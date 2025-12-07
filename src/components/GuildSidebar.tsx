@@ -50,7 +50,9 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
             <nav className="p-4 space-y-1">
                 {menuItems.map((item) => {
                     const fullPath = basePath + item.href;
-                    const isActive = pathname === fullPath || (item.href === "" && pathname === basePath);
+                    const isActive = item.href === ""
+                        ? pathname === fullPath
+                        : pathname.startsWith(fullPath);
 
                     return (
                         <Link

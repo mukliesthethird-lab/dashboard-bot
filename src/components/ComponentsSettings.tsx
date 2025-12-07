@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import EmojiPicker from "./EmojiPicker";
+import ConfirmationModal from "./ConfirmationModal";
 
 interface Role { id: string; name: string; color: number; }
 interface Channel { id: string; name: string; type?: number; }
@@ -77,6 +78,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
     const [showEditor, setShowEditor] = useState<{ type: "button" | "select_menu" } | null>(null);
     const [formData, setFormData] = useState<Partial<ComponentDef>>({});
     const [saving, setSaving] = useState(false);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
     // For nested editing: Action of a component OR Action of an option
     const [editingAction, setEditingAction] = useState<{
@@ -133,10 +135,21 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
         setShowEditor({ type: comp.type });
     };
 
-    const handleDelete = async (id: number) => {
-        if (!confirm("Delete this component?")) return;
-        await fetch(`/api/components?id=${id}&guild_id=${guildId}`, { method: "DELETE" });
-        fetchAll();
+    const handleDelete = (id: number) => {
+        setConfirmDeleteId(id);
+    };
+
+    const confirmDeleteComponent = async () => {
+        if (!confirmDeleteId) return;
+        setConfirmDeleteId(null); // Close immediately or wait? Better wait if async. But consistent with RolesSettings.
+        // Actually RolesSettings waited in finally. Let's do that.
+        try {
+            await fetch(`/api/components?id=${confirmDeleteId}&guild_id=${guildId}`, { method: "DELETE" });
+            await fetchAll();
+        } catch (e) {
+            console.error(e);
+            alert("Failed to delete");
+        }
     };
 
     const handleSave = async () => {
@@ -394,6 +407,16 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                     </div>
                 </div>
             )}
+
+            <ConfirmationModal
+                isOpen={confirmDeleteId !== null}
+                onClose={() => setConfirmDeleteId(null)}
+                onConfirm={confirmDeleteComponent}
+                title="Delete Component"
+                message="Are you sure you want to delete this component? This action cannot be undone."
+                confirmText="Delete"
+                isDestructive={true}
+            />
         </div>
     );
 }

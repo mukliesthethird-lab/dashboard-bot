@@ -178,7 +178,8 @@ export async function GET(request: Request) {
             return NextResponse.json(rows.map((r: any) => ({
                 ...r,
                 embeds: JSON.parse(r.embeds || '[]'),
-                reactions: JSON.parse(r.reactions || '[]')
+                reactions: JSON.parse(r.reactions || '[]'),
+                component_rows: JSON.parse(r.component_rows || '[]')
             })));
         }
 
