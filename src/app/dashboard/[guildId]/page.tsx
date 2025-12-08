@@ -77,10 +77,10 @@ export default async function GuildDashboard({
         : "https://cdn.discordapp.com/embed/avatars/0.png";
 
     return (
-        <div className="flex min-h-screen pt-20">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
             <GuildSidebar guildId={guildId} guildName={guild.name} guildIcon={guild.icon} />
 
-            <main className="flex-1 ml-72 p-8">
+            <main className="ml-72 pt-24 p-8">
                 <div className="max-w-5xl mx-auto">
                     {/* Header */}
                     <div className="mb-8">
@@ -108,14 +108,14 @@ export default async function GuildDashboard({
                             </div>
                             <div className="text-stone-500 text-sm font-bold">Members</div>
                         </div>
-                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border-2 border-emerald-100 shadow-md">
+                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border-2 border-amber-100 shadow-md">
                             <div className="text-4xl mb-2">✅</div>
-                            <div className="text-2xl font-black text-emerald-600">Online</div>
+                            <div className="text-2xl font-black text-amber-600">Online</div>
                             <div className="text-stone-500 text-sm font-bold">Bot Status</div>
                         </div>
-                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border-2 border-blue-100 shadow-md">
+                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border-2 border-amber-100 shadow-md">
                             <div className="text-4xl mb-2">🆔</div>
-                            <div className="text-lg font-black text-blue-600 truncate">{guildId}</div>
+                            <div className="text-lg font-black text-amber-600 truncate">{guildId}</div>
                             <div className="text-stone-500 text-sm font-bold">Server ID</div>
                         </div>
                     </div>

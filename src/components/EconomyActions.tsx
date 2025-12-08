@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import ConfirmationModal from "./ConfirmationModal";
+import CatLoader from "./CatLoader";
 
 interface User {
     user_id: string;
@@ -46,6 +48,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
     const [showConfirm, setShowConfirm] = useState(false);
     const [confirmAction, setConfirmAction] = useState<string>("");
     const [confirmMessage, setConfirmMessage] = useState<string>("");
+    const [isDestructive, setIsDestructive] = useState(false);
 
     const fetchStats = () => {
         setLoading(true);
@@ -153,14 +156,14 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
     };
 
     // Confirmation functions
-    const askConfirm = (action: string, message: string) => {
+    const askConfirm = (action: string, message: string, destructive: boolean = false) => {
         setConfirmAction(action);
         setConfirmMessage(message);
+        setIsDestructive(destructive);
         setShowConfirm(true);
     };
 
     const executeConfirmedAction = async () => {
-        setShowConfirm(false);
         switch (confirmAction) {
             case 'give': await handleGiveMoney(); break;
             case 'reset': await handleResetUser(); break;
@@ -171,25 +174,26 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
         setShowGiveMoney(false);
         setShowResetUser(false);
         setShowLeaderboard(false);
-        setShowConfirm(false);
         setSelectedUser(null);
         setSearchQuery("");
         setSearchResults([]);
         setAmount("");
-        setConfirmAction("");
-        setConfirmMessage("");
     };
+
+    if (loading) {
+        return <CatLoader message="Loading economy data..." />;
+    }
 
     return (
         <>
-            {/* Stats Grid */}
+            {/* Stats Grid - Amber Theme */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div className="bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-2xl p-6 border-2 border-emerald-200 shadow-md">
+                <div className="bg-gradient-to-br from-amber-100 to-amber-50 rounded-2xl p-6 border-2 border-amber-200 shadow-md">
                     <div className="text-4xl mb-3">👥</div>
-                    <div className="text-3xl font-black text-emerald-700">
+                    <div className="text-3xl font-black text-amber-700">
                         {loading ? "..." : stats.totalUsers.toLocaleString()}
                     </div>
-                    <div className="text-emerald-600 font-bold text-sm">Total Players</div>
+                    <div className="text-amber-600 font-bold text-sm">Total Players</div>
                 </div>
 
                 <div className="bg-gradient-to-br from-amber-100 to-amber-50 rounded-2xl p-6 border-2 border-amber-200 shadow-md">
@@ -200,12 +204,12 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                     <div className="text-amber-600 font-bold text-sm">Total Economy</div>
                 </div>
 
-                <div className="bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl p-6 border-2 border-purple-200 shadow-md">
+                <div className="bg-gradient-to-br from-amber-100 to-amber-50 rounded-2xl p-6 border-2 border-amber-200 shadow-md">
                     <div className="text-4xl mb-3">👑</div>
-                    <div className="text-3xl font-black text-purple-700">
+                    <div className="text-3xl font-black text-amber-700">
                         ${loading ? "..." : (stats.topUsers[0]?.balance || 0).toLocaleString()}
                     </div>
-                    <div className="text-purple-600 font-bold text-sm">Richest Player</div>
+                    <div className="text-amber-600 font-bold text-sm">Richest Player</div>
                 </div>
             </div>
 
@@ -216,13 +220,13 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                 </div>
             )}
 
-            {/* Quick Actions */}
+            {/* Quick Actions - Amber Theme */}
             <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border-2 border-amber-100 shadow-md mb-8">
                 <h2 className="text-xl font-black text-stone-800 mb-4">⚡ Economy Actions</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     <button
                         onClick={() => { setShowGiveMoney(true); setMessage(null); }}
-                        className="p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-200 transition text-center group"
+                        className="p-4 rounded-xl bg-amber-50 hover:bg-amber-100 border-2 border-amber-200 transition text-center group"
                     >
                         <div className="text-3xl mb-2 group-hover:scale-110 transition">💸</div>
                         <div className="font-bold text-stone-700 text-sm">Give Money</div>
@@ -236,7 +240,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                     </button>
                     <button
                         onClick={() => { setShowLeaderboard(true); fetchStats(); }}
-                        className="p-4 rounded-xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 transition text-center group"
+                        className="p-4 rounded-xl bg-amber-50 hover:bg-amber-100 border-2 border-amber-200 transition text-center group"
                     >
                         <div className="text-3xl mb-2 group-hover:scale-110 transition">📊</div>
                         <div className="font-bold text-stone-700 text-sm">Leaderboard</div>
@@ -244,10 +248,10 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                 </div>
             </div>
 
-            {/* Give Money Modal */}
+            {/* Give Money Modal - Amber Theme */}
             {showGiveMoney && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={closeModal}>
-                    <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border-4 border-emerald-200" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border-4 border-amber-200" onClick={e => e.stopPropagation()}>
                         <div className="text-center mb-6">
                             <div className="text-5xl mb-3">💸</div>
                             <h2 className="text-2xl font-black text-stone-800">Give Money</h2>
@@ -307,14 +311,14 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                                     onChange={(e) => setAmount(e.target.value)}
                                     placeholder="Enter amount"
                                     min="1"
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-emerald-400 focus:outline-none font-medium"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-amber-400 focus:outline-none font-medium"
                                 />
                             </div>
                         </div>
 
                         <div className="flex gap-3 mt-6">
                             <button onClick={closeModal} className="flex-1 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl transition">Cancel</button>
-                            <button onClick={() => askConfirm('give', `Berikan $${amount} kepada @${selectedUser?.username}?`)} disabled={submitting || !selectedUser || !amount} className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition disabled:opacity-50">
+                            <button onClick={() => askConfirm('give', `Berikan $${amount} kepada @${selectedUser?.username}?`)} disabled={submitting || !selectedUser || !amount} className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition disabled:opacity-50">
                                 {submitting ? "..." : "Give Money"}
                             </button>
                         </div>
@@ -322,7 +326,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                 </div>
             )}
 
-            {/* Reset User Modal */}
+            {/* Reset User Modal - Red Theme for Destructive */}
             {showResetUser && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={closeModal}>
                     <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border-4 border-red-200" onClick={e => e.stopPropagation()}>
@@ -378,7 +382,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
 
                         <div className="flex gap-3 mt-6">
                             <button onClick={closeModal} className="flex-1 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl transition">Cancel</button>
-                            <button onClick={() => askConfirm('reset', `⚠️ RESET semua data economy @${selectedUser?.username}? Tindakan ini TIDAK bisa dibatalkan!`)} disabled={submitting || !selectedUser} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition disabled:opacity-50">
+                            <button onClick={() => askConfirm('reset', `⚠️ RESET semua data economy @${selectedUser?.username}? Tindakan ini TIDAK bisa dibatalkan!`, true)} disabled={submitting || !selectedUser} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition disabled:opacity-50">
                                 {submitting ? "..." : "Reset User"}
                             </button>
                         </div>
@@ -386,10 +390,10 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                 </div>
             )}
 
-            {/* Leaderboard Modal */}
+            {/* Leaderboard Modal - Amber Theme */}
             {showLeaderboard && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={closeModal}>
-                    <div className="bg-white rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl border-4 border-blue-200 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl border-4 border-amber-200 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                         <div className="text-center mb-6">
                             <div className="text-5xl mb-3">📊</div>
                             <h2 className="text-2xl font-black text-stone-800">Top 10 Richest</h2>
@@ -397,7 +401,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
 
                         <div className="space-y-2">
                             {stats.topUsers.map((user, index) => (
-                                <div key={user.user_id} className={`flex items-center gap-3 p-3 rounded-xl ${index === 0 ? 'bg-yellow-100 border-2 border-yellow-300' : index === 1 ? 'bg-slate-100' : index === 2 ? 'bg-orange-50' : 'bg-stone-50'}`}>
+                                <div key={user.user_id} className={`flex items-center gap-3 p-3 rounded-xl ${index === 0 ? 'bg-amber-100 border-2 border-amber-300' : index === 1 ? 'bg-amber-50' : index === 2 ? 'bg-amber-50/50' : 'bg-stone-50'}`}>
                                     <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center font-black text-sm border">
                                         {index === 0 ? "👑" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`}
                                     </div>
@@ -418,28 +422,19 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                 </div>
             )}
 
-            {/* Confirmation Modal */}
-            {showConfirm && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowConfirm(false)}>
-                    <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border-4 border-amber-300" onClick={e => e.stopPropagation()}>
-                        <div className="text-center mb-6">
-                            <div className="text-6xl mb-4">⚠️</div>
-                            <h2 className="text-2xl font-black text-stone-800 mb-2">Konfirmasi</h2>
-                            <p className="text-stone-600 font-medium">{confirmMessage}</p>
-                        </div>
-                        <div className="flex gap-3">
-                            <button onClick={() => setShowConfirm(false)} className="flex-1 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl transition">
-                                Batal
-                            </button>
-                            <button onClick={executeConfirmedAction} disabled={submitting} className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition disabled:opacity-50">
-                                {submitting ? "..." : "Ya, Lanjutkan"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* ConfirmationModal */}
+            <ConfirmationModal
+                isOpen={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={executeConfirmedAction}
+                title="Konfirmasi"
+                message={confirmMessage}
+                confirmText="Ya, Lanjutkan"
+                cancelText="Batal"
+                isDestructive={isDestructive}
+            />
 
-            {/* Info Card */}
+            {/* Info Card - Amber Theme */}
             <div className="bg-gradient-to-r from-amber-100 to-amber-50 rounded-3xl p-6 border-2 border-amber-200 shadow-md">
                 <div className="flex items-start gap-4">
                     <div className="text-4xl">💡</div>

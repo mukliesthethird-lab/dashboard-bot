@@ -970,11 +970,61 @@ export default function CreateMessageModal({
                                 {/* SELECT MENU SPECIFIC: Options */}
                                 {compSettings.type === 3 && (
                                     <div className="space-y-3">
+                                        {/* Allow Multiple Selections Toggle */}
+                                        <div className="flex items-center gap-3 p-3 bg-stone-50 border border-stone-200 rounded-lg">
+                                            <input
+                                                type="checkbox"
+                                                id="allow-multiple-modal"
+                                                checked={(compSettings.max_values || 1) > 1}
+                                                onChange={(e) => {
+                                                    saveCompSettings({
+                                                        min_values: e.target.checked ? 0 : 1,
+                                                        max_values: e.target.checked ? 25 : 1
+                                                    });
+                                                }}
+                                                className="w-5 h-5 rounded border-stone-300 text-amber-500 focus:ring-amber-500 accent-amber-500"
+                                            />
+                                            <label htmlFor="allow-multiple-modal" className="text-stone-700 font-bold cursor-pointer select-none">
+                                                Allow Multiple Selections
+                                            </label>
+                                            <span className="text-stone-400 text-xs ml-auto">
+                                                {(compSettings.max_values || 1) > 1
+                                                    ? `Up to ${compSettings.max_values} options`
+                                                    : "Single selection only"}
+                                            </span>
+                                        </div>
+
+                                        {/* Min/Max controls if multiple is enabled */}
+                                        {(compSettings.max_values || 1) > 1 && (
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-stone-400 mb-1">Min Selections</label>
+                                                    <input
+                                                        type="number"
+                                                        value={compSettings.min_values || 0}
+                                                        onChange={(e) => saveCompSettings({ min_values: parseInt(e.target.value) || 0 })}
+                                                        className="w-full p-2 border border-stone-200 rounded-lg outline-none focus:border-amber-400"
+                                                        min="0" max="25"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-stone-400 mb-1">Max Selections</label>
+                                                    <input
+                                                        type="number"
+                                                        value={compSettings.max_values || 1}
+                                                        onChange={(e) => saveCompSettings({ max_values: parseInt(e.target.value) || 1 })}
+                                                        className="w-full p-2 border border-stone-200 rounded-lg outline-none focus:border-amber-400"
+                                                        min="1" max="25"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div className="flex justify-between items-center">
                                             <label className="text-xs font-bold text-stone-400">Menu Options</label>
                                             <button
                                                 onClick={() => {
-                                                    const newOptions = [...(compSettings?.options || []), { label: 'New Option', value: '', description: '' }];
+                                                    const newOptions = [...(compSettings?.options || []), { label: 'New Option', value: `option_${Date.now()}`, description: '' }];
                                                     saveCompSettings({ options: newOptions });
                                                 }}
                                                 className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded font-bold hover:bg-amber-200 transition"

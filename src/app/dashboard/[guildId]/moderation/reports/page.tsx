@@ -5,9 +5,7 @@ import ModerationReports from "@/components/ModerationReports";
 import GuildSidebar from "@/components/GuildSidebar";
 
 interface PageProps {
-    params: {
-        guildId: string;
-    };
+    params: Promise<{ guildId: string }>;
 }
 
 async function fetchGuildName(guildId: string, accessToken: string) {
@@ -36,27 +34,22 @@ export default async function ModerationReportsPage({ params }: PageProps) {
         redirect("/");
     }
 
-    const { guildId } = params;
+    const { guildId } = await params;
 
-    // Fetch guild details for sidebar title
     const guildDetails = await fetchGuildName(guildId, session.accessToken as string);
 
-    // If guild not found or user not in it
     if (!guildDetails) {
         return (
-            <div className="flex h-screen items-center justify-center bg-stone-50 text-stone-600 font-bold">
+            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-amber-50 via-white to-orange-50 text-stone-600 font-bold">
                 Guild not found or access denied.
             </div>
         );
     }
 
     return (
-        <div className="flex bg-stone-50 min-h-screen font-sans text-stone-900 selection:bg-amber-100 selection:text-amber-900">
-            {/* Sidebar */}
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
             <GuildSidebar guildId={guildId} guildName={guildDetails.name} guildIcon={guildDetails.icon} />
-
-            {/* Main Content Area */}
-            <main className="flex-1 ml-72 p-8 overflow-y-auto h-screen">
+            <main className="ml-72 pt-24 p-8">
                 <div className="max-w-6xl mx-auto">
                     <ModerationReports guildId={guildId} />
                 </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import CreateMessageModal from "./CreateMessageModal";
 import ConfirmationModal from "./ConfirmationModal";
+import CatLoader from "./CatLoader";
 import { ReactionRoleMessage, EmbedData, Component, BotAction, Role, Channel } from "../types";
 
 
@@ -218,11 +219,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
     };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="w-12 h-12 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
+        return <CatLoader message="Loading welcome settings..." />;
     }
 
     return (

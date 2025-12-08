@@ -63,7 +63,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                         <p className="text-stone-500 mb-6">Manage all ban, kick, mute and warn cases.</p>
                     </div>
                     <Link href={`/dashboard/${guildId}/moderation/cases`}>
-                        <button className="self-start px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl shadow-md transition flex items-center gap-2">
+                        <button className="self-start px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md transition flex items-center gap-2">
                             View cases
                         </button>
                     </Link>
@@ -81,7 +81,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                         <p className="text-stone-500 mb-6">Manage incoming reports from your community.</p>
                     </div>
                     <Link href={`/dashboard/${guildId}/moderation/reports`}>
-                        <button className="self-start px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl shadow-md transition flex items-center gap-2">
+                        <button className="self-start px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md transition flex items-center gap-2">
                             View reports
                         </button>
                     </Link>

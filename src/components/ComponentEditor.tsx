@@ -630,28 +630,56 @@ export default function ComponentEditor({ rows, onChange, roles, channels }: Com
                                             className="w-full px-3 py-2 bg-stone-800 text-white rounded-lg border border-stone-600"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label className="block text-xs font-bold text-stone-400 mb-1">Min Values</label>
-                                            <input
-                                                type="number"
-                                                value={(currentComponent as ComponentSelectMenu).min_values || 1}
-                                                onChange={(e) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { min_values: parseInt(e.target.value) || 1 })}
-                                                className="w-full px-3 py-2 bg-stone-800 text-white rounded-lg border border-stone-600"
-                                                min="0" max="25"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-stone-400 mb-1">Max Values</label>
-                                            <input
-                                                type="number"
-                                                value={(currentComponent as ComponentSelectMenu).max_values || 1}
-                                                onChange={(e) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { max_values: parseInt(e.target.value) || 1 })}
-                                                className="w-full px-3 py-2 bg-stone-800 text-white rounded-lg border border-stone-600"
-                                                min="1" max="25"
-                                            />
-                                        </div>
+                                    {/* Multiple Selection Toggle */}
+                                    <div className="flex items-center gap-3 p-3 bg-stone-800 rounded-xl border border-stone-600">
+                                        <input
+                                            type="checkbox"
+                                            id="allow-multiple"
+                                            checked={((currentComponent as ComponentSelectMenu).max_values || 1) > 1}
+                                            onChange={(e) => {
+                                                const newMaxValues = e.target.checked ? 25 : 1;
+                                                updateComponent(editingComponent.rowIndex, editingComponent.compIndex, {
+                                                    min_values: e.target.checked ? 0 : 1,
+                                                    max_values: newMaxValues
+                                                });
+                                            }}
+                                            className="w-5 h-5 rounded border-stone-500 text-amber-500 focus:ring-amber-500 accent-amber-500"
+                                        />
+                                        <label htmlFor="allow-multiple" className="text-white font-bold cursor-pointer select-none">
+                                            Allow Multiple Selections
+                                        </label>
+                                        <span className="text-stone-400 text-xs ml-auto">
+                                            {((currentComponent as ComponentSelectMenu).max_values || 1) > 1
+                                                ? `Users can select up to ${(currentComponent as ComponentSelectMenu).max_values} options`
+                                                : "Users can only select 1 option"}
+                                        </span>
                                     </div>
+
+                                    {/* Advanced: Min/Max if multiple is enabled */}
+                                    {((currentComponent as ComponentSelectMenu).max_values || 1) > 1 && (
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs font-bold text-stone-400 mb-1">Min Selections</label>
+                                                <input
+                                                    type="number"
+                                                    value={(currentComponent as ComponentSelectMenu).min_values || 0}
+                                                    onChange={(e) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { min_values: parseInt(e.target.value) || 0 })}
+                                                    className="w-full px-3 py-2 bg-stone-800 text-white rounded-lg border border-stone-600"
+                                                    min="0" max="25"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-stone-400 mb-1">Max Selections</label>
+                                                <input
+                                                    type="number"
+                                                    value={(currentComponent as ComponentSelectMenu).max_values || 1}
+                                                    onChange={(e) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { max_values: parseInt(e.target.value) || 1 })}
+                                                    className="w-full px-3 py-2 bg-stone-800 text-white rounded-lg border border-stone-600"
+                                                    min="1" max="25"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
                                             <label className="text-sm font-bold text-white">Options</label>

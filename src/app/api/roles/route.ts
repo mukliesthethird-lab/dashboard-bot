@@ -119,19 +119,28 @@ function buildDiscordComponents(rows: any[]) {
                 }
                 return btn;
             } else if (comp.type === 3) {
-                // Select Menu
+                // Select Menu - validate and filter options
+                const validOptions = (comp.options || [])
+                    .filter((opt: any) => opt.label && opt.label.trim()) // Must have label
+                    .map((opt: any, idx: number) => ({
+                        label: opt.label.substring(0, 100), // Max 100 chars
+                        value: (opt.value && opt.value.trim()) ? opt.value.substring(0, 100) : `option_${idx}_${Date.now()}`, // Auto-generate if empty
+                        description: opt.description ? opt.description.substring(0, 100) : undefined,
+                        emoji: opt.emoji ? { name: opt.emoji } : undefined
+                    }));
+
+                // Skip select menu if no valid options
+                if (validOptions.length === 0) {
+                    return null;
+                }
+
                 return {
                     type: 3, // String Select
                     custom_id: comp.custom_id || `sel_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                    options: (comp.options || []).map((opt: any) => ({
-                        label: opt.label,
-                        value: opt.value,
-                        description: opt.description,
-                        emoji: opt.emoji ? { name: opt.emoji } : undefined
-                    })),
-                    placeholder: comp.placeholder,
+                    options: validOptions,
+                    placeholder: comp.placeholder || 'Select an option',
                     min_values: comp.min_values || 1,
-                    max_values: comp.max_values || 1,
+                    max_values: Math.min(comp.max_values || 1, validOptions.length), // max_values can't exceed options count
                 };
             }
             return null;

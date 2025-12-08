@@ -6,6 +6,7 @@ import EmojiPicker from "./EmojiPicker";
 import { ReactionRoleMessage, Channel, Role, GlobalRolesSettings } from "../types";
 import CreateMessageModal from "./CreateMessageModal";
 import ConfirmationModal from "./ConfirmationModal";
+import CatLoader from "./CatLoader";
 
 interface RolesSettingsProps {
     guildId: string;
@@ -156,7 +157,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
     };
 
 
-    if (loading) return <div className="p-10 text-center">Loading...</div>;
+    if (loading) return <CatLoader message="Loading reaction roles..." />;
 
     return (
         <div className="p-8 max-w-6xl mx-auto space-y-8 animate-fade-in-up pb-20">

@@ -162,7 +162,7 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
             <div className="flex items-center gap-4 mb-4">
                 <Link
                     href={`/dashboard/${guildId}/moderation`}
-                    className="p-2.5 rounded-xl bg-white border border-stone-200 text-stone-500 hover:bg-stone-50 hover:text-amber-600 transition"
+                    className="p-2.5 rounded-xl bg-white/90 border-2 border-amber-100 text-stone-500 hover:bg-amber-50 hover:text-amber-600 transition"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -178,13 +178,13 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
             </div>
 
             {/* Controls */}
-            <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm space-y-4 mb-4">
+            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border-2 border-amber-100 shadow-md space-y-4 mb-4">
                 <input
                     type="text"
                     placeholder="Case ID / User ID / Reason"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-5 py-3 bg-stone-50 border border-stone-200 rounded-xl font-medium text-stone-700 focus:outline-none focus:border-amber-400 transition"
+                    className="w-full px-5 py-3 bg-stone-50 border-2 border-amber-100 rounded-xl font-medium text-stone-700 focus:outline-none focus:border-amber-400 transition"
                 />
 
                 <div className="flex flex-wrap gap-3">
@@ -337,11 +337,11 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden">
+            <div className="bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-amber-100 shadow-md overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-stone-50 border-b border-stone-200 text-stone-500 text-xs uppercase tracking-wider font-extrabold">
+                            <tr className="bg-amber-50/50 border-b border-amber-100 text-stone-500 text-xs uppercase tracking-wider font-extrabold">
                                 {isMassEdit && (
                                     <th className="px-6 py-4 w-12">
                                         <input
@@ -360,7 +360,7 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                                 <th className="px-6 py-4">Created</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-stone-100">
+                        <tbody className="divide-y divide-amber-100">
                             {MOCK_CASES.map((item) => (
                                 <tr key={item.id} className="hover:bg-amber-50/30 transition group">
                                     {isMassEdit && (

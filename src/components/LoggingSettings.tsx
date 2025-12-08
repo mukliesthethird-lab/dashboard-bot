@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import CatLoader from "./CatLoader";
 
 interface Channel { id: string; name: string; }
 interface Role { id: string; name: string; color: number; }
@@ -344,11 +345,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
     );
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center py-20">
-                <div className="text-6xl animate-bounce">📝</div>
-            </div>
-        );
+        return <CatLoader message="Loading logging settings..." />;
     }
 
     return (

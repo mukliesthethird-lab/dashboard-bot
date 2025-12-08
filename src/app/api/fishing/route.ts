@@ -69,8 +69,8 @@ export async function GET(request: Request) {
                 const [rodsCount]: any = await pool.query('SELECT COUNT(*) as count FROM fishing_rods');
                 console.log('[Fishing API] fishing_rods count:', rodsCount[0]?.count);
 
-                const [fishCount]: any = await pool.query('SELECT COUNT(*) as total FROM fish_inventory');
-                console.log('[Fishing API] fish_inventory total:', fishCount[0]?.total);
+                const [fishCount]: any = await pool.query('SELECT COALESCE(MAX(id), 0) as total FROM fish_inventory');
+                console.log('[Fishing API] fish_inventory highest ID (total caught):', fishCount[0]?.total);
 
                 const [topFishers]: any = await pool.query(
                     `SELECT CAST(fp.user_id AS CHAR) as user_id, fp.total_catches as total_catch 

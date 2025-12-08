@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import CatLoader from "./CatLoader";
 
 interface LogEntry {
     id: number;
@@ -56,17 +57,11 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
             .catch(() => setLoading(false));
     }, [guildId]);
 
-    // Logging happens only on meaningful actions (settings changes, etc.)
-    // Not on every page view to avoid spam
-
     if (loading) {
         return (
             <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border-2 border-amber-100 shadow-md">
                 <h2 className="text-xl font-black text-stone-800 mb-4">📊 Recent Activity</h2>
-                <div className="text-center py-8 text-stone-400">
-                    <div className="animate-spin text-3xl mb-2">⏳</div>
-                    Loading...
-                </div>
+                <CatLoader message="Loading activity..." />
             </div>
         );
     }

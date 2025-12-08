@@ -63,16 +63,16 @@ export default async function FishingPage({
     const guild = token ? await fetchGuild(guildId, token) : { id: guildId, name: "Server", icon: null };
 
     return (
-        <div className="flex min-h-screen pt-20">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
             <GuildSidebar guildId={guildId} guildName={guild.name} guildIcon={guild.icon} />
 
-            <main className="flex-1 ml-72 p-8">
+            <main className="ml-72 pt-24 p-8">
                 <div className="max-w-5xl mx-auto">
                     <div className="mb-8">
                         <h1 className="text-3xl md:text-4xl font-black text-stone-800 mb-2">
                             🎣 Fishing Management
                         </h1>
-                        <p className="text-blue-700 font-bold">Manage fishing rods, catches, and leaderboards</p>
+                        <p className="text-amber-700 font-bold">Manage fishing rods, catches, and leaderboards</p>
                     </div>
 
                     <FishingActions guildId={guildId} />
