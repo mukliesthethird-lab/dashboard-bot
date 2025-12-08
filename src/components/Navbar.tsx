@@ -17,7 +17,7 @@ export default function Navbar() {
                 <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white font-bold text-lg group-hover:scale-110 transition">P</div>
+                        <img src="/donpollo-icon.jpg" alt="Don Pollo" className="w-10 h-10 rounded-full border-2 border-amber-500 group-hover:scale-110 transition" />
                         <span className="text-2xl font-black text-amber-500 tracking-tighter group-hover:text-amber-600 transition">
                             DON POLLO
                         </span>

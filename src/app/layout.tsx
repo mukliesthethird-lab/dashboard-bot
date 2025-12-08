@@ -7,8 +7,11 @@ import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Don Pollo Bot",
+  title: "Dashboard | Don Pollo",
   description: "The Best Economic & Moderation Bot on Discord",
+  icons: {
+    icon: '/donpollo-icon.jpg',
+  },
 };
 
 export default function RootLayout({
