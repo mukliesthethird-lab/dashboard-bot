@@ -278,7 +278,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                                         <div className="flex flex-wrap items-end gap-4">
                                             <div>
                                                 <label className="text-xs font-bold text-stone-500 mb-1 block">EMOJI</label>
-                                                <EmojiPicker value={formData.data?.emoji || ''} onChange={e => updateData({ emoji: e })} />
+                                                <EmojiPicker value={formData.data?.emoji || ''} onChange={e => updateData({ emoji: e })} guildId={guildId} />
                                             </div>
                                             <div className="flex-1 min-w-[200px]">
                                                 <label className="text-xs font-bold text-stone-500 mb-1 block">LABEL</label>
@@ -372,7 +372,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                                                                     const newOpts = [...(formData.data?.options || [])];
                                                                     newOpts[idx] = { ...newOpts[idx], emoji: e };
                                                                     updateData({ options: newOpts });
-                                                                }} />
+                                                                }} guildId={guildId} />
                                                                 <button onClick={() => {
                                                                     const newOpts = (formData.data?.options || []).filter((_, i) => i !== idx);
                                                                     updateData({ options: newOpts });

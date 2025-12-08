@@ -69,6 +69,7 @@ interface ComponentEditorProps {
     onChange: (rows: ComponentRow[]) => void;
     roles: Role[];
     channels: Channel[];
+    guildId?: string;
 }
 
 const ACTION_TYPES: { value: ActionType; label: string; icon: string; category: string }[] = [
@@ -89,7 +90,7 @@ const BUTTON_STYLES: { value: string; label: string; color: string }[] = [
     { value: "danger", label: "Danger", color: "bg-red-500" },
 ];
 
-export default function ComponentEditor({ rows, onChange, roles, channels }: ComponentEditorProps) {
+export default function ComponentEditor({ rows, onChange, roles, channels, guildId }: ComponentEditorProps) {
     const [editingComponent, setEditingComponent] = useState<{ rowIndex: number; compIndex: number } | null>(null);
     const [editingAction, setEditingAction] = useState<{ actionIndex: number } | null>(null);
     const [showAddModal, setShowAddModal] = useState<{ rowIndex: number } | null>(null);
@@ -252,6 +253,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels }: Com
                                             <EmojiPicker
                                                 value={(currentComponent as ComponentButton).emoji}
                                                 onChange={(emoji) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { emoji })}
+                                                guildId={guildId}
                                             />
                                         </div>
                                         <div className="col-span-2">

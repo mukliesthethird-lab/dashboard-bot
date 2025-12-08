@@ -464,6 +464,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                     }}
                     saveLabel="Update Preview"
                     disableChannelSelect={true}
+                    guildId={guildId}
                 />
             )}
 

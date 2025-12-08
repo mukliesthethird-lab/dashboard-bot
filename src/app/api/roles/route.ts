@@ -98,6 +98,24 @@ function buildDiscordEmbed(embed: any, reactions: any[], roles: any[]) {
     return discordEmbed;
 }
 
+function parseEmoji(emojiStr: string) {
+    if (!emojiStr) return undefined;
+
+    // Check for custom emoji format <:name:id> or <a:name:id>
+    const customMatch = emojiStr.match(/<(a?):(\w+):(\d+)>/);
+    if (customMatch) {
+        const [_, animated, name, id] = customMatch;
+        return {
+            name: name,
+            id: id,
+            animated: !!animated
+        };
+    }
+
+    // Standard unicode emoji
+    return { name: emojiStr };
+}
+
 function buildDiscordComponents(rows: any[]) {
     if (!rows || !Array.isArray(rows) || rows.length === 0) return [];
 
@@ -111,7 +129,7 @@ function buildDiscordComponents(rows: any[]) {
                     style: comp.style || 1,
                     label: comp.label || 'Button',
                 };
-                if (comp.emoji) btn.emoji = { name: comp.emoji };
+                if (comp.emoji) btn.emoji = parseEmoji(comp.emoji);
                 if (comp.style === 5) {
                     btn.url = comp.url || 'https://discord.com';
                 } else {
@@ -126,7 +144,7 @@ function buildDiscordComponents(rows: any[]) {
                         label: opt.label.substring(0, 100), // Max 100 chars
                         value: (opt.value && opt.value.trim()) ? opt.value.substring(0, 100) : `option_${idx}_${Date.now()}`, // Auto-generate if empty
                         description: opt.description ? opt.description.substring(0, 100) : undefined,
-                        emoji: opt.emoji ? { name: opt.emoji } : undefined
+                        emoji: opt.emoji ? parseEmoji(opt.emoji) : undefined
                     }));
 
                 // Skip select menu if no valid options

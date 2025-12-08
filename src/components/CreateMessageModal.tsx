@@ -35,7 +35,29 @@ const AccordionItem = ({ title, children, isOpen, onToggle, extraActions }: { ti
             </div>
         )}
     </div>
+
 );
+
+// --- Emoji Renderer ---
+const renderEmoji = (emoji: string) => {
+    if (!emoji) return null;
+    // Check for custom emoji format <:name:id> or <a:name:id>
+    const customMatch = emoji.match(/<(a?):(\w+):(\d+)>/);
+    if (customMatch) {
+        const [_, animated, name, id] = customMatch;
+        const ext = animated ? 'gif' : 'png';
+        return (
+            <img
+                src={`https://cdn.discordapp.com/emojis/${id}.${ext}`}
+                alt={name}
+                className="w-5 h-5 object-contain inline-block"
+                title={`:${name}:`}
+            />
+        );
+    }
+    // Standard unicode emoji
+    return <span className="inline-block">{emoji}</span>;
+};
 
 // --- Embed Editor Component ---
 
@@ -467,6 +489,7 @@ interface CreateMessageModalProps {
     isEditing: boolean;
     channels: Channel[];
     roles: Role[];
+    guildId?: string;
     onSave: (message: ReactionRoleMessage, channelId: string) => Promise<void>;
 }
 
@@ -478,6 +501,7 @@ export default function CreateMessageModal({
     channels,
     roles,
     onSave,
+    guildId,
     saveLabel = "Send Message",
     disableChannelSelect = false
 }: CreateMessageModalProps & { saveLabel?: string; disableChannelSelect?: boolean }) {
@@ -725,7 +749,7 @@ export default function CreateMessageModal({
                                                                     'bg-[#2B2D31] text-[#DBDEE1] border border-[#1e1f22] w-full justify-between'} 
                                             `}>
                                                 <div className="flex items-center gap-2">
-                                                    {comp.emoji && <span>{comp.emoji}</span>}
+                                                    {comp.emoji && renderEmoji(comp.emoji)}
                                                     <span>{comp.label || comp.placeholder}</span>
                                                 </div>
                                                 {comp.type === 3 && <span className="text-xs">▼</span>}
@@ -868,7 +892,7 @@ export default function CreateMessageModal({
                                                     className={`px-3 py-2 rounded-lg text-sm font-bold border-2 transition flex items-center gap-2 bg-white border-stone-200 hover:border-amber-400 ${comp.type === 3 ? 'w-full justify-between' : ''}`}
                                                 >
                                                     <div className="flex items-center gap-2">
-                                                        {comp.emoji && <span>{comp.emoji}</span>}
+                                                        {comp.emoji && renderEmoji(comp.emoji)}
                                                         {comp.label || comp.placeholder}
                                                     </div>
                                                     {comp.type === 3 && <span className="text-xs text-stone-400">▼</span>}
@@ -939,7 +963,7 @@ export default function CreateMessageModal({
                                     <>
                                         <div>
                                             <label className="block text-xs font-bold text-stone-400 mb-1">Emoji</label>
-                                            <EmojiPicker value={compSettings.emoji || ''} onChange={(val) => saveCompSettings({ emoji: val })} className="w-full" />
+                                            <EmojiPicker value={compSettings.emoji || ''} onChange={(val) => saveCompSettings({ emoji: val })} className="w-full" guildId={guildId} />
                                         </div>
                                         <div>
                                             <label className="block text-xs font-bold text-stone-400 mb-1">Style</label>
@@ -1088,6 +1112,7 @@ export default function CreateMessageModal({
                                                                     saveCompSettings({ options: newOptions });
                                                                 }}
                                                                 className="w-full"
+                                                                guildId={guildId}
                                                             />
                                                         </div>
                                                         <input

@@ -261,6 +261,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                 channels={channels}
                 roles={roles}
                 onSave={handleSaveMessage}
+                guildId={guildId}
             />
 
             <ConfirmationModal
