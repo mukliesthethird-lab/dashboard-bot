@@ -38,22 +38,22 @@ const ConfirmationModal = ({
 
     return createPortal(
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden transform transition-all animate-scale-in">
+            <div className="bg-[#16161f] rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden transform transition-all animate-scale-in border border-white/10">
                 {/* Header */}
                 <div className="p-6 pb-2">
-                    <h3 className="text-xl font-black text-stone-800">{title}</h3>
+                    <h3 className="text-xl font-black text-white">{title}</h3>
                 </div>
 
                 {/* Content */}
                 <div className="px-6 py-2">
-                    <p className="text-stone-600 font-medium leading-relaxed">{message}</p>
+                    <p className="text-gray-400 font-medium leading-relaxed">{message}</p>
                 </div>
 
                 {/* Footer */}
                 <div className="p-6 pt-6 flex gap-3">
                     <button
                         onClick={onClose}
-                        className="flex-1 px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl transition-colors active:scale-95"
+                        className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-colors active:scale-95 border border-white/10"
                     >
                         {cancelText}
                     </button>

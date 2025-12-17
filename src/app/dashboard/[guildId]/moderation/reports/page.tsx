@@ -49,7 +49,7 @@ export default async function ModerationReportsPage({ params }: PageProps) {
     return (
         <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
             <GuildSidebar guildId={guildId} guildName={guildDetails.name} guildIcon={guildDetails.icon} />
-            <main className="ml-72 pt-24 p-8">
+            <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
                 <div className="max-w-6xl mx-auto">
                     <ModerationReports guildId={guildId} />
                 </div>

@@ -106,14 +106,14 @@ export default function EmojiPicker({ value, onChange, className = "", guildId }
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-14 h-10 flex items-center justify-center text-xl bg-white border-2 border-stone-200 rounded-lg hover:border-amber-400 hover:bg-amber-50 transition cursor-pointer"
+                className="w-14 h-10 flex items-center justify-center text-xl bg-white/5 border border-white/10 rounded-lg hover:border-amber-500/50 hover:bg-white/10 transition cursor-pointer"
             >
                 {value.includes('<') ? <img src={`https://cdn.discordapp.com/emojis/${value.split(':')[2].slice(0, -1)}.png`} className="w-6 h-6" alt="emoji" /> : (value || "😀")}
             </button>
 
             {/* Picker Modal */}
             {isOpen && (
-                <div className="absolute z-50 top-12 left-0 w-[420px] h-[450px] bg-[#2B2D31] rounded-lg shadow-2xl border border-[#1e1f22] overflow-hidden flex flex-col font-sans select-none animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute z-[100] top-12 left-0 w-[420px] h-[450px] bg-[#2B2D31] rounded-lg shadow-2xl border border-[#1e1f22] overflow-hidden flex flex-col font-sans select-none animate-in fade-in zoom-in-95 duration-150">
 
                     {/* Header: Search */}
                     <div className="p-4 bg-[#2B2D31] border-b border-[#1e1f22]">

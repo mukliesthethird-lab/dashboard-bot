@@ -44,7 +44,7 @@ export default async function ComponentsPage({ params }: PageProps) {
                 guildIcon={guild.icon}
             />
 
-            <main className="ml-72 pt-24 p-8">
+            <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
                 <div className="max-w-5xl mx-auto">
                     <ComponentsSettings guildId={guildId} />
                 </div>

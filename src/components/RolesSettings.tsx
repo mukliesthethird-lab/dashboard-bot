@@ -17,7 +17,7 @@ interface RolesSettingsProps {
 const Toggle = ({ enabled, onChange }: { enabled: boolean, onChange: (val: boolean) => void }) => (
     <button
         onClick={() => onChange(!enabled)}
-        className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? 'bg-amber-500' : 'bg-stone-300'}`}
+        className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? 'bg-amber-500' : 'bg-white/10'}`}
     >
         <div
             className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200`}
@@ -164,19 +164,19 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-4xl font-black text-stone-800">Roles Configuration</h1>
-                    <p className="text-stone-500 mt-1">Manage automatic role assignment and reaction roles.</p>
+                    <h1 className="text-4xl font-black text-white">Roles Configuration</h1>
+                    <p className="text-gray-400 mt-1">Manage automatic role assignment and reaction roles.</p>
                 </div>
             </div>
 
             {/* Global Settings */}
             <div className="grid md:grid-cols-2 gap-6">
                 {/* Join Roles Card */}
-                <div className="bg-white rounded-3xl p-6 border-2 border-stone-200 shadow-sm hover:border-amber-200 transition">
+                <div className="glass-card rounded-3xl p-6 hover:border-amber-500/30 transition">
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center gap-3">
                             <span className="text-2xl">👋</span>
-                            <h2 className="text-xl font-bold text-stone-800">Join Roles</h2>
+                            <h2 className="text-xl font-bold text-white">Join Roles</h2>
                         </div>
                         <Toggle
                             enabled={globalSettings.join_roles_enabled}
@@ -190,7 +190,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                                     const role = roles.find(r => r.id === roleId);
                                     if (!role) return null;
                                     return (
-                                        <div key={roleId} className="px-3 py-1 bg-stone-100 rounded-lg text-sm font-bold flex items-center gap-2 border border-stone-200">
+                                        <div key={roleId} className="px-3 py-1 bg-white/5 rounded-lg text-sm font-bold flex items-center gap-2 border border-white/10 text-gray-300">
                                             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#' + role.color.toString(16).padStart(6, '0') }}></span>
                                             {role.name}
                                             <button onClick={() => saveGlobalSettings({ join_roles: globalSettings.join_roles.filter(id => id !== roleId) })} className="ml-1 hover:text-red-500">×</button>
@@ -205,7 +205,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                                     }
                                     e.target.value = '';
                                 }}
-                                className="w-full p-2 border border-stone-200 rounded-lg bg-stone-50 focus:border-amber-400 outline-none"
+                                className="w-full p-2 border border-white/10 rounded-lg bg-white/5 focus:border-amber-500/50 outline-none text-white"
                             >
                                 <option value="">+ Add Role</option>
                                 {roles.filter(r => !globalSettings.join_roles.includes(r.id)).map(r => (
@@ -217,11 +217,11 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                 </div>
 
                 {/* Reaction Roles Card */}
-                <div className="bg-white rounded-3xl p-6 border-2 border-stone-200 shadow-sm hover:border-amber-200 transition">
+                <div className="glass-card rounded-3xl p-6 hover:border-amber-500/30 transition">
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center gap-3">
                             <span className="text-2xl">✨</span>
-                            <h2 className="text-xl font-bold text-stone-800">Reaction Roles</h2>
+                            <h2 className="text-xl font-bold text-white">Reaction Roles</h2>
                         </div>
                         <Toggle
                             enabled={globalSettings.reaction_roles_enabled}
@@ -232,18 +232,18 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 {settings.messages.map((msg, idx) => (
-                                    <div key={idx} className="flex justify-between items-center p-3 bg-stone-50 rounded-xl border border-stone-200 group">
-                                        <span className="font-bold text-stone-600 truncate max-w-[200px]">{msg.embeds[0]?.title || 'Untitled Message'}</span>
+                                    <div key={idx} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/10 group">
+                                        <span className="font-bold text-gray-300 truncate max-w-[200px]">{msg.embeds[0]?.title || 'Untitled Message'}</span>
                                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => { setEditingMsg(msg); setEditingIndex(idx); setShowEditor(true); }} className="p-1 px-3 bg-white border border-stone-200 rounded-lg hover:border-amber-400 text-sm font-bold">Edit</button>
-                                            <button onClick={() => handleDeleteClick(msg)} className="p-1 px-3 text-red-400 hover:text-red-600 text-sm">✕</button>
+                                            <button onClick={() => { setEditingMsg(msg); setEditingIndex(idx); setShowEditor(true); }} className="p-1 px-3 bg-white/5 border border-white/10 rounded-lg hover:border-amber-500/50 text-sm font-bold text-white">Edit</button>
+                                            <button onClick={() => handleDeleteClick(msg)} className="p-1 px-3 text-red-400 hover:text-red-300 text-sm">✕</button>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                             <button
                                 onClick={() => { setEditingMsg(null); setEditingIndex(null); setShowEditor(true); }}
-                                className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition shadow-lg shadow-amber-200"
+                                className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/20"
                             >
                                 + Create New Message
                             </button>

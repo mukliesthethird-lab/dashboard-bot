@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import CatLoader from "./CatLoader";
+import CustomDropdown from "./CustomDropdown";
 
 interface Channel { id: string; name: string; }
 interface Role { id: string; name: string; color: number; }
@@ -351,18 +352,18 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
     return (
         <>
             {message && (
-                <div className={`mb-6 p-4 rounded-xl font-bold ${message.type === "success" ? "bg-emerald-100 text-emerald-700 border-2 border-emerald-200" : "bg-red-100 text-red-700 border-2 border-red-200"}`}>
+                <div className={`mb-6 p-4 rounded-xl font-bold ${message.type === "success" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
                     {message.text}
                 </div>
             )}
 
             {/* Header */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border-2 border-amber-100 shadow-md mb-6">
+            <div className="glass-card rounded-3xl p-6 mb-6">
                 <div className="flex items-center gap-4 mb-4">
                     <div className="text-4xl">📝</div>
                     <div>
-                        <h2 className="text-xl font-black text-stone-800">Logging</h2>
-                        <p className="text-stone-500 text-sm">Log all actions happening in this server. Click on a category to see all its log types.</p>
+                        <h2 className="text-xl font-black text-white">Logging</h2>
+                        <p className="text-gray-400 text-sm">Log all actions happening in this server. Click on a category to see all its log types.</p>
                     </div>
                 </div>
 
@@ -370,13 +371,13 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                 <div className="flex gap-2">
                     <button
                         onClick={() => setActiveTab("types")}
-                        className={`px-6 py-2 rounded-xl font-bold transition ${activeTab === "types" ? "bg-amber-400 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
+                        className={`px-6 py-2 rounded-xl font-bold transition ${activeTab === "types" ? "bg-amber-500 text-black" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}
                     >
                         📁 Types
                     </button>
                     <button
                         onClick={() => setActiveTab("settings")}
-                        className={`px-6 py-2 rounded-xl font-bold transition ${activeTab === "settings" ? "bg-amber-400 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
+                        className={`px-6 py-2 rounded-xl font-bold transition ${activeTab === "settings" ? "bg-amber-500 text-black" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}
                     >
                         ⚙️ Settings
                     </button>
@@ -386,33 +387,36 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
             {activeTab === "types" && (
                 <div className="space-y-4">
                     {/* Search and Actions */}
-                    <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border-2 border-stone-200">
+                    <div className="glass-card rounded-2xl p-5 relative z-10">
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="🔍 Search for types..."
-                            className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-amber-400 focus:outline-none mb-4"
+                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-amber-500/50 focus:outline-none mb-4 text-white"
                         />
                         <div className="flex flex-wrap gap-3">
                             <div className="flex-1 min-w-[200px]">
-                                <select
-                                    onChange={(e) => { if (e.target.value) setAllChannels(e.target.value); }}
-                                    className="w-full px-4 py-3 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-xl font-bold cursor-pointer border-2 border-amber-200 transition"
-                                >
-                                    <option value="">📢 Set channel for all types</option>
-                                    {channels.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
-                                </select>
+                                <CustomDropdown
+                                    value=""
+                                    onChange={(val) => { if (val) setAllChannels(val); }}
+                                    options={[
+                                        { value: '', label: '📢 Set channel for all types' },
+                                        ...channels.map(c => ({ value: c.id, label: `#${c.name}` }))
+                                    ]}
+                                    placeholder="📢 Set channel for all types"
+                                    className="w-full"
+                                />
                             </div>
                             <button
                                 onClick={() => setAllChannels(null)}
-                                className="px-6 py-3 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl font-bold transition border-2 border-red-200"
+                                className="px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-bold transition border border-red-500/30"
                             >
                                 🗑️ Remove channel for all types
                             </button>
                             <button
                                 onClick={() => setExpandedCategories(expandedCategories.length === LOG_CATEGORIES.length ? [] : LOG_CATEGORIES.map(c => c.id))}
-                                className="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition border-2 border-stone-200"
+                                className="px-6 py-3 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl font-bold transition border border-white/10"
                             >
                                 {expandedCategories.length === LOG_CATEGORIES.length ? "🔼 Collapse All" : "🔽 Expand All"}
                             </button>
@@ -427,9 +431,9 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                             const isExpanded = expandedCategories.includes(cat.id);
 
                             return (
-                                <div key={cat.id} className="bg-white/90 backdrop-blur-sm rounded-2xl border-2 border-stone-200 overflow-hidden shadow-sm">
+                                <div key={cat.id} className="glass-card rounded-2xl border border-white/10 relative overflow-visible">
                                     {/* Category Header */}
-                                    <div className="flex items-center justify-between p-4 bg-stone-50">
+                                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-t-2xl relative z-20 overflow-visible">
                                         <button
                                             onClick={() => setExpandedCategories(prev =>
                                                 isExpanded ? prev.filter(x => x !== cat.id) : [...prev, cat.id]
@@ -437,8 +441,8 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                             className="flex items-center gap-3 text-left flex-1"
                                         >
                                             <span className="text-2xl">{cat.icon}</span>
-                                            <span className="font-black text-stone-800 text-lg">{cat.name}</span>
-                                            <span className="text-stone-400 text-sm">({cat.types.length} types)</span>
+                                            <span className="font-black text-white text-lg">{cat.name}</span>
+                                            <span className="text-gray-500 text-sm">({cat.types.length} types)</span>
                                             <span className="text-stone-400 transition-transform duration-200" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
                                         </button>
 
@@ -446,7 +450,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                             {categoryChannel && (
                                                 <button
                                                     onClick={() => setCategoryChannel(cat.id, null)}
-                                                    className="w-6 h-6 flex items-center justify-center text-stone-400 hover:text-red-500 hover:bg-red-50 rounded transition"
+                                                    className="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition"
                                                 >×</button>
                                             )}
                                             {categoryChannel ? (
@@ -454,21 +458,23 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                                     # {categoryChannel.name}
                                                 </span>
                                             ) : (
-                                                <select
+                                                <CustomDropdown
                                                     value=""
-                                                    onChange={(e) => setCategoryChannel(cat.id, e.target.value)}
-                                                    className="px-4 py-1.5 bg-stone-200 hover:bg-stone-300 rounded-lg text-sm font-bold text-stone-700 cursor-pointer border-0 transition"
-                                                >
-                                                    <option value="">Set category channel</option>
-                                                    {channels.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
-                                                </select>
+                                                    onChange={(val) => setCategoryChannel(cat.id, val)}
+                                                    options={[
+                                                        { value: '', label: 'Set category channel' },
+                                                        ...channels.map(c => ({ value: c.id, label: `#${c.name}` }))
+                                                    ]}
+                                                    placeholder="Set category channel"
+                                                    className="min-w-[180px]"
+                                                />
                                             )}
                                         </div>
                                     </div>
 
                                     {/* Expanded Types */}
                                     {isExpanded && (
-                                        <div className="border-t border-stone-200">
+                                        <div className="border-t border-white/10 overflow-visible">
                                             {cat.types.map(type => {
                                                 const typeChannelId = settings.type_channels[type.id];
                                                 const effectiveChannelId = typeChannelId || categoryChannelId;
@@ -476,17 +482,17 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                                 const isOverridden = !!typeChannelId;
 
                                                 return (
-                                                    <div key={type.id} className="flex items-center justify-between px-4 py-3 border-b border-stone-100 last:border-b-0 hover:bg-stone-50 transition">
+                                                    <div key={type.id} className="flex items-center justify-between px-4 py-3 border-b border-white/5 last:border-b-0 hover:bg-white/5 transition relative z-10 overflow-visible">
                                                         <div className="flex items-center gap-3 pl-8">
-                                                            <span className="w-1.5 h-1.5 bg-stone-300 rounded-full"></span>
-                                                            <span className="text-stone-700 font-medium">{type.name}</span>
+                                                            <span className="w-1.5 h-1.5 bg-gray-500 rounded-full"></span>
+                                                            <span className="text-gray-300 font-medium">{type.name}</span>
                                                         </div>
 
                                                         <div className="flex items-center gap-2">
                                                             {effectiveChannel && (
                                                                 <button
                                                                     onClick={() => setTypeChannel(type.id, null)}
-                                                                    className={`w-6 h-6 flex items-center justify-center text-stone-400 hover:text-red-500 hover:bg-red-50 rounded transition ${!isOverridden && 'invisible'}`}
+                                                                    className={`w-6 h-6 flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition ${!isOverridden && 'invisible'}`}
                                                                 >×</button>
                                                             )}
                                                             {effectiveChannel ? (
@@ -494,14 +500,16 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                                                     # {effectiveChannel.name}
                                                                 </span>
                                                             ) : (
-                                                                <select
+                                                                <CustomDropdown
                                                                     value=""
-                                                                    onChange={(e) => setTypeChannel(type.id, e.target.value)}
-                                                                    className="px-4 py-1.5 bg-stone-200 hover:bg-stone-300 rounded-lg text-sm font-bold text-stone-700 cursor-pointer border-0 transition"
-                                                                >
-                                                                    <option value="">Set channel</option>
-                                                                    {channels.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
-                                                                </select>
+                                                                    onChange={(val) => setTypeChannel(type.id, val)}
+                                                                    options={[
+                                                                        { value: '', label: 'Set channel' },
+                                                                        ...channels.map(c => ({ value: c.id, label: `#${c.name}` }))
+                                                                    ]}
+                                                                    placeholder="Set channel"
+                                                                    className="min-w-[150px]"
+                                                                />
                                                             )}
                                                         </div>
                                                     </div>
@@ -526,14 +534,14 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                         { key: "log_deleted_polls", title: "Log deleted polls with Message Delete", desc: "Poll deletions are logged by two types: Poll Delete and Message Delete", default: true },
                         { key: "log_sticky_messages", title: "Log deleted sticky messages", desc: "Templates can be sticky messages. Disable to skip logging them", default: true },
                     ].map(setting => (
-                        <div key={setting.key} className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border-2 border-stone-200 flex items-center justify-between">
+                        <div key={setting.key} className="glass-card rounded-2xl p-5 flex items-center justify-between">
                             <div>
-                                <div className="font-bold text-stone-800">{setting.title}</div>
-                                <div className="text-stone-500 text-sm">{setting.desc}</div>
+                                <div className="font-bold text-white">{setting.title}</div>
+                                <div className="text-gray-400 text-sm">{setting.desc}</div>
                             </div>
                             <button
                                 onClick={() => setSettings(prev => ({ ...prev, [setting.key]: !prev[setting.key as keyof LoggingSettings] }))}
-                                className={`relative w-14 h-7 rounded-full transition-colors ${settings[setting.key as keyof LoggingSettings] ? 'bg-emerald-500' : 'bg-stone-300'}`}
+                                className={`relative w-14 h-7 rounded-full transition-colors ${settings[setting.key as keyof LoggingSettings] ? 'bg-emerald-500' : 'bg-white/10'}`}
                             >
                                 <div className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${settings[setting.key as keyof LoggingSettings] ? 'translate-x-7' : 'translate-x-0.5'}`} />
                             </button>
@@ -541,93 +549,93 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                     ))}
 
                     {/* Ignore Channels */}
-                    <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border-2 border-stone-200">
-                        <div className="font-bold text-stone-800 mb-1">Ignore channels</div>
-                        <div className="text-stone-500 text-sm mb-3">All actions involving these channels are ignored from Logging</div>
+                    <div className="glass-card rounded-2xl p-5 relative z-30 overflow-visible">
+                        <div className="font-bold text-white mb-1">Ignore channels</div>
+                        <div className="text-gray-400 text-sm mb-3">All actions involving these channels are ignored from Logging</div>
                         <div className="flex flex-wrap gap-2 mb-3">
                             {settings.ignored_channels.length === 0 && (
-                                <span className="text-stone-400 text-sm">+ No channels added</span>
+                                <span className="text-gray-500 text-sm">+ No channels added</span>
                             )}
                             {settings.ignored_channels.map(id => {
                                 const ch = channels.find(c => c.id === id);
                                 return ch ? (
-                                    <span key={id} className="px-3 py-1.5 bg-amber-100 text-amber-700 rounded-full text-sm font-bold flex items-center gap-2 border border-amber-200">
+                                    <span key={id} className="px-3 py-1.5 bg-amber-500/20 text-amber-400 rounded-full text-sm font-bold flex items-center gap-2 border border-amber-500/30">
                                         #{ch.name}
                                         <button onClick={() => toggleIgnored("channels", id)} className="hover:text-red-500 font-bold">×</button>
                                     </span>
                                 ) : null;
                             })}
                         </div>
-                        <select
+                        <CustomDropdown
                             value=""
-                            onChange={(e) => { if (e.target.value) toggleIgnored("channels", e.target.value); }}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-amber-400 focus:outline-none font-medium"
-                        >
-                            <option value="">+ Add channel to ignore</option>
-                            {channels.filter(c => !settings.ignored_channels.includes(c.id)).map(c => (
-                                <option key={c.id} value={c.id}>#{c.name}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => { if (val) toggleIgnored("channels", val); }}
+                            options={[
+                                { value: '', label: '+ Add channel to ignore' },
+                                ...channels.filter(c => !settings.ignored_channels.includes(c.id)).map(c => ({ value: c.id, label: `#${c.name}` }))
+                            ]}
+                            placeholder="+ Add channel to ignore"
+                            className="w-full"
+                        />
                     </div>
 
                     {/* Ignore Roles */}
-                    <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border-2 border-stone-200">
-                        <div className="font-bold text-stone-800 mb-1">Ignore roles</div>
-                        <div className="text-stone-500 text-sm mb-3">All actions from users with these roles are ignored from Logging</div>
+                    <div className="glass-card rounded-2xl p-5 relative z-20 overflow-visible">
+                        <div className="font-bold text-white mb-1">Ignore roles</div>
+                        <div className="text-gray-400 text-sm mb-3">All actions from users with these roles are ignored from Logging</div>
                         <div className="flex flex-wrap gap-2 mb-3">
                             {settings.ignored_roles.length === 0 && (
-                                <span className="text-stone-400 text-sm">+ No roles added</span>
+                                <span className="text-gray-500 text-sm">+ No roles added</span>
                             )}
                             {settings.ignored_roles.map(id => {
                                 const role = roles.find(r => r.id === id);
                                 return role ? (
-                                    <span key={id} className="px-3 py-1.5 bg-purple-100 text-purple-700 rounded-full text-sm font-bold flex items-center gap-2 border border-purple-200">
+                                    <span key={id} className="px-3 py-1.5 bg-purple-500/20 text-purple-400 rounded-full text-sm font-bold flex items-center gap-2 border border-purple-500/30">
                                         {role.name}
                                         <button onClick={() => toggleIgnored("roles", id)} className="hover:text-red-500 font-bold">×</button>
                                     </span>
                                 ) : null;
                             })}
                         </div>
-                        <select
+                        <CustomDropdown
                             value=""
-                            onChange={(e) => { if (e.target.value) toggleIgnored("roles", e.target.value); }}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-amber-400 focus:outline-none font-medium"
-                        >
-                            <option value="">+ Add role to ignore</option>
-                            {roles.filter(r => !settings.ignored_roles.includes(r.id)).map(r => (
-                                <option key={r.id} value={r.id}>{r.name}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => { if (val) toggleIgnored("roles", val); }}
+                            options={[
+                                { value: '', label: '+ Add role to ignore' },
+                                ...roles.filter(r => !settings.ignored_roles.includes(r.id)).map(r => ({ value: r.id, label: r.name }))
+                            ]}
+                            placeholder="+ Add role to ignore"
+                            className="w-full"
+                        />
                     </div>
 
                     {/* Ignore Users */}
-                    <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border-2 border-stone-200">
-                        <div className="font-bold text-stone-800 mb-1">Ignore users</div>
-                        <div className="text-stone-500 text-sm mb-3">All actions from these users are ignored from Logging</div>
+                    <div className="glass-card rounded-2xl p-5 relative z-10 overflow-visible">
+                        <div className="font-bold text-white mb-1">Ignore users</div>
+                        <div className="text-gray-400 text-sm mb-3">All actions from these users are ignored from Logging</div>
                         <div className="flex flex-wrap gap-2 mb-3">
                             {settings.ignored_users.length === 0 && (
-                                <span className="text-stone-400 text-sm">+ No users added</span>
+                                <span className="text-gray-500 text-sm">+ No users added</span>
                             )}
                             {settings.ignored_users.map(id => {
                                 const user = members.find(m => m.id === id);
                                 return user ? (
-                                    <span key={id} className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-bold flex items-center gap-2 border border-blue-200">
+                                    <span key={id} className="px-3 py-1.5 bg-blue-500/20 text-blue-400 rounded-full text-sm font-bold flex items-center gap-2 border border-blue-500/30">
                                         {user.display_name}
                                         <button onClick={() => toggleIgnored("users", id)} className="hover:text-red-500 font-bold">×</button>
                                     </span>
                                 ) : null;
                             })}
                         </div>
-                        <select
+                        <CustomDropdown
                             value=""
-                            onChange={(e) => { if (e.target.value) toggleIgnored("users", e.target.value); }}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-amber-400 focus:outline-none font-medium"
-                        >
-                            <option value="">+ Add user to ignore</option>
-                            {members.filter(m => !settings.ignored_users.includes(m.id)).map(m => (
-                                <option key={m.id} value={m.id}>{m.display_name} (@{m.username})</option>
-                            ))}
-                        </select>
+                            onChange={(val) => { if (val) toggleIgnored("users", val); }}
+                            options={[
+                                { value: '', label: '+ Add user to ignore' },
+                                ...members.filter(m => !settings.ignored_users.includes(m.id)).map(m => ({ value: m.id, label: `${m.display_name} (@${m.username})` }))
+                            ]}
+                            placeholder="+ Add user to ignore"
+                            className="w-full"
+                        />
                     </div>
                 </div>
             )}

@@ -63,17 +63,17 @@ export default async function WelcomePage({
     const guild = token ? await fetchGuild(guildId, token) : { id: guildId, name: "Server", icon: null };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
+        <div className="min-h-screen">
             <GuildSidebar guildId={guildId} guildName={guild.name} guildIcon={guild.icon} />
 
-            <main className="ml-72 pt-24 p-8">
+            <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
                 <div className="max-w-4xl mx-auto">
                     {/* Header */}
                     <div className="mb-8">
-                        <h1 className="text-3xl md:text-4xl font-black text-stone-800 mb-2">
+                        <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
                             👋 Welcome Settings
                         </h1>
-                        <p className="text-amber-700 font-bold">
+                        <p className="text-amber-400 font-bold">
                             Configure welcome and leave messages for {guild.name}
                         </p>
                     </div>

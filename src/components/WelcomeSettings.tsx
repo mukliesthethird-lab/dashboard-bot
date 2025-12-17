@@ -225,10 +225,10 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
     return (
         <div className="space-y-8 animate-fade-in pb-64">
             {/* Header Section */}
-            <div className="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="glass-card rounded-3xl p-8 relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-6">
                 <div className="relative z-10">
-                    <h1 className="text-4xl font-black text-stone-800 mb-2">Welcome & Greetings</h1>
-                    <p className="text-stone-500 text-lg max-w-2xl">
+                    <h1 className="text-4xl font-black text-white mb-2">Welcome & Greetings</h1>
+                    <p className="text-gray-400 text-lg max-w-2xl">
                         Customize automatic messages for new members, boosts, and more.
                     </p>
                 </div>
@@ -272,24 +272,22 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                         <div
                             key={type.type}
                             onClick={() => setActiveMessageType(type.type as MessageType)}
-                            className={`relative bg-white rounded-2xl p-6 border-2 transition-all cursor-pointer hover:shadow-md flex flex-col md:flex-row gap-6 items-start md:items-center ${isActive ? 'border-amber-400 ring-2 ring-amber-400/10' : 'border-stone-100'
+                            className={`relative glass-card rounded-2xl p-6 border transition-all cursor-pointer hover:shadow-md flex flex-col md:flex-row gap-6 items-start md:items-center ${isActive ? 'border-amber-500/50 ring-2 ring-amber-400/20' : 'border-white/10'
                                 }`}
                         >
-                            {/* Icon & Info */}
                             <div className="flex items-center gap-4 flex-1">
-                                <div className={`w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center text-3xl ${type.color === 'emerald' ? 'bg-emerald-100 text-emerald-600' : type.color === 'red' ? 'bg-red-100 text-red-600' : type.color === 'pink' ? 'bg-pink-100 text-pink-600' : 'bg-indigo-100 text-indigo-600'}`}>
+                                <div className={`w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center text-3xl ${type.color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400' : type.color === 'red' ? 'bg-red-500/20 text-red-400' : type.color === 'pink' ? 'bg-pink-500/20 text-pink-400' : 'bg-indigo-500/20 text-indigo-400'}`}>
                                     {type.icon}
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-stone-800">{type.title}</h3>
-                                    <p className="text-stone-500 font-medium">{type.desc}</p>
+                                    <h3 className="text-xl font-bold text-white">{type.title}</h3>
+                                    <p className="text-gray-400 font-medium">{type.desc}</p>
                                 </div>
                             </div>
 
                             {/* Controls */}
                             <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto" onClick={e => e.stopPropagation()}>
 
-                                {/* Channel Selector */}
                                 <select
                                     value={config.channel_id || ""}
                                     onChange={(e) => {
@@ -298,7 +296,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                             [type.type]: { ...prev[type.type as MessageType], channel_id: e.target.value }
                                         }));
                                     }}
-                                    className="px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl font-bold text-stone-600 outline-none focus:border-amber-400 min-w-[200px]"
+                                    className="px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl font-bold text-gray-300 outline-none focus:border-amber-500/50 min-w-[200px]"
                                 >
                                     <option value="">🚫 No Channel</option>
                                     {channels.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
@@ -315,7 +313,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                     setEditingSubtype("add");
                                                     setShowEditor(true);
                                                 }}
-                                                className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 hover:text-emerald-700 rounded-xl font-bold transition flex items-center gap-1 text-xs"
+                                                className="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 rounded-xl font-bold transition flex items-center gap-1 text-xs border border-emerald-500/30"
                                             >
                                                 ✏️ Add Msg
                                             </button>
@@ -326,7 +324,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                     setEditingSubtype("remove");
                                                     setShowEditor(true);
                                                 }}
-                                                className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-xl font-bold transition flex items-center gap-1 text-xs"
+                                                className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-xl font-bold transition flex items-center gap-1 text-xs border border-red-500/30"
                                             >
                                                 ✏️ Remove Msg
                                             </button>
@@ -339,7 +337,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                 setEditingSubtype(type.type === "role" && config.announce_type === "remove" ? "remove" : "add");
                                                 setShowEditor(true);
                                             }}
-                                            className="px-5 py-2.5 bg-stone-100 hover:bg-amber-100 text-stone-600 hover:text-amber-700 rounded-xl font-bold transition flex items-center gap-2"
+                                            className="px-5 py-2.5 bg-white/5 hover:bg-amber-500/20 text-gray-300 hover:text-amber-400 rounded-xl font-bold transition flex items-center gap-2 border border-white/10"
                                         >
                                             ✏️ {type.type === "role" && config.announce_type === "remove" ? "Edit Remove Msg" : "Edit"}
                                         </button>
@@ -357,22 +355,22 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                 }));
                                             }}
                                         />
-                                        <div className="w-14 h-8 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500"></div>
+                                        <div className="w-14 h-8 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500"></div>
                                     </label>
                                 </div>
                             </div>
 
                             {/* Role Settings Expander for 'Role' type */}
                             {type.type === "role" && isActive && (
-                                <div className="absolute top-full left-0 right-0 mt-[-20px] pt-12 pb-8 px-8 bg-stone-50 rounded-b-2xl border-x-2 border-b-2 border-amber-400 z-10 animate-slide-down shadow-inner" onClick={e => e.stopPropagation()}>
+                                <div className="absolute top-full left-0 right-0 mt-[-20px] pt-12 pb-8 px-8 bg-white/5 rounded-b-2xl border-x border-b border-amber-500/50 z-10 animate-slide-down" onClick={e => e.stopPropagation()}>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-bold text-stone-600 mb-2">🎭 Tracked Roles</label>
+                                            <label className="block text-sm font-bold text-gray-300 mb-2">🎭 Tracked Roles</label>
                                             <div className="flex flex-wrap gap-2 mb-3">
                                                 {(config.tracked_roles || []).map(roleId => {
                                                     const role = roles.find(r => r.id === roleId);
                                                     return role ? (
-                                                        <span key={roleId} className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-bold flex items-center gap-2 border border-indigo-200">
+                                                        <span key={roleId} className="px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-lg text-sm font-bold flex items-center gap-2 border border-indigo-500/30">
                                                             {role.name}
                                                             <button
                                                                 onClick={() => setSettings(prev => ({
@@ -395,7 +393,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                         }));
                                                     }
                                                 }}
-                                                className="w-full px-3 py-2 rounded-xl border border-stone-200 focus:border-indigo-400 focus:outline-none text-sm font-medium"
+                                                className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500/50 focus:outline-none text-sm font-medium text-white"
                                             >
                                                 <option value="">+ Add role to track...</option>
                                                 {roles.filter(r => !(config.tracked_roles || []).includes(r.id)).map(r => (
@@ -405,7 +403,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-bold text-stone-600 mb-2">📣 Announcement Type</label>
+                                            <label className="block text-sm font-bold text-gray-300 mb-2">📣 Announcement Type</label>
                                             <div className="flex gap-2">
                                                 {[
                                                     { val: 'both', label: 'Add & Remove' },
@@ -418,9 +416,9 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                             ...prev,
                                                             role: { ...prev.role, announce_type: opt.val as any }
                                                         }))}
-                                                        className={`flex-1 py-2 rounded-xl text-sm font-bold border-2 transition ${config.announce_type === opt.val
-                                                            ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                                                            : 'border-stone-200 text-stone-500 hover:border-stone-300'
+                                                        className={`flex-1 py-2 rounded-xl text-sm font-bold border transition ${config.announce_type === opt.val
+                                                            ? 'border-indigo-500/50 bg-indigo-500/20 text-indigo-400'
+                                                            : 'border-white/10 text-gray-400 hover:border-white/20'
                                                             }`}
                                                     >
                                                         {opt.label}

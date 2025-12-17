@@ -59,19 +59,19 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
 
     if (loading) {
         return (
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border-2 border-amber-100 shadow-md">
-                <h2 className="text-xl font-black text-stone-800 mb-4">📊 Recent Activity</h2>
+            <div className="glass-card rounded-3xl p-6">
+                <h2 className="text-xl font-black text-white mb-4">📊 Recent Activity</h2>
                 <CatLoader message="Loading activity..." />
             </div>
         );
     }
 
     return (
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border-2 border-amber-100 shadow-md">
-            <h2 className="text-xl font-black text-stone-800 mb-4">📊 Recent Activity</h2>
+        <div className="glass-card rounded-3xl p-6">
+            <h2 className="text-xl font-black text-white mb-4">📊 Recent Activity</h2>
 
             {logs.length === 0 ? (
-                <div className="text-center py-8 text-stone-400">
+                <div className="text-center py-8 text-gray-400">
                     <div className="text-4xl mb-2">📭</div>
                     <p className="font-bold">No activity yet</p>
                     <p className="text-sm">Actions will appear here</p>
@@ -81,18 +81,18 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
                     {logs.map((log) => {
                         const icon = actionIcons[log.action] || actionIcons.default;
                         return (
-                            <div key={log.id} className="flex items-center gap-4 p-3 rounded-xl bg-stone-50 border border-stone-100 hover:bg-amber-50 transition">
-                                <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-lg flex-shrink-0">
+                            <div key={log.id} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                                <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-lg flex-shrink-0">
                                     {icon}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-stone-800 truncate">{log.action}</div>
-                                    <div className="text-stone-500 text-sm truncate">
-                                        by <span className="font-medium">{log.username}</span>
+                                    <div className="font-bold text-white truncate">{log.action}</div>
+                                    <div className="text-gray-400 text-sm truncate">
+                                        by <span className="font-medium text-gray-300">{log.username}</span>
                                         {log.details && ` • ${log.details}`}
                                     </div>
                                 </div>
-                                <div className="text-stone-400 text-sm flex-shrink-0">
+                                <div className="text-gray-500 text-sm flex-shrink-0">
                                     {getTimeAgo(log.created_at)}
                                 </div>
                             </div>

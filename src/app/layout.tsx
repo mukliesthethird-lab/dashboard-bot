@@ -7,11 +7,43 @@ import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Dashboard | Don Pollo",
-  description: "The Best Economic & Moderation Bot on Discord",
+  title: {
+    default: "Don Pollo | The Best Discord Bot",
+    template: "%s | Don Pollo"
+  },
+  description: "The most entertaining Discord bot with Economy, Fishing, Moderation, Welcome System, and Reaction Roles. Join thousands of servers already using Don Pollo!",
+  keywords: ["discord bot", "economy bot", "fishing bot", "moderation bot", "welcome bot", "reaction roles", "don pollo"],
+  authors: [{ name: "Don Pollo Team" }],
+  creator: "Don Pollo",
+  publisher: "Don Pollo",
+  robots: "index, follow",
   icons: {
     icon: '/donpollo-icon.jpg',
+    apple: '/donpollo-icon.jpg',
   },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://donpollo.gg",
+    siteName: "Don Pollo Bot",
+    title: "Don Pollo | The Best Discord Bot",
+    description: "The most entertaining Discord bot with Economy, Fishing, Moderation, and more!",
+    images: [
+      {
+        url: "/donpollo-icon.jpg",
+        width: 512,
+        height: 512,
+        alt: "Don Pollo Bot"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Don Pollo | The Best Discord Bot",
+    description: "The most entertaining Discord bot with Economy, Fishing, Moderation, and more!",
+    images: ["/donpollo-icon.jpg"],
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://donpollo.gg"),
 };
 
 export default function RootLayout({
@@ -19,29 +51,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const bgVideo = "https://media1.tenor.com/m/qCwbF4m0GpoAAAAd/don-pollo-don-pollo-dancing.gif";
-
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} bg-[#0a0a0f] text-white antialiased`}>
         <AuthProvider>
           <Navbar />
-          <div className="relative min-h-screen text-slate-800 overflow-x-hidden font-sans">
-            {/* Global Background Layer */}
-            <div className="fixed inset-0 z-[-1]">
-              {/* Fallback pattern */}
-              <div className="absolute inset-0 bg-yellow-400 bg-[size:20px_20px]"
-                style={{ backgroundImage: 'radial-gradient(circle, #ffffff 2px, transparent 2.5px)' }}>
-              </div>
-
-              {/* Don Pollo GIF */}
-              <div
-                className="absolute inset-0 bg-no-repeat bg-cover bg-center opacity-20 md:opacity-40 grayscale-[20%] sepia-[20%]"
-                style={{ backgroundImage: `url('${bgVideo}')` }}
-              />
-
-              {/* Overlay for Color Tint & Readability - Yellowish Warm Tint */}
-              <div className="absolute inset-0 bg-amber-50/80 backdrop-blur-[2px]"></div>
+          <div className="relative min-h-screen overflow-x-hidden">
+            {/* Clean dark background - no distracting patterns */}
+            <div className="fixed inset-0 z-[-1] bg-[#0a0a0f]">
+              {/* Subtle gradient mesh for depth */}
+              <div className="absolute inset-0 gradient-mesh opacity-30" />
             </div>
 
             {/* Main Content */}

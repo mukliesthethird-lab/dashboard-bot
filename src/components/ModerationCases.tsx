@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import EmptyState from "./EmptyState";
 
 interface ModerationCasesProps {
     guildId: string;
@@ -22,88 +23,21 @@ interface Case {
         avatar: string;
     };
     duration: string;
+    status: "open" | "closed";
     created_at: string;
     relative_time: string;
 }
 
-const MOCK_CASES: Case[] = [
-    {
-        id: "fgvQR3U",
-        type: "warn",
-        user: { id: "1396452979949588", username: "Padoru", avatar: "0" },
-        reason: "/",
-        author: { id: "364361813845868544", username: "ataap", avatar: "0" },
-        duration: "Permanent",
-        created_at: "10/29/2025",
-        relative_time: "a month ago"
-    },
-    {
-        id: "SuxcPMc",
-        type: "warn",
-        user: { id: "411916947773587456", username: "UserTwo", avatar: "1" },
-        reason: "berisik",
-        author: { id: "719511161757761656", username: "Odokawwa", avatar: "2" },
-        duration: "Permanent",
-        created_at: "7/19/2025",
-        relative_time: "5 months ago"
-    },
-    {
-        id: "WnqnVJ8",
-        type: "mute",
-        user: { id: "1257064052203458712", username: "TrollUser", avatar: "3" },
-        reason: "bad words",
-        author: { id: "719511161757761656", username: "Odokawwa", avatar: "2" },
-        duration: "Permanent",
-        created_at: "7/18/2025",
-        relative_time: "5 months ago"
-    },
-    {
-        id: "oGECqKs",
-        type: "ban",
-        user: { id: "283596309863202817", username: "RacistGuy", avatar: "4" },
-        reason: "Racism are intolerated in this server",
-        author: { id: "364361813845868544", username: "ataap", avatar: "0" },
-        duration: "Permanent",
-        created_at: "4/22/2025",
-        relative_time: "8 months ago"
-    },
-    {
-        id: "tsJwuBr",
-        type: "kick",
-        user: { id: "1319576610638135359", username: "Spammer", avatar: "5" },
-        reason: "ganti bot",
-        author: { id: "383954742566584340", username: "Admin", avatar: "6" },
-        duration: "Permanent",
-        created_at: "12/22/2024",
-        relative_time: "a year ago"
-    },
-    {
-        id: "2BfnjSS",
-        type: "warn",
-        user: { id: "159985870458322944", username: "antikritik", avatar: "1" },
-        reason: "antikritik",
-        author: { id: "719511161757761656", username: "Odokawwa", avatar: "2" },
-        duration: "Permanent",
-        created_at: "2/14/2024",
-        relative_time: "2 years ago"
-    },
-    {
-        id: "14v9se5",
-        type: "warn",
-        user: { id: "1132089310645059584", username: "UserNew", avatar: "3" },
-        reason: "/",
-        author: { id: "663049629209985036", username: "ModOne", avatar: "4" },
-        duration: "Permanent",
-        created_at: "12/9/2023",
-        relative_time: "2 years ago"
-    }
-];
-
 export default function ModerationCases({ guildId }: ModerationCasesProps) {
+    const [cases, setCases] = useState<Case[]>([]);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [isMassEdit, setIsMassEdit] = useState(false);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [total, setTotal] = useState(0);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
 
     // Filter States
     const [filters, setFilters] = useState({
@@ -118,12 +52,62 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
         timeRange: "All time"
     });
 
+    // Edit modal state
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editReason, setEditReason] = useState("");
+    const [editDuration, setEditDuration] = useState("");
+
+    const fetchCases = useCallback(async (search?: string) => {
+        setLoading(true);
+        try {
+            const types = [];
+            if (filters.bans) types.push('ban');
+            if (filters.kicks) types.push('kick');
+            if (filters.mutes) types.push('mute');
+            if (filters.warns) types.push('warn');
+
+            const status = filters.open && filters.closed ? 'all' : filters.open ? 'open' : 'closed';
+
+            const params = new URLSearchParams({
+                action: 'cases',
+                guild_id: guildId,
+                type: types.join(','),
+                status: status,
+                search: search ?? searchTerm
+            });
+
+            const res = await fetch(`/api/moderation?${params}`);
+            if (res.ok) {
+                const data = await res.json();
+                setCases(data.cases || []);
+                setTotal(data.total || 0);
+            }
+        } catch (error) {
+            console.error('Failed to fetch cases:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [guildId, filters, searchTerm]);
+
+    useEffect(() => {
+        fetchCases();
+    }, [fetchCases]);
+
+    const handleSearch = (value: string) => {
+        setSearchTerm(value);
+        if (searchTimeout) clearTimeout(searchTimeout);
+        const timeout = setTimeout(() => {
+            fetchCases(value);
+        }, 500);
+        setSearchTimeout(timeout);
+    };
+
     const getIcon = (type: Case['type']) => {
         switch (type) {
-            case "ban": return <span className="text-red-500 text-lg">🔨</span>; // Hammer
-            case "kick": return <span className="text-orange-500 text-lg">🥾</span>; // Boot
-            case "mute": return <span className="text-blue-500 text-lg">🔇</span>; // Mute
-            case "warn": return <span className="text-yellow-500 text-lg">⚠️</span>; // Warning
+            case "ban": return <span className="text-red-500 text-lg">🔨</span>;
+            case "kick": return <span className="text-orange-500 text-lg">🥾</span>;
+            case "mute": return <span className="text-blue-500 text-lg">🔇</span>;
+            case "warn": return <span className="text-yellow-500 text-lg">⚠️</span>;
             default: return null;
         }
     };
@@ -149,10 +133,46 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
     };
 
     const selectAll = () => {
-        if (selectedIds.size === MOCK_CASES.length) {
+        if (selectedIds.size === cases.length) {
             setSelectedIds(new Set());
         } else {
-            setSelectedIds(new Set(MOCK_CASES.map(c => c.id)));
+            setSelectedIds(new Set(cases.map(c => c.id)));
+        }
+    };
+
+    const handleMassAction = async (action: 'case-edit' | 'case-close' | 'case-delete') => {
+        if (selectedIds.size === 0) return;
+        setActionLoading(true);
+
+        try {
+            const body: any = {
+                action,
+                guild_id: guildId,
+                case_ids: Array.from(selectedIds)
+            };
+
+            if (action === 'case-edit') {
+                if (editReason) body.reason = editReason;
+                if (editDuration) body.duration = editDuration;
+            }
+
+            const res = await fetch('/api/moderation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (res.ok) {
+                setSelectedIds(new Set());
+                setShowEditModal(false);
+                setEditReason("");
+                setEditDuration("");
+                fetchCases();
+            }
+        } catch (error) {
+            console.error('Action failed:', error);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -183,7 +203,7 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                     type="text"
                     placeholder="Case ID / User ID / Reason"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => handleSearch(e.target.value)}
                     className="w-full px-5 py-3 bg-stone-50 border-2 border-amber-100 rounded-xl font-medium text-stone-700 focus:outline-none focus:border-amber-400 transition"
                 />
 
@@ -207,7 +227,7 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                         </svg>
                     </button>
                     <div className="ml-auto text-stone-400 text-sm font-medium self-center">
-                        Found {MOCK_CASES.length} cases in 0.028 seconds.
+                        {loading ? 'Loading...' : `Found ${total} cases.`}
                     </div>
                 </div>
 
@@ -255,49 +275,6 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                                     <span className="text-stone-700 font-bold text-sm">Closed</span>
                                 </label>
                             </div>
-
-                            <div className="w-px h-5 bg-stone-300 hidden md:block"></div>
-
-                            {/* Mass settings */}
-                            <div className="flex items-center gap-3">
-                                <label className="flex items-center gap-2 cursor-pointer select-none">
-                                    <input
-                                        type="checkbox"
-                                        className="w-4 h-4 rounded border-stone-300 text-blue-500 focus:ring-blue-500 rounded-md"
-                                        checked={filters.showMass}
-                                        onChange={(e) => setFilters({ ...filters, showMass: e.target.checked })}
-                                    />
-                                    <span className="text-stone-700 font-bold text-sm">Show mass cases</span>
-                                </label>
-                                <label className="flex items-center gap-2 cursor-pointer select-none">
-                                    <input
-                                        type="checkbox"
-                                        className="w-4 h-4 rounded border-stone-300 text-stone-500 focus:ring-stone-500 rounded-md bg-stone-100"
-                                        checked={filters.onlyMass}
-                                        onChange={(e) => setFilters({ ...filters, onlyMass: e.target.checked })}
-                                    />
-                                    <span className="text-stone-500 font-bold text-sm">Show only mass cases</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                            <span className="text-stone-500 font-bold text-sm">Created:</span>
-                            <div className="relative">
-                                <select
-                                    value={filters.timeRange}
-                                    onChange={(e) => setFilters({ ...filters, timeRange: e.target.value })}
-                                    className="appearance-none bg-stone-100 border border-stone-200 text-stone-700 text-sm font-bold py-1.5 pl-3 pr-8 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400"
-                                >
-                                    <option>All time</option>
-                                    <option>Last 24 hours</option>
-                                    <option>Last 7 days</option>
-                                    <option>Last 30 days</option>
-                                </select>
-                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-stone-500">
-                                    <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 )}
@@ -319,16 +296,25 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
 
                             <div className="h-6 w-px bg-stone-300 hidden md:block"></div>
 
-                            <button className="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition text-sm font-bold flex items-center gap-2 whitespace-nowrap">
+                            <button
+                                onClick={() => setShowEditModal(true)}
+                                disabled={selectedIds.size === 0 || actionLoading}
+                                className="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white transition text-sm font-bold flex items-center gap-2 whitespace-nowrap"
+                            >
                                 ✏️ Edit
                             </button>
                             <button
-                                onClick={() => { setIsMassEdit(false); setSelectedIds(new Set()); }}
-                                className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition text-sm font-bold flex items-center gap-2 whitespace-nowrap"
+                                onClick={() => handleMassAction('case-close')}
+                                disabled={selectedIds.size === 0 || actionLoading}
+                                className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white transition text-sm font-bold flex items-center gap-2 whitespace-nowrap"
                             >
-                                ✅ Close
+                                {actionLoading ? '...' : '✅ Close'}
                             </button>
-                            <button className="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white transition text-sm font-bold flex items-center gap-2 whitespace-nowrap">
+                            <button
+                                onClick={() => handleMassAction('case-delete')}
+                                disabled={selectedIds.size === 0 || actionLoading}
+                                className="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white transition text-sm font-bold flex items-center gap-2 whitespace-nowrap"
+                            >
                                 🗑️ Delete
                             </button>
                         </div>
@@ -339,87 +325,154 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
             {/* Table */}
             <div className="bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-amber-100 shadow-md overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-amber-50/50 border-b border-amber-100 text-stone-500 text-xs uppercase tracking-wider font-extrabold">
-                                {isMassEdit && (
-                                    <th className="px-6 py-4 w-12">
-                                        <input
-                                            type="checkbox"
-                                            className="w-5 h-5 rounded border-stone-300 text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500"
-                                            checked={selectedIds.size === MOCK_CASES.length && MOCK_CASES.length > 0}
-                                            onChange={selectAll}
-                                        />
-                                    </th>
-                                )}
-                                <th className="px-6 py-4">ID</th>
-                                <th className="px-6 py-4">User</th>
-                                <th className="px-6 py-4">Reason</th>
-                                <th className="px-6 py-4">Author</th>
-                                <th className="px-6 py-4">Duration</th>
-                                <th className="px-6 py-4">Created</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-amber-100">
-                            {MOCK_CASES.map((item) => (
-                                <tr key={item.id} className="hover:bg-amber-50/30 transition group">
+                    {loading ? (
+                        <div className="flex items-center justify-center py-16">
+                            <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    ) : cases.length === 0 ? (
+                        <EmptyState
+                            variant="moderation"
+                            title="No Cases Found"
+                            description="There are no moderation cases matching your criteria. Your server is squeaky clean!"
+                        />
+                    ) : (
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-amber-50/50 border-b border-amber-100 text-stone-500 text-xs uppercase tracking-wider font-extrabold">
                                     {isMassEdit && (
-                                        <td className="px-6 py-4">
+                                        <th className="px-6 py-4 w-12">
                                             <input
                                                 type="checkbox"
                                                 className="w-5 h-5 rounded border-stone-300 text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500"
-                                                checked={selectedIds.has(item.id)}
-                                                onChange={() => toggleSelection(item.id)}
+                                                checked={selectedIds.size === cases.length && cases.length > 0}
+                                                onChange={selectAll}
                                             />
-                                        </td>
+                                        </th>
                                     )}
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(item.type)}`}></div>
-                                            <div className="flex items-center gap-1.5">
-                                                {getIcon(item.type)}
-                                                <span className="font-bold text-stone-700 font-mono">{item.id}</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-stone-200 bg-cover" style={{ backgroundImage: `url(https://cdn.discordapp.com/embed/avatars/${item.user.avatar}.png)` }}></div>
-                                            <div>
-                                                <div className="font-bold text-stone-800 text-sm">{item.user.username}</div>
-                                                <div className="text-xs text-stone-400 font-mono">{item.user.id}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-stone-600 font-medium text-sm max-w-[200px] truncate">
-                                        {item.reason}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-stone-200 bg-cover" style={{ backgroundImage: `url(https://cdn.discordapp.com/embed/avatars/${item.author.avatar}.png)` }}></div>
-                                            <div>
-                                                <div className="font-bold text-stone-800 text-sm">{item.author.username}</div>
-                                                <div className="text-xs text-stone-400 font-mono">{item.author.id}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-stone-600 text-sm font-medium">
-                                        {item.duration}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-sm font-bold text-stone-700">{item.created_at}</div>
-                                        <div className="text-xs text-stone-400">{item.relative_time}</div>
-                                    </td>
+                                    <th className="px-6 py-4">ID</th>
+                                    <th className="px-6 py-4">User</th>
+                                    <th className="px-6 py-4">Reason</th>
+                                    <th className="px-6 py-4">Author</th>
+                                    <th className="px-6 py-4">Duration</th>
+                                    <th className="px-6 py-4">Created</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-amber-100">
+                                {cases.map((item) => (
+                                    <tr key={item.id} className="hover:bg-amber-50/30 transition group">
+                                        {isMassEdit && (
+                                            <td className="px-6 py-4">
+                                                <input
+                                                    type="checkbox"
+                                                    className="w-5 h-5 rounded border-stone-300 text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500"
+                                                    checked={selectedIds.has(item.id)}
+                                                    onChange={() => toggleSelection(item.id)}
+                                                />
+                                            </td>
+                                        )}
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-2.5 h-2.5 rounded-full ${item.status === 'closed' ? 'bg-green-500' : getStatusColor(item.type)}`}></div>
+                                                <div className="flex items-center gap-1.5">
+                                                    {getIcon(item.type)}
+                                                    <span className="font-bold text-stone-700 font-mono">{item.id}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-stone-200 bg-cover" style={{ backgroundImage: `url(https://cdn.discordapp.com/embed/avatars/${item.user.avatar}.png)` }}></div>
+                                                <div>
+                                                    <div className="font-bold text-stone-800 text-sm">{item.user.username}</div>
+                                                    <div className="text-xs text-stone-400 font-mono">{item.user.id}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-stone-600 font-medium text-sm max-w-[200px] truncate">
+                                            {item.reason}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-stone-200 bg-cover" style={{ backgroundImage: `url(https://cdn.discordapp.com/embed/avatars/${item.author.avatar}.png)` }}></div>
+                                                <div>
+                                                    <div className="font-bold text-stone-800 text-sm">{item.author.username}</div>
+                                                    <div className="text-xs text-stone-400 font-mono">{item.author.id}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-stone-600 text-sm font-medium">
+                                            {item.duration}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm font-bold text-stone-700">{item.created_at}</div>
+                                            <div className="text-xs text-stone-400">{item.relative_time}</div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             </div>
 
             <div className="text-center text-xs text-stone-400 font-medium mt-4">
                 © 2021-2025 Don Pollo • Terms • Privacy • Legal Notice
             </div>
+
+            {/* Edit Modal */}
+            {showEditModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowEditModal(false)}>
+                    <div className="bg-white rounded-3xl p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
+                        <h2 className="text-2xl font-black text-stone-800 mb-4">✏️ Edit Cases</h2>
+                        <p className="text-stone-500 mb-6">Edit {selectedIds.size} selected case(s).</p>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold text-stone-600 mb-2">New Reason (optional)</label>
+                                <input
+                                    type="text"
+                                    value={editReason}
+                                    onChange={e => setEditReason(e.target.value)}
+                                    placeholder="Leave empty to keep current"
+                                    className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl focus:outline-none focus:border-amber-400"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-stone-600 mb-2">New Duration (optional)</label>
+                                <select
+                                    value={editDuration}
+                                    onChange={e => setEditDuration(e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl focus:outline-none focus:border-amber-400"
+                                >
+                                    <option value="">Keep current</option>
+                                    <option value="10 minutes">10 minutes</option>
+                                    <option value="1 hour">1 hour</option>
+                                    <option value="1 day">1 day</option>
+                                    <option value="7 days">7 days</option>
+                                    <option value="30 days">30 days</option>
+                                    <option value="Permanent">Permanent</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                onClick={() => setShowEditModal(false)}
+                                className="flex-1 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => handleMassAction('case-edit')}
+                                disabled={actionLoading}
+                                className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-bold rounded-xl transition"
+                            >
+                                {actionLoading ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

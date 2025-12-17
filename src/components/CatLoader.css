@@ -1,4 +1,4 @@
-/* Cat Loader Animation Styles */
+/* Cat Loader Animation Styles - Dark Theme */
 .cat-loader-container {
     display: flex;
     flex-direction: column;
@@ -12,7 +12,7 @@
     margin-top: 20px;
     font-size: 1rem;
     font-weight: 700;
-    color: #78716c;
+    color: #9ca3af;
     animation: fade-pulse 1.5s ease-in-out infinite;
 }
 
@@ -98,14 +98,14 @@
 }
 
 .zzz {
-    color: #1c1917;
+    color: #f59e0b;
     font-weight: 700;
     font-size: 15px;
     animation: zzz 2s linear infinite;
 }
 
 .bigzzz {
-    color: #1c1917;
+    color: #f59e0b;
     font-weight: 700;
     font-size: 25px;
     margin-left: 10px;
@@ -118,7 +118,7 @@
     }
 
     50% {
-        color: #1c1917;
+        color: #f59e0b;
     }
 
     100% {

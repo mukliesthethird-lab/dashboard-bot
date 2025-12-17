@@ -66,9 +66,9 @@ export default async function ModerationPage({
     const guild = token ? await fetchGuildName(guildId, token) : { name: "Server", icon: null };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
+        <div className="min-h-screen">
             <GuildSidebar guildId={guildId} guildName={guild.name} guildIcon={guild.icon} />
-            <main className="ml-72 pt-24 p-8">
+            <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
                 <div className="max-w-5xl mx-auto">
                     <ModerationSettings guildId={guildId} />
                 </div>
