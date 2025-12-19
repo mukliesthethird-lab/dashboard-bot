@@ -204,7 +204,7 @@ class Notification(commands.Cog):
         feed_url = feed['feed_url']
         
         # Convert YouTube channel URL to RSS feed URL
-        rss_url = self.get_youtube_rss_url(feed_url)
+        rss_url = await self.get_youtube_rss_url(feed_url)
         if not rss_url:
             return
         
@@ -273,9 +273,9 @@ class Notification(commands.Cog):
         except Exception as e:
             logging.error(f"[Notification] RSS parsing error: {e}")
 
-    def get_youtube_rss_url(self, url: str) -> str:
+    async def get_youtube_rss_url(self, url: str) -> str:
         """Convert YouTube URL to RSS feed URL"""
-        # Channel ID pattern
+        # Channel ID pattern (e.g., youtube.com/channel/UCxxxx)
         channel_match = re.search(r'channel/([a-zA-Z0-9_-]+)', url)
         if channel_match:
             return f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_match.group(1)}"
@@ -284,12 +284,83 @@ class Notification(commands.Cog):
         if 'feeds/videos.xml' in url:
             return url
         
-        # Handle @username - would need API call to resolve
+        # Handle @username - resolve to channel ID using YouTube API
         if '/@' in url:
-            logging.warning(f"[Notification] Cannot convert @username URL to RSS: {url}")
-            return None
+            username_match = re.search(r'/@([a-zA-Z0-9_-]+)', url)
+            if username_match:
+                username = username_match.group(1)
+                channel_id = await self.resolve_username_to_channel_id(username)
+                if channel_id:
+                    return f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
+                else:
+                    logging.warning(f"[Notification] Could not resolve @{username} to channel ID")
+                    return None
+        
+        # Handle /c/ custom URL format
+        custom_match = re.search(r'/c/([a-zA-Z0-9_-]+)', url)
+        if custom_match:
+            custom_name = custom_match.group(1)
+            channel_id = await self.resolve_custom_url_to_channel_id(custom_name)
+            if channel_id:
+                return f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
         
         return None
+
+    async def resolve_username_to_channel_id(self, username: str) -> str:
+        """Resolve YouTube @username to channel ID using YouTube Data API"""
+        if not self.youtube_api_key:
+            logging.warning("[Notification] No YOUTUBE_API_KEY, cannot resolve username")
+            return None
+        
+        # Try using the handle/forHandle parameter (YouTube API v3)
+        url = f"https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@{username}&key={self.youtube_api_key}"
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as resp:
+                    if resp.status != 200:
+                        logging.error(f"[Notification] YouTube API error resolving @{username}: {resp.status}")
+                        return None
+                    
+                    data = await resp.json()
+                    items = data.get('items', [])
+                    
+                    if items:
+                        channel_id = items[0].get('id')
+                        logging.info(f"[Notification] Resolved @{username} -> {channel_id}")
+                        return channel_id
+                    
+                    logging.warning(f"[Notification] No channel found for @{username}")
+                    return None
+                    
+        except Exception as e:
+            logging.error(f"[Notification] Error resolving username @{username}: {e}")
+            return None
+
+    async def resolve_custom_url_to_channel_id(self, custom_name: str) -> str:
+        """Resolve YouTube custom URL (/c/name) to channel ID"""
+        if not self.youtube_api_key:
+            return None
+        
+        # Search for the channel by custom URL
+        url = f"https://www.googleapis.com/youtube/v3/search?part=snippet&q={custom_name}&type=channel&key={self.youtube_api_key}"
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as resp:
+                    if resp.status != 200:
+                        return None
+                    
+                    data = await resp.json()
+                    items = data.get('items', [])
+                    
+                    if items:
+                        return items[0].get('snippet', {}).get('channelId')
+                    return None
+                    
+        except Exception as e:
+            logging.error(f"[Notification] Error resolving custom URL {custom_name}: {e}")
+            return None
 
     # ========================================
     # Notification Sending
