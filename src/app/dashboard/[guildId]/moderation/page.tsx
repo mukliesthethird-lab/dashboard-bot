@@ -4,25 +4,8 @@ import { redirect } from "next/navigation";
 import GuildSidebar from "@/components/GuildSidebar";
 import ModerationSettings from "@/components/ModerationSettings";
 import DashboardHeader from "@/components/DashboardHeader";
-import fs from "fs";
-import path from "path";
 import https from "https";
-
-function getTokenFromFile(): string {
-    const rootEnvPath = path.resolve(process.cwd(), '../.env');
-    const localEnvPath = path.resolve(process.cwd(), '.env.local');
-
-    for (const envPath of [rootEnvPath, localEnvPath]) {
-        if (fs.existsSync(envPath)) {
-            const content = fs.readFileSync(envPath, 'utf-8');
-            const match = content.match(/DISCORD_TOKEN\s*=\s*(.+)/);
-            if (match) {
-                return match[1].trim().replace(/^["']|["']$/g, '');
-            }
-        }
-    }
-    return '';
-}
+import { getDiscordToken } from "@/lib/discord-token";
 
 function fetchGuildName(guildId: string, token: string): Promise<{ name: string; icon: string | null }> {
     return new Promise((resolve) => {
@@ -63,7 +46,7 @@ export default async function ModerationPage({
         redirect("/");
     }
 
-    const token = getTokenFromFile();
+    const token = getDiscordToken();
     const guild = token ? await fetchGuildName(guildId, token) : { name: "Server", icon: null };
 
     return (

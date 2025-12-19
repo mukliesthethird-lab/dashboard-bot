@@ -2,8 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import fs from "fs";
-import path from "path";
+import { getDiscordToken } from "@/lib/discord-token";
 
 interface Guild {
     id: string;
@@ -11,22 +10,6 @@ interface Guild {
     icon: string | null;
     owner: boolean;
     permissions: number;
-}
-
-function getTokenFromFile(): string {
-    const rootEnvPath = path.resolve(process.cwd(), '../.env');
-    const localEnvPath = path.resolve(process.cwd(), '.env.local');
-
-    for (const envPath of [rootEnvPath, localEnvPath]) {
-        if (fs.existsSync(envPath)) {
-            const content = fs.readFileSync(envPath, 'utf-8');
-            const match = content.match(/DISCORD_TOKEN\s*=\s*(.+)/);
-            if (match) {
-                return match[1].trim().replace(/^["']|["']$/g, '');
-            }
-        }
-    }
-    return '';
 }
 
 export default async function Dashboard() {
@@ -58,7 +41,7 @@ export default async function Dashboard() {
 
     const userGuilds: Guild[] = await userGuildsRes.json();
 
-    const token = getTokenFromFile();
+    const token = getDiscordToken();
     let botGuilds: Guild[] = [];
     if (token) {
         const botGuildsRes = await fetch("https://discord.com/api/users/@me/guilds", {

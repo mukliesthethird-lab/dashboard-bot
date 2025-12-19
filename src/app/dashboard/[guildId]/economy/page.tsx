@@ -1,30 +1,16 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import fs from "fs";
-import path from "path";
 import https from "https";
 import GuildSidebar from "@/components/GuildSidebar";
 import EconomyActions from "@/components/EconomyActions";
 import DashboardHeader from "@/components/DashboardHeader";
+import { getDiscordToken } from "@/lib/discord-token";
 
 interface Guild {
     id: string;
     name: string;
     icon: string | null;
-}
-
-function getTokenFromFile(): string {
-    const rootEnvPath = path.resolve(process.cwd(), '../.env');
-    const localEnvPath = path.resolve(process.cwd(), '.env.local');
-    for (const envPath of [rootEnvPath, localEnvPath]) {
-        if (fs.existsSync(envPath)) {
-            const content = fs.readFileSync(envPath, 'utf-8');
-            const match = content.match(/DISCORD_TOKEN\s*=\s*(.+)/);
-            if (match) return match[1].trim().replace(/^["']|["']$/g, '');
-        }
-    }
-    return '';
 }
 
 function fetchGuild(guildId: string, token: string): Promise<Guild> {
@@ -66,7 +52,7 @@ export default async function EconomyPage({
         redirect("/");
     }
 
-    const token = getTokenFromFile();
+    const token = getDiscordToken();
     const guild = token ? await fetchGuild(guildId, token) : { id: guildId, name: "Server", icon: null };
 
     return (
