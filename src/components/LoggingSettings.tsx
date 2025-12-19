@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import CatLoader from "./CatLoader";
 import CustomDropdown from "./CustomDropdown";
+import ToastContainer, { useToast } from "./Toast";
+import DashboardHeader from "./DashboardHeader";
 
 interface Channel { id: string; name: string; }
 interface Role { id: string; name: string; color: number; }
@@ -252,7 +254,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
     const [members, setMembers] = useState<Member[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+    const { toast, success, error, hideToast } = useToast();
     const [activeTab, setActiveTab] = useState<"types" | "settings">("types");
     const [searchQuery, setSearchQuery] = useState("");
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
@@ -276,7 +278,6 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
 
     const handleSave = async () => {
         setSaving(true);
-        setMessage(null);
         try {
             const res = await fetch('/api/logging', {
                 method: 'POST',
@@ -284,9 +285,13 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                 body: JSON.stringify(settings)
             });
             const data = await res.json();
-            setMessage(res.ok ? { type: "success", text: "Settings saved! ✅" } : { type: "error", text: data.error || "Failed" });
+            if (res.ok) {
+                success("Settings saved! ✅");
+            } else {
+                error(data.error || "Failed");
+            }
         } catch {
-            setMessage({ type: "error", text: "Network error" });
+            error("Network error");
         }
         setSaving(false);
     };
@@ -351,37 +356,28 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
 
     return (
         <>
-            {message && (
-                <div className={`mb-6 p-4 rounded-xl font-bold ${message.type === "success" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
-                    {message.text}
-                </div>
-            )}
 
             {/* Header */}
-            <div className="glass-card rounded-3xl p-6 mb-6">
-                <div className="flex items-center gap-4 mb-4">
-                    <div className="text-4xl">📝</div>
-                    <div>
-                        <h2 className="text-xl font-black text-white">Logging</h2>
-                        <p className="text-gray-400 text-sm">Log all actions happening in this server. Click on a category to see all its log types.</p>
-                    </div>
-                </div>
+            <DashboardHeader
+                title="Logging"
+                subtitle="Log all actions happening in this server. Click on a category to see all its log types."
+                icon="📝"
+            />
 
-                {/* Tabs */}
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setActiveTab("types")}
-                        className={`px-6 py-2 rounded-xl font-bold transition ${activeTab === "types" ? "bg-amber-500 text-black" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}
-                    >
-                        📁 Types
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("settings")}
-                        className={`px-6 py-2 rounded-xl font-bold transition ${activeTab === "settings" ? "bg-amber-500 text-black" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}
-                    >
-                        ⚙️ Settings
-                    </button>
-                </div>
+            {/* Tabs */}
+            <div className="flex gap-2 mb-6">
+                <button
+                    onClick={() => setActiveTab("types")}
+                    className={`px-6 py-2 rounded-xl font-bold transition ${activeTab === "types" ? "bg-amber-500 text-black shadow-lg shadow-amber-500/20" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}
+                >
+                    📁 Types
+                </button>
+                <button
+                    onClick={() => setActiveTab("settings")}
+                    className={`px-6 py-2 rounded-xl font-bold transition ${activeTab === "settings" ? "bg-amber-500 text-black shadow-lg shadow-amber-500/20" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}
+                >
+                    ⚙️ Settings
+                </button>
             </div>
 
             {activeTab === "types" && (
@@ -645,11 +641,14 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl shadow-lg transition disabled:opacity-50"
+                    className="px-6 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold rounded-lg border border-emerald-500/30 transition disabled:opacity-50"
                 >
-                    {saving ? "..." : "💾 Save All Settings"}
+                    {saving ? "..." : "✓ Done"}
                 </button>
             </div>
+
+
+            <ToastContainer toast={toast} onClose={hideToast} />
         </>
     );
 }

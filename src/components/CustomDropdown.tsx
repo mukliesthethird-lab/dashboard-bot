@@ -16,6 +16,7 @@ interface CustomDropdownProps {
     placeholder?: string;
     className?: string;
     disabled?: boolean;
+    size?: 'md' | 'sm';
 }
 
 export default function CustomDropdown({
@@ -25,13 +26,14 @@ export default function CustomDropdown({
     placeholder = "Select...",
     className = "",
     disabled = false,
+    size = 'md',
 }: CustomDropdownProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [mounted, setMounted] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
-    const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(null);
+    const [position, setPosition] = useState<{ top: number; left: number; width: number; openUpward: boolean } | null>(null);
 
     // Find selected option
     const selectedOption = options.find((opt) => opt.value === value);
@@ -41,14 +43,22 @@ export default function CustomDropdown({
         setMounted(true);
     }, []);
 
-    // Calculate position
+    // Calculate position with viewport boundary check
     const updatePosition = useCallback(() => {
         if (dropdownRef.current) {
             const rect = dropdownRef.current.getBoundingClientRect();
+            const dropdownHeight = 240; // max-h-60 = 15rem = 240px
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const spaceAbove = rect.top;
+
+            // Open upward if not enough space below but enough above
+            const openUpward = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
+
             setPosition({
-                top: rect.bottom + window.scrollY + 4,
-                left: rect.left + window.scrollX,
-                width: rect.width
+                top: openUpward ? rect.top : rect.bottom + 4,
+                left: rect.left,
+                width: rect.width,
+                openUpward
             });
         }
     }, []);
@@ -77,11 +87,15 @@ export default function CustomDropdown({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen]);
 
-    // Close on scroll
+    // Close on scroll OUTSIDE the dropdown (not inside)
     useEffect(() => {
         if (!isOpen) return;
 
-        function handleScroll() {
+        function handleScroll(event: Event) {
+            // Don't close if scrolling inside the dropdown list
+            if (listRef.current && listRef.current.contains(event.target as Node)) {
+                return;
+            }
             setIsOpen(false);
         }
         window.addEventListener("scroll", handleScroll, true);
@@ -161,12 +175,14 @@ export default function CustomDropdown({
             ref={listRef}
             style={{
                 position: 'fixed',
-                top: position.top - window.scrollY,
+                top: position.openUpward ? 'auto' : position.top,
+                bottom: position.openUpward ? (window.innerHeight - position.top + 4) : 'auto',
                 left: position.left,
                 width: position.width,
-                zIndex: 99999
+                zIndex: 99999,
+                maxHeight: '240px'
             }}
-            className="bg-[#16161f] border border-white/10 rounded-lg shadow-2xl max-h-60 overflow-y-auto custom-scrollbar"
+            className="bg-[#16161f] border border-white/10 rounded-lg shadow-2xl overflow-y-auto custom-scrollbar"
         >
             {options.length === 0 ? (
                 <div className="px-3 py-2 text-gray-500 text-sm">No options available</div>
@@ -206,9 +222,9 @@ export default function CustomDropdown({
                 onClick={handleToggle}
                 disabled={disabled}
                 className={`
-                    w-full p-2 bg-white/5 border border-white/10 rounded-lg 
-                    outline-none focus:border-amber-500/50 font-medium text-sm text-left
-                    flex items-center justify-between gap-2 transition
+                    w-full ${size === 'sm' ? 'p-1 text-[11px]' : 'p-2 text-sm'} bg-white/5 border border-white/10 rounded-lg 
+                    outline-none focus:border-amber-500/50 font-medium text-left
+                    flex items-center justify-between gap-1 transition
                     ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-white/20 cursor-pointer"}
                     ${isOpen ? "border-amber-500/50" : ""}
                 `}

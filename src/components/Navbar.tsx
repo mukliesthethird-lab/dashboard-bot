@@ -22,12 +22,14 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const isGuildDashboard = pathname?.startsWith("/dashboard/") && pathname !== "/dashboard";
+
     return (
         <>
-            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled
-                    ? 'bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-white/10 shadow-lg'
-                    : 'bg-transparent'
-                }`}>
+            <nav className={`fixed top-0 right-0 z-50 transition-all duration-300 ${scrolled
+                ? 'bg-[#0a0a0f]/30 backdrop-blur-xl border-b border-white/5'
+                : 'bg-transparent'
+                } ${isGuildDashboard ? 'left-0 lg:left-72' : 'left-0'}`}>
                 <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group" onClick={() => setMobileMenuOpen(false)}>
@@ -49,8 +51,8 @@ export default function Navbar() {
                         <Link
                             href="/leaderboard"
                             className={`px-4 py-2 rounded-full font-semibold transition-all ${pathname === '/leaderboard'
-                                    ? 'bg-amber-500/20 text-amber-400'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                ? 'bg-amber-500/20 text-amber-400'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
                             🏆 Leaderboard
@@ -115,8 +117,8 @@ export default function Navbar() {
                                 href="/leaderboard"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-3 rounded-xl font-semibold transition ${pathname === '/leaderboard'
-                                        ? 'bg-amber-500/20 text-amber-400'
-                                        : 'text-gray-300 hover:bg-white/5'
+                                    ? 'bg-amber-500/20 text-amber-400'
+                                    : 'text-gray-300 hover:bg-white/5'
                                     }`}
                             >
                                 🏆 Leaderboard

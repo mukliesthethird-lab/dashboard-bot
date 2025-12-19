@@ -9,14 +9,17 @@ interface ModerationReportsProps {
 
 interface Report {
     id: number;
+    report_id?: string;
     case_number: number;
     reporter: {
         id: string;
         username: string;
+        avatar?: string | null;
     };
     reportedUser: {
         id: string;
         username: string;
+        avatar?: string | null;
     };
     tanggal: string;
     reason: string;
@@ -33,6 +36,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
     const [statusFilter, setStatusFilter] = useState<string>("all");
     const [total, setTotal] = useState(0);
     const [actionLoading, setActionLoading] = useState<number | null>(null);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
 
     const fetchReports = useCallback(async (search?: string) => {
@@ -94,167 +98,222 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
         }
     };
 
+    const getAvatarUrl = (userId: string, avatar: string | null | '0') => {
+        if (!avatar || avatar === '0') {
+            try {
+                const index = Number((BigInt(userId) >> 22n) % 6n);
+                return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
+            } catch {
+                return `https://cdn.discordapp.com/embed/avatars/0.png`;
+            }
+        }
+        if (avatar.startsWith('http')) return avatar;
+        return `https://cdn.discordapp.com/avatars/${userId}/${avatar}.png`;
+    };
+
     const getStatusBadge = (status: Report['status']) => {
         switch (status) {
-            case "pending": return <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-lg text-xs font-bold uppercase">Pending</span>;
-            case "reviewed": return <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg text-xs font-bold uppercase">Reviewed</span>;
-            case "resolved": return <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs font-bold uppercase">Resolved</span>;
-            case "dismissed": return <span className="bg-stone-100 text-stone-500 px-2 py-1 rounded-lg text-xs font-bold uppercase">Dismissed</span>;
+            case "pending": return <span className="bg-orange-500/10 text-orange-400 px-2 py-1 rounded text-[10px] font-bold uppercase border border-orange-500/20">Pending</span>;
+            case "reviewed": return <span className="bg-blue-500/10 text-blue-400 px-2 py-1 rounded text-[10px] font-bold uppercase border border-blue-500/20">Reviewed</span>;
+            case "resolved": return <span className="bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded text-[10px] font-bold uppercase border border-emerald-500/20">Resolved</span>;
+            case "dismissed": return <span className="bg-white/5 text-gray-500 px-2 py-1 rounded text-[10px] font-bold uppercase border border-white/10">Dismissed</span>;
         }
     };
 
     return (
         <div className="space-y-6 animate-fade-in pb-20">
-            {/* Header / Breadcrumb */}
+            {/* Image Modal */}
+            {selectedImage && (
+                <div
+                    className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <div className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
+                        <button
+                            onClick={() => setSelectedImage(null)}
+                            className="absolute -top-12 right-0 text-white/70 hover:text-white transition"
+                        >
+                            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <img
+                            src={selectedImage}
+                            alt="Proof"
+                            className="max-w-full max-h-[85vh] rounded-lg shadow-2xl border border-white/10"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                        <div className="mt-4 text-gray-400 text-sm font-medium">Click outside to close</div>
+                    </div>
+                </div>
+            )}
+
             <div className="flex items-center gap-4 mb-4">
                 <Link
                     href={`/dashboard/${guildId}/moderation`}
-                    className="p-2.5 rounded-xl bg-white/90 border-2 border-amber-100 text-stone-500 hover:bg-amber-50 hover:text-amber-600 transition"
+                    className="p-2.5 rounded-xl bg-[#16161f] border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white transition"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </Link>
-                <div className="flex items-center gap-2 text-stone-500 font-bold text-lg">
-                    <Link href={`/dashboard/${guildId}/moderation`} className="hover:text-amber-600 transition">
+                <div className="flex items-center gap-2 text-gray-400 font-bold text-lg">
+                    <Link href={`/dashboard/${guildId}/moderation`} className="hover:text-white transition">
                         🛡️ Moderation
                     </Link>
                     <span>›</span>
-                    <span className="text-stone-800">Reports</span>
+                    <span className="text-white">Reports</span>
                 </div>
             </div>
 
             {/* Controls */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border-2 border-amber-100 shadow-md space-y-4 mb-4">
-                <input
-                    type="text"
-                    placeholder="Report ID / User / Reason"
-                    value={searchTerm}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full px-5 py-3 bg-stone-50 border-2 border-amber-100 rounded-xl font-medium text-stone-700 focus:outline-none focus:border-amber-400 transition"
-                />
-                <div className="flex flex-wrap gap-3 items-center">
-                    {/* Status Filter */}
-                    <div className="flex gap-2">
-                        {['all', 'pending', 'reviewed', 'resolved', 'dismissed'].map((status) => (
+            <div className="bg-[#16161f] rounded-3xl p-6 border border-white/10 space-y-4 mb-4">
+                <div className="flex flex-col md:flex-row gap-4">
+                    <input
+                        type="text"
+                        placeholder="Search ID, User, or Reason..."
+                        value={searchTerm}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-xl font-medium text-white focus:outline-none focus:border-amber-500/50 transition"
+                    />
+                    <div className="flex gap-2 bg-white/5 p-1 rounded-xl border border-white/10">
+                        {['all', 'pending', 'resolved', 'dismissed'].map((status) => (
                             <button
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
-                                className={`px-3 py-1.5 rounded-lg font-bold text-sm transition capitalize ${statusFilter === status
-                                    ? 'bg-amber-500 text-white'
-                                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                                className={`px-4 py-2 rounded-lg font-bold text-sm transition capitalize ${statusFilter === status
+                                    ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
+                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                                     }`}
                             >
                                 {status}
                             </button>
                         ))}
                     </div>
-                    <div className="ml-auto text-stone-400 text-sm font-medium">
-                        {loading ? 'Loading...' : `Found ${total} reports.`}
-                    </div>
+                </div>
+                <div className="text-right text-gray-500 text-xs font-bold uppercase tracking-wider">
+                    {loading ? 'Syncing...' : `Showing ${reports.length} of ${total} reports`}
                 </div>
             </div>
 
-            {/* Table */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-amber-100 shadow-md overflow-hidden">
+            {/* Redesigned Compact Table */}
+            <div className="bg-[#16161f] rounded-3xl border border-white/10 overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                     {loading ? (
-                        <div className="flex items-center justify-center py-16">
+                        <div className="flex items-center justify-center py-20">
                             <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
                         </div>
                     ) : reports.length === 0 ? (
-                        <div className="text-center py-16">
-                            <div className="text-6xl mb-4">🚩</div>
-                            <h3 className="text-xl font-bold text-stone-700 mb-2">No reports found</h3>
-                            <p className="text-stone-500">There are no user reports matching your criteria.</p>
+                        <div className="text-center py-20">
+                            <div className="text-6xl mb-4 grayscale opacity-50">🏳️</div>
+                            <h3 className="text-xl font-bold text-white mb-2">No reports found</h3>
+                            <p className="text-gray-500">Everything seems quiet for now.</p>
                         </div>
                     ) : (
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-amber-50/50 border-b border-amber-100 text-stone-500 text-xs uppercase tracking-wider font-extrabold">
-                                    <th className="px-6 py-4">Kasus</th>
-                                    <th className="px-6 py-4">Pelapor</th>
-                                    <th className="px-6 py-4">Dilaporkan</th>
-                                    <th className="px-6 py-4">Tanggal</th>
-                                    <th className="px-6 py-4">Alasan</th>
-                                    <th className="px-6 py-4">Bukti</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4">Dibuat</th>
-                                    <th className="px-6 py-4">Aksi</th>
+                                <tr className="bg-white/5 border-b border-white/10 text-gray-400 text-[11px] uppercase tracking-wider font-extrabold">
+                                    <th className="px-6 py-4 w-24">Case ID</th>
+                                    <th className="px-6 py-4 w-64">Involved Users</th>
+                                    <th className="px-6 py-4">Reason</th>
+                                    <th className="px-6 py-4 w-24 text-center">Proof</th>
+                                    <th className="px-6 py-4 w-32">Status</th>
+                                    <th className="px-6 py-4 w-32 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-amber-100">
+                            <tbody className="divide-y divide-white/5">
                                 {reports.map((item) => (
-                                    <tr key={item.id} className="hover:bg-amber-50/30 transition group">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="font-bold text-stone-700 font-mono text-sm">#{String(item.case_number).padStart(4, '0')}</div>
-                                            <div className="text-xs text-stone-400">ID: {item.id}</div>
+                                    <tr key={item.id} className="hover:bg-white/5 transition group">
+                                        {/* Case ID */}
+                                        <td className="px-6 py-4 align-top">
+                                            <div className="font-bold text-white font-mono text-sm">#{String(item.case_number).padStart(4, '0')}</div>
+                                            <div className="text-[10px] text-gray-500 font-mono mt-1">{item.created_at.split(',')[0]}</div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold text-sm">
-                                                    {item.reporter.username.charAt(0).toUpperCase()}
+
+                                        {/* Involved Users (In Report -> Out Reported) */}
+                                        <td className="px-6 py-4 align-top">
+                                            <div className="flex flex-col gap-3">
+                                                {/* Reporter */}
+                                                <div className="flex items-center gap-3">
+                                                    <div className="relative">
+                                                        <div className="w-6 h-6 rounded-full bg-cover bg-center border border-white/10" style={{ backgroundImage: `url(${getAvatarUrl(item.reporter.id, item.reporter.avatar || '0')})` }}></div>
+                                                        <div className="absolute -bottom-1 -right-1 bg-[#16161f] rounded-full p-[2px]">
+                                                            <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-xs font-bold text-gray-300">{item.reporter.username}</div>
+                                                        <div className="text-[10px] text-gray-600">Reporter</div>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div className="font-bold text-stone-800 text-sm">{item.reporter.username}</div>
-                                                    <div className="text-xs text-stone-400 font-mono">{item.reporter.id}</div>
+
+                                                {/* Arrow */}
+                                                <div className="pl-2.5 border-l border-white/10 h-2 -my-1 ml-1"></div>
+
+                                                {/* Reported */}
+                                                <div className="flex items-center gap-3">
+                                                    <div className="relative">
+                                                        <div className="w-6 h-6 rounded-full bg-cover bg-center border border-white/10" style={{ backgroundImage: `url(${getAvatarUrl(item.reportedUser.id, item.reportedUser.avatar || '0')})` }}></div>
+                                                        <div className="absolute -bottom-1 -right-1 bg-[#16161f] rounded-full p-[2px]">
+                                                            <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-xs font-bold text-white">{item.reportedUser.username}</div>
+                                                        <div className="text-[10px] text-red-400">Reported</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-sm">
-                                                    {item.reportedUser.username.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div>
-                                                    <div className="font-bold text-stone-800 text-sm">{item.reportedUser.username}</div>
-                                                    <div className="text-xs text-stone-400 font-mono">{item.reportedUser.id}</div>
-                                                </div>
+
+                                        {/* Reason */}
+                                        <td className="px-6 py-4 align-top">
+                                            <div className="p-3 rounded-xl bg-black/20 border border-white/5 text-sm text-gray-300 leading-relaxed max-w-md">
+                                                {item.reason}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-stone-600 font-medium text-sm">
-                                            {item.tanggal || '-'}
-                                        </td>
-                                        <td className="px-6 py-4 text-stone-600 font-medium text-sm max-w-[200px] truncate" title={item.reason}>
-                                            {item.reason}
-                                        </td>
-                                        <td className="px-6 py-4">
+
+                                        {/* Proof */}
+                                        <td className="px-6 py-4 align-top text-center">
                                             {item.bukti_gambar ? (
-                                                <a
-                                                    href={item.bukti_gambar}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-amber-600 hover:text-amber-700 text-xs font-bold underline"
+                                                <button
+                                                    onClick={() => setSelectedImage(item.bukti_gambar)}
+                                                    className="w-10 h-10 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/20 hover:border-amber-500/50 flex items-center justify-center transition-all group/btn mx-auto"
                                                 >
-                                                    🖼️ Lihat
-                                                </a>
+                                                    <span className="text-base group-hover/btn:scale-110 transition-transform">🖼️</span>
+                                                </button>
                                             ) : (
-                                                <span className="text-stone-400 text-xs">-</span>
+                                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center mx-auto opacity-50">
+                                                    <span className="text-gray-600 text-lg">✕</span>
+                                                </div>
                                             )}
                                         </td>
-                                        <td className="px-6 py-4 text-stone-600 text-sm font-medium">
-                                            {getStatusBadge(item.status)}
+
+                                        {/* Status */}
+                                        <td className="px-6 py-4 align-top">
+                                            <div className="flex flex-col gap-2">
+                                                {getStatusBadge(item.status)}
+                                                <span className="text-[10px] text-gray-500 font-medium">{item.relative_time}</span>
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm font-bold text-stone-700">{item.created_at}</div>
-                                            <div className="text-xs text-stone-400">{item.relative_time}</div>
-                                        </td>
-                                        <td className="px-6 py-4">
+
+                                        {/* Actions */}
+                                        <td className="px-6 py-4 align-top text-right">
                                             {(item.status === 'pending' || item.status === 'reviewed') && (
-                                                <div className="flex gap-2">
+                                                <div className="flex flex-col gap-2 items-end">
                                                     <button
                                                         onClick={() => handleAction(item.id, 'report-resolve')}
                                                         disabled={actionLoading === item.id}
-                                                        className="px-3 py-1.5 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition"
+                                                        className="w-24 py-1.5 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black border border-emerald-500/50 text-emerald-400 text-[11px] font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
-                                                        {actionLoading === item.id ? '...' : 'Resolve'}
+                                                        {actionLoading === item.id ? '...' : '✔ Resolve'}
                                                     </button>
                                                     <button
                                                         onClick={() => handleAction(item.id, 'report-dismiss')}
                                                         disabled={actionLoading === item.id}
-                                                        className="px-3 py-1.5 bg-stone-400 hover:bg-stone-500 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition"
+                                                        className="w-24 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white text-[11px] font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
-                                                        Dismiss
+                                                        ✖ Dismiss
                                                     </button>
                                                 </div>
                                             )}
@@ -267,7 +326,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                 </div>
             </div>
 
-            <div className="text-center text-xs text-stone-400 font-medium mt-4">
+            <div className="text-center text-xs text-gray-600 font-medium mt-4">
                 © 2021-2025 Don Pollo • Terms • Privacy • Legal Notice
             </div>
         </div>

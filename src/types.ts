@@ -80,3 +80,10 @@ export interface GlobalRolesSettings {
     join_roles: string[];
     reaction_roles_enabled: boolean;
 }
+
+export interface VariableItem {
+    category: string;
+    variable: string;
+    description: string;
+    preview: string;
+}

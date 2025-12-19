@@ -112,7 +112,8 @@ export async function GET(request: Request) {
                     appeals_channel_id: null,
                     appeals_config: {},
                     default_mute_duration: '1 hour',
-                    default_ban_duration: 'Permanent'
+                    default_ban_duration: 'Permanent',
+                    report_channel_id: null
                 });
             }
 
@@ -122,7 +123,10 @@ export async function GET(request: Request) {
                 immune_roles: JSON.parse(settings.immune_roles || '[]'),
                 predefined_reasons: JSON.parse(settings.predefined_reasons || '{}'),
                 locked_channels: JSON.parse(settings.locked_channels || '[]'),
-                appeals_config: JSON.parse(settings.appeals_config || '{}')
+                appeals_config: JSON.parse(settings.appeals_config || '{}'),
+                report_channel_id: settings.report_channel_id ? String(settings.report_channel_id) : null,
+                appeals_channel_id: settings.appeals_channel_id ? String(settings.appeals_channel_id) : null,
+                guild_id: String(settings.guild_id)
             });
         }
 
@@ -215,9 +219,10 @@ export async function GET(request: Request) {
 
             if (search) {
                 // Report.py uses: id, reporter_name, reported_name, case_number, reason
-                query += ' AND (id LIKE ? OR case_number LIKE ? OR reporter_name LIKE ? OR reported_name LIKE ? OR reason LIKE ?)';
+                // Update to check report_id too
+                query += ' AND (id LIKE ? OR report_id LIKE ? OR case_number LIKE ? OR reporter_name LIKE ? OR reported_name LIKE ? OR reason LIKE ?)';
                 const searchPattern = `%${search}%`;
-                params.push(searchPattern, searchPattern, searchPattern, searchPattern, searchPattern);
+                params.push(searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern);
             }
 
             if (status && status !== 'all') {
@@ -234,9 +239,9 @@ export async function GET(request: Request) {
             let countQuery = 'SELECT COUNT(*) as total FROM user_reports WHERE guild_id = ?';
             const countParams: any[] = [guildId];
             if (search) {
-                countQuery += ' AND (id LIKE ? OR case_number LIKE ? OR reporter_name LIKE ? OR reported_name LIKE ? OR reason LIKE ?)';
+                countQuery += ' AND (id LIKE ? OR report_id LIKE ? OR case_number LIKE ? OR reporter_name LIKE ? OR reported_name LIKE ? OR reason LIKE ?)';
                 const searchPattern = `%${search}%`;
-                countParams.push(searchPattern, searchPattern, searchPattern, searchPattern, searchPattern);
+                countParams.push(searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern);
             }
             if (status && status !== 'all') {
                 countQuery += ' AND status = ?';
@@ -247,18 +252,19 @@ export async function GET(request: Request) {
             const total = countRows[0]?.total || 0;
 
             // Map to Report.py schema:
-            // id, guild_id, reporter_id, reporter_name, reported_id, reported_name,
-            // tanggal, reason, bukti_gambar, status, case_number, created_at
             const reports = rows.map((row: any) => ({
                 id: row.id,
+                report_id: row.report_id, // Unique string ID
                 case_number: row.case_number,
                 reporter: {
                     id: row.reporter_id,
-                    username: row.reporter_name || 'Unknown'
+                    username: row.reporter_name || 'Unknown',
+                    avatar: row.reporter_avatar // Avatar URL
                 },
                 reportedUser: {
                     id: row.reported_id,
-                    username: row.reported_name || 'Unknown'
+                    username: row.reported_name || 'Unknown',
+                    avatar: row.reported_avatar // Avatar URL
                 },
                 tanggal: row.tanggal,
                 reason: row.reason,
@@ -307,15 +313,16 @@ export async function POST(request: Request) {
                 appeals_channel_id,
                 appeals_config,
                 default_mute_duration,
-                default_ban_duration
+                default_ban_duration,
+                report_channel_id
             } = body;
 
             await pool.query(`
                 INSERT INTO moderation_settings 
                 (guild_id, user_notifications, purge_pinned, appeals_enabled, immune_roles, 
                  predefined_reasons, locked_channels, privacy_show_moderator, privacy_show_reason,
-                 privacy_show_duration, appeals_channel_id, appeals_config, default_mute_duration, default_ban_duration)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 privacy_show_duration, appeals_channel_id, appeals_config, default_mute_duration, default_ban_duration, report_channel_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON DUPLICATE KEY UPDATE
                     user_notifications = VALUES(user_notifications),
                     purge_pinned = VALUES(purge_pinned),
@@ -330,6 +337,7 @@ export async function POST(request: Request) {
                     appeals_config = VALUES(appeals_config),
                     default_mute_duration = VALUES(default_mute_duration),
                     default_ban_duration = VALUES(default_ban_duration),
+                    report_channel_id = VALUES(report_channel_id),
                     updated_at = CURRENT_TIMESTAMP
             `, [
                 guild_id,
@@ -345,7 +353,8 @@ export async function POST(request: Request) {
                 appeals_channel_id || null,
                 JSON.stringify(appeals_config || {}),
                 default_mute_duration || '1 hour',
-                default_ban_duration || 'Permanent'
+                default_ban_duration || 'Permanent',
+                report_channel_id || null
             ]);
 
             return NextResponse.json({ success: true, message: 'Settings saved!' });
@@ -445,6 +454,32 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     } catch (error: any) {
         console.error('Moderation API error:', error);
+
+        // Self-healing: Handle missing columns
+        if (error.code === 'ER_BAD_FIELD_ERROR') {
+            try {
+                const match = error.sqlMessage?.match(/Unknown column '(.+?)'/);
+                if (match) {
+                    const column = match[1];
+                    console.log(`Auto-migrating: Adding missing column ${column}...`);
+
+                    let def = 'VARCHAR(255)';
+                    if (column === 'user_notifications' || column.startsWith('privacy_') || column === 'appeals_enabled' || column === 'purge_pinned') {
+                        def = 'BOOLEAN DEFAULT FALSE';
+                    } else if (column === 'report_channel_id' || column === 'appeals_channel_id') {
+                        def = 'BIGINT';
+                    } else if (column === 'immune_roles' || column === 'predefined_reasons' || column === 'locked_channels' || column === 'appeals_config') {
+                        def = 'JSON';
+                    }
+
+                    await pool.query(`ALTER TABLE moderation_settings ADD COLUMN ${column} ${def}`);
+                    return NextResponse.json({ error: 'Database updated, please try again' }, { status: 500 });
+                }
+            } catch (migrationError) {
+                console.error('Migration failed:', migrationError);
+            }
+        }
+
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

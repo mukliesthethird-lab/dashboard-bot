@@ -13,55 +13,56 @@ interface EmptyStateProps {
 }
 
 // Variant-specific configurations
+// Variant-specific configurations
 const VARIANTS = {
     default: {
         icon: "📂",
-        bgGradient: "from-stone-100 to-stone-50",
-        borderColor: "border-stone-200",
-        iconBg: "bg-stone-200",
-        buttonBg: "bg-stone-600 hover:bg-stone-700"
+        bgGradient: "from-stone-500/5 to-stone-500/10",
+        borderColor: "border-white/10",
+        iconBg: "bg-stone-500/20",
+        buttonBg: "bg-stone-600 hover:bg-stone-500"
     },
     fishing: {
         icon: "🎣",
-        bgGradient: "from-sky-50 to-blue-50",
-        borderColor: "border-sky-200",
-        iconBg: "bg-sky-100",
-        buttonBg: "bg-sky-500 hover:bg-sky-600"
+        bgGradient: "from-sky-500/5 to-blue-500/10",
+        borderColor: "border-sky-500/20",
+        iconBg: "bg-sky-500/20",
+        buttonBg: "bg-sky-500 hover:bg-sky-400"
     },
     economy: {
         icon: "💰",
-        bgGradient: "from-amber-50 to-yellow-50",
-        borderColor: "border-amber-200",
-        iconBg: "bg-amber-100",
-        buttonBg: "bg-amber-500 hover:bg-amber-600"
+        bgGradient: "from-amber-500/5 to-yellow-500/10",
+        borderColor: "border-amber-500/20",
+        iconBg: "bg-amber-500/20",
+        buttonBg: "bg-amber-500 hover:bg-amber-400"
     },
     moderation: {
         icon: "🛡️",
-        bgGradient: "from-red-50 to-rose-50",
-        borderColor: "border-rose-200",
-        iconBg: "bg-rose-100",
-        buttonBg: "bg-rose-500 hover:bg-rose-600"
+        bgGradient: "from-stone-500/5 to-stone-500/10",
+        borderColor: "border-white/10",
+        iconBg: "bg-stone-500/20",
+        buttonBg: "bg-stone-600 hover:bg-stone-500"
     },
     roles: {
         icon: "🎭",
-        bgGradient: "from-purple-50 to-violet-50",
-        borderColor: "border-violet-200",
-        iconBg: "bg-violet-100",
-        buttonBg: "bg-violet-500 hover:bg-violet-600"
+        bgGradient: "from-purple-500/5 to-violet-500/10",
+        borderColor: "border-violet-500/20",
+        iconBg: "bg-violet-500/20",
+        buttonBg: "bg-violet-500 hover:bg-violet-400"
     },
     welcome: {
         icon: "👋",
-        bgGradient: "from-green-50 to-emerald-50",
-        borderColor: "border-emerald-200",
-        iconBg: "bg-emerald-100",
-        buttonBg: "bg-emerald-500 hover:bg-emerald-600"
+        bgGradient: "from-green-500/5 to-emerald-500/10",
+        borderColor: "border-emerald-500/20",
+        iconBg: "bg-emerald-500/20",
+        buttonBg: "bg-emerald-500 hover:bg-emerald-400"
     },
     logging: {
         icon: "📋",
-        bgGradient: "from-blue-50 to-cyan-50",
-        borderColor: "border-cyan-200",
-        iconBg: "bg-cyan-100",
-        buttonBg: "bg-cyan-500 hover:bg-cyan-600"
+        bgGradient: "from-blue-500/5 to-cyan-500/10",
+        borderColor: "border-cyan-500/20",
+        iconBg: "bg-cyan-500/20",
+        buttonBg: "bg-cyan-500 hover:bg-cyan-400"
     }
 };
 
@@ -78,25 +79,25 @@ export default function EmptyState({
     const displayIcon = icon || config.icon;
 
     return (
-        <div className={`bg-gradient-to-br ${config.bgGradient} rounded-3xl border-2 ${config.borderColor} p-8 md:p-12 text-center ${className}`}>
+        <div className={`bg-gradient-to-br ${config.bgGradient} rounded-3xl border ${config.borderColor} p-8 md:p-12 text-center ${className}`}>
             {/* Animated Icon */}
             <div className="relative inline-block mb-6">
                 <div className={`w-24 h-24 ${config.iconBg} rounded-full flex items-center justify-center mx-auto animate-bounce-subtle`}>
                     <span className="text-5xl">{displayIcon}</span>
                 </div>
                 {/* Decorative circles */}
-                <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white/80 animate-pulse" />
-                <div className="absolute -bottom-1 -left-3 w-4 h-4 rounded-full bg-white/60 animate-pulse delay-100" />
+                <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white/20 animate-pulse" />
+                <div className="absolute -bottom-1 -left-3 w-4 h-4 rounded-full bg-white/10 animate-pulse delay-100" />
             </div>
 
             {/* Title */}
-            <h3 className="text-2xl md:text-3xl font-black text-stone-800 mb-3">
+            <h3 className="text-2xl md:text-3xl font-black text-white mb-3">
                 {title}
             </h3>
 
             {/* Description */}
             {description && (
-                <p className="text-stone-500 text-lg mb-6 max-w-md mx-auto">
+                <p className="text-gray-400 text-lg mb-6 max-w-md mx-auto">
                     {description}
                 </p>
             )}

@@ -163,9 +163,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden">
-      {/* Navigation spacer */}
-      <div className="h-20" />
-
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center justify-center px-6 overflow-hidden">
         {/* Background Effects */}

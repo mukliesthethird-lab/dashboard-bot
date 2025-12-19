@@ -7,6 +7,8 @@ import { ReactionRoleMessage, Channel, Role, GlobalRolesSettings } from "../type
 import CreateMessageModal from "./CreateMessageModal";
 import ConfirmationModal from "./ConfirmationModal";
 import CatLoader from "./CatLoader";
+import DashboardHeader from "./DashboardHeader";
+import PremiumCard from "./PremiumCard";
 
 interface RolesSettingsProps {
     guildId: string;
@@ -162,30 +164,34 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
     return (
         <div className="p-8 max-w-6xl mx-auto space-y-8 animate-fade-in-up pb-20">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-4xl font-black text-white">Roles Configuration</h1>
-                    <p className="text-gray-400 mt-1">Manage automatic role assignment and reaction roles.</p>
-                </div>
-            </div>
+            <DashboardHeader
+                title="Roles Configuration"
+                subtitle="Manage automatic role assignment and reaction roles."
+                icon="🎭"
+            />
 
             {/* Global Settings */}
             <div className="grid md:grid-cols-2 gap-6">
                 {/* Join Roles Card */}
-                <div className="glass-card rounded-3xl p-6 hover:border-amber-500/30 transition">
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="flex items-center gap-3">
-                            <span className="text-2xl">👋</span>
-                            <h2 className="text-xl font-bold text-white">Join Roles</h2>
-                        </div>
+                <PremiumCard
+                    title="Join Roles"
+                    description="Automatically assign roles to new members"
+                    icon={<span className="text-2xl">👋</span>}
+                    gradientFrom="emerald-500"
+                    gradientTo="teal-500"
+                >
+                    <div className="flex justify-end absolute top-6 right-6">
                         <Toggle
                             enabled={globalSettings.join_roles_enabled}
                             onChange={(val) => saveGlobalSettings({ join_roles_enabled: val })}
                         />
                     </div>
                     {globalSettings.join_roles_enabled && (
-                        <div className="space-y-3 animate-fade-in">
+                        <div className="space-y-4 animate-fade-in mt-4">
                             <div className="flex flex-wrap gap-2">
+                                {globalSettings.join_roles.length === 0 && (
+                                    <span className="text-gray-500 text-sm italic">No roles configured for joining</span>
+                                )}
                                 {globalSettings.join_roles.map(roleId => {
                                     const role = roles.find(r => r.id === roleId);
                                     if (!role) return null;
@@ -193,7 +199,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                                         <div key={roleId} className="px-3 py-1 bg-white/5 rounded-lg text-sm font-bold flex items-center gap-2 border border-white/10 text-gray-300">
                                             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#' + role.color.toString(16).padStart(6, '0') }}></span>
                                             {role.name}
-                                            <button onClick={() => saveGlobalSettings({ join_roles: globalSettings.join_roles.filter(id => id !== roleId) })} className="ml-1 hover:text-red-500">×</button>
+                                            <button onClick={() => saveGlobalSettings({ join_roles: globalSettings.join_roles.filter(id => id !== roleId) })} className="ml-1 hover:text-red-500 transition-colors">×</button>
                                         </div>
                                     );
                                 })}
@@ -205,51 +211,56 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                                     }
                                     e.target.value = '';
                                 }}
-                                className="w-full p-2 border border-white/10 rounded-lg bg-white/5 focus:border-amber-500/50 outline-none text-white"
+                                className="w-full p-2.5 border border-white/10 rounded-xl bg-white/5 focus:border-emerald-500/50 outline-none text-white transition"
                             >
-                                <option value="">+ Add Role</option>
+                                <option value="" className="bg-[#12121a]">+ Add Role</option>
                                 {roles.filter(r => !globalSettings.join_roles.includes(r.id)).map(r => (
-                                    <option key={r.id} value={r.id}>{r.name}</option>
+                                    <option key={r.id} value={r.id} className="bg-[#12121a]">{r.name}</option>
                                 ))}
                             </select>
                         </div>
                     )}
-                </div>
+                </PremiumCard>
 
                 {/* Reaction Roles Card */}
-                <div className="glass-card rounded-3xl p-6 hover:border-amber-500/30 transition">
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="flex items-center gap-3">
-                            <span className="text-2xl">✨</span>
-                            <h2 className="text-xl font-bold text-white">Reaction Roles</h2>
-                        </div>
+                <PremiumCard
+                    title="Reaction Roles"
+                    description="Self-assignable roles via messages"
+                    icon={<span className="text-2xl">✨</span>}
+                    gradientFrom="purple-500"
+                    gradientTo="pink-500"
+                >
+                    <div className="flex justify-end absolute top-6 right-6">
                         <Toggle
                             enabled={globalSettings.reaction_roles_enabled}
                             onChange={(val) => saveGlobalSettings({ reaction_roles_enabled: val })}
                         />
                     </div>
                     {globalSettings.reaction_roles_enabled && (
-                        <div className="space-y-4">
+                        <div className="space-y-4 animate-fade-in mt-4">
                             <div className="space-y-2">
+                                {settings.messages.length === 0 && (
+                                    <p className="text-gray-500 text-sm py-4 text-center">No reaction role messages created yet</p>
+                                )}
                                 {settings.messages.map((msg, idx) => (
-                                    <div key={idx} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/10 group">
+                                    <div key={idx} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/10 group hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300">
                                         <span className="font-bold text-gray-300 truncate max-w-[200px]">{msg.embeds[0]?.title || 'Untitled Message'}</span>
-                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => { setEditingMsg(msg); setEditingIndex(idx); setShowEditor(true); }} className="p-1 px-3 bg-white/5 border border-white/10 rounded-lg hover:border-amber-500/50 text-sm font-bold text-white">Edit</button>
-                                            <button onClick={() => handleDeleteClick(msg)} className="p-1 px-3 text-red-400 hover:text-red-300 text-sm">✕</button>
+                                        <div className="flex gap-2 lg:opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => { setEditingMsg(msg); setEditingIndex(idx); setShowEditor(true); }} className="p-1 px-3 bg-white/5 border border-white/10 rounded-lg hover:border-purple-500/50 text-sm font-bold text-white transition-colors">Edit</button>
+                                            <button onClick={() => handleDeleteClick(msg)} className="p-1 px-3 text-red-400 hover:text-red-300 text-sm transition-colors">✕</button>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                             <button
                                 onClick={() => { setEditingMsg(null); setEditingIndex(null); setShowEditor(true); }}
-                                className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/20"
+                                className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-xl transition shadow-lg shadow-purple-500/20 active:scale-95"
                             >
                                 + Create New Message
                             </button>
                         </div>
                     )}
-                </div>
+                </PremiumCard>
             </div>
 
             {/* Modals */}

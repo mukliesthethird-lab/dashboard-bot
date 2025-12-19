@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ToastContainer, { useToast } from "./Toast";
 
 interface SettingsExportImportProps {
     guildId: string;
@@ -10,13 +11,12 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
     const [showModal, setShowModal] = useState(false);
     const [importing, setImporting] = useState(false);
     const [exporting, setExporting] = useState(false);
-    const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+    const { toast, success, error, hideToast } = useToast();
     const [importData, setImportData] = useState<string>("");
     const [overwrite, setOverwrite] = useState(false);
 
     const handleExport = async () => {
         setExporting(true);
-        setMessage(null);
 
         try {
             const res = await fetch(`/api/settings?guild_id=${guildId}`);
@@ -31,12 +31,12 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                setMessage({ type: "success", text: "Settings exported successfully!" });
+                success("Settings exported successfully!");
             } else {
-                setMessage({ type: "error", text: "Failed to export settings" });
+                error("Failed to export settings");
             }
         } catch {
-            setMessage({ type: "error", text: "Network error" });
+            error("Network error");
         }
 
         setExporting(false);
@@ -55,12 +55,11 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
 
     const handleImport = async () => {
         if (!importData) {
-            setMessage({ type: "error", text: "Please select a file to import" });
+            error("Please select a file to import");
             return;
         }
 
         setImporting(true);
-        setMessage(null);
 
         try {
             const settings = JSON.parse(importData);
@@ -78,14 +77,14 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
             const data = await res.json();
 
             if (res.ok) {
-                setMessage({ type: "success", text: data.message || "Settings imported successfully!" });
+                success(data.message || "Settings imported successfully!");
                 setImportData("");
                 setShowModal(false);
             } else {
-                setMessage({ type: "error", text: data.error || "Import failed" });
+                error(data.error || "Import failed");
             }
         } catch {
-            setMessage({ type: "error", text: "Invalid JSON file" });
+            error("Invalid JSON file");
         }
 
         setImporting(false);
@@ -108,7 +107,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                     Export
                 </button>
                 <button
-                    onClick={() => { setShowModal(true); setMessage(null); }}
+                    onClick={() => setShowModal(true)}
                     className="px-4 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 font-bold text-sm transition flex items-center gap-2"
                 >
                     <span>📥</span> Import
@@ -116,11 +115,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
             </div>
 
             {/* Success/Error message toast */}
-            {message && !showModal && (
-                <div className={`mt-2 px-3 py-2 rounded-xl text-sm font-bold ${message.type === "success" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
-                    {message.type === "success" ? "✅" : "❌"} {message.text}
-                </div>
-            )}
+            {/* Success/Error message toast -> Removed */}
 
             {/* Import Modal */}
             {showModal && (
@@ -173,11 +168,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                             </div>
 
                             {/* Message */}
-                            {message && (
-                                <div className={`p-3 rounded-xl text-sm font-bold ${message.type === "success" ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"}`}>
-                                    {message.type === "success" ? "✅" : "❌"} {message.text}
-                                </div>
-                            )}
+                            {/* Message -> Removed */}
                         </div>
 
                         <div className="flex gap-3 mt-6">
@@ -205,6 +196,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                     </div>
                 </div>
             )}
+            <ToastContainer toast={toast} onClose={hideToast} />
         </>
     );
 }

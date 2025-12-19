@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import CatLoader from "./CatLoader";
+import ToastContainer, { useToast } from "./Toast";
 
 interface User {
     user_id: string;
@@ -41,7 +42,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
 
     // Form states
     const [amount, setAmount] = useState("");
-    const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+    const { toast, success, error, hideToast } = useToast();
     const [submitting, setSubmitting] = useState(false);
 
     // Confirmation state
@@ -111,7 +112,6 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
     const handleGiveMoney = async () => {
         if (!selectedUser || !amount) return;
         setSubmitting(true);
-        setMessage(null);
 
         try {
             const res = await fetch('/api/economy', {
@@ -127,15 +127,15 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
             const data = await res.json();
 
             if (res.ok) {
-                setMessage({ type: "success", text: `Successfully gave $${amount} to @${selectedUser.username}!` });
+                success(`Successfully gave $${amount} to @${selectedUser.username}!`);
                 setSelectedUser(null);
                 setAmount("");
                 fetchStats();
             } else {
-                setMessage({ type: "error", text: data.error || "Failed to give money" });
+                error(data.error || "Failed to give money");
             }
         } catch {
-            setMessage({ type: "error", text: "Network error" });
+            error("Network error");
         }
         setSubmitting(false);
     };
@@ -143,7 +143,6 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
     const handleResetUser = async () => {
         if (!selectedUser) return;
         setSubmitting(true);
-        setMessage(null);
 
         try {
             const res = await fetch('/api/economy', {
@@ -158,15 +157,15 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
             const data = await res.json();
 
             if (res.ok) {
-                setMessage({ type: "success", text: `Reset @${selectedUser.username}'s balance!` });
+                success(`Reset @${selectedUser.username}'s balance!`);
                 setSelectedUser(null);
                 fetchStats();
                 setShowResetUser(false);
             } else {
-                setMessage({ type: "error", text: data.error || "Failed to reset user" });
+                error(data.error || "Failed to reset user");
             }
         } catch {
-            setMessage({ type: "error", text: "Network error" });
+            error("Network error");
         }
         setSubmitting(false);
     };
@@ -231,26 +230,19 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                 </div>
             </div>
 
-            {/* Message */}
-            {message && (
-                <div className={`mb-4 p-4 rounded-xl font-bold ${message.type === "success" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
-                    {message.type === "success" ? "✅" : "❌"} {message.text}
-                </div>
-            )}
-
             {/* Quick Actions - Dark Theme */}
             <div className="glass-card rounded-3xl p-6 mb-8">
                 <h2 className="text-xl font-black text-white mb-4">⚡ Economy Actions</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     <button
-                        onClick={() => { setShowGiveMoney(true); setMessage(null); }}
+                        onClick={() => setShowGiveMoney(true)}
                         className="p-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition text-center group"
                     >
                         <div className="text-3xl mb-2 group-hover:scale-110 transition">💸</div>
                         <div className="font-bold text-white text-sm">Give Money</div>
                     </button>
                     <button
-                        onClick={() => { setShowResetUser(true); setMessage(null); }}
+                        onClick={() => setShowResetUser(true)}
                         className="p-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition text-center group"
                     >
                         <div className="text-3xl mb-2 group-hover:scale-110 transition">🗑️</div>
@@ -507,6 +499,8 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
                     </div>
                 </div>
             </div>
+            {/* Toast Container */}
+            <ToastContainer toast={toast} onClose={hideToast} />
         </>
     );
 }

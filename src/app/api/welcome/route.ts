@@ -34,7 +34,7 @@ function fetchGuildChannels(guildId: string, token: string): Promise<any[]> {
             res.on('end', () => {
                 if (res.statusCode === 200) {
                     const channels = JSON.parse(data);
-                    const textChannels = channels.filter((c: any) => c.type === 0);
+                    const textChannels = channels.filter((c: any) => c.type === 0 || c.type === 5);
                     resolve(textChannels.map((c: any) => ({
                         id: c.id,
                         name: c.name,

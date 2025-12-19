@@ -18,12 +18,18 @@ const menuItems = [
     { name: "Welcome", icon: "👋", href: "/welcome" },
     { name: "Logging", icon: "📝", href: "/logging" },
     { name: "Roles", icon: "🎭", href: "/roles" },
+    { name: "Notification", icon: "🔔", href: "/notifications" },
 ];
 
 export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarProps) {
     const pathname = usePathname();
     const basePath = `/dashboard/${guildId}`;
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const iconUrl = guildIcon
         ? `https://cdn.discordapp.com/icons/${guildId}/${guildIcon}.png`
@@ -46,8 +52,12 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
         };
     }, [mobileOpen]);
 
+    if (!mounted) {
+        return <div className="hidden lg:block w-72 bg-[#0a0a0f]/50 border-r border-white/5" />;
+    }
+
     return (
-        <>
+        <div>
             {/* Mobile Header Bar */}
             <div className="lg:hidden fixed top-20 left-0 right-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/10 px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -87,11 +97,11 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
 
             {/* Sidebar - Desktop: always visible, Mobile: slide in */}
             <aside className={`
-                fixed left-0 top-20 bottom-0 w-72 bg-[#12121a]/95 backdrop-blur-xl border-r border-white/10 z-50 overflow-y-auto custom-scrollbar
+                fixed left-0 top-20 bottom-0 w-72 bg-[#0a0a0f]/50 backdrop-blur-xl border-r border-white/5 z-[100] overflow-y-auto custom-scrollbar
                 transition-transform duration-300 ease-in-out
                 lg:translate-x-0
                 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-                lg:top-20
+                lg:top-0
             `}>
                 {/* Server Info - Hidden on mobile (shown in header bar instead) */}
                 <div className="p-6 border-b border-white/10 hidden lg:block">
@@ -100,9 +110,9 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
                             <img
                                 src={iconUrl}
                                 alt={guildName}
-                                className="w-14 h-14 rounded-2xl border-2 border-white/20 shadow-lg"
+                                className="w-14 h-14 rounded-2xl border-2 border-white/20 shadow-lg group-hover:border-amber-500/50 transition-colors duration-500"
                             />
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#12121a]" />
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#0a0a0f] shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
                         </div>
                         <div className="flex-1 min-w-0">
                             <h2 className="font-black text-lg text-white truncate">{guildName}</h2>
@@ -126,8 +136,8 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
                                 key={item.name}
                                 href={fullPath}
                                 onClick={() => setMobileOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${isActive
-                                    ? "bg-gradient-to-r from-amber-500 to-orange-500 text-black shadow-lg shadow-amber-500/25"
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-300 ${isActive
+                                    ? "bg-gradient-to-r from-amber-500 to-orange-500 text-black shadow-lg shadow-amber-500/40 scale-[1.02]"
                                     : "text-gray-400 hover:bg-white/5 hover:text-white"
                                     }`}
                             >
@@ -142,7 +152,7 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
                 </nav>
 
                 {/* Bottom Actions */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-[#12121a]/90 backdrop-blur-sm">
+                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5 bg-[#0a0a0f]/50 backdrop-blur-sm">
                     <Link
                         href="/dashboard"
                         onClick={() => setMobileOpen(false)}
@@ -155,6 +165,6 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
                     </Link>
                 </div>
             </aside>
-        </>
+        </div>
     );
 }

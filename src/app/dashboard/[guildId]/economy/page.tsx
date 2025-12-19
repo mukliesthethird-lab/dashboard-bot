@@ -6,6 +6,7 @@ import path from "path";
 import https from "https";
 import GuildSidebar from "@/components/GuildSidebar";
 import EconomyActions from "@/components/EconomyActions";
+import DashboardHeader from "@/components/DashboardHeader";
 
 interface Guild {
     id: string;
@@ -75,12 +76,11 @@ export default async function EconomyPage({
             <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
                 <div className="max-w-5xl mx-auto">
                     {/* Header */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
-                            💰 Economy Management
-                        </h1>
-                        <p className="text-amber-400 font-bold">Manage your server's virtual economy</p>
-                    </div>
+                    <DashboardHeader
+                        title="Economy Management"
+                        subtitle="Manage your server's virtual economy"
+                        icon="💰"
+                    />
 
                     {/* Economy Actions Component (Client-side with modals) */}
                     <EconomyActions guildId={guildId} />

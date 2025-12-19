@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import GuildSidebar from "@/components/GuildSidebar";
 import ModerationSettings from "@/components/ModerationSettings";
+import DashboardHeader from "@/components/DashboardHeader";
 import fs from "fs";
 import path from "path";
 import https from "https";
@@ -70,6 +71,13 @@ export default async function ModerationPage({
             <GuildSidebar guildId={guildId} guildName={guild.name} guildIcon={guild.icon} />
             <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
                 <div className="max-w-5xl mx-auto">
+                    {/* Header */}
+                    <DashboardHeader
+                        title="Moderation System"
+                        subtitle="Manage automated moderation, cases, and punishments"
+                        icon="🛡️"
+                    />
+
                     <ModerationSettings guildId={guildId} />
                 </div>
             </main>

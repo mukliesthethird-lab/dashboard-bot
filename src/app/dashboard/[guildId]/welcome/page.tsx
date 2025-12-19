@@ -6,6 +6,7 @@ import path from "path";
 import https from "https";
 import GuildSidebar from "@/components/GuildSidebar";
 import WelcomeSettings from "@/components/WelcomeSettings";
+import DashboardHeader from "@/components/DashboardHeader";
 
 interface Guild {
     id: string;
@@ -69,14 +70,11 @@ export default async function WelcomePage({
             <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
                 <div className="max-w-4xl mx-auto">
                     {/* Header */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
-                            👋 Welcome Settings
-                        </h1>
-                        <p className="text-amber-400 font-bold">
-                            Configure welcome and leave messages for {guild.name}
-                        </p>
-                    </div>
+                    <DashboardHeader
+                        title="Welcome Settings"
+                        subtitle={`Configure welcome and leave messages for ${guild.name}`}
+                        icon="👋"
+                    />
 
                     {/* Welcome Settings Component */}
                     <WelcomeSettings guildId={guildId} />

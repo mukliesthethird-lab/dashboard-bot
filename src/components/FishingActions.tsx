@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import CatLoader from "./CatLoader";
+import ToastContainer, { useToast } from "./Toast";
 
 interface User {
     user_id: string;
@@ -91,7 +92,7 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
     const [confirmMessage, setConfirmMessage] = useState<string>("");
     const [isDestructive, setIsDestructive] = useState(false);
 
-    const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+    const { toast, success, error, hideToast } = useToast();
     const [submitting, setSubmitting] = useState(false);
     const [userDetails, setUserDetails] = useState<any>(null);
 
@@ -164,7 +165,6 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
     const handleGiveRod = async () => {
         if (!selectedUser || !selectedRod) return;
         setSubmitting(true);
-        setMessage(null);
 
         try {
             const res = await fetch('/api/fishing', {
@@ -180,15 +180,15 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             });
             const data = await res.json();
             if (res.ok) {
-                setMessage({ type: "success", text: `Gave ${selectedRod} +${rodLevel} to @${selectedUser.username}!` });
+                success(`Gave ${selectedRod} +${rodLevel} to @${selectedUser.username}!`);
                 setSelectedUser(null);
                 setRodLevel("0");
                 fetchStats();
             } else {
-                setMessage({ type: "error", text: data.error || "Failed to give rod" });
+                error(data.error || "Failed to give rod");
             }
         } catch {
-            setMessage({ type: "error", text: "Network error" });
+            error("Network error");
         }
         setSubmitting(false);
     };
@@ -196,7 +196,6 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
     const handleGiveMaterial = async () => {
         if (!selectedUser || !selectedMaterial || !materialAmount) return;
         setSubmitting(true);
-        setMessage(null);
 
         try {
             const res = await fetch('/api/fishing', {
@@ -212,14 +211,14 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             });
             const data = await res.json();
             if (res.ok) {
-                setMessage({ type: "success", text: `Gave ${materialAmount}x ${selectedMaterial} to @${selectedUser.username}!` });
+                success(`Gave ${materialAmount}x ${selectedMaterial} to @${selectedUser.username}!`);
                 setSelectedUser(null);
                 fetchStats();
             } else {
-                setMessage({ type: "error", text: data.error || "Failed to give material" });
+                error(data.error || "Failed to give material");
             }
         } catch {
-            setMessage({ type: "error", text: "Network error" });
+            error("Network error");
         }
         setSubmitting(false);
     };
@@ -227,7 +226,6 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
     const handleGiveBuff = async () => {
         if (!selectedUser || !selectedBuff || !buffAmount) return;
         setSubmitting(true);
-        setMessage(null);
 
         try {
             const res = await fetch('/api/fishing', {
@@ -243,14 +241,14 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             });
             const data = await res.json();
             if (res.ok) {
-                setMessage({ type: "success", text: `Gave ${buffAmount}x ${selectedBuff} to @${selectedUser.username}!` });
+                success(`Gave ${buffAmount}x ${selectedBuff} to @${selectedUser.username}!`);
                 setSelectedUser(null);
                 fetchStats();
             } else {
-                setMessage({ type: "error", text: data.error || "Failed to give buff" });
+                error(data.error || "Failed to give buff");
             }
         } catch {
-            setMessage({ type: "error", text: "Network error" });
+            error("Network error");
         }
         setSubmitting(false);
     };
@@ -258,7 +256,6 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
     const handleResetUser = async () => {
         if (!selectedUser) return;
         setSubmitting(true);
-        setMessage(null);
 
         try {
             const res = await fetch('/api/fishing', {
@@ -268,15 +265,15 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             });
             const data = await res.json();
             if (res.ok) {
-                setMessage({ type: "success", text: `Reset @${selectedUser.username}'s fishing data!` });
+                success(`Reset @${selectedUser.username}'s fishing data!`);
                 setSelectedUser(null);
                 fetchStats();
                 setShowResetUser(false);
             } else {
-                setMessage({ type: "error", text: data.error || "Failed to reset user" });
+                error(data.error || "Failed to reset user");
             }
         } catch {
-            setMessage({ type: "error", text: "Network error" });
+            error("Network error");
         }
         setSubmitting(false);
     };
@@ -391,30 +388,23 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
                 </div>
             </div>
 
-            {/* Message */}
-            {message && (
-                <div className={`mb-4 p-4 rounded-xl font-bold ${message.type === "success" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
-                    {message.type === "success" ? "✅" : "❌"} {message.text}
-                </div>
-            )}
-
             {/* Fishing Actions - Dark Theme */}
             <div className="glass-card rounded-3xl p-6 mb-8">
                 <h2 className="text-xl font-black text-white mb-4">⚡ Fishing Actions</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <button onClick={() => { setShowGiveRod(true); setMessage(null); }} className="p-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition text-center group">
+                    <button onClick={() => setShowGiveRod(true)} className="p-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition text-center group">
                         <div className="text-2xl mb-1 group-hover:scale-110 transition">🎣</div>
                         <div className="font-bold text-white text-xs">Give Rod</div>
                     </button>
-                    <button onClick={() => { setShowGiveMaterial(true); setMessage(null); }} className="p-4 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition text-center group">
+                    <button onClick={() => setShowGiveMaterial(true)} className="p-4 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition text-center group">
                         <div className="text-2xl mb-1 group-hover:scale-110 transition">🔩</div>
                         <div className="font-bold text-white text-xs">Give Material</div>
                     </button>
-                    <button onClick={() => { setShowGiveBuff(true); setMessage(null); }} className="p-4 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 transition text-center group">
+                    <button onClick={() => setShowGiveBuff(true)} className="p-4 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 transition text-center group">
                         <div className="text-2xl mb-1 group-hover:scale-110 transition">🚬</div>
                         <div className="font-bold text-white text-xs">Give Buff</div>
                     </button>
-                    <button onClick={() => { setShowViewUser(true); setMessage(null); }} className="p-4 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition text-center group">
+                    <button onClick={() => setShowViewUser(true)} className="p-4 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition text-center group">
                         <div className="text-2xl mb-1 group-hover:scale-110 transition">👤</div>
                         <div className="font-bold text-white text-xs">View User</div>
                     </button>
@@ -422,7 +412,7 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
                         <div className="text-2xl mb-1 group-hover:scale-110 transition">📊</div>
                         <div className="font-bold text-white text-xs">Leaderboard</div>
                     </button>
-                    <button onClick={() => { setShowResetUser(true); setMessage(null); }} className="p-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition text-center group">
+                    <button onClick={() => setShowResetUser(true)} className="p-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition text-center group">
                         <div className="text-2xl mb-1 group-hover:scale-110 transition">🗑️</div>
                         <div className="font-bold text-white text-xs">Reset User</div>
                     </button>
@@ -700,6 +690,8 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
                     </div>
                 </div>
             </div>
+            {/* Toast Container */}
+            <ToastContainer toast={toast} onClose={hideToast} />
         </>
     );
 }

@@ -1,7 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+
+import CustomDropdown from "./CustomDropdown";
 
 interface ModerationSettingsProps {
     guildId: string;
@@ -20,6 +22,7 @@ interface Settings {
     appeals_channel_id: string | null;
     default_mute_duration: string;
     default_ban_duration: string;
+    report_channel_id: string | null;
 }
 
 interface Role {
@@ -42,12 +45,18 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
         privacy_show_duration: true,
         appeals_channel_id: null,
         default_mute_duration: '1 hour',
-        default_ban_duration: 'Permanent'
+        default_ban_duration: 'Permanent',
+        report_channel_id: null
     });
+    // Store original settings for comparison
+    const [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
+
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [roles, setRoles] = useState<Role[]>([]);
+    const [channels, setChannels] = useState<{ id: string, name: string }[]>([]);
     const [showImmuneRolesModal, setShowImmuneRolesModal] = useState(false);
+    const [showReportChannelModal, setShowReportChannelModal] = useState(false);
     const [showReasonsModal, setShowReasonsModal] = useState(false);
     const [showPrivacyModal, setShowPrivacyModal] = useState(false);
     const [showPunishModal, setShowPunishModal] = useState(false);
@@ -57,6 +66,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
     useEffect(() => {
         fetchSettings();
         fetchRoles();
+        fetchChannels();
     }, [guildId]);
 
     const fetchSettings = async () => {
@@ -65,6 +75,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             if (res.ok) {
                 const data = await res.json();
                 setSettings(data);
+                setOriginalSettings(data);
             }
         } catch (error) {
             console.error('Failed to fetch settings:', error);
@@ -85,21 +96,38 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
         }
     };
 
-    const saveSettings = async (newSettings: Partial<Settings>) => {
+    const fetchChannels = async () => {
+        try {
+            const res = await fetch(`/api/moderation?action=channels&guild_id=${guildId}`);
+            if (res.ok) {
+                const data = await res.json();
+                setChannels(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch channels:', error);
+        }
+    };
+
+    // Update local state only
+    const updateSettings = (newSettings: Partial<Settings>) => {
+        setSettings(prev => ({ ...prev, ...newSettings }));
+    };
+
+    // Save to API
+    const persistSettings = async () => {
         setSaving(true);
         try {
-            const updatedSettings = { ...settings, ...newSettings };
             const res = await fetch('/api/moderation', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'settings',
                     guild_id: guildId,
-                    ...updatedSettings
+                    ...settings
                 })
             });
             if (res.ok) {
-                setSettings(updatedSettings);
+                setOriginalSettings(settings); // Update original to match current
             }
         } catch (error) {
             console.error('Failed to save settings:', error);
@@ -108,17 +136,23 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
         }
     };
 
+    const resetSettings = () => {
+        if (originalSettings) {
+            setSettings(originalSettings);
+        }
+    };
+
     const toggleImmuneRole = (roleId: string) => {
         const newRoles = settings.immune_roles.includes(roleId)
             ? settings.immune_roles.filter(id => id !== roleId)
             : [...settings.immune_roles, roleId];
-        saveSettings({ immune_roles: newRoles });
+        updateSettings({ immune_roles: newRoles });
     };
 
     const addPredefinedReason = () => {
         if (newReasonKey && newReasonValue) {
             const newReasons = { ...settings.predefined_reasons, [newReasonKey]: newReasonValue };
-            saveSettings({ predefined_reasons: newReasons });
+            updateSettings({ predefined_reasons: newReasons });
             setNewReasonKey('');
             setNewReasonValue('');
         }
@@ -127,7 +161,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
     const removePredefinedReason = (key: string) => {
         const newReasons = { ...settings.predefined_reasons };
         delete newReasons[key];
-        saveSettings({ predefined_reasons: newReasons });
+        updateSettings({ predefined_reasons: newReasons });
     };
 
     const menuItems = [
@@ -136,9 +170,27 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             title: "Appeals",
             desc: "Create custom forms for users to appeal their punishments.",
             isNew: true,
-            onClick: () => saveSettings({ appeals_enabled: !settings.appeals_enabled }),
+            onClick: () => updateSettings({ appeals_enabled: !settings.appeals_enabled }),
             isToggle: true,
             checked: settings.appeals_enabled
+        },
+        {
+            icon: "📢",
+            title: "Report Channel",
+            desc: "Select the channel where use reports will be sent.",
+            action: (
+                <div className="w-48" onClick={(e) => e.stopPropagation()}>
+                    <CustomDropdown
+                        value={settings.report_channel_id || ''}
+                        onChange={(value) => updateSettings({ report_channel_id: value })}
+                        options={channels.map(channel => ({
+                            value: channel.id,
+                            label: `#${channel.name}`
+                        }))}
+                        placeholder="No Channel"
+                    />
+                </div>
+            )
         },
         {
             icon: "🔨",
@@ -159,7 +211,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             desc: "Toggle direct messages on punishments.",
             isToggle: true,
             checked: settings.user_notifications,
-            onToggle: () => saveSettings({ user_notifications: !settings.user_notifications })
+            onToggle: () => updateSettings({ user_notifications: !settings.user_notifications })
         },
         {
             icon: "📋",
@@ -188,7 +240,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             desc: "Keep pinned messages when purging channel history.",
             isToggle: true,
             checked: settings.purge_pinned,
-            onToggle: () => saveSettings({ purge_pinned: !settings.purge_pinned })
+            onToggle: () => updateSettings({ purge_pinned: !settings.purge_pinned })
         },
     ];
 
@@ -200,28 +252,17 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
         );
     }
 
+    // Check if there are unsaved changes
+    const hasChanges = JSON.stringify(settings) !== JSON.stringify(originalSettings);
+
     return (
-        <div className="space-y-8 animate-fade-in pb-20">
-            {/* Header Section */}
-            <div className="glass-card rounded-3xl p-8 relative overflow-hidden">
-                <div className="relative z-10">
-                    <h1 className="text-4xl font-black text-white mb-2">Moderation System</h1>
-                    <p className="text-gray-400 text-lg max-w-2xl">
-                        Manage automated moderation, cases, and punishments to keep your server safe.
-                    </p>
-                    {saving && (
-                        <div className="absolute top-0 right-0 flex items-center gap-2 text-amber-400 text-sm font-bold">
-                            <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-                            Saving...
-                        </div>
-                    )}
-                </div>
-            </div>
+        <div className="space-y-8 animate-fade-in pb-20 relative">
+            {/* Header Removed - Moved to Page Component */}
 
             {/* Top Cards: Cases & Reports */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Cases Card */}
-                <div className="glass-card rounded-3xl p-6 flex flex-col justify-between hover:scale-[1.02] transition group">
+                <div className="glass-card rounded-2xl p-6 flex flex-col justify-between hover:scale-[1.02] transition group">
                     <div>
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
@@ -239,7 +280,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                 </div>
 
                 {/* User Reports Card */}
-                <div className="glass-card rounded-3xl p-6 flex flex-col justify-between hover:scale-[1.02] transition group">
+                <div className="glass-card rounded-2xl p-6 flex flex-col justify-between hover:scale-[1.02] transition group">
                     <div>
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-xl">
@@ -258,61 +299,66 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             </div>
 
             {/* Menu List */}
-            <div className="flex flex-col gap-4">
-                {menuItems.map((item, index) => (
-                    <div
-                        key={index}
-                        onClick={item.isToggle ? undefined : item.onClick}
-                        className={`glass-card rounded-2xl p-5 hover:bg-white/10 transition-all flex items-center gap-5 group ${!item.isToggle && item.onClick ? 'cursor-pointer' : ''}`}
-                    >
-                        {/* Icon */}
-                        <div className="w-12 h-12 rounded-2xl bg-white/5 group-hover:bg-amber-500/20 text-gray-400 group-hover:text-amber-400 flex items-center justify-center text-2xl transition-colors">
-                            {item.icon}
-                        </div>
+            <div>
+                <h2 className="text-xl font-black text-white mb-4">⚙️ Configuration</h2>
+                <div className="flex flex-col gap-4">
+                    {menuItems.map((item, index) => (
+                        <div
+                            key={index}
+                            onClick={item.isToggle ? undefined : item.onClick}
+                            className={`glass-card rounded-2xl p-5 hover:bg-white/10 transition-all flex items-center gap-5 group ${!item.isToggle && item.onClick ? 'cursor-pointer' : ''}`}
+                        >
+                            {/* Icon */}
+                            <div className="w-12 h-12 rounded-2xl bg-white/5 group-hover:bg-amber-500/20 text-gray-400 group-hover:text-amber-400 flex items-center justify-center text-2xl transition-colors">
+                                {item.icon}
+                            </div>
 
-                        {/* Content */}
-                        <div className="flex-1">
-                            <div className="flex items-center gap-3">
-                                <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
-                                    {item.title}
-                                </h3>
-                                {item.isNew && (
-                                    <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-black uppercase tracking-wider rounded-md">
-                                        New
-                                    </span>
-                                )}
-                                {item.badge && (
-                                    <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-bold rounded-md">
-                                        {item.badge}
-                                    </span>
+                            {/* Content */}
+                            <div className="flex-1">
+                                <div className="flex items-center gap-3">
+                                    <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
+                                        {item.title}
+                                    </h3>
+                                    {item.isNew && (
+                                        <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-black uppercase tracking-wider rounded-md">
+                                            New
+                                        </span>
+                                    )}
+                                    {item.badge && (
+                                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-bold rounded-md">
+                                            {item.badge}
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-gray-500 font-medium text-sm">{item.desc}</p>
+                            </div>
+
+                            {/* Action / Arrow */}
+                            <div>
+                                {item.isToggle ? (
+                                    <div
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (item.onToggle) item.onToggle();
+                                            else if (item.onClick) item.onClick();
+                                        }}
+                                        className={`w-14 h-8 rounded-full relative transition-colors duration-300 cursor-pointer ${item.checked ? 'bg-emerald-500' : 'bg-white/10'}`}
+                                    >
+                                        <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-300 ${item.checked ? 'translate-x-6' : 'translate-x-0'}`} />
+                                    </div>
+                                ) : item.action ? (
+                                    <div>{item.action}</div>
+                                ) : (
+                                    <div className="w-10 h-10 rounded-xl bg-white/5 group-hover:bg-amber-500 group-hover:text-black text-gray-500 flex items-center justify-center transition-all">
+                                        <svg className="w-6 h-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
                                 )}
                             </div>
-                            <p className="text-gray-500 font-medium text-sm">{item.desc}</p>
                         </div>
-
-                        {/* Action / Arrow */}
-                        <div>
-                            {item.isToggle ? (
-                                <div
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (item.onToggle) item.onToggle();
-                                        else if (item.onClick) item.onClick();
-                                    }}
-                                    className={`w-14 h-8 rounded-full relative transition-colors duration-300 cursor-pointer ${item.checked ? 'bg-emerald-500' : 'bg-white/10'}`}
-                                >
-                                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-300 ${item.checked ? 'translate-x-6' : 'translate-x-0'}`} />
-                                </div>
-                            ) : (
-                                <div className="w-10 h-10 rounded-xl bg-white/5 group-hover:bg-amber-500 group-hover:text-black text-gray-500 flex items-center justify-center transition-all">
-                                    <svg className="w-6 h-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
 
             {/* Immune Roles Modal */}
@@ -421,7 +467,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                             <label className="flex items-center justify-between p-4 bg-white/5 rounded-xl cursor-pointer">
                                 <span className="font-bold text-gray-200">Show moderator name</span>
                                 <div
-                                    onClick={() => saveSettings({ privacy_show_moderator: !settings.privacy_show_moderator })}
+                                    onClick={() => updateSettings({ privacy_show_moderator: !settings.privacy_show_moderator })}
                                     className={`w-12 h-7 rounded-full relative transition-colors duration-300 cursor-pointer ${settings.privacy_show_moderator ? 'bg-emerald-500' : 'bg-white/10'}`}
                                 >
                                     <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-300 ${settings.privacy_show_moderator ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -430,7 +476,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                             <label className="flex items-center justify-between p-4 bg-white/5 rounded-xl cursor-pointer">
                                 <span className="font-bold text-gray-200">Show punishment reason</span>
                                 <div
-                                    onClick={() => saveSettings({ privacy_show_reason: !settings.privacy_show_reason })}
+                                    onClick={() => updateSettings({ privacy_show_reason: !settings.privacy_show_reason })}
                                     className={`w-12 h-7 rounded-full relative transition-colors duration-300 cursor-pointer ${settings.privacy_show_reason ? 'bg-emerald-500' : 'bg-white/10'}`}
                                 >
                                     <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-300 ${settings.privacy_show_reason ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -439,7 +485,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                             <label className="flex items-center justify-between p-4 bg-white/5 rounded-xl cursor-pointer">
                                 <span className="font-bold text-gray-200">Show duration</span>
                                 <div
-                                    onClick={() => saveSettings({ privacy_show_duration: !settings.privacy_show_duration })}
+                                    onClick={() => updateSettings({ privacy_show_duration: !settings.privacy_show_duration })}
                                     className={`w-12 h-7 rounded-full relative transition-colors duration-300 cursor-pointer ${settings.privacy_show_duration ? 'bg-emerald-500' : 'bg-white/10'}`}
                                 >
                                     <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-300 ${settings.privacy_show_duration ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -469,7 +515,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                 <label className="block text-sm font-bold text-gray-300 mb-2">Default Mute Duration</label>
                                 <select
                                     value={settings.default_mute_duration}
-                                    onChange={e => saveSettings({ default_mute_duration: e.target.value })}
+                                    onChange={e => updateSettings({ default_mute_duration: e.target.value })}
                                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-amber-500/50 text-white"
                                 >
                                     <option value="10 minutes">10 minutes</option>
@@ -486,7 +532,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                 <label className="block text-sm font-bold text-gray-300 mb-2">Default Ban Duration</label>
                                 <select
                                     value={settings.default_ban_duration}
-                                    onChange={e => saveSettings({ default_ban_duration: e.target.value })}
+                                    onChange={e => updateSettings({ default_ban_duration: e.target.value })}
                                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-amber-500/50 text-white"
                                 >
                                     <option value="1 day">1 day</option>
@@ -506,6 +552,43 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                     </div>
                 </div>
             )}
+
+            {/* Unsaved Changes Bar */}
+            {hasChanges && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#0f0f15] border border-white/10 pl-6 pr-2 py-2 rounded-full shadow-2xl animate-fade-in-up flex items-center gap-6">
+                    <span className="text-gray-300 font-medium">Unsaved changes</span>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={resetSettings}
+                            className="px-4 py-2 text-gray-400 hover:text-white font-bold transition-colors hover:bg-white/5 rounded-full"
+                        >
+                            Reset
+                        </button>
+                        <button
+                            onClick={persistSettings}
+                            disabled={saving}
+                            className="px-6 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 hover:text-emerald-300 font-bold rounded-full transition-all flex items-center gap-2 group"
+                        >
+                            {saving ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Save Changes
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
+
+

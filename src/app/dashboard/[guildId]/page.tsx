@@ -7,6 +7,8 @@ import https from "https";
 import GuildSidebar from "@/components/GuildSidebar";
 import ActivityLog from "@/components/ActivityLog";
 import SettingsExportImport from "@/components/SettingsExportImport";
+import DashboardHeader from "@/components/DashboardHeader";
+import PremiumCard from "@/components/PremiumCard";
 
 interface Guild {
     id: string;
@@ -84,81 +86,92 @@ export default async function GuildDashboard({
             <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
                 <div className="max-w-5xl mx-auto">
                     {/* Header */}
-                    <div className="mb-8">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                            <div className="flex items-center gap-4">
-                                <div className="relative">
-                                    <img
-                                        src={iconUrl}
-                                        alt={guild.name}
-                                        className="w-16 h-16 rounded-2xl border-2 border-white/20 shadow-xl"
-                                    />
-                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-[#0a0a0f]" />
-                                </div>
-                                <div>
-                                    <h1 className="text-3xl md:text-4xl font-black text-white">
-                                        {guild.name}
-                                    </h1>
-                                    <p className="text-amber-400 font-bold">Server Overview</p>
-                                </div>
-                            </div>
-                            <SettingsExportImport guildId={guildId} />
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                        <div className="flex-1">
+                            <DashboardHeader
+                                title={guild.name}
+                                subtitle="Server Overview & Statistics"
+                                gradientFrom="amber-400"
+                                gradientTo="orange-500"
+                            />
                         </div>
+                        <SettingsExportImport guildId={guildId} />
                     </div>
 
                     {/* Quick Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                        <div className="glass-card rounded-2xl p-5">
-                            <div className="text-4xl mb-2">👥</div>
-                            <div className="text-2xl font-black text-white">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <PremiumCard
+                            title="Members"
+                            description="Total community size"
+                            icon={<span className="text-2xl">👥</span>}
+                            gradientFrom="blue-500"
+                            gradientTo="cyan-500"
+                        >
+                            <div className="text-3xl font-black text-white mt-2">
                                 {guild.approximate_member_count?.toLocaleString() || "—"}
                             </div>
-                            <div className="text-gray-400 text-sm font-bold">Members</div>
-                        </div>
-                        <div className="glass-card rounded-2xl p-5">
-                            <div className="text-4xl mb-2">✅</div>
-                            <div className="text-2xl font-black text-emerald-400">Online</div>
-                            <div className="text-gray-400 text-sm font-bold">Bot Status</div>
-                        </div>
-                        <div className="glass-card rounded-2xl p-5">
-                            <div className="text-4xl mb-2">🆔</div>
-                            <div className="text-lg font-black gradient-text truncate">{guildId}</div>
-                            <div className="text-gray-400 text-sm font-bold">Server ID</div>
-                        </div>
+                        </PremiumCard>
+
+                        <PremiumCard
+                            title="Bot Status"
+                            description="System heartbeat"
+                            icon={<span className="text-2xl">✅</span>}
+                            gradientFrom="emerald-500"
+                            gradientTo="teal-500"
+                            badge="Active"
+                        >
+                            <div className="text-3xl font-black text-emerald-400 mt-2">
+                                Online
+                            </div>
+                        </PremiumCard>
+
+                        <PremiumCard
+                            title="Server ID"
+                            description="Unique identifier"
+                            icon={<span className="text-2xl">🆔</span>}
+                            gradientFrom="purple-500"
+                            gradientTo="indigo-500"
+                        >
+                            <div className="text-lg font-black text-white/70 mt-4 break-all opacity-80">
+                                {guildId}
+                            </div>
+                        </PremiumCard>
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="glass-card rounded-3xl p-6 mb-8">
-                        <h2 className="text-xl font-black text-white mb-4 flex items-center gap-2">
-                            <span className="text-2xl">⚡</span> Quick Actions
-                        </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                            <a href={`/dashboard/${guildId}/welcome`} className="group p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-500/20 transition text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 transition">👋</div>
+                    <PremiumCard
+                        title="Quick Actions"
+                        description="Frequently used tools and settings"
+                        icon={<span className="text-2xl">⚡</span>}
+                        className="mb-8"
+                    >
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-4">
+                            <a href={`/dashboard/${guildId}/welcome`} className="group p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 hover:border-emerald-500/50 hover:bg-emerald-500/20 transition-all duration-300 text-center">
+                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">👋</div>
                                 <div className="font-bold text-gray-300 text-xs">Welcome</div>
                             </a>
-                            <a href={`/dashboard/${guildId}/roles`} className="group p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 hover:border-purple-500/60 hover:bg-purple-500/20 transition text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 transition">🎭</div>
+                            <a href={`/dashboard/${guildId}/roles`} className="group p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/20 transition-all duration-300 text-center">
+                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">🎭</div>
                                 <div className="font-bold text-gray-300 text-xs">Roles</div>
                             </a>
-                            <a href={`/dashboard/${guildId}/moderation`} className="group p-4 rounded-xl bg-red-500/10 border border-red-500/30 hover:border-red-500/60 hover:bg-red-500/20 transition text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 transition">🛡️</div>
+                            <a href={`/dashboard/${guildId}/moderation`} className="group p-4 rounded-xl bg-red-500/10 border border-red-500/20 hover:border-red-500/50 hover:bg-red-500/20 transition-all duration-300 text-center">
+                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">🛡️</div>
                                 <div className="font-bold text-gray-300 text-xs">Moderation</div>
                             </a>
-                            <a href={`/dashboard/${guildId}/logging`} className="group p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/20 transition text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 transition">📋</div>
+                            <a href={`/dashboard/${guildId}/logging`} className="group p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 hover:border-cyan-500/50 hover:bg-cyan-500/20 transition-all duration-300 text-center">
+                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">📋</div>
                                 <div className="font-bold text-gray-300 text-xs">Logging</div>
                             </a>
-                            <a href={`/dashboard/${guildId}/economy`} className="group p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:border-amber-500/60 hover:bg-amber-500/20 transition text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 transition">💰</div>
+                            <a href={`/dashboard/${guildId}/economy`} className="group p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 hover:border-amber-500/50 hover:bg-amber-500/20 transition-all duration-300 text-center">
+                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">💰</div>
                                 <div className="font-bold text-gray-300 text-xs">Economy</div>
                             </a>
-                            <a href={`/dashboard/${guildId}/fishing`} className="group p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/60 hover:bg-blue-500/20 transition text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 transition">🎣</div>
+                            <a href={`/dashboard/${guildId}/fishing`} className="group p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/20 transition-all duration-300 text-center">
+                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">🎣</div>
                                 <div className="font-bold text-gray-300 text-xs">Fishing</div>
                             </a>
                         </div>
-                    </div>
+                    </PremiumCard>
 
                     {/* Recent Activity - Now using real component */}
                     <ActivityLog guildId={guildId} />

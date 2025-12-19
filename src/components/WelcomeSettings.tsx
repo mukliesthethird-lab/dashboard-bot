@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import CreateMessageModal from "./CreateMessageModal";
 import ConfirmationModal from "./ConfirmationModal";
+import ToastContainer, { useToast } from "./Toast";
 import CatLoader from "./CatLoader";
 import { ReactionRoleMessage, EmbedData, Component, BotAction, Role, Channel } from "../types";
 
@@ -101,7 +102,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+    const { toast, success, error, hideToast } = useToast();
 
     // UI States
     const [activeMessageType, setActiveMessageType] = useState<MessageType>("join");
@@ -190,7 +191,6 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
     const handleSave = async () => {
         setShowConfirm(false);
         setSaving(true);
-        setMessage(null);
 
         try {
             const res = await fetch('/api/welcome', {
@@ -211,9 +211,13 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                 })
             });
             const data = await res.json();
-            setMessage(res.ok ? { type: "success", text: "Settings saved! ✅" } : { type: "error", text: data.error || "Failed" });
+            if (res.ok) {
+                success("Settings saved! ✅");
+            } else {
+                error(data.error || "Failed");
+            }
         } catch {
-            setMessage({ type: "error", text: "Network error" });
+            error("Network error");
         }
         setSaving(false);
     };
@@ -236,31 +240,16 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                     <button
                         onClick={() => setShowConfirm(true)}
                         disabled={saving}
-                        className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md transition disabled:opacity-50 flex items-center gap-2"
+                        className="px-6 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold rounded-xl border border-emerald-500/30 transition disabled:opacity-50 flex items-center gap-2"
                     >
-                        {saving ? (
-                            <>
-                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                Saving...
-                            </>
-                        ) : (
-                            <>
-                                <span>💾</span> Save Changes
-                            </>
-                        )}
+                        {saving ? "..." : "✓ Save Changes"}
                     </button>
                 </div>
             </div>
 
             {/* Notification Toast */}
-            {message && (
-                <div className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-3 ${message.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                    } animate-slide-up`}>
-                    <span className="text-xl">{message.type === 'success' ? '✅' : '❌'}</span>
-                    <span className="font-bold">{message.text}</span>
-                    <button onClick={() => setMessage(null)} className="ml-2 bg-white/20 hover:bg-white/30 rounded-full w-6 h-6 flex items-center justify-center text-sm transition">✕</button>
-                </div>
-            )}
+            {/* Notification Toast */}
+            <ToastContainer toast={toast} onClose={hideToast} />
 
             {/* Message Type List (Vertical Stack) */}
             <div className="flex flex-col gap-4">

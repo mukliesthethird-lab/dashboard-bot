@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import ToastContainer, { useToast } from "./Toast";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import EmojiPicker from "./EmojiPicker";
 import CustomDropdown from "./CustomDropdown";
@@ -12,7 +13,8 @@ import {
     EmbedData,
     Component,
     SelectOption,
-    BotAction
+    BotAction,
+    VariableItem
 } from "../types";
 
 // --- Placeholder Variables Data ---
@@ -52,14 +54,16 @@ const PLACEHOLDER_VARIABLES = [
 ];
 
 // Variables Section Component (Accordion Style)
-const VariablesSection = () => {
+const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableItem[] }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [copiedVar, setCopiedVar] = useState<string | null>(null);
 
-    const categories = [...new Set(PLACEHOLDER_VARIABLES.map(v => v.category))];
+    const allVariables = [...PLACEHOLDER_VARIABLES, ...extraVariables];
 
-    const filteredVariables = PLACEHOLDER_VARIABLES.filter(v => {
+    const categories = [...new Set(allVariables.map(v => v.category))];
+
+    const filteredVariables = allVariables.filter(v => {
         const matchesSearch = v.variable.toLowerCase().includes(searchQuery.toLowerCase()) ||
             v.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = !selectedCategory || v.category === selectedCategory;
@@ -73,6 +77,7 @@ const VariablesSection = () => {
         'Channel': 'bg-lime-50 text-lime-700 border-lime-200 hover:bg-lime-100',
         'Date': 'bg-stone-100 text-stone-700 border-stone-200 hover:bg-stone-200',
         'Counter': 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200',
+        'Notification': 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100',
     };
 
     const categoryIcons: Record<string, string> = {
@@ -82,6 +87,7 @@ const VariablesSection = () => {
         'Channel': '💬',
         'Date': '📅',
         'Counter': '🔢',
+        'Notification': '🔔',
     };
 
     const handleCopy = (variable: string) => {
@@ -132,7 +138,7 @@ const VariablesSection = () => {
                         : 'bg-white/5 text-gray-300 border-white/10 hover:border-amber-500/30'
                         }`}
                 >
-                    Semua ({PLACEHOLDER_VARIABLES.length})
+                    Semua ({allVariables.length})
                 </button>
                 {categories.map(cat => (
                     <button
@@ -143,9 +149,9 @@ const VariablesSection = () => {
                             : 'bg-white/5 text-gray-300 border-white/10 hover:border-amber-500/30'
                             }`}
                     >
-                        <span>{categoryIcons[cat]}</span>
+                        <span>{categoryIcons[cat] || '✨'}</span>
                         <span>{cat}</span>
-                        <span className="opacity-60">({PLACEHOLDER_VARIABLES.filter(v => v.category === cat).length})</span>
+                        <span className="opacity-60">({allVariables.filter(v => v.category === cat).length})</span>
                     </button>
                 ))}
             </div>
@@ -166,14 +172,14 @@ const VariablesSection = () => {
                             <div key={cat} className="bg-[#16161f] rounded-xl border border-white/10 overflow-hidden">
                                 {/* Category Header */}
                                 <div className="px-4 py-2.5 border-b border-white/10 bg-white/5 flex items-center gap-2">
-                                    <span>{categoryIcons[cat]}</span>
+                                    <span>{categoryIcons[cat] || '✨'}</span>
                                     <span className="font-bold text-sm text-white">{cat} Variables</span>
                                     <span className="text-xs text-gray-500 ml-auto">{catVars.length} items</span>
                                 </div>
 
                                 {/* Variables List */}
                                 <div className="divide-y divide-white/5">
-                                    {catVars.map((v, i) => (
+                                    {catVars.map((v: VariableItem, i: number) => (
                                         <button
                                             key={i}
                                             onClick={() => handleCopy(v.variable)}
@@ -652,27 +658,7 @@ const ActionManager = ({
 
 // --- Notification Toast Component ---
 
-const NotificationToast = ({
-    notification,
-    onClose
-}: {
-    notification: { type: 'success' | 'error', message: string } | null,
-    onClose: () => void
-}) => {
-    if (!notification) return null;
 
-    return (
-        <div className={`fixed top-10 left-1/2 transform -translate-x-1/2 z-[10000] px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 animate-bounce-in
-            ${notification.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}
-        `}>
-            <span className="font-bold text-xl">
-                {notification.type === 'success' ? '✓' : '⚠'}
-            </span>
-            <span className="font-bold text-base">{notification.message}</span>
-            <button onClick={onClose} className="ml-2 p-1 hover:bg-white/20 rounded-full transition">✕</button>
-        </div>
-    );
-};
 
 // --- Main Modal Component ---
 
@@ -684,6 +670,7 @@ interface CreateMessageModalProps {
     channels: Channel[];
     roles: Role[];
     guildId?: string;
+    extraVariables?: VariableItem[];
     onSave: (message: ReactionRoleMessage, channelId: string) => Promise<void>;
 }
 
@@ -696,6 +683,7 @@ export default function CreateMessageModal({
     roles,
     onSave,
     guildId,
+    extraVariables = [],
     saveLabel = "Send Message",
     disableChannelSelect = false
 }: CreateMessageModalProps & { saveLabel?: string; disableChannelSelect?: boolean }) {
@@ -737,7 +725,8 @@ export default function CreateMessageModal({
     const [compSettings, setCompSettings] = useState<Component | null>(null);
 
     // Notification State
-    const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+    // Notification State
+    const { toast, success, error, hideToast } = useToast();
 
     // Mobile view state
     const [mobileView, setMobileView] = useState<'editor' | 'preview'>('editor');
@@ -793,8 +782,7 @@ export default function CreateMessageModal({
             const prevState = JSON.parse(JSON.stringify(history[historyIndex - 1]));
             setHistoryIndex(historyIndex - 1);
             setEditingMsgInternal(prevState);
-            setNotification({ type: 'success', message: '↩️ Undo!' });
-            setTimeout(() => setNotification(null), 1000);
+            success('↩️ Undo!', 1000);
         }
     };
 
@@ -804,8 +792,7 @@ export default function CreateMessageModal({
             const nextState = JSON.parse(JSON.stringify(history[historyIndex + 1]));
             setHistoryIndex(historyIndex + 1);
             setEditingMsgInternal(nextState);
-            setNotification({ type: 'success', message: '↪️ Redo!' });
-            setTimeout(() => setNotification(null), 1000);
+            success('↪️ Redo!', 1000);
         }
     };
 
@@ -829,8 +816,7 @@ export default function CreateMessageModal({
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        setNotification({ type: 'success', message: '📥 JSON exported!' });
-        setTimeout(() => setNotification(null), 2000);
+        success('📥 JSON exported!', 2000);
     };
 
     // Import from JSON - supports both internal format and Discord API format
@@ -938,8 +924,7 @@ export default function CreateMessageModal({
             setShowImportModal(false);
             setImportJson('');
             setImportError(null);
-            setNotification({ type: 'success', message: '📤 JSON imported successfully! All components loaded.' });
-            setTimeout(() => setNotification(null), 3000);
+            success('📤 JSON imported successfully! All components loaded.', 3000);
         } catch (e: any) {
             setImportError(e.message || 'Invalid JSON format');
         }
@@ -987,23 +972,20 @@ export default function CreateMessageModal({
 
     const handleSendMessage = async () => {
         if (!targetChannel) {
-            setNotification({ type: 'error', message: 'Please select a channel!' });
-            setTimeout(() => setNotification(null), 3000);
+            error('Please select a channel!', 3000);
             return;
         }
 
         setSending(true);
         try {
             await onSave(editingMsg, targetChannel);
-            setNotification({ type: 'success', message: 'Message sent successfully!' });
+            success('Message sent successfully!');
             setTimeout(() => {
-                setNotification(null);
                 onClose(); // Optional: Close modal on success
             }, 2000);
         } catch (error: any) {
             console.error(error);
-            setNotification({ type: 'error', message: error.message || 'Failed to send message.' });
-            setTimeout(() => setNotification(null), 3000);
+            error(error.message || 'Failed to send message.', 3000);
         } finally {
             setSending(false);
         }
@@ -1281,7 +1263,7 @@ export default function CreateMessageModal({
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-fade-in">
-            <NotificationToast notification={notification} onClose={() => setNotification(null)} />
+            <ToastContainer toast={toast} onClose={() => { }} />
             <div className="bg-[#16161f] w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-3xl shadow-2xl flex flex-col overflow-hidden border-0 md:border border-white/10 animate-scale-in">
 
                 {/* Top Bar */}
@@ -1536,13 +1518,13 @@ export default function CreateMessageModal({
                                 <div className="flex items-center gap-2">
                                     <span>📝</span>
                                     <span>Variables Guide</span>
-                                    <span className="text-xs font-normal text-gray-500">({PLACEHOLDER_VARIABLES.length} variables)</span>
+                                    <span className="text-xs font-normal text-gray-500">({PLACEHOLDER_VARIABLES.length + extraVariables.length} variables)</span>
                                 </div>
                             }
                             isOpen={openSections.includes('variables')}
                             onToggle={() => toggleSection('variables')}
                         >
-                            <VariablesSection />
+                            <VariablesSection extraVariables={extraVariables} />
                         </AccordionItem>
 
                     </div>
@@ -1910,6 +1892,7 @@ export default function CreateMessageModal({
                         </div>
                     </div>
                 )}
+                <ToastContainer toast={toast} onClose={hideToast} />
             </div>
         </div >,
         document.body
