@@ -12,8 +12,11 @@ export default function PrivacyPage() {
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-10">
-                    <h1 className="text-4xl md:text-5xl font-black text-stone-800 mb-3">
-                        🔒 Privacy Policy
+                    <h1 className="text-4xl md:text-5xl font-black mb-3">
+                        <span className="mr-2">🔒</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
+                            Privacy Policy
+                        </span>
                     </h1>
                     <p className="text-stone-500">
                         Last updated: December 17, 2024
