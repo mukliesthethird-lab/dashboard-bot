@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import https from 'https';
-import path from 'path';
-import fs from 'fs';
+import { getDiscordToken } from '@/lib/discord-token';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
@@ -11,26 +10,7 @@ export const revalidate = 60; // Revalidate every 60 seconds
 let statsCache: { data: any; expires: number } | null = null;
 const CACHE_TTL = 60 * 1000; // 1 minute
 
-// Read token from file
-function getTokenFromFile(): string {
-    const rootEnvPath = path.resolve(process.cwd(), '../.env');
-    const localEnvPath = path.resolve(process.cwd(), '.env.local');
 
-    let token = '';
-
-    for (const envPath of [rootEnvPath, localEnvPath]) {
-        if (fs.existsSync(envPath)) {
-            const content = fs.readFileSync(envPath, 'utf-8');
-            const match = content.match(/DISCORD_TOKEN\s*=\s*(.+)/);
-            if (match) {
-                token = match[1].trim().replace(/^["']|["']$/g, '');
-                break;
-            }
-        }
-    }
-
-    return token;
-}
 
 // Fetch bot guilds count from Discord API
 async function fetchBotGuildsCount(token: string): Promise<number> {
@@ -82,7 +62,7 @@ export async function GET() {
         const activeUsers = userCountResult[0]?.count || 0;
 
         // Fetch servers count from Discord API
-        const token = getTokenFromFile();
+        const token = getDiscordToken();
         let serversCount = 0;
 
         if (token) {

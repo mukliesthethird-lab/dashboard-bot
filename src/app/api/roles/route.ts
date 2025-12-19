@@ -3,23 +3,11 @@ import pool from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import https from 'https';
-import fs from 'fs';
-import path from 'path';
+import { getDiscordToken } from '@/lib/discord-token';
 
 export const dynamic = 'force-dynamic';
 
-function getTokenFromFile(): string {
-    const rootEnvPath = path.resolve(process.cwd(), '../.env');
-    const localEnvPath = path.resolve(process.cwd(), '.env.local');
-    for (const envPath of [rootEnvPath, localEnvPath]) {
-        if (fs.existsSync(envPath)) {
-            const content = fs.readFileSync(envPath, 'utf-8');
-            const match = content.match(/DISCORD_TOKEN\s*=\s*(.+)/);
-            if (match) return match[1].trim().replace(/^["']|["']$/g, '');
-        }
-    }
-    return '';
-}
+
 
 function fetchDiscordAPI(apiPath: string, token: string, method = 'GET', body?: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -176,7 +164,7 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'guild_id is required' }, { status: 400 });
         }
 
-        const token = getTokenFromFile();
+        const token = getDiscordToken();
 
         if (action === 'channels') {
             if (!token) return NextResponse.json({ error: 'Bot token not configured' }, { status: 500 });
@@ -305,7 +293,7 @@ export async function POST(request: Request) {
 
         if (action === 'send_message') {
             const { guild_id, channel_id, message_content, embeds, reactions, component_rows } = body;
-            const token = getTokenFromFile();
+            const token = getDiscordToken();
 
             if (!token) {
                 return NextResponse.json({ error: 'Bot token not configured' }, { status: 500 });
@@ -368,7 +356,7 @@ export async function POST(request: Request) {
 
         if (action === 'update_message') {
             const { id, channel_id, message_id, message_content, embeds, reactions, component_rows } = body;
-            const token = getTokenFromFile();
+            const token = getDiscordToken();
 
             // Get message details from DB if not provided
             let msgChannelId = channel_id;
@@ -426,7 +414,7 @@ export async function POST(request: Request) {
 
         if (action === 'delete_message') {
             const { id } = body;
-            const token = getTokenFromFile();
+            const token = getDiscordToken();
 
             // Get message details
             const [rows]: any = await pool.query('SELECT channel_id, message_id FROM reaction_role_messages WHERE id = ?', [id]);

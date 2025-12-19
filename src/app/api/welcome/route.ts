@@ -3,23 +3,11 @@ import pool from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import https from 'https';
-import fs from 'fs';
-import path from 'path';
+import { getDiscordToken } from '@/lib/discord-token';
 
 export const dynamic = 'force-dynamic';
 
-function getTokenFromFile(): string {
-    const rootEnvPath = path.resolve(process.cwd(), '../.env');
-    const localEnvPath = path.resolve(process.cwd(), '.env.local');
-    for (const envPath of [rootEnvPath, localEnvPath]) {
-        if (fs.existsSync(envPath)) {
-            const content = fs.readFileSync(envPath, 'utf-8');
-            const match = content.match(/DISCORD_TOKEN\s*=\s*(.+)/);
-            if (match) return match[1].trim().replace(/^["']|["']$/g, '');
-        }
-    }
-    return '';
-}
+
 
 function fetchGuildChannels(guildId: string, token: string): Promise<any[]> {
     return new Promise((resolve) => {
@@ -95,7 +83,7 @@ export async function GET(request: Request) {
         }
 
         if (action === 'channels') {
-            const token = getTokenFromFile();
+            const token = getDiscordToken();
             if (!token) {
                 return NextResponse.json({ error: 'Bot token not configured' }, { status: 500 });
             }
@@ -104,7 +92,7 @@ export async function GET(request: Request) {
         }
 
         if (action === 'roles') {
-            const token = getTokenFromFile();
+            const token = getDiscordToken();
             if (!token) {
                 return NextResponse.json({ error: 'Bot token not configured' }, { status: 500 });
             }

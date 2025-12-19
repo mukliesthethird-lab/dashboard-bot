@@ -3,27 +3,13 @@ import pool from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import https from 'https';
-import fs from 'fs';
-import path from 'path';
+import { getDiscordToken } from '@/lib/discord-token';
 
 export const dynamic = 'force-dynamic';
 
 // Cache for Discord user data
 const userCache: Map<string, { data: any; expires: number }> = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
-function getTokenFromFile(): string {
-    const rootEnvPath = path.resolve(process.cwd(), '../.env');
-    const localEnvPath = path.resolve(process.cwd(), '.env.local');
-    for (const envPath of [rootEnvPath, localEnvPath]) {
-        if (fs.existsSync(envPath)) {
-            const content = fs.readFileSync(envPath, 'utf-8');
-            const match = content.match(/DISCORD_TOKEN\s*=\s*(.+)/);
-            if (match) return match[1].trim().replace(/^["']|["']$/g, '');
-        }
-    }
-    return '';
-}
 
 function fetchDiscordUser(userId: string, token: string): Promise<any> {
     const cached = userCache.get(userId);
@@ -64,7 +50,7 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const action = searchParams.get('action');
         const userId = searchParams.get('user_id');
-        const token = getTokenFromFile();
+        const token = getDiscordToken();
 
         if (action === 'stats') {
             const [countResult]: any = await pool.query('SELECT COUNT(*) as count FROM slot_users');

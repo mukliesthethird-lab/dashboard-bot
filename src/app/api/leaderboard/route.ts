@@ -10,25 +10,28 @@ export const dynamic = 'force-dynamic';
 const userCache: Map<string, { data: any; expires: number }> = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-// Read token directly from file
-function getTokenFromFile(): string {
+// Get token from environment (Vercel) or file (local dev)
+function getToken(): string {
+    // First try process.env (works on Vercel)
+    if (process.env.DISCORD_TOKEN) {
+        return process.env.DISCORD_TOKEN;
+    }
+
+    // Fallback to file reading (for local development)
     const rootEnvPath = path.resolve(process.cwd(), '../.env');
     const localEnvPath = path.resolve(process.cwd(), '.env.local');
-
-    let token = '';
 
     for (const envPath of [rootEnvPath, localEnvPath]) {
         if (fs.existsSync(envPath)) {
             const content = fs.readFileSync(envPath, 'utf-8');
             const match = content.match(/DISCORD_TOKEN\s*=\s*(.+)/);
             if (match) {
-                token = match[1].trim().replace(/^["']|["']$/g, '');
-                break;
+                return match[1].trim().replace(/^["']|["']$/g, '');
             }
         }
     }
 
-    return token;
+    return '';
 }
 
 // Fetch user with caching
@@ -81,7 +84,7 @@ export async function GET() {
             'SELECT CAST(user_id AS CHAR) as user_id, balance as total FROM slot_users ORDER BY balance DESC LIMIT 10'
         );
 
-        const token = getTokenFromFile();
+        const token = getToken();
         if (!token) {
             return NextResponse.json({ error: "Token not configured" }, { status: 500 });
         }
