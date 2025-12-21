@@ -175,12 +175,6 @@ export default function Home() {
         <div className="absolute top-1/2 right-1/3 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-[80px] animate-float-slow" style={{ animationDelay: '2s' }} />
 
         <div className="relative z-10 max-w-6xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-slide-down">
-            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            <span className="text-sm font-semibold text-gray-300">The #1 Discord Entertainment Bot</span>
-          </div>
-
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight animate-slide-up">
             <span className="text-white">Make Your Server</span>
@@ -191,7 +185,7 @@ export default function Home() {
           {/* Subheading */}
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed animate-slide-up animate-delay-200">
             The ultimate Discord bot with Economy, Fishing, Moderation, Welcome System,
-            and Reaction Roles. Join thousands of servers already using Don Pollo!
+            and Reaction Roles. Join now using Don Pollo!
           </p>
 
           {/* CTA Buttons */}
@@ -429,7 +423,7 @@ export default function Home() {
                 <span className="text-2xl font-black gradient-text">DON POLLO</span>
               </div>
               <p className="text-gray-400 max-w-sm">
-                The most entertaining Discord bot with Economy, Fishing, Moderation, and more. Make your server come alive!
+                Entertaining Discord bot with Economy, Fishing, Moderation, and more. Make your server come alive!
               </p>
             </div>
 
