@@ -72,10 +72,13 @@ class Notification(commands.Cog):
         try:
             cursor = conn.cursor(dictionary=True)
             
-            # PRIORITY 1: Check webhook events (realtime from PubSubHubbub)
+            # PRIORITY 1: Check YouTube webhook events (realtime from PubSubHubbub)
             await self.process_webhook_events(cursor, conn)
             
-            # PRIORITY 2: Get all enabled YouTube feeds for RSS fallback
+            # PRIORITY 2: Check Twitch webhook events (realtime from EventSub)
+            await self.process_twitch_events(cursor, conn)
+            
+            # PRIORITY 3: Get all enabled YouTube feeds for RSS fallback
             cursor.execute("SELECT * FROM notifications_feeds WHERE is_enabled = 1 AND type = 'youtube'")
             feeds = cursor.fetchall()
             
@@ -278,13 +281,17 @@ class Notification(commands.Cog):
             
             for event in events:
                 try:
+                    event_type = event.get('event_type', 'none')
+                    is_live = event_type in ('live', 'upcoming')
+                    
                     # Build content info
                     content_info = {
                         'title': event.get('video_title', 'New Video'),
                         'url': f"https://youtube.com/watch?v={event['video_id']}",
                         'channel_name': event.get('channel_name', 'YouTube Channel'),
                         'thumbnail': f"https://i.ytimg.com/vi/{event['video_id']}/maxresdefault.jpg",
-                        'video_id': event['video_id']
+                        'video_id': event['video_id'],
+                        'event_type': event_type  # 'upcoming', 'live', or 'none'
                     }
                     
                     # Build feed object for send_notification
@@ -297,7 +304,7 @@ class Notification(commands.Cog):
                         'feed_url': ''
                     }
                     
-                    await self.send_notification(feed, content_info)
+                    await self.send_notification(feed, content_info, is_live=is_live)
                     
                     # Mark as processed
                     cursor.execute(
@@ -306,13 +313,72 @@ class Notification(commands.Cog):
                     )
                     conn.commit()
                     
-                    logging.info(f"[Webhook] Sent notification for video: {event['video_id']}")
+                    logging.info(f"[Webhook] Sent notification for video: {event['video_id']} (type: {event_type})")
                     
                 except Exception as e:
                     logging.error(f"[Webhook] Error processing event {event.get('id')}: {e}")
                     
         except Exception as e:
             logging.error(f"[Webhook] Error fetching events: {e}")
+    
+    async def process_twitch_events(self, cursor, conn):
+        """Process events received via Twitch EventSub webhook (stored in twitch_live_events)"""
+        try:
+            # Get unprocessed events
+            cursor.execute("""
+                SELECT tle.*, nf.id as feed_id, nf.guild_id, nf.discord_channel_id, nf.custom_message_json
+                FROM twitch_live_events tle
+                JOIN notifications_feeds nf ON (
+                    nf.feed_url LIKE CONCAT('%', tle.broadcaster_login, '%')
+                    OR nf.feed_url LIKE CONCAT('%', tle.broadcaster_id, '%')
+                )
+                WHERE tle.is_processed = 0 
+                AND tle.event_type = 'stream.online'
+                AND nf.is_enabled = 1
+                AND nf.type = 'twitch'
+                ORDER BY tle.created_at ASC
+                LIMIT 10
+            """)
+            events = cursor.fetchall()
+            
+            for event in events:
+                try:
+                    # Build content info
+                    content_info = {
+                        'title': event.get('stream_title', 'Live Stream'),
+                        'url': f"https://twitch.tv/{event['broadcaster_login']}",
+                        'channel_name': event.get('broadcaster_name', event.get('broadcaster_login', 'Twitch Streamer')),
+                        'thumbnail': f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{event['broadcaster_login']}-1280x720.jpg",
+                        'game': event.get('game_name', 'Playing'),
+                        'broadcaster_id': event['broadcaster_id']
+                    }
+                    
+                    # Build feed object for send_notification
+                    feed = {
+                        'id': event['feed_id'],
+                        'guild_id': event['guild_id'],
+                        'discord_channel_id': event['discord_channel_id'],
+                        'custom_message_json': event['custom_message_json'],
+                        'type': 'twitch',
+                        'feed_url': ''
+                    }
+                    
+                    await self.send_notification(feed, content_info, is_live=True)
+                    
+                    # Mark as processed
+                    cursor.execute(
+                        "UPDATE twitch_live_events SET is_processed = 1, processed_at = NOW() WHERE id = %s",
+                        (event['id'],)
+                    )
+                    conn.commit()
+                    
+                    logging.info(f"[Twitch] Sent notification for streamer: {event['broadcaster_login']}")
+                    
+                except Exception as e:
+                    logging.error(f"[Twitch] Error processing event {event.get('id')}: {e}")
+                    
+        except Exception as e:
+            logging.error(f"[Twitch] Error fetching events: {e}")
 
     async def process_feed(self, feed, cursor, conn):
         """RSS Fallback: Check YouTube RSS feed for new videos"""
@@ -461,23 +527,49 @@ class Notification(commands.Cog):
     async def send_default_embed(self, channel, feed, content, is_live=False):
         """Sends a beautiful default embed if no custom one is set"""
         feed_type = feed['type']
+        event_type = content.get('event_type', 'none')
         
-        # Check if this is a live stream notification
-        if is_live or feed_type == 'live':
+        # Twitch live stream
+        if feed_type == 'twitch':
+            embed = discord.Embed(
+                title=f"🟣 {content.get('channel_name', 'Streamer')} is LIVE on Twitch!",
+                description=f"🎮 **{content.get('game', 'Playing')}**\n\n**[{content.get('title', 'Stream Title')}]({content.get('url', '')})**\n\nJangan sampai ketinggalan! 🔥",
+                color=0x9146FF,  # Twitch purple
+                timestamp=datetime.utcnow()
+            )
+            if content.get('thumbnail'):
+                embed.set_image(url=content['thumbnail'])
+            message_text = f"🟣 Hey @everyone, **{content.get('channel_name', 'Seseorang')}** is LIVE on Twitch!"
+        
+        # YouTube scheduled live stream (upcoming)
+        elif event_type == 'upcoming':
+            embed = discord.Embed(
+                title=f"📅 {content.get('channel_name', 'Channel')} akan LIVE!",
+                description=f"**{content.get('channel_name', 'Streamer')}** baru saja menjadwalkan live stream!\n\n**[{content.get('title', 'Stream Title')}]({content.get('url', '')})**\n\nSet reminder kalian! ⏰",
+                color=0xFFD700,  # Gold for scheduled
+                timestamp=datetime.utcnow()
+            )
+            if content.get('thumbnail'):
+                embed.set_image(url=content['thumbnail'])
+            message_text = f"📅 Hey @everyone, **{content.get('channel_name', 'Seseorang')}** akan LIVE segera!"
+        
+        # YouTube currently live
+        elif event_type == 'live' or is_live:
             embed = discord.Embed(
                 title=f"🔴 {content.get('channel_name', 'Streamer')} is LIVE!",
-                description=f"Don't miss out! **{content.get('channel_name', 'Streamer')}** sedang live streaming sekarang!\n\n**[{content.get('title', 'Stream Title')}]({content.get('url', feed.get('feed_url', ''))})**\n\nGas masuk sekarang! ✨",
-                color=0xFF0000,
+                description=f"**{content.get('channel_name', 'Streamer')}** sedang live streaming sekarang!\n\n**[{content.get('title', 'Stream Title')}]({content.get('url', '')})**\n\nGas masuk sekarang! ✨",
+                color=0xFF0000,  # Red for live
                 timestamp=datetime.utcnow()
             )
             if content.get('thumbnail'):
                 embed.set_image(url=content['thumbnail'])
             message_text = f"🔴 Hey @everyone, **{content.get('channel_name', 'Seseorang')}** is LIVE!"
+        
+        # Regular YouTube video upload
         else:
-            # Regular video upload
             embed = discord.Embed(
                 title=f"📹 New YouTube Video!",
-                description=f"**{content.get('channel_name', 'Artist')}** baru saja mengunggah video baru!\n\n**[{content.get('title', 'Video Title')}]({content.get('url', feed.get('feed_url', ''))})**\n\nYuk buruan tonton! 🔥",
+                description=f"**{content.get('channel_name', 'Artist')}** baru saja mengunggah video baru!\n\n**[{content.get('title', 'Video Title')}]({content.get('url', '')})**\n\nYuk buruan tonton! 🔥",
                 color=0xFF0000,
                 timestamp=datetime.utcnow()
             )

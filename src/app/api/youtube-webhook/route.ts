@@ -3,6 +3,48 @@ import pool from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || '';
+
+/**
+ * Check if a video is a live broadcast using YouTube Data API
+ * Returns: 'upcoming' | 'live' | 'none'
+ */
+async function checkLiveBroadcastStatus(videoId: string): Promise<'upcoming' | 'live' | 'none'> {
+    if (!YOUTUBE_API_KEY) {
+        console.warn('[YouTube Webhook] No API key, cannot check broadcast status');
+        return 'none';
+    }
+
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${videoId}&key=${YOUTUBE_API_KEY}`;
+        const response = await fetch(url, {
+            signal: AbortSignal.timeout(10000)
+        });
+
+        if (!response.ok) {
+            console.error('[YouTube Webhook] API error:', response.status);
+            return 'none';
+        }
+
+        const data = await response.json();
+        const items = data.items || [];
+
+        if (items.length === 0) {
+            return 'none';
+        }
+
+        const snippet = items[0].snippet || {};
+        const liveBroadcastContent = snippet.liveBroadcastContent; // 'upcoming', 'live', or 'none'
+
+        console.log(`[YouTube Webhook] Video ${videoId} broadcast status: ${liveBroadcastContent}`);
+        return liveBroadcastContent || 'none';
+
+    } catch (error) {
+        console.error('[YouTube Webhook] Error checking broadcast status:', error);
+        return 'none';
+    }
+}
+
 /**
  * YouTube PubSubHubbub Webhook Endpoint
  * 
@@ -103,6 +145,10 @@ export async function POST(request: NextRequest) {
                 return NextResponse.json({ status: 'ignored', reason: 'deleted' });
             }
 
+            // Check live broadcast status via YouTube API
+            const eventType = await checkLiveBroadcastStatus(videoData.videoId);
+            console.log(`[YouTube Webhook] Determined event type: ${eventType}`);
+
             // Store the event in database for bot to process
             await pool.query(`
                 INSERT INTO youtube_live_events 
@@ -111,6 +157,7 @@ export async function POST(request: NextRequest) {
                 ON DUPLICATE KEY UPDATE
                     video_title = VALUES(video_title),
                     channel_name = VALUES(channel_name),
+                    event_type = VALUES(event_type),
                     raw_xml = VALUES(raw_xml)
             `, [
                 videoData.channelId,
@@ -118,12 +165,16 @@ export async function POST(request: NextRequest) {
                 videoData.title,
                 videoData.authorName,
                 videoData.published ? new Date(videoData.published) : new Date(),
-                'video', // Bot will determine if it's actually live
+                eventType, // Now using actual broadcast status: 'upcoming', 'live', or 'none' (video)
                 rawBody.substring(0, 10000) // Limit raw XML size
             ]);
 
-            console.log('[YouTube Webhook] Event stored successfully');
-            return NextResponse.json({ status: 'received', videoId: videoData.videoId });
+            console.log('[YouTube Webhook] Event stored successfully with type:', eventType);
+            return NextResponse.json({
+                status: 'received',
+                videoId: videoData.videoId,
+                eventType: eventType
+            });
         }
 
         console.warn('[YouTube Webhook] Could not parse video data from feed');
