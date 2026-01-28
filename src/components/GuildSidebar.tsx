@@ -19,6 +19,7 @@ const menuItems = [
     { name: "Logging", icon: "📝", href: "/logging" },
     { name: "Roles", icon: "🎭", href: "/roles" },
     { name: "Notification", icon: "🔔", href: "/notifications" },
+    { name: "Forms", icon: "📋", href: "/forms" },
 ];
 
 export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarProps) {
