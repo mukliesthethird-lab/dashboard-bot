@@ -5,6 +5,8 @@ import { Form, Channel, Role } from "@/types";
 import ToastContainer, { useToast } from "./Toast";
 import ConfirmationModal from "./ConfirmationModal";
 import FormEditor from "./FormEditor";
+import FormSubmissions from "./FormSubmissions";
+import FormPanelEditor from "./FormPanelEditor";
 import { SkeletonCard } from "./SkeletonLoader";
 import EmptyState from "./EmptyState";
 
@@ -21,6 +23,8 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
     const [editingForm, setEditingForm] = useState<Form | null>(null);
     const [showEditor, setShowEditor] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState<Form | null>(null);
+    const [viewingSubmissions, setViewingSubmissions] = useState<Form | null>(null);
+    const [sendingPanel, setSendingPanel] = useState<Form | null>(null);
 
     const { toast, hideToast, success, error } = useToast();
 
@@ -269,11 +273,26 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
                                 <button
                                     onClick={() => handleEditForm(form)}
                                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition-all"
+                                    title="Edit Form"
                                 >
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                     Edit
+                                </button>
+                                <button
+                                    onClick={() => setViewingSubmissions(form)}
+                                    className="px-3 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-xl transition-all font-semibold"
+                                    title="View Submissions"
+                                >
+                                    📋
+                                </button>
+                                <button
+                                    onClick={() => setSendingPanel(form)}
+                                    className="px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-xl transition-all font-semibold"
+                                    title="Send Panel to Channel"
+                                >
+                                    📤
                                 </button>
                                 <button
                                     onClick={() => handleToggleEnabled(form)}
@@ -311,6 +330,37 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
                         setEditingForm(null);
                     }}
                     saving={saving}
+                />
+            )}
+
+            {/* Submissions Viewer */}
+            {viewingSubmissions && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 overflow-y-auto">
+                    <div className="min-h-screen p-4 md:p-8">
+                        <FormSubmissions
+                            guildId={guildId}
+                            formId={viewingSubmissions.id!}
+                            formName={viewingSubmissions.name}
+                            submissionType={viewingSubmissions.submission_type}
+                            onBack={() => setViewingSubmissions(null)}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Panel Editor Modal */}
+            {sendingPanel && (
+                <FormPanelEditor
+                    form={sendingPanel}
+                    channels={channels}
+                    guildId={guildId}
+                    onClose={() => setSendingPanel(null)}
+                    onSave={() => {
+                        // Refresh forms list after sending panel
+                        fetch(`/api/forms?guild_id=${guildId}`)
+                            .then(res => res.json())
+                            .then(data => setForms(data));
+                    }}
                 />
             )}
 

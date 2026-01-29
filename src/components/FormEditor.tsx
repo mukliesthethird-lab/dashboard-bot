@@ -204,8 +204,8 @@ export default function FormEditor({
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`flex-1 px-4 py-3 font-semibold transition-all ${activeTab === tab.id
-                                    ? "bg-amber-500/10 text-amber-400 border-b-2 border-amber-500"
-                                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                                ? "bg-amber-500/10 text-amber-400 border-b-2 border-amber-500"
+                                : "text-gray-400 hover:text-white hover:bg-white/5"
                                 }`}
                         >
                             <span className="mr-2">{tab.icon}</span>
@@ -256,8 +256,8 @@ export default function FormEditor({
                                     <div
                                         key={page.id}
                                         className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${activePageIndex === idx
-                                                ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                                                : "bg-[#12121a] text-gray-400 border border-white/10 hover:border-white/20"
+                                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                                            : "bg-[#12121a] text-gray-400 border border-white/10 hover:border-white/20"
                                             }`}
                                         onClick={() => setActivePageIndex(idx)}
                                     >
@@ -309,8 +309,8 @@ export default function FormEditor({
                                             <div
                                                 key={comp.id}
                                                 className={`border rounded-xl overflow-hidden transition-all ${expandedComponent === comp.id
-                                                        ? "border-amber-500/30 bg-[#12121a]"
-                                                        : "border-white/10 bg-[#12121a]/50"
+                                                    ? "border-amber-500/30 bg-[#12121a]"
+                                                    : "border-white/10 bg-[#12121a]/50"
                                                     }`}
                                             >
                                                 {/* Component Header */}
@@ -550,8 +550,8 @@ export default function FormEditor({
                                         <label
                                             key={type.id}
                                             className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all ${form.submission_type === type.id
-                                                    ? "bg-amber-500/20 border-2 border-amber-500"
-                                                    : "bg-[#12121a] border-2 border-white/10 hover:border-white/20"
+                                                ? "bg-amber-500/20 border-2 border-amber-500"
+                                                : "bg-[#12121a] border-2 border-white/10 hover:border-white/20"
                                                 }`}
                                         >
                                             <input
@@ -651,6 +651,195 @@ export default function FormEditor({
                                         className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-amber-500 transition-all"
                                     />
                                 </div>
+                            </div>
+
+                            {/* Advanced Settings - Role Requirements */}
+                            <div className="pt-4 border-t border-white/10">
+                                <h3 className="text-sm font-bold text-amber-400 mb-4 flex items-center gap-2">
+                                    🔐 Access Requirements
+                                </h3>
+
+                                {/* Required Roles */}
+                                <div className="mb-4">
+                                    <label className="block text-sm font-bold text-gray-300 mb-2">Required Roles</label>
+                                    <p className="text-xs text-gray-500 mb-2">Users must have at least one of these roles to open the form</p>
+                                    <div className="flex flex-wrap gap-2 p-3 bg-[#12121a] border border-white/10 rounded-xl min-h-[48px]">
+                                        {(form.required_roles || []).map((roleId) => {
+                                            const role = roles.find(r => r.id === roleId);
+                                            return (
+                                                <span
+                                                    key={roleId}
+                                                    className="flex items-center gap-1 px-2 py-1 bg-white/10 rounded-lg text-sm"
+                                                    style={{ color: role ? `#${role.color.toString(16).padStart(6, "0")}` : "white" }}
+                                                >
+                                                    @{role?.name || roleId}
+                                                    <button
+                                                        onClick={() => updateForm({ required_roles: (form.required_roles || []).filter(r => r !== roleId) })}
+                                                        className="ml-1 text-gray-400 hover:text-red-400"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </span>
+                                            );
+                                        })}
+                                        <select
+                                            value=""
+                                            onChange={(e) => {
+                                                if (e.target.value && !(form.required_roles || []).includes(e.target.value)) {
+                                                    updateForm({ required_roles: [...(form.required_roles || []), e.target.value] });
+                                                }
+                                            }}
+                                            className="px-2 py-1 bg-transparent border border-dashed border-white/20 rounded-lg text-gray-400 text-sm hover:border-amber-500/50 cursor-pointer"
+                                        >
+                                            <option value="">+ Add role</option>
+                                            {roles.filter(r => !(form.required_roles || []).includes(r.id)).map(r => (
+                                                <option key={r.id} value={r.id}>{r.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* Blacklist Roles */}
+                                <div className="mb-4">
+                                    <label className="block text-sm font-bold text-gray-300 mb-2">Blacklisted Roles</label>
+                                    <p className="text-xs text-gray-500 mb-2">Users with any of these roles cannot open the form</p>
+                                    <div className="flex flex-wrap gap-2 p-3 bg-[#12121a] border border-white/10 rounded-xl min-h-[48px]">
+                                        {(form.blacklist_roles || []).map((roleId) => {
+                                            const role = roles.find(r => r.id === roleId);
+                                            return (
+                                                <span
+                                                    key={roleId}
+                                                    className="flex items-center gap-1 px-2 py-1 bg-red-500/20 rounded-lg text-sm text-red-400"
+                                                >
+                                                    @{role?.name || roleId}
+                                                    <button
+                                                        onClick={() => updateForm({ blacklist_roles: (form.blacklist_roles || []).filter(r => r !== roleId) })}
+                                                        className="ml-1 text-gray-400 hover:text-red-400"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </span>
+                                            );
+                                        })}
+                                        <select
+                                            value=""
+                                            onChange={(e) => {
+                                                if (e.target.value && !(form.blacklist_roles || []).includes(e.target.value)) {
+                                                    updateForm({ blacklist_roles: [...(form.blacklist_roles || []), e.target.value] });
+                                                }
+                                            }}
+                                            className="px-2 py-1 bg-transparent border border-dashed border-white/20 rounded-lg text-gray-400 text-sm hover:border-red-500/50 cursor-pointer"
+                                        >
+                                            <option value="">+ Add role</option>
+                                            {roles.filter(r => !(form.blacklist_roles || []).includes(r.id)).map(r => (
+                                                <option key={r.id} value={r.id}>{r.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* Account Age */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-300 mb-2">Minimum Account Age (days)</label>
+                                    <input
+                                        type="number"
+                                        value={form.min_account_age_days || 0}
+                                        onChange={(e) => updateForm({ min_account_age_days: parseInt(e.target.value) || 0 })}
+                                        min={0}
+                                        placeholder="0 = no requirement"
+                                        className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-amber-500 transition-all"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">Set to 0 to disable this requirement</p>
+                                </div>
+                            </div>
+
+                            {/* Messages & DM Templates */}
+                            <div className="pt-4 border-t border-white/10">
+                                <h3 className="text-sm font-bold text-amber-400 mb-4 flex items-center gap-2">
+                                    💬 Messages & DM Templates
+                                </h3>
+
+                                {/* Success Message */}
+                                <div className="mb-4">
+                                    <label className="block text-sm font-bold text-gray-300 mb-2">Success Message</label>
+                                    <textarea
+                                        value={form.success_message || ""}
+                                        onChange={(e) => updateForm({ success_message: e.target.value })}
+                                        placeholder="Thank you for your submission!"
+                                        rows={2}
+                                        className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-amber-500 transition-all resize-none"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">Message shown after successful submission</p>
+                                </div>
+
+                                {form.submission_type === "application" && (
+                                    <>
+                                        {/* Approve DM Template */}
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-bold text-gray-300 mb-2">Approval DM Template</label>
+                                            <textarea
+                                                value={form.approve_dm_template || ""}
+                                                onChange={(e) => updateForm({ approve_dm_template: e.target.value })}
+                                                placeholder="Congratulations! Your application has been approved."
+                                                rows={3}
+                                                className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-green-500 transition-all resize-none"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">DM sent when application is approved. Use {"{user}"} for username</p>
+                                        </div>
+
+                                        {/* Deny DM Template */}
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-bold text-gray-300 mb-2">Denial DM Template</label>
+                                            <textarea
+                                                value={form.deny_dm_template || ""}
+                                                onChange={(e) => updateForm({ deny_dm_template: e.target.value })}
+                                                placeholder="Unfortunately, your application has been denied."
+                                                rows={3}
+                                                className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-red-500 transition-all resize-none"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">DM sent when application is denied. Use {"{user}"}, {"{reason}"}</p>
+                                        </div>
+
+                                        {/* Roles on Approve */}
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-300 mb-2">Add Roles on Approve</label>
+                                            <div className="flex flex-wrap gap-2 p-3 bg-[#12121a] border border-white/10 rounded-xl min-h-[48px]">
+                                                {(form.add_roles_on_approve || []).map((roleId) => {
+                                                    const role = roles.find(r => r.id === roleId);
+                                                    return (
+                                                        <span
+                                                            key={roleId}
+                                                            className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-lg text-sm text-green-400"
+                                                        >
+                                                            @{role?.name || roleId}
+                                                            <button
+                                                                onClick={() => updateForm({ add_roles_on_approve: (form.add_roles_on_approve || []).filter(r => r !== roleId) })}
+                                                                className="ml-1 text-gray-400 hover:text-red-400"
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        </span>
+                                                    );
+                                                })}
+                                                <select
+                                                    value=""
+                                                    onChange={(e) => {
+                                                        if (e.target.value && !(form.add_roles_on_approve || []).includes(e.target.value)) {
+                                                            updateForm({ add_roles_on_approve: [...(form.add_roles_on_approve || []), e.target.value] });
+                                                        }
+                                                    }}
+                                                    className="px-2 py-1 bg-transparent border border-dashed border-white/20 rounded-lg text-gray-400 text-sm hover:border-green-500/50 cursor-pointer"
+                                                >
+                                                    <option value="">+ Add role</option>
+                                                    {roles.filter(r => !(form.add_roles_on_approve || []).includes(r.id)).map(r => (
+                                                        <option key={r.id} value={r.id}>{r.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mt-1">Roles added when application is approved</p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     )}

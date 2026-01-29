@@ -135,6 +135,14 @@ export interface Form {
     remove_roles_on_submit: string[];
     cooldown_seconds: number;
     max_submissions_per_user: number;
+    // Advanced settings
+    required_roles?: string[];  // Roles required to open form
+    blacklist_roles?: string[]; // Roles that cannot open form
+    min_account_age_days?: number; // Minimum account age in days
+    success_message?: string;  // Custom success message after submission
+    approve_dm_template?: string; // DM template for approval
+    deny_dm_template?: string;    // DM template for denial
+    add_roles_on_approve?: string[]; // Roles to add when approved
     pages: FormPage[];
     created_at?: string;
     updated_at?: string;
