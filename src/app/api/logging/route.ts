@@ -96,6 +96,11 @@ export async function GET(request: Request) {
         const settings = rows[0];
         return NextResponse.json({
             ...settings,
+            use_webhooks: !!settings.use_webhooks,
+            ignore_embeds: !!settings.ignore_embeds,
+            ignore_voice_users: !!settings.ignore_voice_users,
+            log_deleted_polls: !!settings.log_deleted_polls,
+            log_sticky_messages: !!settings.log_sticky_messages,
             ignored_channels: JSON.parse(settings.ignored_channels || '[]'),
             ignored_roles: JSON.parse(settings.ignored_roles || '[]'),
             ignored_users: JSON.parse(settings.ignored_users || '[]'),
