@@ -1,0 +1,6 @@
+Refactor: Standardize dashboard settings UI and loading states
+
+- Implemented unified floating save bar across FormsSettings, LoggingSettings, RolesSettings, ComponentsSettings, and WelcomeSettings
+- Updated ComponentsSettings theme to dark glass-card to match the rest of the dashboard
+- Centralized loading UI with CatLoader across Moderation, Forms, and Component subpages
+- Removed unused SkeletonLoader to improve UX
