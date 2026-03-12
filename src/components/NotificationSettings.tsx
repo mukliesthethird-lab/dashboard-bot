@@ -7,6 +7,7 @@ import CustomDropdown from "./CustomDropdown";
 import DashboardHeader from "./DashboardHeader";
 import PremiumCard from "./PremiumCard";
 import ToastContainer, { useToast } from "./Toast";
+import CatLoader from "./CatLoader";
 
 interface Feed {
     id: number;
@@ -287,6 +288,10 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
         { category: 'Notification', variable: '{content.thumbnail}', description: 'Thumbnail video/stream', preview: '🖼️ Image' },
         { category: 'Server', variable: '{server}', description: 'Nama server Discord', preview: 'My Server' },
     ];
+
+    if (loading) {
+        return <CatLoader message="Loading notification settings..." />;
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

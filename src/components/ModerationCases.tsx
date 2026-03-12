@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import EmptyState from "./EmptyState";
+import CatLoader from "./CatLoader";
 
 interface ModerationCasesProps {
     guildId: string;
@@ -339,9 +340,7 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
             <div className="bg-[#16161f] rounded-3xl border border-white/10 overflow-hidden">
                 <div className="overflow-x-auto">
                     {loading ? (
-                        <div className="flex items-center justify-center py-16">
-                            <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-                        </div>
+                        <CatLoader message="Loading cases..." />
                     ) : cases.length === 0 ? (
                         <EmptyState
                             variant="moderation"

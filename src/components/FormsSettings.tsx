@@ -7,7 +7,7 @@ import ConfirmationModal from "./ConfirmationModal";
 import FormEditor from "./FormEditor";
 import FormSubmissions from "./FormSubmissions";
 import FormPanelEditor from "./FormPanelEditor";
-import { SkeletonCard } from "./SkeletonLoader";
+import CatLoader from "./CatLoader";
 import EmptyState from "./EmptyState";
 
 interface FormsSettingsProps {
@@ -183,13 +183,7 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
     };
 
     if (loading) {
-        return (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <SkeletonCard />
-                <SkeletonCard />
-                <SkeletonCard />
-            </div>
-        );
+        return <CatLoader message="Loading forms..." />;
     }
 
     return (

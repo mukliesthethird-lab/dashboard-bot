@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import CatLoader from "./CatLoader";
 
 interface ModerationReportsProps {
     guildId: string;
@@ -200,9 +201,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
             <div className="bg-[#16161f] rounded-3xl border border-white/10 overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                     {loading ? (
-                        <div className="flex items-center justify-center py-20">
-                            <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-                        </div>
+                        <CatLoader message="Loading reports..." />
                     ) : reports.length === 0 ? (
                         <div className="text-center py-20">
                             <div className="text-6xl mb-4 grayscale opacity-50">🏳️</div>

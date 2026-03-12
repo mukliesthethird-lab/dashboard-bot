@@ -35,6 +35,7 @@ const Toggle = ({ enabled, onChange }: { enabled: boolean, onChange: (val: boole
 export default function RolesSettings({ guildId }: RolesSettingsProps) {
     // Global Settings State
     const [globalSettings, setGlobalSettings] = useState<GlobalRolesSettings>({ join_roles_enabled: false, join_roles: [], reaction_roles_enabled: false });
+    const [originalGlobalSettings, setOriginalGlobalSettings] = useState<GlobalRolesSettings | null>(null);
     const [savingGlobal, setSavingGlobal] = useState(false);
 
     // Data State
@@ -73,11 +74,13 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                 if (Array.isArray(rolesData)) setRoles(rolesData);
 
                 if (settingsData && !settingsData.error) {
-                    setGlobalSettings({
+                    const loaded = {
                         join_roles_enabled: !!settingsData.join_roles_enabled,
                         join_roles: Array.isArray(settingsData.join_roles) ? settingsData.join_roles : [],
                         reaction_roles_enabled: !!settingsData.reaction_roles_enabled || !!messagesData.length,
-                    });
+                    };
+                    setGlobalSettings(loaded);
+                    setOriginalGlobalSettings(loaded);
                 }
             } catch (error) {
                 console.error("Failed to load data", error);
@@ -88,20 +91,31 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
     }, [guildId]);
 
     // Functions
-    const saveGlobalSettings = async (updates: Partial<GlobalRolesSettings>) => {
-        const newSettings = { ...globalSettings, ...updates };
-        setGlobalSettings(newSettings);
+    const updateGlobalSettings = (updates: Partial<GlobalRolesSettings>) => {
+        setGlobalSettings(prev => ({ ...prev, ...updates }));
+    };
+
+    const handleSaveGlobal = async () => {
         setSavingGlobal(true);
         try {
-            await fetch('/api/roles', {
+            const res = await fetch('/api/roles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'save_settings', guild_id: guildId, ...newSettings })
+                body: JSON.stringify({ action: 'save_settings', guild_id: guildId, ...globalSettings })
             });
+            if (res.ok) {
+                setOriginalGlobalSettings(globalSettings);
+            }
         } catch (e) {
             console.error(e);
         }
         setSavingGlobal(false);
+    };
+
+    const resetGlobalSettings = () => {
+        if (originalGlobalSettings) {
+            setGlobalSettings(originalGlobalSettings);
+        }
     };
 
     const handleDeleteClick = (msg: ReactionRoleMessage) => {
@@ -183,7 +197,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                     <div className="flex justify-end absolute top-6 right-6">
                         <Toggle
                             enabled={globalSettings.join_roles_enabled}
-                            onChange={(val) => saveGlobalSettings({ join_roles_enabled: val })}
+                            onChange={(val) => updateGlobalSettings({ join_roles_enabled: val })}
                         />
                     </div>
                     {globalSettings.join_roles_enabled && (
@@ -199,7 +213,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                                         <div key={roleId} className="px-3 py-1 bg-white/5 rounded-lg text-sm font-bold flex items-center gap-2 border border-white/10 text-gray-300">
                                             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#' + role.color.toString(16).padStart(6, '0') }}></span>
                                             {role.name}
-                                            <button onClick={() => saveGlobalSettings({ join_roles: globalSettings.join_roles.filter(id => id !== roleId) })} className="ml-1 hover:text-red-500 transition-colors">×</button>
+                                            <button onClick={() => updateGlobalSettings({ join_roles: globalSettings.join_roles.filter(id => id !== roleId) })} className="ml-1 hover:text-red-500 transition-colors">×</button>
                                         </div>
                                     );
                                 })}
@@ -207,7 +221,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                             <select
                                 onChange={(e) => {
                                     if (e.target.value && !globalSettings.join_roles.includes(e.target.value)) {
-                                        saveGlobalSettings({ join_roles: [...globalSettings.join_roles, e.target.value] });
+                                        updateGlobalSettings({ join_roles: [...globalSettings.join_roles, e.target.value] });
                                     }
                                     e.target.value = '';
                                 }}
@@ -233,7 +247,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                     <div className="flex justify-end absolute top-6 right-6">
                         <Toggle
                             enabled={globalSettings.reaction_roles_enabled}
-                            onChange={(val) => saveGlobalSettings({ reaction_roles_enabled: val })}
+                            onChange={(val) => updateGlobalSettings({ reaction_roles_enabled: val })}
                         />
                     </div>
                     {globalSettings.reaction_roles_enabled && (
@@ -280,10 +294,44 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                 onClose={() => setConfirmDeleteId(null)}
                 onConfirm={confirmDeleteMessage}
                 title="Delete Message"
-                message="Are you sure you want to delete this message? This action requires saving to remove it from the database."
+                message="Are you sure you want to delete this message?"
                 confirmText="Delete"
                 isDestructive={true}
             />
+
+            {/* Unsaved Changes Bar */}
+            {JSON.stringify(globalSettings) !== JSON.stringify(originalGlobalSettings) && originalGlobalSettings && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-[#0f0f15] border border-white/10 pl-6 pr-2 py-2 rounded-full shadow-2xl animate-fade-in-up flex items-center gap-6">
+                    <span className="text-gray-300 font-medium tracking-wide">Unsaved roles changes</span>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={resetGlobalSettings}
+                            className="px-4 py-2 text-gray-400 hover:text-white font-bold transition-colors hover:bg-white/5 rounded-full"
+                        >
+                            Reset
+                        </button>
+                        <button
+                            onClick={handleSaveGlobal}
+                            disabled={savingGlobal}
+                            className="px-6 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 hover:text-emerald-300 font-bold rounded-full transition-all flex items-center gap-2 group"
+                        >
+                            {savingGlobal ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Save Changes
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

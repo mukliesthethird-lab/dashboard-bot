@@ -97,6 +97,7 @@ const defaultSettings: WelcomeSettings = {
 
 export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
     const [settings, setSettings] = useState<WelcomeSettings>({ ...defaultSettings, guild_id: guildId });
+    const [originalSettings, setOriginalSettings] = useState<WelcomeSettings | null>(null);
     const [channels, setChannels] = useState<Channel[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
 
@@ -139,13 +140,15 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                             } : undefined)
                         });
 
-                        setSettings({
+                        const loadedSettings = {
                             guild_id: guildId,
                             join: loadConfig("join"),
                             leave: loadConfig("leave"),
                             boost: loadConfig("boost"),
                             role: loadConfig("role"),
-                        });
+                        };
+                        setSettings(loadedSettings);
+                        setOriginalSettings(loadedSettings);
                     } catch { /* Keep defaults */ }
                 }
                 setLoading(false);
@@ -212,6 +215,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
             });
             const data = await res.json();
             if (res.ok) {
+                setOriginalSettings(settings);
                 success("Settings saved! ✅");
             } else {
                 error(data.error || "Failed");
@@ -220,6 +224,13 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
             error("Network error");
         }
         setSaving(false);
+    };
+
+    const resetSettings = () => {
+        if (originalSettings) {
+            setSettings(originalSettings);
+            setActiveMessageType("join");
+        }
     };
 
     if (loading) {
@@ -236,15 +247,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                         Customize automatic messages for new members, boosts, and more.
                     </p>
                 </div>
-                <div className="relative z-10 flex gap-3">
-                    <button
-                        onClick={() => setShowConfirm(true)}
-                        disabled={saving}
-                        className="px-6 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold rounded-xl border border-emerald-500/30 transition disabled:opacity-50 flex items-center gap-2"
-                    >
-                        {saving ? "..." : "✓ Save Changes"}
-                    </button>
-                </div>
+                {/* Save button moved to floating bar */}
             </div>
 
             {/* Notification Toast */}
@@ -465,6 +468,40 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                 confirmText={saving ? "Saving..." : "Yes, Save All"}
                 cancelText="Cancel"
             />
+
+            {/* Unsaved Changes Bar */}
+            {JSON.stringify(settings) !== JSON.stringify(originalSettings) && originalSettings && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-[#0f0f15] border border-white/10 pl-6 pr-2 py-2 rounded-full shadow-2xl animate-fade-in-up flex items-center gap-6">
+                    <span className="text-gray-300 font-medium">Unsaved changes</span>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={resetSettings}
+                            className="px-4 py-2 text-gray-400 hover:text-white font-bold transition-colors hover:bg-white/5 rounded-full"
+                        >
+                            Reset
+                        </button>
+                        <button
+                            onClick={() => setShowConfirm(true)}
+                            disabled={saving}
+                            className="px-6 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 hover:text-emerald-300 font-bold rounded-full transition-all flex items-center gap-2 group"
+                        >
+                            {saving ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Save Changes
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            )}
 
         </div>
     );

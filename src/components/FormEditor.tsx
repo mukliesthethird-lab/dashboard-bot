@@ -845,33 +845,36 @@ export default function FormEditor({
                     )}
                 </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between p-4 border-t border-white/10 bg-[#0a0a0f]">
-                    <button
-                        onClick={onClose}
-                        className="px-6 py-2.5 text-gray-400 hover:text-white font-semibold transition-colors"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={() => onSave(form)}
-                        disabled={saving || !form.name || !form.title}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {saving ? (
-                            <>
-                                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                                Saving...
-                            </>
-                        ) : (
-                            <>
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                                Save Form
-                            </>
-                        )}
-                    </button>
+                {/* Modal Floating Save Bar */}
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[250] bg-[#0f0f15] border border-white/10 pl-6 pr-2 py-2 rounded-full shadow-2xl animate-fade-in-up flex items-center gap-6">
+                    <span className="text-gray-300 font-medium tracking-wide">Unsaved form changes</span>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={onClose}
+                            className="px-4 py-2 text-gray-400 hover:text-white font-bold transition-colors hover:bg-white/5 rounded-full"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => onSave(form)}
+                            disabled={saving || !form.name || !form.title}
+                            className="px-6 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 hover:text-emerald-300 font-bold rounded-full transition-all flex items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {saving ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Save Form
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
