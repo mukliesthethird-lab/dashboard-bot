@@ -99,7 +99,7 @@ function FloatingParticles() {
       {[...Array(20)].map((_, i) => (
         <div
           key={i}
-          className="absolute w-1 h-1 bg-amber-500/30 rounded-full"
+          className="absolute w-1 h-1 bg-indigo-500/30 rounded-full"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -170,9 +170,9 @@ export default function Home() {
         <FloatingParticles />
 
         {/* Animated gradient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-amber-500/20 rounded-full blur-[120px] animate-float-slow" />
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[120px] animate-float-slow" />
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-500/15 rounded-full blur-[100px] animate-float" />
-        <div className="absolute top-1/2 right-1/3 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-[80px] animate-float-slow" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/2 right-1/3 w-[300px] h-[300px] bg-rose-500/10 rounded-full blur-[80px] animate-float-slow" style={{ animationDelay: '2s' }} />
 
         <div className="relative z-10 max-w-6xl mx-auto text-center">
           {/* Main Heading */}
@@ -193,7 +193,7 @@ export default function Home() {
             <a
               href={botInviteUrl}
               target="_blank"
-              className="group relative px-8 py-4 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 flex items-center gap-3"
+              className="group relative px-8 py-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 flex items-center gap-3"
             >
               <span className="text-2xl">🐔</span>
               <span>Add to Discord</span>
@@ -231,7 +231,7 @@ export default function Home() {
 
       {/* Stats Section */}
       <section ref={statsRef} className="relative py-24 px-6">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-500/5 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/5 to-transparent" />
 
         <div className="relative max-w-6xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -317,7 +317,7 @@ export default function Home() {
                   <img
                     src="/donpollo-icon.jpg"
                     alt="Don Pollo"
-                    className="w-48 h-48 rounded-full border-4 border-amber-500/50 shadow-2xl mx-auto"
+                    className="w-48 h-48 rounded-full border-4 border-indigo-500/50 shadow-2xl mx-auto"
                   />
 
                   {/* Badges in a row below avatar */}
@@ -325,7 +325,7 @@ export default function Home() {
                     <span className="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 rounded-full text-sm font-bold border border-emerald-500/30">
                       ✓ Verified
                     </span>
-                    <span className="px-3 py-1.5 bg-amber-500/20 text-amber-400 rounded-full text-sm font-bold border border-amber-500/30">
+                    <span className="px-3 py-1.5 bg-indigo-500/20 text-indigo-400 rounded-full text-sm font-bold border border-indigo-500/30">
                       ⚡ Fast
                     </span>
                     <span className="px-3 py-1.5 bg-purple-500/20 text-purple-400 rounded-full text-sm font-bold border border-purple-500/30">
@@ -348,7 +348,7 @@ export default function Home() {
 
               <div className="space-y-4">
                 {[
-                  { icon: "⚡", title: "Lightning Fast", desc: "Optimized for speed with minimal latency", color: "from-amber-500 to-orange-500" },
+                  { icon: "⚡", title: "Lightning Fast", desc: "Optimized for speed with minimal latency", color: "from-indigo-500 to-purple-600" },
                   { icon: "🔒", title: "Secure & Reliable", desc: "99.9% uptime with robust security measures", color: "from-emerald-500 to-green-500" },
                   { icon: "🎨", title: "Fully Customizable", desc: "Configure everything to match your server's style", color: "from-purple-500 to-violet-500" },
                   { icon: "💬", title: "Active Support", desc: "Dedicated support team ready to help 24/7", color: "from-cyan-500 to-blue-500" },
@@ -393,7 +393,7 @@ export default function Home() {
             <a
               href={botInviteUrl}
               target="_blank"
-              className="px-10 py-5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 flex items-center gap-3"
+              className="px-10 py-5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 flex items-center gap-3"
             >
               <span>Get Started Free</span>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -419,7 +419,7 @@ export default function Home() {
             {/* Brand */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                <img src="/donpollo-icon.jpg" alt="Don Pollo" className="w-12 h-12 rounded-full border-2 border-amber-500" />
+                <img src="/donpollo-icon.jpg" alt="Don Pollo" className="w-12 h-12 rounded-full border-2 border-indigo-500" />
                 <span className="text-2xl font-black gradient-text">DON POLLO</span>
               </div>
               <p className="text-gray-400 max-w-sm">

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { subscribeToWebSub, unsubscribeFromWebSub, resolveYouTubeChannelId } from '@/lib/youtube';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,13 +59,30 @@ export async function POST(request: Request) {
                     is_enabled = ?
                 WHERE id = ? AND guild_id = ?
             `, [feed_url, discord_channel_id, JSON.stringify(custom_message_json), is_enabled ? 1 : 0, id, guild_id]);
+
+            // Re-subscribe if it's YouTube
+            if (type === 'youtube') {
+                const channelId = await resolveYouTubeChannelId(feed_url);
+                if (channelId) await subscribeToWebSub(channelId);
+            }
         } else {
+            // Resolve YouTube ID for cleaner tracking
+            let finalFeedUrl = feed_url;
+            if (type === 'youtube') {
+                const resolvedId = await resolveYouTubeChannelId(feed_url);
+                if (resolvedId) {
+                    finalFeedUrl = `https://youtube.com/channel/${resolvedId}`;
+                    // Trigger subscription
+                    await subscribeToWebSub(resolvedId);
+                }
+            }
+
             // Insert new
             await pool.query(`
                 INSERT INTO notifications_feeds 
                 (guild_id, type, feed_url, discord_channel_id, custom_message_json, is_enabled)
                 VALUES (?, ?, ?, ?, ?, ?)
-            `, [guild_id, type, feed_url, discord_channel_id, JSON.stringify(custom_message_json), is_enabled ? 1 : 0]);
+            `, [guild_id, type, finalFeedUrl, discord_channel_id, JSON.stringify(custom_message_json), is_enabled ? 1 : 0]);
         }
 
         // Log the action
@@ -93,6 +111,20 @@ export async function DELETE(request: Request) {
 
         if (!id || !guildId) {
             return NextResponse.json({ error: 'id and guild_id are required' }, { status: 400 });
+        }
+
+        // Get feed info before deleting for unsubscription
+        const [feedRows]: any = await pool.query(
+            'SELECT * FROM notifications_feeds WHERE id = ? AND guild_id = ?',
+            [id, guildId]
+        );
+
+        if (feedRows.length > 0) {
+            const feed = feedRows[0];
+            if (feed.type === 'youtube') {
+                const channelId = await resolveYouTubeChannelId(feed.feed_url);
+                if (channelId) await unsubscribeFromWebSub(channelId);
+            }
         }
 
         await pool.query(

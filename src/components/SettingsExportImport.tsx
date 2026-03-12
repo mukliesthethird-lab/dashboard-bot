@@ -108,7 +108,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                 </button>
                 <button
                     onClick={() => setShowModal(true)}
-                    className="px-4 py-1.5 rounded-[3px] bg-[#5865f2] hover:bg-[#4752c4] border border-transparent text-white font-bold text-xs transition flex items-center gap-2"
+                    className="px-4 py-1.5 rounded-[3px] bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg hover:shadow-indigo-500/25 text-white font-bold text-xs transition flex items-center gap-2"
                 >
                     <span>📥</span> Import Settings
                 </button>
@@ -120,25 +120,25 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
             {/* Import Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in" onClick={() => setShowModal(false)}>
-                    <div className="bg-[#2b2d31] rounded-[8px] p-6 max-w-md w-full mx-4 shadow-2xl border border-[#1e1f22] animate-scale-in" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0f111a] rounded-[16px] p-8 max-w-md w-full mx-4 shadow-2xl border border-white/5 animate-scale-in" onClick={e => e.stopPropagation()}>
                         <div className="text-center mb-6">
-                            <div className="w-16 h-16 bg-[#1e1f22] rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-3xl text-[#5865f2]">📥</span>
+                            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
+                                <span className="text-3xl text-indigo-500">📥</span>
                             </div>
-                            <h2 className="text-xl font-black text-[#f2f3f5]">Import Settings</h2>
-                            <p className="text-[#b5bac1] text-sm mt-1">Upload a previously exported settings file</p>
+                            <h2 className="text-xl font-black text-white">Import Settings</h2>
+                            <p className="text-gray-400 text-sm mt-1">Upload a previously exported settings file</p>
                         </div>
 
                         <div className="space-y-4">
                             {/* File Upload */}
                             <div>
-                                <label className="block text-[11px] font-bold text-[#b5bac1] mb-2 uppercase tracking-wider">Settings File (.json)</label>
+                                <label className="block text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Settings File (.json)</label>
                                 <div className="relative group">
                                     <input
                                         type="file"
                                         accept=".json"
                                         onChange={handleFileUpload}
-                                        className="w-full px-4 py-3 rounded-[3px] bg-[#1e1f22] border border-transparent focus:border-[#5865f2] focus:outline-none font-medium text-sm text-[#dbdee1] file:mr-4 file:py-1 file:px-3 file:rounded-[3px] file:border-0 file:bg-[#4e5058]/30 file:text-[#f2f3f5] file:font-bold file:text-xs file:cursor-pointer transition-all"
+                                        className="w-full px-4 py-3 rounded-[8px] bg-white/5 border border-white/10 focus:border-indigo-500 focus:outline-none font-medium text-sm text-gray-300 file:mr-4 file:py-1 file:px-3 file:rounded-[4px] file:border-0 file:bg-white/10 file:text-white file:font-bold file:text-xs file:cursor-pointer transition-all"
                                     />
                                 </div>
                             </div>
@@ -153,13 +153,13 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                             )}
 
                             {/* Overwrite option */}
-                            <label className="flex items-center justify-between p-3 bg-[#1e1f22]/50 rounded-[8px] border border-[#1e1f22] cursor-pointer hover:bg-[#1e1f22]/80 transition-all">
+                            <label className="flex items-center justify-between p-3 bg-white/3 rounded-[12px] border border-white/5 cursor-pointer hover:bg-white/5 transition-all">
                                 <div>
-                                    <span className="text-[#f2f3f5] font-bold text-sm">Overwrite existing settings</span>
-                                    <p className="text-[#4e5058] text-[11px]">Replace current settings instead of merging</p>
+                                    <span className="text-white font-bold text-sm">Overwrite existing settings</span>
+                                    <p className="text-gray-500 text-[11px]">Replace current settings instead of merging</p>
                                 </div>
                                 <div
-                                    className={`w-10 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${overwrite ? 'bg-[#248046]' : 'bg-[#4e5058]'}`}
+                                    className={`w-10 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${overwrite ? 'bg-emerald-500' : 'bg-gray-700'}`}
                                     onClick={() => setOverwrite(!overwrite)}
                                 >
                                     <div className={`absolute top-1 left-1 bg-white w-3 h-3 rounded-full transition-transform duration-200 ease-in-out ${overwrite ? 'translate-x-5' : 'translate-x-0'}`}></div>
@@ -167,11 +167,11 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                             </label>
 
                             {/* Warning */}
-                            <div className="bg-[#da373c]/10 border border-[#da373c]/30 rounded-[8px] p-4 flex gap-3">
+                            <div className="bg-rose-500/10 border border-rose-500/30 rounded-[12px] p-4 flex gap-3">
                                 <span className="text-xl">⚠️</span>
                                 <div className="text-xs">
-                                    <p className="font-bold text-[#da373c] uppercase tracking-wider mb-1 text-[10px]">Security Warning</p>
-                                    <p className="text-[#b5bac1] leading-relaxed">Importing settings will modify your server configuration. Only upload files from sources you trust.</p>
+                                    <p className="font-bold text-rose-500 uppercase tracking-wider mb-1 text-[10px]">Security Warning</p>
+                                    <p className="text-gray-400 leading-relaxed">Importing settings will modify your server configuration. Only upload files from sources you trust.</p>
                                 </div>
                             </div>
 
@@ -182,14 +182,14 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                         <div className="flex gap-3 mt-8">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="flex-1 py-2.5 bg-transparent hover:underline text-[#f2f3f5] font-bold rounded-[3px] transition text-sm"
+                                className="flex-1 py-2.5 bg-transparent hover:underline text-gray-400 hover:text-white font-bold rounded-[8px] transition text-sm"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleImport}
                                 disabled={!importData || importing}
-                                className="flex-[2] py-2.5 bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold rounded-[3px] transition disabled:opacity-50 flex items-center justify-center gap-2 text-sm shadow-lg shadow-black/20"
+                                className="flex-[2] py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-[8px] transition disabled:opacity-50 flex items-center justify-center gap-2 text-sm shadow-lg shadow-indigo-500/25"
                             >
                                 {importing ? (
                                     <>

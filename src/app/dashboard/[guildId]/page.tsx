@@ -74,8 +74,8 @@ export default async function GuildDashboard({
                             <DashboardHeader
                                 title={guild.name}
                                 subtitle="Server Overview & Statistics"
-                                gradientFrom="amber-400"
-                                gradientTo="orange-500"
+                                gradientFrom="indigo-400"
+                                gradientTo="purple-500"
                             />
                         </div>
                         <SettingsExportImport guildId={guildId} />
@@ -145,7 +145,7 @@ export default async function GuildDashboard({
                                 <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">📋</div>
                                 <div className="font-bold text-gray-300 text-xs">Logging</div>
                             </a>
-                            <a href={`/dashboard/${guildId}/economy`} className="group p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 hover:border-amber-500/50 hover:bg-amber-500/20 transition-all duration-300 text-center">
+                            <a href={`/dashboard/${guildId}/economy`} className="group p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 hover:border-indigo-500/50 hover:bg-indigo-500/20 transition-all duration-300 text-center">
                                 <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">💰</div>
                                 <div className="font-bold text-gray-300 text-xs">Economy</div>
                             </a>

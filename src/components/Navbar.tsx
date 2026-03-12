@@ -27,7 +27,7 @@ export default function Navbar() {
     return (
         <>
             <nav className={`fixed top-0 right-0 z-50 transition-all duration-300 ${scrolled
-                ? 'bg-[#0a0a0f]/30 backdrop-blur-xl border-b border-white/5'
+                ? 'bg-[#05050a]/30 backdrop-blur-xl border-b border-white/5'
                 : 'bg-transparent'
                 } ${isGuildDashboard ? 'left-0 lg:left-72' : 'left-0'}`}>
                 <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
@@ -37,11 +37,11 @@ export default function Navbar() {
                             <img
                                 src="/donpollo-icon.jpg"
                                 alt="Don Pollo"
-                                className="w-10 h-10 rounded-full border-2 border-amber-500/50 group-hover:border-amber-500 transition-all group-hover:scale-110"
+                                className="w-10 h-10 rounded-full border-2 border-indigo-500/50 group-hover:border-indigo-500 transition-all group-hover:scale-110"
                             />
-                            <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="absolute inset-0 rounded-full bg-indigo-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
-                        <span className="text-xl md:text-2xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+                        <span className="text-xl md:text-2xl font-black bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
                             DON POLLO
                         </span>
                     </Link>
@@ -51,7 +51,7 @@ export default function Navbar() {
                         <Link
                             href="/leaderboard"
                             className={`px-4 py-2 rounded-full font-semibold transition-all ${pathname === '/leaderboard'
-                                ? 'bg-amber-500/20 text-amber-400'
+                                ? 'bg-indigo-500/20 text-indigo-400'
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
@@ -63,7 +63,7 @@ export default function Navbar() {
                                 {pathname !== '/dashboard' && (
                                     <Link
                                         href="/dashboard"
-                                        className="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold hover:shadow-lg hover:shadow-amber-500/25 transition-all hover:scale-105"
+                                        className="px-5 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold hover:shadow-lg hover:shadow-indigo-500/25 transition-all hover:scale-105"
                                     >
                                         Dashboard
                                     </Link>
@@ -85,7 +85,7 @@ export default function Navbar() {
                         ) : (
                             <button
                                 onClick={() => setShowLoginModal(true)}
-                                className="ml-4 px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold hover:shadow-lg hover:shadow-amber-500/25 transition-all hover:scale-105"
+                                className="ml-4 px-6 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold hover:shadow-lg hover:shadow-indigo-500/25 transition-all hover:scale-105"
                             >
                                 Login
                             </button>
@@ -111,13 +111,13 @@ export default function Navbar() {
 
                 {/* Mobile Menu Dropdown */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden bg-[#0a0a0f]/95 backdrop-blur-xl border-t border-white/10 animate-slide-down">
+                    <div className="md:hidden bg-[#05050a]/95 backdrop-blur-xl border-t border-white/10 animate-slide-down">
                         <div className="px-4 py-4 space-y-3">
                             <Link
                                 href="/leaderboard"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-3 rounded-xl font-semibold transition ${pathname === '/leaderboard'
-                                    ? 'bg-amber-500/20 text-amber-400'
+                                    ? 'bg-indigo-500/20 text-indigo-400'
                                     : 'text-gray-300 hover:bg-white/5'
                                     }`}
                             >
@@ -129,7 +129,7 @@ export default function Navbar() {
                                     <Link
                                         href="/dashboard"
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className="block px-4 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold text-center"
+                                        className="block px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-center"
                                     >
                                         Dashboard
                                     </Link>
@@ -153,7 +153,7 @@ export default function Navbar() {
                             ) : (
                                 <button
                                     onClick={() => { setMobileMenuOpen(false); setShowLoginModal(true); }}
-                                    className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold"
+                                    className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold"
                                 >
                                     Login with Discord
                                 </button>
@@ -168,7 +168,7 @@ export default function Navbar() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-[#16161f] rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/10 animate-scale-in">
                         <div className="text-center">
-                            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
+                            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
                                 <span className="text-5xl">🐔</span>
                             </div>
                             <h2 className="text-2xl font-black text-white mb-2">Welcome to Don Pollo!</h2>

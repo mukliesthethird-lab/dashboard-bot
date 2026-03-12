@@ -18,15 +18,15 @@ export default function PremiumCard({
     title,
     description,
     icon,
-    gradientFrom = "[#5865f2]",
-    gradientTo = "[#4752c4]",
+    gradientFrom = "[#6366f1]",
+    gradientTo = "[#a855f7]",
     className = "",
     badge
 }: PremiumCardProps) {
     return (
         <div className={`group relative h-full ${className}`}>
             <div className={`absolute -inset-0.5 bg-gradient-to-r from-${gradientFrom} to-${gradientTo} rounded-[8px] blur opacity-10 group-hover:opacity-30 transition duration-500`} />
-            <div className="relative bg-[#2b2d31] border border-[#1e1f22] p-6 rounded-[8px] h-full flex flex-col shadow-sm">
+            <div className="relative bg-[#0a0a0f] border border-white/5 p-6 rounded-[8px] h-full flex flex-col shadow-sm">
                 {(title || icon) && (
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-4">

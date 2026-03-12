@@ -59,7 +59,7 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
 
     if (loading) {
         return (
-            <div className="bg-[#2b2d31] border border-[#1e1f22] rounded-[8px] p-6 shadow-sm">
+            <div className="bg-[#0f111a] border border-white/5 rounded-[8px] p-6 shadow-sm">
                 <h2 className="text-sm font-black text-[#f2f3f5] mb-4 uppercase tracking-widest flex items-center gap-2">
                     <span className="text-lg">📊</span> Recent Activity
                 </h2>
@@ -69,13 +69,13 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
     }
 
     return (
-        <div className="bg-[#2b2d31] border border-[#1e1f22] rounded-[8px] p-6 shadow-sm">
+        <div className="bg-[#0f111a] border border-white/5 rounded-[8px] p-6 shadow-sm">
             <h2 className="text-sm font-black text-[#f2f3f5] mb-4 uppercase tracking-widest flex items-center gap-2">
                 <span className="text-lg">📊</span> Recent Activity
             </h2>
 
             {logs.length === 0 ? (
-                <div className="text-center py-10 bg-[#1e1f22]/30 rounded-[8px] border border-dashed border-[#1e1f22]">
+                <div className="text-center py-10 bg-white/2 rounded-[8px] border border-dashed border-white/5">
                     <div className="text-4xl mb-3 opacity-20">📭</div>
                     <p className="font-bold text-[#b5bac1]">No activity yet</p>
                     <p className="text-[11px] text-[#4e5058] uppercase tracking-wider mt-1">Actions will appear here</p>
@@ -85,8 +85,8 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
                     {logs.map((log) => {
                         const icon = actionIcons[log.action] || actionIcons.default;
                         return (
-                            <div key={log.id} className="flex items-center gap-4 p-3 rounded-[4px] bg-[#1e1f22]/30 border border-transparent hover:border-[#5865f2]/30 hover:bg-[#1e1f22]/60 transition-all group">
-                                <div className="w-10 h-10 rounded-full bg-[#313338] border border-[#1e1f22] flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <div key={log.id} className="flex items-center gap-4 p-3 rounded-[4px] bg-white/3 border border-transparent hover:border-indigo-500/30 hover:bg-white/5 transition-all group">
+                                <div className="w-10 h-10 rounded-full bg-[#16161f] border border-white/5 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
                                     {icon}
                                 </div>
                                 <div className="flex-1 min-w-0">

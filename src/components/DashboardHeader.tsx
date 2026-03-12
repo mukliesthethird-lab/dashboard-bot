@@ -13,8 +13,8 @@ interface DashboardHeaderProps {
 export default function DashboardHeader({
     title,
     subtitle,
-    gradientFrom = "amber-400",
-    gradientTo = "orange-500",
+    gradientFrom = "indigo-400",
+    gradientTo = "purple-500",
     icon
 }: DashboardHeaderProps) {
     return (

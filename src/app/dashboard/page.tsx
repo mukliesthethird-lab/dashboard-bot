@@ -81,14 +81,14 @@ export default async function Dashboard() {
                     </p>
 
                     {/* User Info Card */}
-                    <div className="mt-6 inline-flex items-center gap-4 glass px-6 py-3 rounded-full">
+                    <div className="mt-6 inline-flex items-center gap-4 glass px-6 py-3 rounded-full border border-white/5 shadow-xl">
                         <img
                             src={session.user?.image || "https://cdn.discordapp.com/embed/avatars/0.png"}
                             alt="User"
-                            className="w-10 h-10 rounded-full border-2 border-white/20"
+                            className="w-10 h-10 rounded-full border-2 border-indigo-500/20"
                         />
                         <span className="font-bold text-white">{session.user?.name}</span>
-                        <span className="text-amber-400 font-bold bg-amber-500/20 px-3 py-1 rounded-full text-sm">
+                        <span className="text-indigo-400 font-bold bg-indigo-500/10 px-3 py-1 rounded-full text-sm border border-indigo-500/20">
                             {adminGuilds.length} Server{adminGuilds.length !== 1 ? 's' : ''}
                         </span>
                     </div>
@@ -133,11 +133,11 @@ export default async function Dashboard() {
                                                     {guild.name}
                                                 </h3>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-emerald-400 bg-emerald-500/20 px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                                                    <span className="text-emerald-400 bg-emerald-500/10 px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border border-emerald-500/20">
                                                         ● Active
                                                     </span>
                                                     {guild.owner && (
-                                                        <span className="text-amber-400 bg-amber-500/20 px-3 py-0.5 rounded-full text-xs font-bold">
+                                                        <span className="text-indigo-400 bg-indigo-500/10 px-3 py-0.5 rounded-full text-xs font-bold border border-indigo-500/20">
                                                             Owner
                                                         </span>
                                                     )}
@@ -182,7 +182,7 @@ export default async function Dashboard() {
                                     <a
                                         href={`https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&scope=bot%20applications.commands&guild_id=${guild.id}`}
                                         target="_blank"
-                                        className="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:shadow-lg hover:shadow-amber-500/25 text-black font-bold rounded-lg transition-all flex items-center gap-2"
+                                        className="px-5 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg hover:shadow-indigo-500/25 text-white font-bold rounded-lg transition-all flex items-center gap-2"
                                     >
                                         <span>Invite Bot</span>
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

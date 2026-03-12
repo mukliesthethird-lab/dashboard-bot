@@ -3,53 +3,53 @@
 /* ===== DESIGN SYSTEM - MEE6 INSPIRED ===== */
 
 :root {
-  /* Colors - Dark Mode Base (MEE6 Style) */
-  --background: #0a0a0f;
-  --background-secondary: #12121a;
-  --background-tertiary: #1a1a25;
+  /* Colors - Dark Mode Base (Nebula Premium) */
+  --background: #05050a;
+  --background-secondary: #0d0d14;
+  --background-tertiary: #16161f;
   --foreground: #ffffff;
-  --foreground-secondary: #a0a0b0;
+  --foreground-secondary: #94a3b8;
 
-  /* Brand Colors - Amber/Gold */
-  --primary: #f59e0b;
-  --primary-hover: #fbbf24;
-  --primary-dark: #d97706;
-  --primary-glow: rgba(245, 158, 11, 0.5);
-  --primary-light: rgba(245, 158, 11, 0.1);
+  /* Brand Colors - Electric Indigo */
+  --primary: #6366f1;
+  --primary-hover: #818cf8;
+  --primary-dark: #4f46e5;
+  --primary-glow: rgba(99, 102, 241, 0.4);
+  --primary-light: rgba(99, 102, 241, 0.1);
 
-  /* Gradient Colors */
-  --gradient-start: #f59e0b;
-  --gradient-mid: #f97316;
-  --gradient-end: #ea580c;
+  /* Gradient Colors - Nebula Spectrum */
+  --gradient-start: #6366f1;
+  --gradient-mid: #a855f7;
+  --gradient-end: #ec4899;
   --gradient-purple: #8b5cf6;
   --gradient-blue: #3b82f6;
   --gradient-cyan: #06b6d4;
   --gradient-emerald: #10b981;
 
   /* UI Colors */
-  --success: #22c55e;
-  --error: #ef4444;
+  --success: #10b981;
+  --error: #f43f5e;
   --warning: #f59e0b;
-  --info: #3b82f6;
+  --info: #0ea5e9;
   --discord: #5865F2;
 
-  /* Glass Effect */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-hover: rgba(255, 255, 255, 0.08);
+  /* Glass Effect - Refined */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-hover: rgba(255, 255, 255, 0.07);
 
   /* Neutral Colors */
-  --muted: #6b7280;
-  --border: rgba(255, 255, 255, 0.1);
-  --card: #16161f;
-  --card-hover: #1e1e2a;
+  --muted: #64748b;
+  --border: rgba(255, 255, 255, 0.08);
+  --card: #0f111a;
+  --card-hover: #161927;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5);
-  --shadow-glow: 0 0 40px rgba(245, 158, 11, 0.3);
+  /* Shadows - More subtle */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.7);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.8);
+  --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.2);
 
   /* Border Radius */
   --radius-sm: 0.375rem;
@@ -461,19 +461,19 @@ body {
 
 .gradient-hero {
   background:
-    radial-gradient(ellipse 80% 80% at 50% -20%, rgba(245, 158, 11, 0.3), transparent),
-    radial-gradient(ellipse 60% 60% at 80% 50%, rgba(139, 92, 246, 0.15), transparent),
-    radial-gradient(ellipse 60% 60% at 20% 80%, rgba(6, 182, 212, 0.1), transparent),
+    radial-gradient(ellipse 80% 80% at 50% -20%, rgba(99, 102, 241, 0.35), transparent),
+    radial-gradient(ellipse 60% 60% at 80% 50%, rgba(168, 85, 247, 0.2), transparent),
+    radial-gradient(ellipse 60% 60% at 20% 80%, rgba(236, 72, 153, 0.15), transparent),
     var(--background);
 }
 
 .gradient-mesh {
   background:
-    radial-gradient(at 40% 20%, rgba(245, 158, 11, 0.2) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, rgba(6, 182, 212, 0.1) 0px, transparent 50%),
-    radial-gradient(at 80% 50%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(245, 158, 11, 0.1) 0px, transparent 50%),
+    radial-gradient(at 40% 20%, rgba(99, 102, 241, 0.2) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(236, 72, 153, 0.12) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(168, 85, 247, 0.12) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
     var(--background);
 }
 

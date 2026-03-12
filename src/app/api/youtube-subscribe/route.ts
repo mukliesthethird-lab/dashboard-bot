@@ -3,7 +3,8 @@ import pool from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-const YOUTUBE_HUB_URL = 'https://pubsubhubbub.appspot.com/subscribe';
+import { subscribeToWebSub, unsubscribeFromWebSub } from '@/lib/youtube';
+
 const CALLBACK_URL = process.env.NEXTAUTH_URL
     ? `${process.env.NEXTAUTH_URL}/api/youtube-webhook`
     : 'https://dashboard-bot-virid.vercel.app/api/youtube-webhook';
@@ -77,38 +78,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: true, message: 'Event marked as processed' });
         }
 
-        const topicUrl = `https://www.youtube.com/xml/feeds/videos.xml?channel_id=${channel_id}`;
+        // Use shared utility for subscription
+        const success = await subscribeToWebSub(channel_id);
 
-        console.log('[YouTube Subscribe] Subscribing to:', { channel_id, topicUrl, callback: CALLBACK_URL });
-
-        // Build form data for PubSubHubbub
-        const formData = new URLSearchParams();
-        formData.append('hub.callback', CALLBACK_URL);
-        formData.append('hub.topic', topicUrl);
-        formData.append('hub.verify', 'async');
-        formData.append('hub.mode', 'subscribe');
-        formData.append('hub.lease_seconds', '432000'); // 5 days
-
-        // Send subscription request to Google's PubSubHubbub hub
-        const response = await fetch(YOUTUBE_HUB_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: formData.toString(),
-        });
-
-        if (response.status === 202 || response.status === 204) {
-            // Create pending subscription record
-            await pool.query(`
-                INSERT INTO youtube_subscriptions (channel_id, hub_topic, status)
-                VALUES (?, ?, 'pending')
-                ON DUPLICATE KEY UPDATE
-                    hub_topic = VALUES(hub_topic),
-                    status = 'pending',
-                    updated_at = CURRENT_TIMESTAMP
-            `, [channel_id, topicUrl]);
-
+        if (success) {
             console.log('[YouTube Subscribe] Subscription request sent successfully');
             return NextResponse.json({
                 success: true,
@@ -117,12 +90,9 @@ export async function POST(request: NextRequest) {
                 callback_url: CALLBACK_URL
             });
         } else {
-            const errorText = await response.text();
-            console.error('[YouTube Subscribe] Hub returned error:', response.status, errorText);
             return NextResponse.json({
                 error: 'Subscription failed',
-                status: response.status,
-                details: errorText
+                details: 'Check server logs for hub error'
             }, { status: 500 });
         }
 
@@ -142,39 +112,19 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'channel_id is required' }, { status: 400 });
         }
 
-        const topicUrl = `https://www.youtube.com/xml/feeds/videos.xml?channel_id=${channel_id}`;
+        // Use shared utility for unsubscription
+        const success = await unsubscribeFromWebSub(channel_id);
 
-        // Build form data for unsubscribe
-        const formData = new URLSearchParams();
-        formData.append('hub.callback', CALLBACK_URL);
-        formData.append('hub.topic', topicUrl);
-        formData.append('hub.verify', 'async');
-        formData.append('hub.mode', 'unsubscribe');
-
-        const response = await fetch(YOUTUBE_HUB_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: formData.toString(),
-        });
-
-        if (response.status === 202 || response.status === 204) {
-            await pool.query(
-                'UPDATE youtube_subscriptions SET status = ? WHERE channel_id = ?',
-                ['unsubscribed', channel_id]
-            );
-
+        if (success) {
             return NextResponse.json({
                 success: true,
                 message: 'Unsubscription request sent',
                 channel_id
             });
         } else {
-            const errorText = await response.text();
             return NextResponse.json({
                 error: 'Unsubscription failed',
-                details: errorText
+                details: 'Check server logs for hub error'
             }, { status: 500 });
         }
 
