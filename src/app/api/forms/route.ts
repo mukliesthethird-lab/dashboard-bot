@@ -29,6 +29,7 @@ export async function GET(request: Request) {
         // Parse JSON fields
         const forms = rows.map((row: any) => ({
             ...row,
+            is_enabled: Buffer.isBuffer(row.is_enabled) ? row.is_enabled[0] === 1 : Boolean(row.is_enabled),
             pages: typeof row.pages === 'string' ? JSON.parse(row.pages) : row.pages || [],
             ping_roles: typeof row.ping_roles === 'string' ? JSON.parse(row.ping_roles) : row.ping_roles || [],
             add_roles_on_submit: typeof row.add_roles_on_submit === 'string' ? JSON.parse(row.add_roles_on_submit) : row.add_roles_on_submit || [],

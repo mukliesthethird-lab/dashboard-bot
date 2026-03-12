@@ -182,7 +182,7 @@ export default function CustomDropdown({
                 zIndex: 99999,
                 maxHeight: '240px'
             }}
-            className="bg-[#16161f] border border-white/10 rounded-lg shadow-2xl overflow-y-auto custom-scrollbar"
+            className="bg-[#111214] border border-[#1e1f22] rounded-[3px] shadow-2xl overflow-y-auto custom-scrollbar"
         >
             {options.length === 0 ? (
                 <div className="px-3 py-2 text-gray-500 text-sm">No options available</div>
@@ -196,13 +196,11 @@ export default function CustomDropdown({
                         className={`
                             px-3 py-2 text-sm cursor-pointer transition-colors flex items-center gap-2
                             ${option.value === value
-                                ? "bg-amber-500 text-black font-medium"
+                                ? "bg-[#5865f2] text-white font-bold"
                                 : highlightedIndex === index
-                                    ? "bg-amber-500/80 text-black"
-                                    : "text-white hover:bg-amber-500/80 hover:text-black"
+                                    ? "bg-[#4e5058]/50 text-[#f2f3f5]"
+                                    : "text-[#dbdee1] hover:bg-[#4e5058]/30 hover:text-[#f2f3f5]"
                             }
-                            ${index === 0 ? "rounded-t-lg" : ""}
-                            ${index === options.length - 1 ? "rounded-b-lg" : ""}
                         `}
                     >
                         {option.icon && <span>{option.icon}</span>}
@@ -222,11 +220,11 @@ export default function CustomDropdown({
                 onClick={handleToggle}
                 disabled={disabled}
                 className={`
-                    w-full ${size === 'sm' ? 'p-1 text-[11px]' : 'p-2 text-sm'} bg-white/5 border border-white/10 rounded-lg 
-                    outline-none focus:border-amber-500/50 font-medium text-left
-                    flex items-center justify-between gap-1 transition
-                    ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-white/20 cursor-pointer"}
-                    ${isOpen ? "border-amber-500/50" : ""}
+                    w-full ${size === 'sm' ? 'p-1 text-[11px]' : 'p-2 text-sm'} bg-[#1e1f22] border border-transparent rounded-[3px] 
+                    outline-none focus:border-[#5865F2] font-medium text-left
+                    flex items-center justify-between gap-1 transition-all
+                    ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-[#5865f2]/50 cursor-pointer"}
+                    ${isOpen ? "border-[#5865f2]" : ""}
                 `}
             >
                 <span className={selectedOption ? "text-white" : "text-gray-500"}>

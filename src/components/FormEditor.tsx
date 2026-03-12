@@ -172,11 +172,11 @@ export default function FormEditor({
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative w-full max-w-5xl max-h-[90vh] bg-[#0a0a0f] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+            <div className="relative w-full max-w-5xl max-h-[90vh] bg-[#2b2d31] rounded-[8px] shadow-2xl overflow-hidden flex flex-col animate-scale-in">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-white/10 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
+                <div className="flex items-center justify-between p-5 border-b border-[#1e1f22] bg-[#2b2d31]">
                     <div className="flex items-center gap-3">
-                        <span className="text-2xl">📋</span>
+                        <span className="text-2xl">📝</span>
                         <div>
                             <h2 className="text-lg font-bold text-white">
                                 {form.id ? "Edit Form" : "Create Form"}
@@ -186,7 +186,7 @@ export default function FormEditor({
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                        className="p-1.5 hover:bg-[#3f4147] rounded-[4px] transition-colors"
                     >
                         <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -195,21 +195,26 @@ export default function FormEditor({
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-white/10">
+                <div className="flex border-b border-[#1e1f22]">
                     {[
-                        { id: "form", label: "Form Editor", icon: "📝" },
+                        { id: "form", label: "Form Editor", icon: "📋" },
                         { id: "settings", label: "Submission Settings", icon: "⚙️" },
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex-1 px-4 py-3 font-semibold transition-all ${activeTab === tab.id
-                                ? "bg-amber-500/10 text-amber-400 border-b-2 border-amber-500"
-                                : "text-gray-400 hover:text-white hover:bg-white/5"
+                            className={`flex flex-col items-center justify-center relative px-6 py-4 font-semibold transition-all ${activeTab === tab.id
+                                ? "text-white"
+                                : "text-gray-400 hover:text-white"
                                 }`}
                         >
-                            <span className="mr-2">{tab.icon}</span>
-                            {tab.label}
+                            <span className="flex items-center">
+                                <span className="mr-2 text-lg">{tab.icon}</span>
+                                {tab.label}
+                            </span>
+                            {activeTab === tab.id && (
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#5865F2] rounded-t-md" />
+                            )}
                         </button>
                     ))}
                 </div>
@@ -221,7 +226,7 @@ export default function FormEditor({
                             {/* Form Basic Info */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">
                                         Form Name <span className="text-red-400">*</span>
                                     </label>
                                     <input
@@ -230,12 +235,12 @@ export default function FormEditor({
                                         onChange={(e) => updateForm({ name: e.target.value })}
                                         placeholder="e.g., Staff Application"
                                         maxLength={45}
-                                        className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                     <p className="text-xs text-gray-500 mt-1">{form.name.length}/45</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">
                                         Modal Title <span className="text-red-400">*</span>
                                     </label>
                                     <input
@@ -244,7 +249,7 @@ export default function FormEditor({
                                         onChange={(e) => updateForm({ title: e.target.value })}
                                         placeholder="e.g., Staff Application Form"
                                         maxLength={45}
-                                        className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                     <p className="text-xs text-gray-500 mt-1">{form.title.length}/45 - Shown at the top of the Discord modal</p>
                                 </div>
@@ -255,21 +260,21 @@ export default function FormEditor({
                                 {form.pages.map((page, idx) => (
                                     <div
                                         key={page.id}
-                                        className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${activePageIndex === idx
-                                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                                            : "bg-[#12121a] text-gray-400 border border-white/10 hover:border-white/20"
+                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-[4px] cursor-pointer transition-all ${activePageIndex === idx
+                                            ? "bg-[#5865F2] text-white"
+                                            : "bg-[#4e5058] hover:bg-[#686d73] text-white"
                                             }`}
                                         onClick={() => setActivePageIndex(idx)}
                                     >
                                         <span className="font-semibold text-sm">Page {idx + 1}</span>
-                                        <span className="text-xs opacity-60">({page.components.length}/5)</span>
+                                        <span className="text-xs opacity-80">({page.components.length}/5)</span>
                                         {form.pages.length > 1 && (
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     deletePage(idx);
                                                 }}
-                                                className="ml-1 p-0.5 hover:bg-red-500/20 rounded text-red-400"
+                                                className="ml-1 p-0.5 hover:bg-black/20 rounded text-red-300 hover:text-red-400"
                                             >
                                                 ✕
                                             </button>
@@ -278,7 +283,7 @@ export default function FormEditor({
                                 ))}
                                 <button
                                     onClick={addPage}
-                                    className="flex items-center gap-1 px-3 py-2 bg-[#12121a] text-gray-400 border border-dashed border-white/20 rounded-lg hover:border-amber-500/50 hover:text-amber-400 transition-all"
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-transparent text-gray-300 hover:text-white hover:bg-white/5 rounded-[4px] transition-all text-sm font-medium"
                                 >
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -300,7 +305,7 @@ export default function FormEditor({
 
                                 {/* Component List */}
                                 {currentPage.components.length === 0 ? (
-                                    <div className="p-8 border border-dashed border-white/10 rounded-xl text-center">
+                                    <div className="p-8 border-2 border-dashed border-[#1e1f22] rounded-md text-center">
                                         <p className="text-gray-400 mb-4">No components yet. Add your first question!</p>
                                     </div>
                                 ) : (
@@ -308,9 +313,9 @@ export default function FormEditor({
                                         {currentPage.components.map((comp, idx) => (
                                             <div
                                                 key={comp.id}
-                                                className={`border rounded-xl overflow-hidden transition-all ${expandedComponent === comp.id
-                                                    ? "border-amber-500/30 bg-[#12121a]"
-                                                    : "border-white/10 bg-[#12121a]/50"
+                                                className={`rounded-[4px] overflow-hidden transition-all bg-[#1e1f22] ${expandedComponent === comp.id
+                                                    ? "ring-2 ring-[#5865F2]"
+                                                    : ""
                                                     }`}
                                             >
                                                 {/* Component Header */}
@@ -540,7 +545,7 @@ export default function FormEditor({
                         <div className="space-y-6">
                             {/* Submission Type */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 mb-3">Submission Type</label>
+                                <label className="block text-xs font-bold text-gray-300 uppercase mb-3">Submission Type</label>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     {[
                                         { id: "default", label: "Default", icon: "📤", desc: "Send response to channel" },
@@ -549,9 +554,9 @@ export default function FormEditor({
                                     ].map((type) => (
                                         <label
                                             key={type.id}
-                                            className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all ${form.submission_type === type.id
-                                                ? "bg-amber-500/20 border-2 border-amber-500"
-                                                : "bg-[#12121a] border-2 border-white/10 hover:border-white/20"
+                                            className={`flex items-center gap-3 p-4 rounded-[4px] cursor-pointer transition-all border ${form.submission_type === type.id
+                                                ? "bg-[#5865F2]/10 border-[#5865F2]"
+                                                : "bg-[#1e1f22] border-transparent hover:border-white/10"
                                                 }`}
                                         >
                                             <input
@@ -564,7 +569,7 @@ export default function FormEditor({
                                             />
                                             <span className="text-2xl">{type.icon}</span>
                                             <div>
-                                                <p className="font-bold text-white">{type.label}</p>
+                                                <p className="font-bold text-white text-sm">{type.label}</p>
                                                 <p className="text-xs text-gray-400">{type.desc}</p>
                                             </div>
                                         </label>
@@ -574,7 +579,7 @@ export default function FormEditor({
 
                             {/* Submission Channel */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 mb-2">
+                                <label className="block text-xs font-bold text-gray-300 uppercase mb-2">
                                     Submission Channel <span className="text-red-400">*</span>
                                 </label>
                                 <CustomDropdown
@@ -591,19 +596,19 @@ export default function FormEditor({
 
                             {/* Ping Roles */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 mb-2">Ping Roles on Submission</label>
-                                <div className="flex flex-wrap gap-2 p-3 bg-[#12121a] border border-white/10 rounded-xl min-h-[48px]">
-                                    {form.ping_roles.map((roleId) => {
+                                <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Ping Roles on Submission</label>
+                                <div className="flex flex-wrap gap-2 p-3 bg-[#1e1f22] rounded-[4px] min-h-[48px]">
+                                    {(form.ping_roles || []).map((roleId) => {
                                         const role = roles.find(r => r.id === roleId);
                                         return (
                                             <span
                                                 key={roleId}
-                                                className="flex items-center gap-1 px-2 py-1 bg-white/10 rounded-lg text-sm"
+                                                className="flex items-center gap-1 px-2 py-1 bg-[#2b2d31] rounded-[4px] text-sm font-medium"
                                                 style={{ color: role ? `#${role.color.toString(16).padStart(6, "0")}` : "white" }}
                                             >
                                                 @{role?.name || roleId}
                                                 <button
-                                                    onClick={() => updateForm({ ping_roles: form.ping_roles.filter(r => r !== roleId) })}
+                                                    onClick={() => updateForm({ ping_roles: (form.ping_roles || []).filter(r => r !== roleId) })}
                                                     className="ml-1 text-gray-400 hover:text-red-400"
                                                 >
                                                     ✕
@@ -614,14 +619,14 @@ export default function FormEditor({
                                     <select
                                         value=""
                                         onChange={(e) => {
-                                            if (e.target.value && !form.ping_roles.includes(e.target.value)) {
-                                                updateForm({ ping_roles: [...form.ping_roles, e.target.value] });
+                                            if (e.target.value && !(form.ping_roles || []).includes(e.target.value)) {
+                                                updateForm({ ping_roles: [...(form.ping_roles || []), e.target.value] });
                                             }
                                         }}
-                                        className="px-2 py-1 bg-transparent border border-dashed border-white/20 rounded-lg text-gray-400 text-sm hover:border-amber-500/50 cursor-pointer"
+                                        className="px-2 py-1 bg-transparent border border-dashed border-white/10 rounded-[4px] text-gray-400 text-sm hover:border-[#5865F2] hover:text-[#5865F2] cursor-pointer transition-colors"
                                     >
                                         <option value="">+ Add role</option>
-                                        {roles.filter(r => !form.ping_roles.includes(r.id)).map(r => (
+                                        {roles.filter(r => !(form.ping_roles || []).includes(r.id)).map(r => (
                                             <option key={r.id} value={r.id}>{r.name}</option>
                                         ))}
                                     </select>
@@ -631,45 +636,45 @@ export default function FormEditor({
                             {/* Cooldown */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-300 mb-2">Cooldown (seconds)</label>
+                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Cooldown (seconds)</label>
                                     <input
                                         type="number"
                                         value={form.cooldown_seconds}
                                         onChange={(e) => updateForm({ cooldown_seconds: parseInt(e.target.value) || 0 })}
                                         min={0}
-                                        className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-amber-500 transition-all"
+                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-300 mb-2">Max Submissions per User</label>
+                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Max Submissions per User</label>
                                     <input
                                         type="number"
                                         value={form.max_submissions_per_user}
                                         onChange={(e) => updateForm({ max_submissions_per_user: parseInt(e.target.value) || 0 })}
                                         min={0}
                                         placeholder="0 = unlimited"
-                                        className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-amber-500 transition-all"
+                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                 </div>
                             </div>
 
                             {/* Advanced Settings - Role Requirements */}
-                            <div className="pt-4 border-t border-white/10">
-                                <h3 className="text-sm font-bold text-amber-400 mb-4 flex items-center gap-2">
+                            <div className="pt-6 border-t border-[#1e1f22]">
+                                <h3 className="text-xs font-bold text-gray-200 uppercase mb-4 flex items-center gap-2">
                                     🔐 Access Requirements
                                 </h3>
 
                                 {/* Required Roles */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-bold text-gray-300 mb-2">Required Roles</label>
-                                    <p className="text-xs text-gray-500 mb-2">Users must have at least one of these roles to open the form</p>
-                                    <div className="flex flex-wrap gap-2 p-3 bg-[#12121a] border border-white/10 rounded-xl min-h-[48px]">
+                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-1">Required Roles</label>
+                                    <p className="text-xs text-gray-400 mb-2">Users must have at least one of these roles to open the form</p>
+                                    <div className="flex flex-wrap gap-2 p-3 bg-[#1e1f22] rounded-[4px] min-h-[48px]">
                                         {(form.required_roles || []).map((roleId) => {
                                             const role = roles.find(r => r.id === roleId);
                                             return (
                                                 <span
                                                     key={roleId}
-                                                    className="flex items-center gap-1 px-2 py-1 bg-white/10 rounded-lg text-sm"
+                                                    className="flex items-center gap-1 px-2 py-1 bg-[#2b2d31] rounded-[4px] text-sm font-medium"
                                                     style={{ color: role ? `#${role.color.toString(16).padStart(6, "0")}` : "white" }}
                                                 >
                                                     @{role?.name || roleId}
@@ -689,7 +694,7 @@ export default function FormEditor({
                                                     updateForm({ required_roles: [...(form.required_roles || []), e.target.value] });
                                                 }
                                             }}
-                                            className="px-2 py-1 bg-transparent border border-dashed border-white/20 rounded-lg text-gray-400 text-sm hover:border-amber-500/50 cursor-pointer"
+                                            className="px-2 py-1 bg-transparent border border-dashed border-white/10 rounded-[4px] text-gray-400 text-sm hover:border-[#5865F2] hover:text-[#5865F2] cursor-pointer transition-colors"
                                         >
                                             <option value="">+ Add role</option>
                                             {roles.filter(r => !(form.required_roles || []).includes(r.id)).map(r => (
@@ -701,20 +706,20 @@ export default function FormEditor({
 
                                 {/* Blacklist Roles */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-bold text-gray-300 mb-2">Blacklisted Roles</label>
-                                    <p className="text-xs text-gray-500 mb-2">Users with any of these roles cannot open the form</p>
-                                    <div className="flex flex-wrap gap-2 p-3 bg-[#12121a] border border-white/10 rounded-xl min-h-[48px]">
+                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-1">Blacklisted Roles</label>
+                                    <p className="text-xs text-gray-400 mb-2">Users with any of these roles cannot open the form</p>
+                                    <div className="flex flex-wrap gap-2 p-3 bg-[#1e1f22] rounded-[4px] min-h-[48px]">
                                         {(form.blacklist_roles || []).map((roleId) => {
                                             const role = roles.find(r => r.id === roleId);
                                             return (
                                                 <span
                                                     key={roleId}
-                                                    className="flex items-center gap-1 px-2 py-1 bg-red-500/20 rounded-lg text-sm text-red-400"
+                                                    className="flex items-center gap-1 px-2 py-1 bg-[#2b2d31] rounded-[4px] text-sm text-red-400 font-medium"
                                                 >
                                                     @{role?.name || roleId}
                                                     <button
                                                         onClick={() => updateForm({ blacklist_roles: (form.blacklist_roles || []).filter(r => r !== roleId) })}
-                                                        className="ml-1 text-gray-400 hover:text-red-400"
+                                                        className="ml-1 text-gray-400 hover:text-red-500"
                                                     >
                                                         ✕
                                                     </button>
@@ -728,7 +733,7 @@ export default function FormEditor({
                                                     updateForm({ blacklist_roles: [...(form.blacklist_roles || []), e.target.value] });
                                                 }
                                             }}
-                                            className="px-2 py-1 bg-transparent border border-dashed border-white/20 rounded-lg text-gray-400 text-sm hover:border-red-500/50 cursor-pointer"
+                                            className="px-2 py-1 bg-transparent border border-dashed border-white/10 rounded-[4px] text-gray-400 text-sm hover:border-red-500 hover:text-red-400 cursor-pointer transition-colors"
                                         >
                                             <option value="">+ Add role</option>
                                             {roles.filter(r => !(form.blacklist_roles || []).includes(r.id)).map(r => (
@@ -740,76 +745,76 @@ export default function FormEditor({
 
                                 {/* Account Age */}
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-300 mb-2">Minimum Account Age (days)</label>
+                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Minimum Account Age (days)</label>
                                     <input
                                         type="number"
                                         value={form.min_account_age_days || 0}
                                         onChange={(e) => updateForm({ min_account_age_days: parseInt(e.target.value) || 0 })}
                                         min={0}
                                         placeholder="0 = no requirement"
-                                        className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-amber-500 transition-all"
+                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">Set to 0 to disable this requirement</p>
+                                    <p className="text-[11px] text-gray-400 mt-1">Set to 0 to disable this requirement</p>
                                 </div>
                             </div>
 
                             {/* Messages & DM Templates */}
-                            <div className="pt-4 border-t border-white/10">
-                                <h3 className="text-sm font-bold text-amber-400 mb-4 flex items-center gap-2">
+                            <div className="pt-6 border-t border-[#1e1f22]">
+                                <h3 className="text-xs font-bold text-gray-200 uppercase mb-4 flex items-center gap-2">
                                     💬 Messages & DM Templates
                                 </h3>
 
                                 {/* Success Message */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-bold text-gray-300 mb-2">Success Message</label>
+                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Success Message</label>
                                     <textarea
                                         value={form.success_message || ""}
                                         onChange={(e) => updateForm({ success_message: e.target.value })}
                                         placeholder="Thank you for your submission!"
                                         rows={2}
-                                        className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-amber-500 transition-all resize-none"
+                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">Message shown after successful submission</p>
+                                    <p className="text-[11px] text-gray-400 mt-1">Message shown after successful submission</p>
                                 </div>
 
                                 {form.submission_type === "application" && (
                                     <>
                                         {/* Approve DM Template */}
                                         <div className="mb-4">
-                                            <label className="block text-sm font-bold text-gray-300 mb-2">Approval DM Template</label>
+                                            <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Approval DM Template</label>
                                             <textarea
                                                 value={form.approve_dm_template || ""}
                                                 onChange={(e) => updateForm({ approve_dm_template: e.target.value })}
                                                 placeholder="Congratulations! Your application has been approved."
                                                 rows={3}
-                                                className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-green-500 transition-all resize-none"
+                                                className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
                                             />
                                             <p className="text-xs text-gray-500 mt-1">DM sent when application is approved. Use {"{user}"} for username</p>
                                         </div>
 
                                         {/* Deny DM Template */}
                                         <div className="mb-4">
-                                            <label className="block text-sm font-bold text-gray-300 mb-2">Denial DM Template</label>
+                                            <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Denial DM Template</label>
                                             <textarea
                                                 value={form.deny_dm_template || ""}
                                                 onChange={(e) => updateForm({ deny_dm_template: e.target.value })}
                                                 placeholder="Unfortunately, your application has been denied."
                                                 rows={3}
-                                                className="w-full px-4 py-3 bg-[#12121a] border border-white/10 rounded-xl text-white focus:border-red-500 transition-all resize-none"
+                                                className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
                                             />
-                                            <p className="text-xs text-gray-500 mt-1">DM sent when application is denied. Use {"{user}"}, {"{reason}"}</p>
+                                            <p className="text-[11px] text-gray-400 mt-1">DM sent when application is denied. Use {"{user}"}, {"{reason}"}</p>
                                         </div>
 
                                         {/* Roles on Approve */}
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-300 mb-2">Add Roles on Approve</label>
-                                            <div className="flex flex-wrap gap-2 p-3 bg-[#12121a] border border-white/10 rounded-xl min-h-[48px]">
+                                            <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Add Roles on Approve</label>
+                                            <div className="flex flex-wrap gap-2 p-3 bg-[#1e1f22] rounded-[4px] min-h-[48px]">
                                                 {(form.add_roles_on_approve || []).map((roleId) => {
                                                     const role = roles.find(r => r.id === roleId);
                                                     return (
                                                         <span
                                                             key={roleId}
-                                                            className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-lg text-sm text-green-400"
+                                                            className="flex items-center gap-1 px-2 py-1 bg-[#2b2d31] rounded-[4px] text-sm text-green-400 font-medium"
                                                         >
                                                             @{role?.name || roleId}
                                                             <button
@@ -828,7 +833,7 @@ export default function FormEditor({
                                                             updateForm({ add_roles_on_approve: [...(form.add_roles_on_approve || []), e.target.value] });
                                                         }
                                                     }}
-                                                    className="px-2 py-1 bg-transparent border border-dashed border-white/20 rounded-lg text-gray-400 text-sm hover:border-green-500/50 cursor-pointer"
+                                                    className="px-2 py-1 bg-transparent border border-dashed border-white/10 rounded-[4px] text-gray-400 text-sm hover:border-[#5865F2] hover:text-[#5865F2] cursor-pointer transition-colors"
                                                 >
                                                     <option value="">+ Add role</option>
                                                     {roles.filter(r => !(form.add_roles_on_approve || []).includes(r.id)).map(r => (
@@ -846,32 +851,27 @@ export default function FormEditor({
                 </div>
 
                 {/* Modal Floating Save Bar */}
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[250] bg-[#0f0f15] border border-white/10 pl-6 pr-2 py-2 rounded-full shadow-2xl animate-fade-in-up flex items-center gap-6">
-                    <span className="text-gray-300 font-medium tracking-wide">Unsaved form changes</span>
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[250] bg-[#1e1f22] border border-[#2b2d31] pl-6 pr-2 py-2 rounded-full shadow-2xl flex items-center gap-6">
+                    <span className="text-gray-300 font-medium text-sm">Unsaved form changes</span>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 text-gray-400 hover:text-white font-bold transition-colors hover:bg-white/5 rounded-full"
+                            className="px-4 py-1.5 text-gray-300 hover:text-white hover:underline transition-colors text-sm"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={() => onSave(form)}
                             disabled={saving || !form.name || !form.title}
-                            className="px-6 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 hover:text-emerald-300 font-bold rounded-full transition-all flex items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-6 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white font-medium rounded-[3px] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                         >
                             {saving ? (
                                 <>
-                                    <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     Saving...
                                 </>
                             ) : (
-                                <>
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Save Form
-                                </>
+                                "Save Changes"
                             )}
                         </button>
                     </div>

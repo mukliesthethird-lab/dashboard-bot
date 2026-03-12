@@ -305,30 +305,34 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
-                <PremiumCard
-                    title="YouTube Content"
-                    description="Broadcast new video uploads"
-                    icon={<svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>}
-                    gradientFrom="red-600"
-                    gradientTo="rose-600"
-                >
-                    <div className="space-y-6">
+                {/* YouTube Content */}
+                <div className="bg-[#2b2d31] rounded-[8px] border border-[#1e1f22] overflow-hidden flex flex-col shadow-lg">
+                    <div className="p-4 border-b border-[#1e1f22] bg-[#1e1f22]/30 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-[8px] bg-[#da373c]/10 flex items-center justify-center text-[#da373c]">
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                        </div>
+                        <div>
+                            <h3 className="text-[#f2f3f5] font-bold text-lg leading-tight">YouTube Content</h3>
+                            <p className="text-[#b5bac1] text-xs">Broadcast new video uploads</p>
+                        </div>
+                    </div>
+                    <div className="p-4 space-y-6">
                         {/* Add Form */}
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 className="text-xs font-black text-red-400 uppercase tracking-widest mb-4">Add New Channel</h4>
+                        <div className="bg-[#1e1f22]/50 p-4 rounded-[8px] border border-[#1e1f22]">
+                            <h4 className="text-[10px] font-bold text-[#da373c] uppercase tracking-widest mb-4">Add New Channel</h4>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">YouTube URL or ID</label>
+                                    <label className="block text-[11px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">YouTube URL or ID</label>
                                     <input
                                         type="text"
                                         value={ytInput}
                                         onChange={(e) => setYtInput(e.target.value)}
                                         placeholder="https://youtube.com/@donpollo"
-                                        className="w-full bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-red-500/50 transition-all"
+                                        className="w-full bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] px-3 py-2 text-sm text-[#dbdee1] placeholder:text-[#4e5058] outline-none transition-all"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Discord Channel</label>
+                                    <label className="block text-[11px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Discord Channel</label>
                                     <CustomDropdown
                                         value={ytChannelId}
                                         onChange={(val) => setYtChannelId(val)}
@@ -341,7 +345,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                 </div>
                                 <button
                                     onClick={() => handleAddFeed('youtube')}
-                                    className="w-full py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-black rounded-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                                    className="w-full py-2 bg-[#248046] hover:bg-[#1a6334] text-white text-sm font-bold rounded-[3px] transition-all flex items-center justify-center gap-2"
                                 >
                                     <span>➕</span> Add YouTube Feed
                                 </button>
@@ -350,20 +354,20 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
 
                         {/* Saved List */}
                         <div className="space-y-3">
-                            <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                            <h4 className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-widest flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-[#da373c] rounded-full animate-pulse"></span>
                                 Currently Tracking
                             </h4>
                             <div className="space-y-2">
                                 {feeds.filter(f => f.type === 'youtube').map(feed => (
-                                    <div key={feed.id} className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between group/item">
+                                    <div key={feed.id} className="bg-[#1e1f22]/50 border border-[#1e1f22] rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
-                                                <p className="text-sm font-bold text-white truncate max-w-[150px]">{feed.feed_url.split('/').pop()}</p>
-                                                <span className="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded font-black">YT</span>
+                                                <p className="text-sm font-bold text-[#f2f3f5] truncate max-w-[150px]">{feed.feed_url.split('/').pop()}</p>
+                                                <span className="text-[10px] bg-[#da373c]/10 text-[#da373c] px-1.5 py-0.5 rounded-[3px] font-bold">YT</span>
                                             </div>
-                                            <div className="flex items-center gap-2 mt-0.5">
-                                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Target:</span>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-[10px] text-[#b5bac1] font-bold uppercase tracking-wider">Target:</span>
                                                 <div className="w-40">
                                                     <CustomDropdown
                                                         value={feed.discord_channel_id}
@@ -374,26 +378,23 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-3">
                                             <button
                                                 onClick={() => openEditor(feed)}
-                                                className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
+                                                className="p-1.5 hover:bg-[#4e5058] rounded-[3px] text-[#b5bac1] hover:text-[#f2f3f5] transition-colors"
                                                 title="Edit Message"
                                             >
                                                 ⚙️
                                             </button>
-                                            <label className="relative inline-flex items-center cursor-pointer scale-75">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={feed.is_enabled}
-                                                    onChange={() => handleToggleFeed(feed.id, feed.is_enabled)}
-                                                    className="sr-only peer"
-                                                />
-                                                <div className="w-11 h-6 bg-white/5 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500 peer-checked:after:bg-white" />
-                                            </label>
+                                            <div
+                                                onClick={() => handleToggleFeed(feed.id, feed.is_enabled)}
+                                                className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${feed.is_enabled ? 'bg-[#248046]' : 'bg-[#4e5058]'}`}
+                                            >
+                                                <div className={`absolute top-[2px] w-4 h-4 bg-white rounded-full transition-transform ${feed.is_enabled ? 'left-[18px]' : 'left-[2px]'}`} />
+                                            </div>
                                             <button
                                                 onClick={() => handleDeleteFeed(feed.id)}
-                                                className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-500 hover:text-red-400 transition-colors"
+                                                className="p-1.5 hover:bg-[#da373c]/10 rounded-[3px] text-[#b5bac1] hover:text-[#da373c] transition-colors"
                                             >
                                                 🗑️
                                             </button>
@@ -401,37 +402,41 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                     </div>
                                 ))}
                                 {feeds.filter(f => f.type === 'youtube').length === 0 && (
-                                    <p className="text-xs text-center text-gray-600 py-4 italic border border-dashed border-white/5 rounded-xl">No feeds tracked yet.</p>
+                                    <p className="text-xs text-center text-[#87898c] py-4 italic border border-dashed border-[#4e5058] rounded-[8px]">No feeds tracked yet.</p>
                                 )}
                             </div>
                         </div>
                     </div>
-                </PremiumCard>
+                </div>
 
-                <PremiumCard
-                    title="Live Streams"
-                    description="Broadcast when you go live"
-                    icon={<svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0h1.714v5.143h-1.714zM4.714 0L1.714 3v15.429h5.143v4.285l4.286-4.285h3.428L22.286 12V0zm15.857 11.142l-3.428 3.429h-3.429l-3 3v-3H6.857V1.714h13.714z" /></svg>}
-                    gradientFrom="purple-600"
-                    gradientTo="indigo-600"
-                >
-                    <div className="space-y-6">
+                {/* Live Streams */}
+                <div className="bg-[#2b2d31] rounded-[8px] border border-[#1e1f22] overflow-hidden flex flex-col shadow-lg">
+                    <div className="p-4 border-b border-[#1e1f22] bg-[#1e1f22]/30 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-[8px] bg-[#5865f2]/10 flex items-center justify-center text-[#5865f2]">
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0h1.714v5.143h-1.714zM4.714 0L1.714 3v15.429h5.143v4.285l4.286-4.285h3.428L22.286 12V0zm15.857 11.142l-3.428 3.429h-3.429l-3 3v-3H6.857V1.714h13.714z" /></svg>
+                        </div>
+                        <div>
+                            <h3 className="text-[#f2f3f5] font-bold text-lg leading-tight">Live Streams</h3>
+                            <p className="text-[#b5bac1] text-xs">Broadcast when you go live</p>
+                        </div>
+                    </div>
+                    <div className="p-4 space-y-6">
                         {/* Add Form */}
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 className="text-xs font-black text-purple-400 uppercase tracking-widest mb-4">Add New Stream</h4>
+                        <div className="bg-[#1e1f22]/50 p-4 rounded-[8px] border border-[#1e1f22]">
+                            <h4 className="text-[10px] font-bold text-[#5865f2] uppercase tracking-widest mb-4">Add New Stream</h4>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Platform URL</label>
+                                    <label className="block text-[11px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Platform URL</label>
                                     <input
                                         type="text"
                                         value={liveInput}
                                         onChange={(e) => setLiveInput(e.target.value)}
                                         placeholder="https://twitch.tv/donpollo"
-                                        className="w-full bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all"
+                                        className="w-full bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] px-3 py-2 text-sm text-[#dbdee1] placeholder:text-[#4e5058] outline-none transition-all"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Discord Channel</label>
+                                    <label className="block text-[11px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Discord Channel</label>
                                     <CustomDropdown
                                         value={liveChannelId}
                                         onChange={(val) => setLiveChannelId(val)}
@@ -444,7 +449,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                 </div>
                                 <button
                                     onClick={() => handleAddFeed('live')}
-                                    className="w-full py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-black rounded-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                                    className="w-full py-2 bg-[#248046] hover:bg-[#1a6334] text-white text-sm font-bold rounded-[3px] transition-all flex items-center justify-center gap-2"
                                 >
                                     <span>➕</span> Add Live Feed
                                 </button>
@@ -453,20 +458,20 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
 
                         {/* Saved List */}
                         <div className="space-y-3">
-                            <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></span>
+                            <h4 className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-widest flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-[#5865f2] rounded-full animate-pulse"></span>
                                 Currently Tracking
                             </h4>
                             <div className="space-y-2">
                                 {feeds.filter(f => f.type === 'live').map(feed => (
-                                    <div key={feed.id} className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between group/item">
+                                    <div key={feed.id} className="bg-[#1e1f22]/50 border border-[#1e1f22] rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
-                                                <p className="text-sm font-bold text-white truncate max-w-[150px]">{feed.feed_url.split('/').pop()}</p>
-                                                <span className="text-[10px] bg-purple-500/10 text-purple-400 px-1.5 py-0.5 rounded font-black">LIVE</span>
+                                                <p className="text-sm font-bold text-[#f2f3f5] truncate max-w-[150px]">{feed.feed_url.split('/').pop()}</p>
+                                                <span className="text-[10px] bg-[#5865f2]/10 text-[#5865f2] px-1.5 py-0.5 rounded-[3px] font-bold">LIVE</span>
                                             </div>
-                                            <div className="flex items-center gap-2 mt-0.5">
-                                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Target:</span>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-[10px] text-[#b5bac1] font-bold uppercase tracking-wider">Target:</span>
                                                 <div className="w-40">
                                                     <CustomDropdown
                                                         value={feed.discord_channel_id}
@@ -477,26 +482,23 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-3">
                                             <button
                                                 onClick={() => openEditor(feed)}
-                                                className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
+                                                className="p-1.5 hover:bg-[#4e5058] rounded-[3px] text-[#b5bac1] hover:text-[#f2f3f5] transition-colors"
                                                 title="Edit Message"
                                             >
                                                 ⚙️
                                             </button>
-                                            <label className="relative inline-flex items-center cursor-pointer scale-75">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={feed.is_enabled}
-                                                    onChange={() => handleToggleFeed(feed.id, feed.is_enabled)}
-                                                    className="sr-only peer"
-                                                />
-                                                <div className="w-11 h-6 bg-white/5 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500 peer-checked:after:bg-white" />
-                                            </label>
+                                            <div
+                                                onClick={() => handleToggleFeed(feed.id, feed.is_enabled)}
+                                                className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${feed.is_enabled ? 'bg-[#248046]' : 'bg-[#4e5058]'}`}
+                                            >
+                                                <div className={`absolute top-[2px] w-4 h-4 bg-white rounded-full transition-transform ${feed.is_enabled ? 'left-[18px]' : 'left-[2px]'}`} />
+                                            </div>
                                             <button
                                                 onClick={() => handleDeleteFeed(feed.id)}
-                                                className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-500 hover:text-red-400 transition-colors"
+                                                className="p-1.5 hover:bg-[#da373c]/10 rounded-[3px] text-[#b5bac1] hover:text-[#da373c] transition-colors"
                                             >
                                                 🗑️
                                             </button>
@@ -504,24 +506,24 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                     </div>
                                 ))}
                                 {feeds.filter(f => f.type === 'live').length === 0 && (
-                                    <p className="text-xs text-center text-gray-600 py-4 italic border border-dashed border-white/5 rounded-xl">No feeds tracked yet.</p>
+                                    <p className="text-xs text-center text-[#87898c] py-4 italic border border-dashed border-[#4e5058] rounded-[8px]">No feeds tracked yet.</p>
                                 )}
                             </div>
                         </div>
                     </div>
-                </PremiumCard>
+                </div>
 
                 {/* Coming Soon / More Platforms */}
                 <div className="md:col-span-2 group relative">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-gray-600 to-slate-600 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-500" />
-                    <div className="relative bg-[#0a0a0f]/40 backdrop-blur-xl border border-dashed border-white/10 p-8 rounded-2xl flex flex-col items-center justify-center text-center">
-                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                            <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-[#5865f2] to-[#4e5058] rounded-[8px] blur opacity-5 group-hover:opacity-10 transition duration-500" />
+                    <div className="relative bg-[#2b2d31] border border-dashed border-[#1e1f22] p-8 rounded-[8px] flex flex-col items-center justify-center text-center">
+                        <div className="w-16 h-16 bg-[#1e1f22] rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-8 h-8 text-[#4e5058]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                         </div>
-                        <h4 className="text-xl font-bold text-gray-300">More Platforms Coming Soon</h4>
-                        <p className="text-gray-500 mt-2 max-w-sm">We're working on integrating TikTok, X (Twitter), and Instagram feeds into your dashboard.</p>
+                        <h4 className="text-xl font-bold text-[#f2f3f5]">More Platforms Coming Soon</h4>
+                        <p className="text-[#b5bac1] mt-2 max-w-sm">We're working on integrating TikTok, X (Twitter), and Instagram feeds into your dashboard.</p>
                     </div>
                 </div>
             </div>

@@ -18,15 +18,15 @@ export default function PremiumCard({
     title,
     description,
     icon,
-    gradientFrom = "amber-500",
-    gradientTo = "orange-500",
+    gradientFrom = "[#5865f2]",
+    gradientTo = "[#4752c4]",
     className = "",
     badge
 }: PremiumCardProps) {
     return (
         <div className={`group relative h-full ${className}`}>
-            <div className={`absolute -inset-0.5 bg-gradient-to-r from-${gradientFrom} to-${gradientTo} rounded-2xl blur opacity-10 group-hover:opacity-30 transition duration-500`} />
-            <div className="relative bg-[#0a0a0f]/80 backdrop-blur-xl border border-white/5 p-6 rounded-2xl h-full flex flex-col">
+            <div className={`absolute -inset-0.5 bg-gradient-to-r from-${gradientFrom} to-${gradientTo} rounded-[8px] blur opacity-10 group-hover:opacity-30 transition duration-500`} />
+            <div className="relative bg-[#2b2d31] border border-[#1e1f22] p-6 rounded-[8px] h-full flex flex-col shadow-sm">
                 {(title || icon) && (
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-4">
@@ -36,8 +36,8 @@ export default function PremiumCard({
                                 </div>
                             )}
                             <div>
-                                {title && <h3 className="text-xl font-bold text-white">{title}</h3>}
-                                {description && <p className="text-sm text-gray-400">{description}</p>}
+                                {title && <h3 className="text-xl font-bold text-[#f2f3f5]">{title}</h3>}
+                                {description && <p className="text-sm text-[#b5bac1]">{description}</p>}
                             </div>
                         </div>
                         {badge && (

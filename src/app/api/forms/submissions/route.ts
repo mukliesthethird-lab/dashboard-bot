@@ -9,8 +9,8 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
-        const formId = searchParams.get('form_id');
-        const guildId = searchParams.get('guild_id');
+        const formId = searchParams.get('formId') || searchParams.get('form_id');
+        const guildId = searchParams.get('guildId') || searchParams.get('guild_id');
         const status = searchParams.get('status');
 
         if (!guildId) {
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
             responses: typeof row.responses === 'string' ? JSON.parse(row.responses) : row.responses || {},
         }));
 
-        return NextResponse.json(submissions);
+        return NextResponse.json({ submissions, total: submissions.length });
     } catch (error: any) {
         console.error('Form Submissions API GET error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });

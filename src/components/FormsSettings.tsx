@@ -41,15 +41,15 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
 
                 if (formsRes.ok) {
                     const formsData = await formsRes.json();
-                    setForms(formsData);
+                    setForms(Array.isArray(formsData) ? formsData : []);
                 }
                 if (channelsRes.ok) {
                     const channelsData = await channelsRes.json();
-                    setChannels(channelsData);
+                    setChannels(Array.isArray(channelsData) ? channelsData : []);
                 }
                 if (rolesRes.ok) {
                     const rolesData = await rolesRes.json();
-                    setRoles(rolesData);
+                    setRoles(Array.isArray(rolesData) ? rolesData : []);
                 }
             } catch (err) {
                 console.error("Error fetching data:", err);
@@ -153,8 +153,36 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
 
     // Toggle form enabled status
     const handleToggleEnabled = async (form: Form) => {
-        const updatedForm = { ...form, is_enabled: !form.is_enabled };
-        await handleSaveForm(updatedForm);
+        const newStatus = !form.is_enabled;
+        const updatedForm = { ...form, is_enabled: newStatus };
+        
+        // Optimistic UI update
+        setForms(forms.map(f => f.id === form.id ? updatedForm : f));
+
+        try {
+            const response = await fetch("/api/forms", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedForm)
+            });
+
+            if (response.ok) {
+                if (newStatus) {
+                    success(`${form.name} is now Active!`);
+                } else {
+                    error(`${form.name} is now Disabled!`);
+                }
+            } else {
+                // Revert state if failed
+                setForms(forms.map(f => f.id === form.id ? form : f));
+                error("Failed to update form status");
+            }
+        } catch (err) {
+            console.error("Error toggling form state:", err);
+            // Revert state
+            setForms(forms.map(f => f.id === form.id ? form : f));
+            error("Failed to update form status");
+        }
     };
 
     // Format date for display
@@ -199,7 +227,7 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
                 </div>
                 <button
                     onClick={handleCreateForm}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 hover:-translate-y-0.5"
+                    className="flex items-center gap-2 px-4 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[4px] transition-colors"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -222,51 +250,51 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
                     {forms.map((form) => (
                         <div
                             key={form.id}
-                            className="group bg-[#12121a] border border-white/10 rounded-2xl overflow-hidden hover:border-amber-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-amber-500/10"
+                            className="group bg-[#2b2d31] rounded-[8px] overflow-hidden transition-all duration-200 hover:shadow-lg"
                         >
                             {/* Card Header */}
-                            <div className="p-5 border-b border-white/5">
+                            <div className="p-4 border-b border-[#1e1f22]">
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-bold text-white text-lg truncate group-hover:text-amber-400 transition-colors">
+                                        <h3 className="font-bold text-white text-base truncate transition-colors">
                                             {form.name}
                                         </h3>
-                                        <p className="text-gray-500 text-sm truncate mt-1">
+                                        <p className="text-[#dbdee1] text-xs truncate mt-1">
                                             {form.title}
                                         </p>
                                     </div>
-                                    <div className={`w-3 h-3 rounded-full flex-shrink-0 mt-1.5 ${form.is_enabled ? "bg-emerald-500 shadow-lg shadow-emerald-500/50" : "bg-gray-600"}`} />
+                                    <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1.5 ${form.is_enabled ? "bg-[#23a559]" : "bg-[#80848e]"}`} />
                                 </div>
 
                                 {/* Submission Type Badge */}
                                 <div className="mt-3 flex items-center gap-2">
-                                    <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${getSubmissionTypeBadge(form.submission_type)}`}>
+                                    <span className={`px-2 py-0.5 text-[11px] font-bold rounded-[4px] uppercase ${getSubmissionTypeBadge(form.submission_type)}`}>
                                         {form.submission_type === "application" ? "📝 Application" :
                                             form.submission_type === "ticket" ? "🎫 Ticket" : "📤 Default"}
                                     </span>
-                                    <span className="text-xs text-gray-500">
-                                        {form.pages.length} page{form.pages.length !== 1 ? "s" : ""}
+                                    <span className="text-[11px] font-medium text-[#b5bac1] bg-[#1e1f22] px-2 py-0.5 rounded-[4px]">
+                                        {form.pages.length} PAGE{form.pages.length !== 1 ? "S" : ""}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Stats */}
-                            <div className="p-5 bg-[#0a0a0f]/50">
-                                <div className="flex items-center justify-between text-sm mb-3">
-                                    <span className="text-gray-400">Submissions</span>
+                            <div className="px-4 py-3 bg-[#1e1f22]/50">
+                                <div className="flex items-center justify-between text-xs mb-2">
+                                    <span className="text-[#b5bac1] font-medium">Submissions</span>
                                     <span className="font-bold text-white">{form.submission_count || 0}</span>
                                 </div>
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-gray-400">Last Response</span>
-                                    <span className="text-gray-300 text-xs">{formatDate(form.last_submission)}</span>
+                                <div className="flex items-center justify-between text-xs">
+                                    <span className="text-[#b5bac1] font-medium">Last Response</span>
+                                    <span className="text-[#dbdee1]">{formatDate(form.last_submission)}</span>
                                 </div>
                             </div>
 
                             {/* Actions */}
-                            <div className="p-4 border-t border-white/5 flex items-center gap-2">
+                            <div className="p-3 border-t border-[#1e1f22] flex items-center gap-2">
                                 <button
                                     onClick={() => handleEditForm(form)}
-                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition-all"
+                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 bg-[#4e5058] hover:bg-[#686d73] text-white text-sm font-medium rounded-[3px] transition-colors"
                                     title="Edit Form"
                                 >
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -276,34 +304,36 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
                                 </button>
                                 <button
                                     onClick={() => setViewingSubmissions(form)}
-                                    className="px-3 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-xl transition-all font-semibold"
+                                    className="px-3 flex items-center justify-center py-1.5 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-[3px] transition-colors"
                                     title="View Submissions"
                                 >
-                                    📋
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                 </button>
                                 <button
                                     onClick={() => setSendingPanel(form)}
-                                    className="px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-xl transition-all font-semibold"
+                                    className="px-3 flex items-center justify-center py-1.5 bg-[#4e5058] hover:bg-[#686d73] text-white rounded-[3px] transition-colors"
                                     title="Send Panel to Channel"
                                 >
-                                    📤
-                                </button>
-                                <button
-                                    onClick={() => handleToggleEnabled(form)}
-                                    className={`px-3 py-2 rounded-xl font-semibold transition-all ${form.is_enabled
-                                        ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
-                                        : "bg-gray-500/20 text-gray-400 hover:bg-gray-500/30"
-                                        }`}
-                                    title={form.is_enabled ? "Disable" : "Enable"}
-                                >
-                                    {form.is_enabled ? "🟢" : "⚫"}
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                                 </button>
                                 <button
                                     onClick={() => setDeleteConfirm(form)}
-                                    className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-xl transition-all"
+                                    className="px-3 flex items-center justify-center py-1.5 bg-[#da373c] hover:bg-[#a12828] text-white rounded-[3px] transition-colors"
                                     title="Delete"
                                 >
-                                    🗑️
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                                
+                                <div className="w-px h-6 bg-[#4e5058] mx-0.5"></div>
+                                
+                                <button
+                                    onClick={() => handleToggleEnabled(form)}
+                                    className={`relative inline-flex h-[24px] w-[40px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${form.is_enabled ? "bg-[#23a559]" : "bg-[#80848e]"}`}
+                                    title={form.is_enabled ? "Turn Off" : "Turn On"}
+                                >
+                                    <span
+                                        className={`pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${form.is_enabled ? "translate-x-[16px]" : "translate-x-0"}`}
+                                    />
                                 </button>
                             </div>
                         </div>
@@ -329,15 +359,17 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
 
             {/* Submissions Viewer */}
             {viewingSubmissions && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 overflow-y-auto">
-                    <div className="min-h-screen p-4 md:p-8">
-                        <FormSubmissions
-                            guildId={guildId}
-                            formId={viewingSubmissions.id!}
-                            formName={viewingSubmissions.name}
-                            submissionType={viewingSubmissions.submission_type}
-                            onBack={() => setViewingSubmissions(null)}
-                        />
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-8 animate-fade-in">
+                    <div className="w-full max-w-7xl max-h-full bg-[#313338] rounded-[8px] shadow-2xl flex flex-col overflow-hidden animate-slide-up">
+                        <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+                            <FormSubmissions
+                                guildId={guildId}
+                                formId={viewingSubmissions.id!}
+                                formName={viewingSubmissions.name}
+                                submissionType={viewingSubmissions.submission_type}
+                                onBack={() => setViewingSubmissions(null)}
+                            />
+                        </div>
                     </div>
                 </div>
             )}

@@ -89,7 +89,7 @@ export default function FormSubmissions({
         } finally {
             setLoading(false);
         }
-    }, [formId, guildId, statusFilter, searchTerm, error]);
+    }, [formId, guildId, statusFilter, searchTerm]);
 
     useEffect(() => {
         fetchSubmissions();
@@ -216,18 +216,32 @@ export default function FormSubmissions({
         success("Exported to CSV");
     };
 
+    const getEmbedColor = (status: string) => {
+        switch (status) {
+            case 'pending':
+                return 'border-[#fee75c]'; // Discord yellow
+            case 'approved':
+                return 'border-[#57F287]'; // Discord green
+            case 'denied':
+                return 'border-[#ED4245]'; // Discord red
+            case 'submitted':
+            default:
+                return 'border-[#5865F2]'; // Discord blurple
+        }
+    };
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'pending':
-                return <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">⏳ Pending</span>;
+                return <span className="px-2 py-0.5 rounded-md bg-[#fee75c]/10 text-[#fee75c] text-xs font-bold uppercase border border-[#fee75c]/20">Pending</span>;
             case 'approved':
-                return <span className="px-2.5 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold">✅ Approved</span>;
+                return <span className="px-2 py-0.5 rounded-md bg-[#57F287]/10 text-[#57F287] text-xs font-bold uppercase border border-[#57F287]/20">Approved</span>;
             case 'denied':
-                return <span className="px-2.5 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-bold">❌ Denied</span>;
+                return <span className="px-2 py-0.5 rounded-md bg-[#ED4245]/10 text-[#ED4245] text-xs font-bold uppercase border border-[#ED4245]/20">Denied</span>;
             case 'submitted':
-                return <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold">📋 Submitted</span>;
+                return <span className="px-2 py-0.5 rounded-md bg-[#5865F2]/10 text-[#5865F2] text-xs font-bold uppercase border border-[#5865F2]/20">Submitted</span>;
             default:
-                return <span className="px-2.5 py-1 rounded-full bg-gray-500/20 text-gray-400 text-xs font-bold">{status}</span>;
+                return <span className="px-2 py-0.5 rounded-md bg-gray-500/10 text-gray-400 text-xs font-bold uppercase border border-gray-500/20">{status}</span>;
         }
     };
 
@@ -270,7 +284,7 @@ export default function FormSubmissions({
             <div className="flex items-center gap-4 mb-4">
                 <button
                     onClick={onBack}
-                    className="p-2.5 rounded-xl bg-[#16161f] border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white transition"
+                    className="p-2.5 rounded-[4px] bg-[#2b2d31] border border-[#1e1f22] text-gray-400 hover:bg-[#1e1f22] hover:text-white transition"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -288,20 +302,20 @@ export default function FormSubmissions({
             </div>
 
             {/* Controls */}
-            <div className="bg-[#16161f] rounded-3xl p-6 border border-white/10 space-y-4 mb-4">
+            <div className="bg-[#2b2d31] rounded-[8px] p-6 border border-[#1e1f22] space-y-4 mb-4">
                 <div className="flex flex-col md:flex-row gap-4">
                     <input
                         type="text"
                         placeholder="Search by username or response..."
                         value={searchTerm}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="flex-1 px-5 py-3 bg-white/5 border border-white/10 rounded-xl font-medium text-white focus:outline-none focus:border-amber-500/50 transition"
+                        className="flex-1 px-5 py-3 bg-[#1e1f22] border-none rounded-[4px] font-medium text-white focus:outline-none focus:ring-0 transition text-sm"
                     />
 
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-medium focus:outline-none focus:border-amber-500/50"
+                        className="px-4 py-3 bg-[#1e1f22] border-none rounded-[4px] text-white font-medium focus:outline-none focus:ring-0 transition text-sm min-w-[200px]"
                     >
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
@@ -314,17 +328,17 @@ export default function FormSubmissions({
                 <div className="flex flex-wrap gap-3">
                     <button
                         onClick={() => setIsMassEdit(!isMassEdit)}
-                        className={`px-4 py-2 rounded-xl border font-bold transition flex items-center gap-2 text-sm ${isMassEdit ? 'bg-amber-500/10 border-amber-500 text-amber-400' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'}`}
+                        className={`px-4 py-2 rounded-[4px] font-medium transition flex items-center gap-2 text-sm ${isMassEdit ? 'bg-[#5865F2] text-white hover:bg-[#4752c4]' : 'bg-[#4f545c] text-white hover:bg-[#5d6269]'}`}
                     >
-                        <span className="text-lg">📚</span> Bulk Actions
+                        📚 Bulk Actions
                     </button>
 
                     <button
                         onClick={exportToCSV}
                         disabled={submissions.length === 0}
-                        className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 font-bold transition flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 rounded-[4px] bg-[#4f545c] text-white hover:bg-[#5d6269] font-medium transition flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <span className="text-lg">📥</span> Export CSV
+                        📥 Export CSV
                     </button>
 
                     <div className="ml-auto text-gray-500 text-sm font-medium self-center">
@@ -395,153 +409,214 @@ export default function FormSubmissions({
                 )}
             </div>
 
-            {/* Submissions Table */}
-            <div className="bg-[#16161f] rounded-3xl border border-white/10 overflow-hidden">
-                <div className="overflow-x-auto">
-                    {loading ? (
+            {/* Submissions Embed Cards */}
+            <div className="w-full mt-4">
+                 {loading ? (
+                    <div className="bg-[#2b2d31] rounded-[8px] border border-[#1e1f22] p-8">
                         <CatLoader message="Loading submissions..." />
-                    ) : submissions.length === 0 ? (
+                    </div>
+                ) : submissions.length === 0 ? (
+                    <div className="bg-[#2b2d31] rounded-[8px] border border-[#1e1f22] p-8">
                         <EmptyState
                             icon="📋"
                             title="No Submissions Yet"
                             description="This form hasn't received any submissions yet. Once users start filling out the form, their responses will appear here."
                         />
-                    ) : (
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-white/5 border-b border-white/10 text-gray-400 text-xs uppercase tracking-wider font-extrabold">
-                                    {isMassEdit && (
-                                        <th className="px-6 py-4 w-12">
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full">
+                        {submissions.map((item) => {
+                            const dateInfo = formatDate(item.submitted_at);
+                            return (
+                                <div key={item.id} className="relative flex flex-col w-full animate-fade-in group">
+                                     {/* Mass Edit Checkbox */}
+                                     {isMassEdit && (
+                                        <div className="absolute -left-6 top-6 z-10 w-6 h-6 flex items-center justify-center">
                                             <input
                                                 type="checkbox"
-                                                className="w-5 h-5 rounded border-white/20 bg-white/5 text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500"
-                                                checked={selectedIds.size === submissions.length && submissions.length > 0}
-                                                onChange={selectAll}
+                                                className="w-5 h-5 rounded border-white/20 bg-[#2b2d31] text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500 shadow-xl"
+                                                checked={selectedIds.has(item.id)}
+                                                onChange={() => toggleSelection(item.id)}
                                             />
-                                        </th>
+                                        </div>
                                     )}
-                                    <th className="px-6 py-4">ID</th>
-                                    <th className="px-6 py-4">User</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4">Submitted</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {submissions.map((item) => {
-                                    const dateInfo = formatDate(item.submitted_at);
-                                    return (
-                                        <tr key={item.id} className="hover:bg-white/5 transition group">
-                                            {isMassEdit && (
-                                                <td className="px-6 py-4">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="w-5 h-5 rounded border-white/20 bg-white/5 text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500"
-                                                        checked={selectedIds.has(item.id)}
-                                                        onChange={() => toggleSelection(item.id)}
-                                                    />
-                                                </td>
-                                            )}
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="font-bold text-white font-mono">#{item.id}</span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div
-                                                        className="w-8 h-8 rounded-full bg-[#202029] bg-cover bg-center shrink-0 border border-white/10"
-                                                        style={{ backgroundImage: `url(${getAvatarUrl(item.user_id)})` }}
-                                                    ></div>
-                                                    <div>
-                                                        <div className="font-bold text-gray-200 text-sm">{item.username}</div>
-                                                        <div className="text-xs text-gray-500 font-mono">{item.user_id}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {getStatusBadge(item.status)}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm font-bold text-gray-300">{dateInfo.full}</div>
-                                                <div className="text-xs text-gray-500">{dateInfo.relative}</div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedSubmission(item);
-                                                            setShowDetailModal(true);
-                                                        }}
-                                                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition"
-                                                        title="View Details"
-                                                    >
-                                                        👁️
-                                                    </button>
 
-                                                    {submissionType === 'application' && item.status === 'pending' && (
+                                    {/* Discord Embed Card container */}
+                                    <div className={`flex flex-col bg-[#2b2d31] rounded-[4px] border-l-4 ${getEmbedColor(item.status)} overflow-hidden ${isMassEdit && selectedIds.has(item.id) ? 'ring-2 ring-amber-500/50' : ''}`}>
+                                        
+                                        {/* Embed Body */}
+                                        <div className="p-4 flex flex-col gap-3">
+                                            {/* Header Section */}
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-white text-sm">Forms</span>
+                                                    <span className="bg-[#5865F2] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-[3px] leading-none flex items-center gap-1">
+                                                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path fillRule="evenodd" clipRule="evenodd" d="M19.9626 5.37899L18.6656 4.08599L10.2836 12.463L6.33862 8.525L5.04262 9.818L10.2836 15.053L19.9626 5.37899Z" />
+                                                        </svg>
+                                                        APP
+                                                    </span>
+                                                    <span className="text-gray-400 text-[12px] ml-1">{dateInfo.relative}</span>
+                                                </div>
+                                                {getStatusBadge(item.status)}
+                                            </div>
+
+                                            {/* Title / Author Info */}
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <img 
+                                                    src={getAvatarUrl(item.user_id)} 
+                                                    alt={item.username}
+                                                    className="w-6 h-6 rounded-full"
+                                                />
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold text-white text-[15px] leading-tight hover:underline cursor-pointer">{item.username}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Responses body */}
+                                            <div className="flex flex-col mt-2 space-y-3">
+                                                {Object.entries(item.responses).map(([question, answer]) => (
+                                                    <div key={question} className="flex flex-col gap-1">
+                                                        <h3 className="font-bold text-white text-[14px] leading-tight flex items-start gap-1">
+                                                            <span>{question}</span>
+                                                        </h3>
+                                                        <div className="text-[#dbdee1] text-[14px] whitespace-pre-wrap break-words leading-relaxed pl-1 border-l-2 border-[#4E5058] rounded-sm py-0.5 bg-[#1E1F22]/30 px-2">
+                                                            {answer ? answer : <span className="italic text-gray-500">No response</span>}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Footer Info */}
+                                            <div className="mt-4 flex items-center justify-between text-[11px] font-medium text-gray-400">
+                                                <div className="flex items-center gap-2">
+                                                    <span>Submission #{item.id}</span>
+                                                    <span>•</span>
+                                                    <span className="font-mono">{item.user_id}</span>
+                                                    {item.reviewed_by && (
                                                         <>
-                                                            <button
-                                                                onClick={() => handleStatusUpdate(item.id, 'approved')}
-                                                                disabled={actionLoading}
-                                                                className="p-2 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 transition disabled:opacity-50"
-                                                                title="Approve"
-                                                            >
-                                                                ✅
-                                                            </button>
-                                                            <button
-                                                                onClick={() => {
-                                                                    setPendingDenyId(item.id);
-                                                                    setShowDenyModal(true);
-                                                                }}
-                                                                disabled={actionLoading}
-                                                                className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition disabled:opacity-50"
-                                                                title="Deny"
-                                                            >
-                                                                ❌
-                                                            </button>
+                                                            <span>•</span>
+                                                            <span>Reviewed by {item.reviewed_by}</span>
                                                         </>
                                                     )}
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    )}
-                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons (Discord styled) */}
+                                    <div className="flex gap-2 mt-2 flex-wrap">
+                                         <button
+                                            onClick={() => {
+                                                setSelectedSubmission(item);
+                                                setShowDetailModal(true);
+                                            }}
+                                            className="px-4 py-2 bg-[#4e5058] hover:bg-[#686d73] text-white text-sm font-medium rounded-[4px] transition-colors"
+                                        >
+                                            View Details
+                                        </button>
+
+                                        {submissionType === 'application' && item.status === 'pending' && (
+                                            <>
+                                                <button
+                                                    onClick={() => handleStatusUpdate(item.id, 'approved')}
+                                                    disabled={actionLoading}
+                                                    className="px-4 py-2 bg-[#248046] hover:bg-[#1a5f33] text-white text-sm font-medium rounded-[4px] transition-colors disabled:opacity-50"
+                                                >
+                                                    Approve
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setPendingDenyId(item.id);
+                                                        setShowDenyModal(true);
+                                                    }}
+                                                    disabled={actionLoading}
+                                                    className="px-4 py-2 bg-[#da373c] hover:bg-[#a12828] text-white text-sm font-medium rounded-[4px] transition-colors disabled:opacity-50"
+                                                >
+                                                    Deny
+                                                </button>
+                                            </>
+                                        )}
+                                        
+                                        {/* Optional Delete Button per item for quicker management */}
+                                        <button
+                                            onClick={() => setConfirmAction({
+                                                isOpen: true,
+                                                title: `Delete Submission #${item.id}`,
+                                                message: `Are you sure you want to permanently delete submission from ${item.username}?`,
+                                                action: () => {
+                                                    setSelectedIds(new Set([item.id]));
+                                                    handleBulkAction('delete');
+                                                }
+                                            })}
+                                            disabled={actionLoading}
+                                            className="ml-auto p-2 bg-transparent hover:bg-red-500/10 text-red-400 rounded-[4px] transition-colors disabled:opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                            title="Delete Submission"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
 
             {/* Detail Modal */}
             {showDetailModal && selectedSubmission && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowDetailModal(false)}>
-                    <div className="bg-[#16161f] border border-white/10 rounded-3xl p-8 w-full max-w-2xl max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-start justify-between mb-6">
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setShowDetailModal(false)}>
+                    <div className="bg-[#2b2d31] shadow-2xl rounded-[4px] border-l-4 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up" style={{ borderLeftColor: getEmbedColor(selectedSubmission.status).replace('border-[', '').replace(']', '') }} onClick={e => e.stopPropagation()}>
+                        
+                        {/* Modal Header */}
+                        <div className="p-6 pb-4 border-b border-[#1E1F22]/50 flex items-start justify-between">
                             <div>
-                                <h2 className="text-2xl font-black text-white">📋 Submission #{selectedSubmission.id}</h2>
-                                <p className="text-gray-400 mt-1">Submitted by {selectedSubmission.username}</p>
-                            </div>
-                            {getStatusBadge(selectedSubmission.status)}
-                        </div>
-
-                        <div className="space-y-4 mb-6">
-                            {Object.entries(selectedSubmission.responses).map(([question, answer]) => (
-                                <div key={question} className="bg-white/5 border border-white/10 rounded-xl p-4">
-                                    <div className="text-sm font-bold text-amber-400 mb-2">{question}</div>
-                                    <div className="text-gray-200 whitespace-pre-wrap">{answer || <span className="text-gray-500 italic">No response</span>}</div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="font-bold text-white text-sm">Forms</span>
+                                    <span className="bg-[#5865F2] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-[3px] leading-none flex items-center gap-1">APP</span>
                                 </div>
-                            ))}
+                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                    Submission #{selectedSubmission.id}
+                                    {getStatusBadge(selectedSubmission.status)}
+                                </h2>
+                            </div>
+                            <button onClick={() => setShowDetailModal(false)} className="text-gray-400 hover:text-white transition p-1">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
                         </div>
 
-                        <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                            <div className="text-sm text-gray-500">
-                                User ID: <span className="font-mono text-gray-400">{selectedSubmission.user_id}</span>
+                        {/* Modal Body */}
+                        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+                            <div className="flex items-center gap-3 mb-6">
+                                <img src={getAvatarUrl(selectedSubmission.user_id)} alt="Avatar" className="w-10 h-10 rounded-full" />
+                                <div>
+                                    <div className="text-white font-bold text-lg leading-tight hover:underline cursor-pointer">{selectedSubmission.username}</div>
+                                    <div className="text-gray-400 font-mono text-xs">{selectedSubmission.user_id}</div>
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                {Object.entries(selectedSubmission.responses).map(([question, answer]) => (
+                                    <div key={question} className="flex flex-col gap-1.5">
+                                        <h3 className="font-bold text-white text-[15px]">{question}</h3>
+                                        <div className="text-[#dbdee1] text-[15px] whitespace-pre-wrap break-words leading-relaxed pl-2 border-l-2 border-[#4E5058] rounded-sm py-1 bg-[#1E1F22]/30 px-3">
+                                            {answer || <span className="text-gray-500 italic">No response provided</span>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Modal Footer / Actions */}
+                        <div className="p-4 bg-[#2b2d31] border-t border-[#1E1F22]/50 flex items-center justify-between mt-auto">
+                            <div className="text-[11px] font-medium text-gray-400">
+                                <span className="font-bold text-gray-300">{formatDate(selectedSubmission.submitted_at).full}</span>
                             </div>
 
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => setShowDetailModal(false)}
-                                    className="px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-400 font-bold rounded-xl transition"
-                                >
+                            <div className="flex gap-2">
+                                <button onClick={() => setShowDetailModal(false)} className="px-4 py-2 hover:underline text-white font-medium text-sm transition">
                                     Close
                                 </button>
 
@@ -553,9 +628,9 @@ export default function FormSubmissions({
                                                 setShowDetailModal(false);
                                             }}
                                             disabled={actionLoading}
-                                            className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition disabled:opacity-50"
+                                            className="px-4 py-2 bg-[#248046] hover:bg-[#1a5f33] text-white font-medium text-sm rounded-[4px] transition disabled:opacity-50"
                                         >
-                                            ✅ Approve
+                                            Approve
                                         </button>
                                         <button
                                             onClick={() => {
@@ -564,9 +639,9 @@ export default function FormSubmissions({
                                                 setShowDetailModal(false);
                                             }}
                                             disabled={actionLoading}
-                                            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition disabled:opacity-50"
+                                            className="px-4 py-2 bg-[#da373c] hover:bg-[#a12828] text-white font-medium text-sm rounded-[4px] transition disabled:opacity-50"
                                         >
-                                            ❌ Deny
+                                            Deny
                                         </button>
                                     </>
                                 )}

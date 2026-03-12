@@ -313,13 +313,13 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
     // User search component (inline)
     const renderUserSearch = () => (
         selectedUser ? (
-            <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10">
-                <img src={selectedUser.avatar || defaultAvatar} alt="" className="w-10 h-10 rounded-full border-2 border-white/20 shadow" />
+            <div className="flex items-center gap-3 p-3 bg-[#1e1f22] rounded-[4px]">
+                <img src={selectedUser.avatar || defaultAvatar} alt="" className="w-10 h-10 rounded-full" />
                 <div className="flex-1">
-                    <div className="font-bold text-white">@{selectedUser.username}</div>
-                    <div className="text-xs text-gray-400">ID: {selectedUser.user_id} • Fish: {selectedUser.total_catch}</div>
+                    <div className="font-medium text-[#dbdee1]">@{selectedUser.username}</div>
+                    <div className="text-xs text-[#87898c]">ID: {selectedUser.user_id} • Fish: {selectedUser.total_catch}</div>
                 </div>
-                <button onClick={() => setSelectedUser(null)} className="text-gray-400 hover:text-red-400 text-xl">✕</button>
+                <button onClick={() => setSelectedUser(null)} className="text-[#87898c] hover:text-[#da373c] text-lg">✕</button>
             </div>
         ) : (
             <div className="relative">
@@ -327,31 +327,31 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Ketik User ID (min 1 karakter)..."
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-amber-500/50 focus:outline-none font-medium text-white"
+                    placeholder="Enter User ID (min 1 char)..."
+                    className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]"
                     autoFocus
                 />
-                {searching && <div className="absolute right-3 top-3 text-amber-400 animate-pulse">⏳</div>}
+                {searching && <div className="absolute right-3 top-2.5 text-[#dbdee1] animate-pulse">⏳</div>}
                 {searchResults.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-[#16161f] rounded-xl border border-white/10 shadow-2xl max-h-60 overflow-y-auto">
+                    <div className="absolute z-10 w-full mt-1 bg-[#2b2d31] rounded-[4px] shadow-xl max-h-60 overflow-y-auto py-1 border border-[#1e1f22]">
                         {searchResults.map(user => (
-                            <button key={user.user_id} onClick={() => handleSelectUser(user)} className="w-full flex items-center gap-3 p-3 hover:bg-white/5 transition text-left border-b border-white/5 last:border-0">
-                                <img src={user.avatar || defaultAvatar} alt="" className="w-12 h-12 rounded-full border-2 border-white/20 shadow" />
+                            <button key={user.user_id} onClick={() => handleSelectUser(user)} className="w-full flex items-center gap-3 p-2 hover:bg-[#313338] transition text-left">
+                                <img src={user.avatar || defaultAvatar} alt="" className="w-8 h-8 rounded-full" />
                                 <div className="flex-1">
-                                    <div className="font-bold text-white">@{user.username}</div>
-                                    <div className="text-xs text-gray-500">{user.user_id}</div>
+                                    <div className="font-medium text-[#dbdee1] text-sm">@{user.username}</div>
+                                    <div className="text-xs text-[#87898c]">{user.user_id}</div>
                                 </div>
-                                <div className="font-black text-amber-400 text-lg">🐟 {user.total_catch}</div>
+                                <div className="font-semibold text-[#f0b232] text-sm">🐟 {user.total_catch}</div>
                             </button>
                         ))}
                     </div>
                 )}
                 {searchQuery.length > 0 && searchQuery.length < 1 && (
-                    <div className="text-xs text-gray-500 mt-1">Ketik minimal 1 karakter</div>
+                    <div className="text-xs text-[#da373c] mt-1 font-semibold">Min 1 character</div>
                 )}
                 {searchQuery.length >= 1 && searchResults.length === 0 && !searching && (
-                    <div className="absolute z-10 w-full mt-1 bg-[#16161f] rounded-xl border border-white/10 shadow-xl p-4 text-center text-gray-500">
-                        Tidak ada hasil untuk "{searchQuery}"
+                    <div className="absolute z-10 w-full mt-1 bg-[#2b2d31] rounded-[4px] py-3 text-center text-[#87898c] text-sm border border-[#1e1f22]">
+                        No results for "{searchQuery}"
                     </div>
                 )}
             </div>
@@ -365,227 +365,260 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
     return (
         <>
             {/* Stats Grid - Dark Theme */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="glass-card rounded-2xl p-5">
-                    <div className="text-3xl mb-2">👥</div>
-                    <div className="text-2xl font-black text-white">{loading ? "..." : (stats?.totalFishers ?? 0).toLocaleString()}</div>
-                    <div className="text-amber-400 font-bold text-xs">Fishers</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 mt-4">
+                <div className="bg-[#2b2d31] rounded-[8px] p-6 border border-[#1e1f22]">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 rounded-full bg-[#1e1f22] flex items-center justify-center text-lg text-[#b5bac1]">👥</div>
+                        <h3 className="text-sm font-bold text-[#b5bac1] uppercase tracking-wide">Fishers</h3>
+                    </div>
+                    <div className="text-3xl font-bold text-[#dbdee1]">{loading ? "..." : (stats?.totalFishers ?? 0).toLocaleString()}</div>
                 </div>
-                <div className="glass-card rounded-2xl p-5">
-                    <div className="text-3xl mb-2">🐟</div>
-                    <div className="text-2xl font-black text-white">{loading ? "..." : (stats?.totalFishCaught ?? 0).toLocaleString()}</div>
-                    <div className="text-amber-400 font-bold text-xs">Fish Caught</div>
+
+                <div className="bg-[#2b2d31] rounded-[8px] p-6 border border-[#1e1f22]">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 rounded-full bg-[#1e1f22] flex items-center justify-center text-lg text-[#f0b232]">🐟</div>
+                        <h3 className="text-sm font-bold text-[#b5bac1] uppercase tracking-wide">Fish Caught</h3>
+                    </div>
+                    <div className="text-3xl font-bold text-[#dbdee1]">{loading ? "..." : (stats?.totalFishCaught ?? 0).toLocaleString()}</div>
                 </div>
-                <div className="glass-card rounded-2xl p-5">
-                    <div className="text-3xl mb-2">🎣</div>
-                    <div className="text-2xl font-black text-white">{loading ? "..." : (stats?.totalRods ?? 0).toLocaleString()}</div>
-                    <div className="text-amber-400 font-bold text-xs">Rods</div>
+
+                <div className="bg-[#2b2d31] rounded-[8px] p-6 border border-[#1e1f22]">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 rounded-full bg-[#1e1f22] flex items-center justify-center text-lg text-[#f0b232]">🎣</div>
+                        <h3 className="text-sm font-bold text-[#b5bac1] uppercase tracking-wide">Rods</h3>
+                    </div>
+                    <div className="text-3xl font-bold text-[#dbdee1]">{loading ? "..." : (stats?.totalRods ?? 0).toLocaleString()}</div>
                 </div>
-                <div className="glass-card rounded-2xl p-5">
-                    <div className="text-3xl mb-2">👑</div>
-                    <div className="text-2xl font-black text-white">{loading ? "..." : (stats?.topFishers?.[0]?.total_catch ?? 0).toLocaleString()}</div>
-                    <div className="text-amber-400 font-bold text-xs">Top Fisher</div>
+
+                <div className="bg-[#2b2d31] rounded-[8px] p-6 border border-[#1e1f22]">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 rounded-full bg-[#1e1f22] flex items-center justify-center text-xl text-[#f0b232]">👑</div>
+                        <h3 className="text-sm font-bold text-[#b5bac1] uppercase tracking-wide">Top Fisher</h3>
+                    </div>
+                    <div className="text-3xl font-bold text-[#f0b232]">{loading ? "..." : (stats?.topFishers?.[0]?.total_catch ?? 0).toLocaleString()}</div>
                 </div>
             </div>
 
             {/* Fishing Actions - Dark Theme */}
-            <div className="glass-card rounded-3xl p-6 mb-8">
-                <h2 className="text-xl font-black text-white mb-4">⚡ Fishing Actions</h2>
+            <div className="bg-[#2b2d31] rounded-[8px] p-6 mb-4 border border-[#1e1f22]">
+                <h2 className="text-lg font-bold text-[#dbdee1] mb-4 flex items-center gap-2">
+                    <span className="text-[#f0b232]">⚡</span> Fishing Actions
+                </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <button onClick={() => setShowGiveRod(true)} className="p-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition text-center group">
-                        <div className="text-2xl mb-1 group-hover:scale-110 transition">🎣</div>
-                        <div className="font-bold text-white text-xs">Give Rod</div>
+                    <button onClick={() => setShowGiveRod(true)} className="p-4 rounded-[4px] bg-[#1e1f22] hover:bg-[#313338] border border-transparent hover:border-[#5865F2]/50 transition text-center group flex flex-col items-center justify-center gap-2 h-28">
+                        <div className="text-2xl group-hover:scale-110 transition bg-[#2b2d31] w-12 h-12 flex items-center justify-center rounded-full text-[#b5bac1]">🎣</div>
+                        <div className="font-semibold text-[#dbdee1] text-xs">Give Rod</div>
                     </button>
-                    <button onClick={() => setShowGiveMaterial(true)} className="p-4 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition text-center group">
-                        <div className="text-2xl mb-1 group-hover:scale-110 transition">🔩</div>
-                        <div className="font-bold text-white text-xs">Give Material</div>
+                    <button onClick={() => setShowGiveMaterial(true)} className="p-4 rounded-[4px] bg-[#1e1f22] hover:bg-[#313338] border border-transparent hover:border-[#5865F2]/50 transition text-center group flex flex-col items-center justify-center gap-2 h-28">
+                        <div className="text-2xl group-hover:scale-110 transition bg-[#2b2d31] w-12 h-12 flex items-center justify-center rounded-full text-[#b5bac1]">🔩</div>
+                        <div className="font-semibold text-[#dbdee1] text-xs">Give Material</div>
                     </button>
-                    <button onClick={() => setShowGiveBuff(true)} className="p-4 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 transition text-center group">
-                        <div className="text-2xl mb-1 group-hover:scale-110 transition">🚬</div>
-                        <div className="font-bold text-white text-xs">Give Buff</div>
+                    <button onClick={() => setShowGiveBuff(true)} className="p-4 rounded-[4px] bg-[#1e1f22] hover:bg-[#313338] border border-transparent hover:border-[#5865F2]/50 transition text-center group flex flex-col items-center justify-center gap-2 h-28">
+                        <div className="text-2xl group-hover:scale-110 transition bg-[#2b2d31] w-12 h-12 flex items-center justify-center rounded-full text-[#b5bac1]">🚬</div>
+                        <div className="font-semibold text-[#dbdee1] text-xs">Give Buff</div>
                     </button>
-                    <button onClick={() => setShowViewUser(true)} className="p-4 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition text-center group">
-                        <div className="text-2xl mb-1 group-hover:scale-110 transition">👤</div>
-                        <div className="font-bold text-white text-xs">View User</div>
+                    <button onClick={() => setShowViewUser(true)} className="p-4 rounded-[4px] bg-[#1e1f22] hover:bg-[#313338] border border-transparent hover:border-[#5865F2]/50 transition text-center group flex flex-col items-center justify-center gap-2 h-28">
+                        <div className="text-2xl group-hover:scale-110 transition bg-[#2b2d31] w-12 h-12 flex items-center justify-center rounded-full text-[#b5bac1]">👤</div>
+                        <div className="font-semibold text-[#dbdee1] text-xs">View User</div>
                     </button>
-                    <button onClick={() => { setShowLeaderboard(true); fetchStats(); }} className="p-4 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition text-center group">
-                        <div className="text-2xl mb-1 group-hover:scale-110 transition">📊</div>
-                        <div className="font-bold text-white text-xs">Leaderboard</div>
+                    <button onClick={() => { setShowLeaderboard(true); fetchStats(); }} className="p-4 rounded-[4px] bg-[#1e1f22] hover:bg-[#313338] border border-transparent hover:border-[#5865F2]/50 transition text-center group flex flex-col items-center justify-center gap-2 h-28">
+                        <div className="text-2xl group-hover:scale-110 transition bg-[#2b2d31] w-12 h-12 flex items-center justify-center rounded-full text-[#f0b232]">📊</div>
+                        <div className="font-semibold text-[#dbdee1] text-xs">Leaderboard</div>
                     </button>
-                    <button onClick={() => setShowResetUser(true)} className="p-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition text-center group">
-                        <div className="text-2xl mb-1 group-hover:scale-110 transition">🗑️</div>
-                        <div className="font-bold text-white text-xs">Reset User</div>
+                    <button onClick={() => setShowResetUser(true)} className="p-4 rounded-[4px] bg-[#1e1f22] hover:bg-[#313338] border border-transparent hover:border-[#da373c]/50 transition text-center group flex flex-col items-center justify-center gap-2 h-28">
+                        <div className="text-2xl group-hover:scale-110 transition bg-[#2b2d31] w-12 h-12 flex items-center justify-center rounded-full text-[#b5bac1]">🗑️</div>
+                        <div className="font-semibold text-[#da373c] text-xs">Reset User</div>
                     </button>
                 </div>
             </div>
 
-            {/* Give Rod Modal - Amber Theme */}
+            {/* Give Rod Modal - Dark Theme */}
             {showGiveRod && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={closeModal}>
-                    <div className="bg-[#16161f] rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border border-white/10" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
+                    <div className="bg-[#313338] rounded-[8px] p-8 max-w-md w-full mx-4 shadow-2xl relative border border-[#1e1f22]" onClick={e => e.stopPropagation()}>
+                        <button onClick={closeModal} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
                         <div className="text-center mb-6">
-                            <div className="text-5xl mb-3">🎣</div>
-                            <h2 className="text-2xl font-black text-white">Give Fishing Rod</h2>
+                            <h2 className="text-2xl font-bold text-gray-100">🎣 Give Fishing Rod</h2>
                         </div>
                         <div className="space-y-4">
-                            <div><label className="block text-sm font-bold text-gray-300 mb-2">Select User</label>{renderUserSearch()}</div>
+                            <div><label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Select User</label>{renderUserSearch()}</div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 mb-1">Rod Type</label>
-                                <select value={selectedRod} onChange={(e) => setSelectedRod(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-amber-500/50 focus:outline-none font-medium text-white">
+                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Rod Type</label>
+                                <select value={selectedRod} onChange={(e) => setSelectedRod(e.target.value)} className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]">
                                     {Object.entries(ROD_DATA).map(([name, rod]) => (<option key={name} value={name}>{rod.emoji} {name}</option>))}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 mb-1">Level (+0 to +10)</label>
-                                <input type="number" value={rodLevel} onChange={(e) => setRodLevel(e.target.value)} min="0" max="10" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-amber-500/50 focus:outline-none font-medium text-white" />
+                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Level (+0 to +10)</label>
+                                <input type="number" value={rodLevel} onChange={(e) => setRodLevel(e.target.value)} min="0" max="10" className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]" />
                             </div>
                         </div>
-                        <div className="flex gap-3 mt-6">
-                            <button onClick={closeModal} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition border border-white/10">Cancel</button>
-                            <button onClick={() => askConfirm('give_rod', `Berikan ${selectedRod} +${rodLevel} kepada @${selectedUser?.username}?`)} disabled={submitting || !selectedUser} className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition disabled:opacity-50">{submitting ? "..." : "Give Rod"}</button>
+                        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[#1e1f22]">
+                            <button onClick={closeModal} className="px-6 py-2 bg-transparent hover:underline text-white font-medium transition text-sm">Cancel</button>
+                            <button onClick={() => askConfirm('give_rod', `Berikan ${selectedRod} +${rodLevel} kepada @${selectedUser?.username}?`)} disabled={submitting || !selectedUser} className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[3px] transition disabled:opacity-50 text-sm">{submitting ? "..." : "Give Rod"}</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Give Material Modal - Amber Theme */}
+            {/* Give Material Modal - Dark Theme */}
             {showGiveMaterial && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={closeModal}>
-                    <div className="bg-[#16161f] rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border border-white/10" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
+                    <div className="bg-[#313338] rounded-[8px] p-8 max-w-md w-full mx-4 shadow-2xl relative border border-[#1e1f22]" onClick={e => e.stopPropagation()}>
+                        <button onClick={closeModal} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
                         <div className="text-center mb-6">
-                            <div className="text-5xl mb-3">🔩</div>
-                            <h2 className="text-2xl font-black text-white">Give Material</h2>
+                            <h2 className="text-2xl font-bold text-gray-100">🔩 Give Material</h2>
                         </div>
                         <div className="space-y-4">
-                            <div><label className="block text-sm font-bold text-gray-300 mb-2">Select User</label>{renderUserSearch()}</div>
+                            <div><label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Select User</label>{renderUserSearch()}</div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 mb-1">Material</label>
-                                <select value={selectedMaterial} onChange={(e) => setSelectedMaterial(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-amber-500/50 focus:outline-none font-medium text-white">
+                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Material</label>
+                                <select value={selectedMaterial} onChange={(e) => setSelectedMaterial(e.target.value)} className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]">
                                     {MATERIALS.map(m => (<option key={m.name} value={m.name}>{m.emoji} {m.name} - {m.description}</option>))}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 mb-1">Amount</label>
-                                <input type="number" value={materialAmount} onChange={(e) => setMaterialAmount(e.target.value)} min="1" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-amber-500/50 focus:outline-none font-medium text-white" />
+                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Amount</label>
+                                <input type="number" value={materialAmount} onChange={(e) => setMaterialAmount(e.target.value)} min="1" className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]" />
                             </div>
                         </div>
-                        <div className="flex gap-3 mt-6">
-                            <button onClick={closeModal} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition border border-white/10">Cancel</button>
-                            <button onClick={() => askConfirm('give_material', `Berikan ${materialAmount}x ${selectedMaterial} kepada @${selectedUser?.username}?`)} disabled={submitting || !selectedUser} className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition disabled:opacity-50">{submitting ? "..." : "Give Material"}</button>
+                        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[#1e1f22]">
+                            <button onClick={closeModal} className="px-6 py-2 bg-transparent hover:underline text-white font-medium transition text-sm">Cancel</button>
+                            <button onClick={() => askConfirm('give_material', `Berikan ${materialAmount}x ${selectedMaterial} kepada @${selectedUser?.username}?`)} disabled={submitting || !selectedUser} className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[3px] transition disabled:opacity-50 text-sm">{submitting ? "..." : "Give Material"}</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Give Buff Modal - Amber Theme */}
+            {/* Give Buff Modal - Dark Theme */}
             {showGiveBuff && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={closeModal}>
-                    <div className="bg-[#16161f] rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border border-white/10" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
+                    <div className="bg-[#313338] rounded-[8px] p-8 max-w-md w-full mx-4 shadow-2xl relative border border-[#1e1f22]" onClick={e => e.stopPropagation()}>
+                        <button onClick={closeModal} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
                         <div className="text-center mb-6">
-                            <div className="text-5xl mb-3">🚬</div>
-                            <h2 className="text-2xl font-black text-white">Give Buff Item</h2>
+                            <h2 className="text-2xl font-bold text-gray-100">🚬 Give Buff Item</h2>
                         </div>
                         <div className="space-y-4">
-                            <div><label className="block text-sm font-bold text-gray-300 mb-2">Select User</label>{renderUserSearch()}</div>
+                            <div><label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Select User</label>{renderUserSearch()}</div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 mb-1">Buff Item</label>
-                                <select value={selectedBuff} onChange={(e) => setSelectedBuff(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-amber-500/50 focus:outline-none font-medium text-white">
+                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Buff Item</label>
+                                <select value={selectedBuff} onChange={(e) => setSelectedBuff(e.target.value)} className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]">
                                     {BUFF_ITEMS.map(b => (<option key={b.name} value={b.name}>{b.emoji} {b.name} ({b.duration}) - {b.description}</option>))}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-300 mb-1">Amount</label>
-                                <input type="number" value={buffAmount} onChange={(e) => setBuffAmount(e.target.value)} min="1" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-amber-500/50 focus:outline-none font-medium text-white" />
+                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Amount</label>
+                                <input type="number" value={buffAmount} onChange={(e) => setBuffAmount(e.target.value)} min="1" className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]" />
                             </div>
                         </div>
-                        <div className="flex gap-3 mt-6">
-                            <button onClick={closeModal} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition border border-white/10">Cancel</button>
-                            <button onClick={() => askConfirm('give_buff', `Berikan ${buffAmount}x ${selectedBuff} kepada @${selectedUser?.username}?`)} disabled={submitting || !selectedUser} className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition disabled:opacity-50">{submitting ? "..." : "Give Buff"}</button>
+                        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[#1e1f22]">
+                            <button onClick={closeModal} className="px-6 py-2 bg-transparent hover:underline text-white font-medium transition text-sm">Cancel</button>
+                            <button onClick={() => askConfirm('give_buff', `Berikan ${buffAmount}x ${selectedBuff} kepada @${selectedUser?.username}?`)} disabled={submitting || !selectedUser} className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[3px] transition disabled:opacity-50 text-sm">{submitting ? "..." : "Give Buff"}</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* View User Modal - Amber Theme */}
+            {/* View User Modal - Dark Theme */}
             {showViewUser && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={closeModal}>
-                    <div className="bg-[#16161f] rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl border border-white/10 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
+                    <div className="bg-[#313338] rounded-[8px] p-8 max-w-lg w-full mx-4 shadow-2xl relative border border-[#1e1f22] max-h-[80vh] overflow-y-auto custom-scrollbar" onClick={e => e.stopPropagation()}>
+                        <button onClick={closeModal} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
                         <div className="text-center mb-6">
-                            <div className="text-5xl mb-3">👤</div>
-                            <h2 className="text-2xl font-black text-white">View User Profile</h2>
+                            <h2 className="text-2xl font-bold text-gray-100 flex justify-center items-center gap-2">
+                                <span className="text-[#b5bac1]">👤</span> View User Profile
+                            </h2>
                         </div>
                         <div className="space-y-4">
-                            <div><label className="block text-sm font-bold text-gray-300 mb-2">Select User</label>{renderUserSearch()}</div>
+                            <div><label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Select User</label>{renderUserSearch()}</div>
                             {selectedUser && !userDetails && (
-                                <button onClick={() => fetchUserDetails(selectedUser.user_id)} className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition">Load Profile</button>
+                                <button onClick={() => fetchUserDetails(selectedUser.user_id)} className="w-full py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[3px] transition text-sm">Load Profile</button>
                             )}
                             {userDetails && (
                                 <div className="space-y-4 mt-4">
-                                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                                        <h3 className="font-bold text-white mb-2">🎣 Rods</h3>
+                                    <div className="bg-[#2b2d31] rounded-[4px] p-4 border border-[#1e1f22]">
+                                        <h3 className="font-semibold text-[#dbdee1] mb-2 uppercase text-[12px] tracking-wide">🎣 Rods</h3>
                                         {userDetails.rods?.length > 0 ? userDetails.rods.map((r: any, idx: number) => {
                                             const level = r.level || r.rod_level || 0;
                                             const stats = getRodStats(r.rod_name, level);
                                             const isEquipped = userDetails.profile?.equipped_rod === r.rod_name;
                                             return (
-                                                <div key={`${r.rod_name}_${idx}`} className={`py-2 border-b border-white/5 last:border-0 ${isEquipped ? 'bg-emerald-500/10 -mx-2 px-2 rounded-lg' : ''}`}>
+                                                <div key={`${r.rod_name}_${idx}`} className={`py-2 border-b border-[#1e1f22] last:border-0 ${isEquipped ? 'bg-[#248046]/10 -mx-2 px-2 rounded-[4px]' : ''}`}>
                                                     <div className="flex justify-between items-center">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="font-bold text-white">{stats.emoji} {r.rod_name}</span>
-                                                            {isEquipped && <span className="px-1.5 py-0.5 bg-emerald-500 text-white rounded text-xs font-bold">IN USE</span>}
+                                                            <span className="font-semibold text-[#dbdee1] text-sm">{stats.emoji} {r.rod_name}</span>
+                                                            {isEquipped && <span className="px-1.5 py-0.5 bg-[#248046] text-white rounded-[2px] text-[10px] font-bold tracking-wide uppercase">In Use</span>}
                                                         </div>
-                                                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded font-bold text-sm">+{level}</span>
+                                                        <span className="px-2 py-0.5 bg-[#f0b232]/20 text-[#f0b232] rounded-[2px] font-bold text-[10px] uppercase">+{level}</span>
                                                     </div>
-                                                    <div className="flex gap-3 mt-1 text-xs text-gray-400">
+                                                    <div className="flex gap-3 mt-1 text-[11px] text-[#87898c]">
                                                         <span>⚖️ Weight: +{stats.weightBoostPercent}%</span>
                                                         <span>✨ Rarity: +{stats.rarityBoost}%</span>
                                                     </div>
                                                 </div>
                                             );
-                                        }) : <p className="text-gray-500 text-sm">No rods</p>}
+                                        }) : <p className="text-[#87898c] text-sm">No rods</p>}
                                     </div>
-                                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                                        <h3 className="font-bold text-white mb-2">🐟 Top Fish</h3>
+                                    <div className="bg-[#2b2d31] rounded-[4px] p-4 border border-[#1e1f22]">
+                                        <h3 className="font-semibold text-[#dbdee1] mb-2 uppercase text-[12px] tracking-wide">🐟 Top Fish</h3>
                                         {userDetails.inventory?.length > 0 ? userDetails.inventory.slice(0, 5).map((f: any, idx: number) => (
-                                            <div key={`${f.fish_name}_${idx}`} className="flex justify-between py-1 border-b border-white/5 last:border-0">
-                                                <span className="truncate mr-2 text-gray-300">{f.fish_name}</span>
-                                                <span className="font-bold text-amber-400 whitespace-nowrap">${f.price?.toLocaleString() || '0'}</span>
+                                            <div key={`${f.fish_name}_${idx}`} className="flex justify-between py-1 border-b border-[#1e1f22] last:border-0">
+                                                <span className="truncate mr-2 text-[#dbdee1] text-sm">{f.fish_name}</span>
+                                                <span className="font-bold text-[#248046] whitespace-nowrap text-sm">${f.price?.toLocaleString() || '0'}</span>
                                             </div>
-                                        )) : <p className="text-gray-500 text-sm">No fish</p>}
+                                        )) : <p className="text-[#87898c] text-sm">No fish</p>}
                                     </div>
                                 </div>
                             )}
                         </div>
-                        <button onClick={closeModal} className="w-full mt-6 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition border border-white/10">Close</button>
+                        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[#1e1f22]">
+                            <button onClick={closeModal} className="px-6 py-2 bg-[#4e5058] hover:bg-[#686d73] text-white font-medium rounded-[3px] transition text-sm">Close</button>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* Reset User Modal - Red Theme */}
+            {/* Reset User Modal - Dark Theme */}
             {showResetUser && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={closeModal}>
-                    <div className="bg-[#16161f] rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border border-red-500/30" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
+                    <div className="bg-[#313338] rounded-[8px] p-8 max-w-md w-full mx-4 shadow-2xl relative border border-[#da373c]/50" onClick={e => e.stopPropagation()}>
+                        <button onClick={closeModal} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
                         <div className="text-center mb-6">
-                            <div className="text-5xl mb-3">🗑️</div>
-                            <h2 className="text-2xl font-black text-white">Reset User</h2>
-                            <p className="text-red-500 text-sm font-bold">⚠️ Deletes ALL fishing data!</p>
+                            <h2 className="text-2xl font-bold text-gray-100 flex justify-center items-center gap-2">
+                                <span className="text-[#da373c]">🗑️</span> Reset User
+                            </h2>
+                            <p className="text-[#da373c] mt-1 text-sm font-semibold">⚠️ Deletes ALL fishing data!</p>
                         </div>
-                        <div><label className="block text-sm font-bold text-gray-300 mb-2">Select User</label>{renderUserSearch()}</div>
-                        <div className="flex gap-3 mt-6">
-                            <button onClick={closeModal} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition border border-white/10">Cancel</button>
-                            <button onClick={() => askConfirm('reset', `⚠️ RESET semua data fishing @${selectedUser?.username}? Tindakan ini TIDAK bisa dibatalkan!`, true)} disabled={submitting || !selectedUser} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition disabled:opacity-50">{submitting ? "..." : "Reset User"}</button>
+                        <div><label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Select User</label>{renderUserSearch()}</div>
+                        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[#1e1f22]">
+                            <button onClick={closeModal} className="px-6 py-2 bg-transparent hover:underline text-white font-medium transition text-sm">Cancel</button>
+                            <button onClick={() => askConfirm('reset', `⚠️ RESET semua data fishing @${selectedUser?.username}? Tindakan ini TIDAK bisa dibatalkan!`, true)} disabled={submitting || !selectedUser} className="px-6 py-2 bg-[#da373c] hover:bg-[#a12828] text-white font-medium rounded-[3px] transition disabled:opacity-50 text-sm">{submitting ? "..." : "Reset User"}</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Leaderboard Modal - Amber Theme with Search */}
+            {/* Leaderboard Modal - Dark Theme with Search */}
             {showLeaderboard && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={closeModal}>
-                    <div className="bg-[#16161f] rounded-3xl p-6 md:p-8 max-w-lg w-full mx-4 shadow-2xl border border-white/10 max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                        <div className="text-center mb-4">
-                            <div className="text-5xl mb-2">📊</div>
-                            <h2 className="text-2xl font-black text-white">Top Fishers</h2>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
+                    <div className="bg-[#313338] rounded-[8px] p-6 max-w-lg w-full mx-4 shadow-2xl border border-[#1e1f22] max-h-[85vh] flex flex-col relative" onClick={e => e.stopPropagation()}>
+                        <button onClick={closeModal} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <div className="text-center mb-6">
+                            <h2 className="text-2xl font-bold text-gray-100 flex items-center justify-center gap-2">
+                                <span className="text-[#f0b232]">📊</span> Top Fishers
+                            </h2>
                         </div>
 
                         {/* Search Input */}
@@ -595,31 +628,31 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
                                 value={leaderboardSearch}
                                 onChange={(e) => setLeaderboardSearch(e.target.value)}
                                 placeholder="🔍 Search by username..."
-                                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-amber-500/50 focus:outline-none font-medium text-sm text-white"
+                                className="w-full px-3 py-2 rounded-[3px] bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] focus:outline-none focus:ring-1 focus:ring-[#5865F2] font-medium text-sm"
                             />
                         </div>
 
                         {/* Leaderboard List */}
-                        <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
+                        <div className="flex-1 overflow-y-auto space-y-2 min-h-0 pr-2 custom-scrollbar">
                             {filteredLeaderboard.length > 0 ? (
                                 paginatedLeaderboard.map((user, index) => {
                                     const realIndex = (leaderboardPage - 1) * leaderboardPerPage + index;
                                     return (
-                                        <div key={user.user_id} className={`flex items-center gap-3 p-3 rounded-xl ${realIndex === 0 ? 'bg-amber-500/20 border border-amber-500/30' : realIndex === 1 ? 'bg-gray-500/10' : realIndex === 2 ? 'bg-orange-500/10' : 'bg-white/5'}`}>
-                                            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-black text-sm shrink-0 text-white">
+                                        <div key={user.user_id} className={`flex items-center gap-3 p-3 rounded-[4px] border border-[#1e1f22] ${realIndex === 0 ? 'bg-[#f0b232]/10 !border-[#f0b232]/30' : realIndex === 1 ? 'bg-[#b5bac1]/10 !border-[#b5bac1]/20' : realIndex === 2 ? 'bg-[#f0b232]/5 !border-[#f0b232]/10' : 'bg-[#2b2d31]'}`}>
+                                            <div className="w-8 h-8 rounded-full bg-[#1e1f22] flex items-center justify-center font-bold text-sm shrink-0 text-[#dbdee1]">
                                                 {realIndex === 0 ? "👑" : realIndex === 1 ? "🥈" : realIndex === 2 ? "🥉" : `#${realIndex + 1}`}
                                             </div>
-                                            <img src={user.avatar || defaultAvatar} alt="" className="w-10 h-10 rounded-full border-2 border-white/10 shadow shrink-0" />
+                                            <img src={user.avatar || defaultAvatar} alt="" className="w-10 h-10 rounded-full shrink-0" />
                                             <div className="flex-1 min-w-0">
-                                                <div className="font-bold text-white truncate">@{user.username}</div>
-                                                <div className="text-xs text-gray-500">{user.user_id}</div>
+                                                <div className="font-semibold text-[#dbdee1] truncate text-sm">@{user.username}</div>
+                                                <div className="text-[11px] text-[#87898c]">{user.user_id}</div>
                                             </div>
-                                            <div className="font-black text-amber-400 shrink-0">🐟 {(user.total_catch ?? 0).toLocaleString()}</div>
+                                            <div className="font-bold text-[#f0b232] shrink-0 text-sm">🐟 {(user.total_catch ?? 0).toLocaleString()}</div>
                                         </div>
                                     );
                                 })
                             ) : (
-                                <div className="text-center py-8 text-gray-500">
+                                <div className="text-center py-8 text-[#87898c]">
                                     {leaderboardSearch ? "No users match your search" : "No fishers yet"}
                                 </div>
                             )}
@@ -627,28 +660,26 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
 
                         {/* Pagination */}
                         {filteredLeaderboard.length > leaderboardPerPage && (
-                            <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-4">
+                            <div className="flex items-center justify-between pt-4 border-t border-[#1e1f22] mt-4">
                                 <button
                                     onClick={() => setLeaderboardPage(p => Math.max(1, p - 1))}
                                     disabled={leaderboardPage === 1}
-                                    className="px-3 py-1.5 rounded-lg bg-white/5 text-gray-300 font-bold text-sm disabled:opacity-50 hover:bg-white/10 transition"
+                                    className="px-3 py-1.5 rounded-[3px] bg-[#4e5058] hover:bg-[#686d73] text-white font-medium text-xs disabled:opacity-50 transition"
                                 >
                                     ← Prev
                                 </button>
-                                <span className="text-gray-400 text-sm font-medium">
+                                <span className="text-[#87898c] text-xs font-semibold">
                                     Page {leaderboardPage} of {totalLeaderboardPages}
                                 </span>
                                 <button
                                     onClick={() => setLeaderboardPage(p => Math.min(totalLeaderboardPages, p + 1))}
                                     disabled={leaderboardPage === totalLeaderboardPages}
-                                    className="px-3 py-1.5 rounded-lg bg-white/5 text-gray-300 font-bold text-sm disabled:opacity-50 hover:bg-white/10 transition"
+                                    className="px-3 py-1.5 rounded-[3px] bg-[#4e5058] hover:bg-[#686d73] text-white font-medium text-xs disabled:opacity-50 transition"
                                 >
                                     Next →
                                 </button>
                             </div>
                         )}
-
-                        <button onClick={closeModal} className="w-full mt-4 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition border border-white/10">Close</button>
                     </div>
                 </div>
             )}
@@ -666,26 +697,28 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             />
 
             {/* Info - Dark Theme */}
-            <div className="glass-card rounded-3xl p-6">
-                <h3 className="text-lg font-black text-white mb-3">🎣 Fishing System Overview</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-400">
+            <div className="bg-[#2b2d31] rounded-[8px] p-6 border border-[#1e1f22]">
+                <h3 className="text-lg font-bold text-[#dbdee1] mb-4 flex items-center gap-2">
+                    <span className="text-[#f0b232]">🎣</span> Fishing System Overview
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[#b5bac1]">
                     <div>
-                        <h4 className="font-bold text-amber-400 mb-1">Rods (5 Types)</h4>
+                        <h4 className="font-semibold text-[#dbdee1] mb-2 uppercase text-[12px] tracking-wide">Rods (5 Types)</h4>
                         <p>Common → Good → Unique → Masterwork → Dyto</p>
-                        <p className="text-xs text-gray-500">Each rod can be enhanced +0 to +10</p>
+                        <p className="text-[11px] text-[#87898c] mt-1">Each rod can be enhanced +0 to +10</p>
                     </div>
                     <div>
-                        <h4 className="font-bold text-amber-400 mb-1">Materials</h4>
+                        <h4 className="font-semibold text-[#dbdee1] mb-2 uppercase text-[12px] tracking-wide">Materials</h4>
                         <p>🔩 Scrap - Common forging material</p>
                         <p>🧪 Pearl - Rare forging material</p>
                     </div>
                     <div>
-                        <h4 className="font-bold text-amber-400 mb-1">Buffs</h4>
+                        <h4 className="font-semibold text-[#dbdee1] mb-2 uppercase text-[12px] tracking-wide">Buffs</h4>
                         <p>🚬 Rokok Surya - Faster cooldown</p>
                         <p>🪝 Kail Mata Dua - Double catch</p>
                     </div>
                     <div>
-                        <h4 className="font-bold text-amber-400 mb-1">Fish Rarities</h4>
+                        <h4 className="font-semibold text-[#dbdee1] mb-2 uppercase text-[12px] tracking-wide">Fish Rarities</h4>
                         <p>Common → Uncommon → Rare → Epic → Legendary</p>
                     </div>
                 </div>

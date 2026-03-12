@@ -196,7 +196,7 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
             <div className="flex items-center gap-4 mb-4">
                 <Link
                     href={`/dashboard/${guildId}/moderation`}
-                    className="p-2.5 rounded-xl bg-[#16161f] border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white transition"
+                    className="p-2.5 rounded-[3px] bg-[#2b2d31] text-[#b5bac1] hover:bg-[#313338] hover:text-[#dbdee1] transition"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -212,19 +212,19 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
             </div>
 
             {/* Controls */}
-            <div className="bg-[#16161f] rounded-3xl p-6 border border-white/10 space-y-4 mb-4">
+            <div className="bg-[#2b2d31] rounded-[8px] p-6 space-y-4 mb-4">
                 <input
                     type="text"
                     placeholder="Case ID / User ID / Reason"
                     value={searchTerm}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl font-medium text-white focus:outline-none focus:border-amber-500/50 transition"
+                    className="w-full px-4 py-3 bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2] transition"
                 />
 
                 <div className="flex flex-wrap gap-3">
                     <button
                         onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                        className={`px-4 py-2 rounded-xl border font-bold transition flex items-center gap-2 text-sm ${isFiltersOpen ? 'bg-amber-500/10 border-amber-500 text-amber-400' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'}`}
+                        className={`px-4 py-2 rounded-[3px] font-medium transition flex items-center gap-2 text-sm ${isFiltersOpen ? 'bg-[#5865F2]/20 text-[#5865F2]' : 'bg-[#4e5058] hover:bg-[#686d73] text-white'}`}
                     >
                         <span className="text-lg">⚙️</span> Filters
                         <svg className={`w-4 h-4 transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -233,21 +233,21 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                     </button>
                     <button
                         onClick={() => setIsMassEdit(!isMassEdit)}
-                        className={`px-4 py-2 rounded-xl border font-bold transition flex items-center gap-2 text-sm ${isMassEdit ? 'bg-amber-500/10 border-amber-500 text-amber-400' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'}`}
+                        className={`px-4 py-2 rounded-[3px] font-medium transition flex items-center gap-2 text-sm ${isMassEdit ? 'bg-[#5865F2]/20 text-[#5865F2]' : 'bg-[#4e5058] hover:bg-[#686d73] text-white'}`}
                     >
                         <span className="text-lg">📚</span> Mass edit
                         <svg className={`w-4 h-4 transition-transform ${isMassEdit ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div className="ml-auto text-gray-500 text-sm font-medium self-center">
+                    <div className="ml-auto text-[#b5bac1] text-sm font-medium self-center">
                         {loading ? 'Loading...' : `Found ${total} cases.`}
                     </div>
                 </div>
 
                 {/* Filters Expandable Section */}
                 {isFiltersOpen && (
-                    <div className="pt-4 border-t border-white/10 animate-slide-down space-y-4">
+                    <div className="pt-4 border-t border-[#1e1f22] animate-slide-down space-y-4">
                         <div className="flex flex-wrap gap-x-6 gap-y-3">
                             {/* Case Types */}
                             <div className="flex items-center gap-3">
@@ -255,38 +255,38 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                                     <label key={type} className="flex items-center gap-2 cursor-pointer select-none">
                                         <input
                                             type="checkbox"
-                                            className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500 rounded-md"
+                                            className="w-4 h-4 rounded-[3px] border-none bg-[#1e1f22] text-[#5865F2] focus:ring-0 cursor-pointer"
                                             checked={(filters as any)[type]}
                                             onChange={(e) => setFilters({ ...filters, [type]: e.target.checked })}
                                         />
-                                        <span className="text-gray-300 font-bold capitalize text-sm">{type}</span>
+                                        <span className="text-[#dbdee1] font-medium capitalize text-sm">{type}</span>
                                     </label>
                                 ))}
                             </div>
 
-                            <div className="w-px h-5 bg-white/10 hidden md:block"></div>
+                            <div className="w-px h-5 bg-[#1e1f22] hidden md:block"></div>
 
                             {/* Status */}
                             <div className="flex items-center gap-3">
                                 <label className="flex items-center gap-2 cursor-pointer select-none">
                                     <input
                                         type="checkbox"
-                                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500 rounded-md"
+                                        className="w-4 h-4 rounded-[3px] border-none bg-[#1e1f22] text-[#5865F2] focus:ring-0 cursor-pointer"
                                         checked={filters.open}
                                         onChange={(e) => setFilters({ ...filters, open: e.target.checked })}
                                     />
                                     <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                                    <span className="text-gray-300 font-bold text-sm">Open</span>
+                                    <span className="text-[#dbdee1] font-medium text-sm">Open</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer select-none">
                                     <input
                                         type="checkbox"
-                                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500 rounded-md"
+                                        className="w-4 h-4 rounded-[3px] border-none bg-[#1e1f22] text-[#5865F2] focus:ring-0 cursor-pointer"
                                         checked={filters.closed}
                                         onChange={(e) => setFilters({ ...filters, closed: e.target.checked })}
                                     />
                                     <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                    <span className="text-gray-300 font-bold text-sm">Closed</span>
+                                    <span className="text-[#dbdee1] font-medium text-sm">Closed</span>
                                 </label>
                             </div>
                         </div>
@@ -295,39 +295,39 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
 
                 {/* Mass Edit Expandable Panel */}
                 {isMassEdit && (
-                    <div className="pt-4 border-t border-white/10 animate-slide-down">
+                    <div className="pt-4 border-t border-[#1e1f22] animate-slide-down">
                         <div className="flex flex-wrap items-center gap-4">
-                            <div className="text-gray-300 font-bold whitespace-nowrap">
+                            <div className="text-[#dbdee1] font-medium whitespace-nowrap text-sm">
                                 Selected {selectedIds.size} cases
                             </div>
 
                             <button
                                 onClick={selectAll}
-                                className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 transition text-sm font-bold whitespace-nowrap border border-white/10"
+                                className="px-3 py-1.5 rounded-[3px] bg-[#4e5058] hover:bg-[#686d73] text-white transition text-sm font-medium whitespace-nowrap"
                             >
                                 Select all cases
                             </button>
 
-                            <div className="h-6 w-px bg-white/10 hidden md:block"></div>
+                            <div className="h-6 w-px bg-[#1e1f22] hidden md:block"></div>
 
                             <button
                                 onClick={() => setShowEditModal(true)}
                                 disabled={selectedIds.size === 0 || actionLoading}
-                                className="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white transition text-sm font-bold flex items-center gap-2 whitespace-nowrap"
+                                className="px-3 py-1.5 rounded-[3px] bg-[#5865F2] hover:bg-[#4752C4] disabled:opacity-50 text-white transition text-sm font-medium flex items-center gap-2 whitespace-nowrap"
                             >
                                 ✏️ Edit
                             </button>
                             <button
                                 onClick={() => handleMassAction('case-close')}
                                 disabled={selectedIds.size === 0 || actionLoading}
-                                className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white transition text-sm font-bold flex items-center gap-2 whitespace-nowrap"
+                                className="px-3 py-1.5 rounded-[3px] bg-[#248046] hover:bg-[#1a6334] disabled:opacity-50 text-white transition text-sm font-medium flex items-center gap-2 whitespace-nowrap"
                             >
                                 {actionLoading ? '...' : '✅ Close'}
                             </button>
                             <button
                                 onClick={() => handleMassAction('case-delete')}
                                 disabled={selectedIds.size === 0 || actionLoading}
-                                className="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white transition text-sm font-bold flex items-center gap-2 whitespace-nowrap"
+                                className="px-3 py-1.5 rounded-[3px] bg-[#da373c] hover:bg-[#a12828] disabled:opacity-50 text-white transition text-sm font-medium flex items-center gap-2 whitespace-nowrap"
                             >
                                 🗑️ Delete
                             </button>
@@ -337,7 +337,7 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
             </div>
 
             {/* Table */}
-            <div className="bg-[#16161f] rounded-3xl border border-white/10 overflow-hidden">
+            <div className="bg-[#2b2d31] rounded-[8px] overflow-hidden">
                 <div className="overflow-x-auto">
                     {loading ? (
                         <CatLoader message="Loading cases..." />
@@ -350,33 +350,33 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                     ) : (
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-white/5 border-b border-white/10 text-gray-400 text-xs uppercase tracking-wider font-extrabold">
+                                <tr className="bg-[#1e1f22] border-b border-[#111214] text-[#87898c] text-xs uppercase tracking-wider font-bold">
                                     {isMassEdit && (
-                                        <th className="px-6 py-4 w-12">
+                                        <th className="px-6 py-4 w-12 border-b border-[#111214]">
                                             <input
                                                 type="checkbox"
-                                                className="w-5 h-5 rounded border-white/20 bg-white/5 text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500"
+                                                className="w-5 h-5 rounded-[4px] border-none bg-[#2b2d31] text-[#5865F2] focus:ring-0 cursor-pointer"
                                                 checked={selectedIds.size === cases.length && cases.length > 0}
                                                 onChange={selectAll}
                                             />
                                         </th>
                                     )}
-                                    <th className="px-6 py-4">ID</th>
-                                    <th className="px-6 py-4">User</th>
-                                    <th className="px-6 py-4">Reason</th>
-                                    <th className="px-6 py-4">Author</th>
-                                    <th className="px-6 py-4">Duration</th>
-                                    <th className="px-6 py-4">Created</th>
+                                    <th className="px-6 py-4 border-b border-[#111214]">ID</th>
+                                    <th className="px-6 py-4 border-b border-[#111214]">User</th>
+                                    <th className="px-6 py-4 border-b border-[#111214]">Reason</th>
+                                    <th className="px-6 py-4 border-b border-[#111214]">Author</th>
+                                    <th className="px-6 py-4 border-b border-[#111214]">Duration</th>
+                                    <th className="px-6 py-4 border-b border-[#111214]">Created</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-[#1e1f22]">
                                 {cases.map((item) => (
-                                    <tr key={item.id} className="hover:bg-white/5 transition group">
+                                    <tr key={item.id} className="hover:bg-[#313338] transition group">
                                         {isMassEdit && (
                                             <td className="px-6 py-4">
                                                 <input
                                                     type="checkbox"
-                                                    className="w-5 h-5 rounded border-white/20 bg-white/5 text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500"
+                                                    className="w-5 h-5 rounded-[4px] border-none bg-[#1e1f22] text-[#5865F2] focus:ring-0 cursor-pointer"
                                                     checked={selectedIds.has(item.id)}
                                                     onChange={() => toggleSelection(item.id)}
                                                 />
@@ -387,37 +387,37 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                                                 <div className={`w-2.5 h-2.5 rounded-full ${item.status === 'closed' ? 'bg-green-500' : getStatusColor(item.type)}`}></div>
                                                 <div className="flex items-center gap-1.5">
                                                     {getIcon(item.type)}
-                                                    <span className="font-bold text-white font-mono">{item.id}</span>
+                                                    <span className="font-bold text-gray-200 font-mono">{item.id}</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-[#202029] bg-cover bg-center shrink-0 border border-white/10" style={{ backgroundImage: `url(${getAvatarUrl(item.user.id, item.user.avatar)})` }}></div>
+                                                <div className="w-8 h-8 rounded-full bg-[#1e1f22] bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${getAvatarUrl(item.user.id, item.user.avatar)})` }}></div>
                                                 <div>
-                                                    <div className="font-bold text-gray-200 text-sm">{item.user.username}</div>
-                                                    <div className="text-xs text-gray-500 font-mono">{item.user.id}</div>
+                                                    <div className="font-medium text-[#dbdee1] text-sm">{item.user.username}</div>
+                                                    <div className="text-xs text-[#87898c] font-mono">{item.user.id}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-400 font-medium text-sm max-w-[200px] truncate">
+                                        <td className="px-6 py-4 text-[#dbdee1] font-medium text-sm max-w-[200px] truncate">
                                             {item.reason}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-[#202029] bg-cover bg-center shrink-0 border border-white/10" style={{ backgroundImage: `url(${getAvatarUrl(item.author.id, item.author.avatar)})` }}></div>
+                                                <div className="w-8 h-8 rounded-full bg-[#1e1f22] bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${getAvatarUrl(item.author.id, item.author.avatar)})` }}></div>
                                                 <div>
-                                                    <div className="font-bold text-gray-200 text-sm">{item.author.username}</div>
-                                                    <div className="text-xs text-gray-500 font-mono">{item.author.id}</div>
+                                                    <div className="font-medium text-[#dbdee1] text-sm">{item.author.username}</div>
+                                                    <div className="text-xs text-[#87898c] font-mono">{item.author.id}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-400 text-sm font-medium">
+                                        <td className="px-6 py-4 text-[#dbdee1] text-sm font-medium">
                                             {item.duration}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm font-bold text-gray-300">{item.created_at}</div>
-                                            <div className="text-xs text-gray-500">{item.relative_time}</div>
+                                            <div className="text-sm font-medium text-[#dbdee1]">{item.created_at}</div>
+                                            <div className="text-xs text-[#87898c]">{item.relative_time}</div>
                                         </td>
                                     </tr>
                                 ))}
@@ -427,34 +427,37 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                 </div>
             </div>
 
-            <div className="text-center text-xs text-gray-600 font-medium mt-4">
+            <div className="text-center text-xs text-[#87898c] font-medium mt-4">
                 © 2021-2025 Don Pollo • Terms • Privacy • Legal Notice
             </div>
 
             {/* Edit Modal */}
             {showEditModal && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowEditModal(false)}>
-                    <div className="bg-[#16161f] border border-white/10 rounded-3xl p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
-                        <h2 className="text-2xl font-black text-white mb-4">✏️ Edit Cases</h2>
-                        <p className="text-gray-400 mb-6">Edit {selectedIds.size} selected case(s).</p>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowEditModal(false)}>
+                    <div className="bg-[#313338] rounded-[8px] p-8 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setShowEditModal(false)} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <h2 className="text-2xl font-bold text-gray-100 mb-2">✏️ Edit Cases</h2>
+                        <p className="text-[#b5bac1] mb-6 text-sm">Edit {selectedIds.size} selected case(s).</p>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-bold text-gray-400 mb-2">New Reason (optional)</label>
+                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">New Reason (optional)</label>
                                 <input
                                     type="text"
                                     value={editReason}
                                     onChange={e => setEditReason(e.target.value)}
                                     placeholder="Leave empty to keep current"
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-amber-500/50 text-white"
+                                    className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-400 mb-2">New Duration (optional)</label>
+                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">New Duration (optional)</label>
                                 <select
                                     value={editDuration}
                                     onChange={e => setEditDuration(e.target.value)}
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-amber-500/50 text-white"
+                                    className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2] cursor-pointer"
                                 >
                                     <option value="">Keep current</option>
                                     <option value="10 minutes">10 minutes</option>
@@ -467,17 +470,17 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
                             </div>
                         </div>
 
-                        <div className="flex gap-3 mt-6">
+                        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[#1e1f22]">
                             <button
                                 onClick={() => setShowEditModal(false)}
-                                className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-gray-400 font-bold rounded-xl transition"
+                                className="px-6 py-2 bg-transparent hover:underline text-white font-medium transition text-sm"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={() => handleMassAction('case-edit')}
                                 disabled={actionLoading}
-                                className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-bold rounded-xl transition"
+                                className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] disabled:opacity-50 text-white font-medium rounded-[3px] transition text-sm"
                             >
                                 {actionLoading ? 'Saving...' : 'Save Changes'}
                             </button>

@@ -25,17 +25,17 @@ const TOAST_ICONS: Record<ToastType, string> = {
 };
 
 const TOAST_STYLES: Record<ToastType, string> = {
-    success: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-    error: "bg-red-500/15 text-red-400 border-red-500/30",
-    warning: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-    info: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+    success: "bg-[#232428] text-[#248046] border-[#248046]/50 shadow-[0_4px_15px_-5px_rgba(36,128,70,0.3)]",
+    error: "bg-[#232428] text-[#da373c] border-[#da373c]/50 shadow-[0_4px_15px_-5px_rgba(218,55,60,0.3)]",
+    warning: "bg-[#232428] text-[#f0b232] border-[#f0b232]/50 shadow-[0_4px_15px_-5px_rgba(240,178,50,0.3)]",
+    info: "bg-[#232428] text-[#5865f2] border-[#5865f2]/50 shadow-[0_4px_15px_-5px_rgba(88,101,242,0.3)]",
 };
 
 const TOAST_ICON_STYLES: Record<ToastType, string> = {
-    success: "bg-emerald-500/20 text-emerald-400",
-    error: "bg-red-500/20 text-red-400",
-    warning: "bg-amber-500/20 text-amber-400",
-    info: "bg-blue-500/20 text-blue-400",
+    success: "bg-[#248046]/20 text-[#248046]",
+    error: "bg-[#da373c]/20 text-[#da373c]",
+    warning: "bg-[#f0b232]/20 text-[#f0b232]",
+    info: "bg-[#5865f2]/20 text-[#5865f2]",
 };
 
 // Single Toast Component
@@ -50,8 +50,8 @@ export function Toast({ type, message, duration = 5000, onClose }: ToastProps & 
     return (
         <div
             className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-sm
-                shadow-lg animate-in slide-in-from-bottom-2 fade-in duration-200
+                flex items-center gap-3 px-4 py-3 rounded-[4px] border border-l-4
+                shadow-2xl animate-fade-in
                 ${TOAST_STYLES[type]}
             `}
         >
