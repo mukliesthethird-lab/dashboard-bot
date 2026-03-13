@@ -36,6 +36,7 @@ export interface EmbedData {
 export interface BotAction {
     type: string;
     role_id?: string;
+    roles?: string[];
     target_channel_id?: string;
     message_content?: string;
     success_message?: string;
@@ -66,6 +67,12 @@ export interface Component {
     actions?: BotAction[];
 }
 
+export interface EmojiReaction {
+    emoji: string;
+    role_ids: string[];
+    success_message?: string;
+}
+
 export interface ReactionRoleMessage {
     id?: number;
     message_id: string | null;
@@ -73,6 +80,7 @@ export interface ReactionRoleMessage {
     message_content: string;
     embeds: EmbedData[];
     component_rows?: Component[][];
+    reactions?: EmojiReaction[];
 }
 
 export interface GlobalRolesSettings {

@@ -48,8 +48,12 @@ function buildDiscordEmbed(embed: any, reactions: any[], roles: any[]) {
     let description = embed.description || '';
     if (description.includes('${reactionroles}')) {
         const rolesList = reactions.map(r => {
-            const role = roles.find((ro: any) => ro.id === r.role_id);
-            return `${r.emoji} - ${role?.name || 'Unknown Role'}`;
+            const rids = r.role_ids || (r.role_id ? [r.role_id] : []);
+            const names = rids.map((rid: string) => {
+                const role = roles.find((ro: any) => ro.id === rid);
+                return role?.name || 'Unknown Role';
+            }).join(', ');
+            return `${r.emoji} - ${names}`;
         }).join('\n');
         description = description.replace('${reactionroles}', rolesList);
     }

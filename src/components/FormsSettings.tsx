@@ -35,8 +35,8 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
             try {
                 const [formsRes, channelsRes, rolesRes] = await Promise.all([
                     fetch(`/api/forms?guild_id=${guildId}`),
-                    fetch(`/api/channels?guild_id=${guildId}`),
-                    fetch(`/api/roles?guild_id=${guildId}`)
+                    fetch(`/api/welcome?action=channels&guild_id=${guildId}`),
+                    fetch(`/api/welcome?action=roles&guild_id=${guildId}`)
                 ]);
 
                 if (formsRes.ok) {

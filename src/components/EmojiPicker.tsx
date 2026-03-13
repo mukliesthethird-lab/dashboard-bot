@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 
 interface EmojiPickerProps {
     value: string;
     onChange: (emoji: string) => void;
     className?: string;
     guildId?: string;
+    trigger?: React.ReactNode;
 }
 
 interface CustomEmoji {
@@ -28,15 +30,22 @@ const CATEGORIES = [
     { id: "flags", label: "Flags", icon: "🏁", emojis: ["🏳️", "🏴", "🏁", "🚩", "🏳️‍🌈", "🏳️‍⚧️", "🏴‍☠️", "🇦🇫", "🇦🇽", "🇦🇱", "🇩🇿", "🇦🇸", "🇦🇩", "🇦🇴", "🇦🇮", "🇦🇶", "🇦🇬", "🇦🇷", "🇦🇲", "🇦🇼", "🇦🇺", "🇦🇹", "🇦🇿", "🇧🇸", "🇧🇭", "🇧🇩", "🇧🇧", "🇧🇾", "🇧🇪", "🇧🇿", "🇧🇯", "🇧🇲", "🇧🇹", "🇧🇴", "🇧🇦", "🇧🇼", "🇧🇷", "🇮🇴", "🇻🇬", "🇧🇳", "🇧🇬", "🇧🇫", "🇧🇮", "🇰🇭", "🇨🇲", "🇨🇦", "🇮🇨", "🇨🇻", "🇧🇶", "🇰🇾", "🇨🇫", "🇹🇩", "🇨🇱", "🇨🇳", "🇨🇽", "🇨🇨", "🇨🇴", "🇰🇲", "🇨🇬", "🇨🇩", "🇨🇰", "🇨🇷", "🇨🇮", "🇭🇷", "🇨🇺", "🇨🇼", "🇨🇾", "🇨🇿", "🇩🇰", "🇩🇯", "🇩🇲", "🇩🇴", "🇪🇨", "🇪🇬", "🇸🇻", "🇬🇶", "🇪🇷", "🇪🇪", "🇪🇹", "🇪🇺", "🇫🇰", "🇫🇴", "🇫🇯", "🇫🇮", "🇫🇷", "🇬🇫", "🇵🇫", "🇹🇫", "🇬🇦", "🇬🇲", "🇬🇪", "🇩🇪", "🇬🇭", "🇬🇮", "🇬🇷", "🇬🇱", "🇬🇩", "🇬🇵", "🇬🇺", "🇬🇹", "🇬🇬", "🇬🇳", "🇬🇼", "🇬🇾", "🇭🇹", "🇭🇳", "🇭🇰", "🇭🇺", "🇮🇸", "🇮🇳", "🇮🇩", "🇮🇷", "🇮🇶", "🇮🇪", "🇮🇲", "🇮🇱", "🇮🇹", "🇯🇲", "🇯🇵", "🎌", "🇯🇪", "🇯🇴", "🇰🇿", "🇰🇪", "🇰🇮", "🇽🇰", "🇰🇼", "🇰🇬", "🇱🇦", "🇱🇻", "🇱🇧", "🇱🇸", "🇱🇷", "🇱🇾", "🇱🇮", "🇱🇹", "🇱🇺", "🇲🇴", "🇲🇰", "🇲🇬", "🇲🇼", "🇲🇾", "🇲🇻", "🇲🇱", "🇲🇹", "🇲🇭", "🇲🇶", "🇲🇷", "🇲🇺", "🇾🇹", "🇲🇽", "🇫🇲", "🇲🇩", "🇲🇨", "🇲🇳", "🇲🇪", "🇲🇸", "🇲🇦", "🇲🇿", "🇲🇲", "🇳🇦", "🇳🇷", "🇳🇵", "🇳🇱", "🇳🇨", "🇳🇿", "🇳🇮", "🇳🇪", "🇳🇬", "🇳🇺", "🇳🇫", "🇰🇵", "🇲🇵", "🇳🇴", "🇴🇲", "🇵🇰", "🇵🇼", "🇵🇸", "🇵🇦", "🇵🇬", "🇵🇾", "🇵🇪", "🇵🇭", "🇵🇳", "🇵🇱", "🇵🇹", "🇵🇷", "🇶🇦", "🇷🇪", "🇷🇴", "🇷🇺", "🇷🇼", "🇼🇸", "🇸🇲", "🇸🇹", "🇸🇦", "🇸🇳", "🇸🇨", "🇸🇱", "🇸🇬", "🇸🇽", "🇸🇰", "🇸🇮", "🇬🇸", "🇸🇧", "🇸🇴", "🇿🇦", "🇰🇷", "🇸🇸", "🇪🇸", "🇱🇰", "🇧🇱", "🇸🇭", "🇰🇳", "🇱🇨", "🇵🇲", "🇻🇨", "🇸🇩", "🇸🇷", "🇸🇿", "🇸🇪", "🇨🇭", "🇸🇾", "🇹🇼", "🇹🇯", "🇹🇿", "🇹🇭", "🇹🇱", "🇹🇬", "🇹🇰", "🇹🇴", "🇹🇹", "🇹🇳", "🇹🇷", "🇹🇲", "🇹🇨", "🇹🇻", "🇺🇬", "🇺🇦", "🇦🇪", "🇬🇧", "🇺🇸", "🇺🇾", "🇺🇿", "🇻🇺", "🇻🇦", "🇻🇪", "🇻🇳", "🇼🇫", "🇪🇭", "🇾🇪", "🇿🇲", "🇿🇼", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "🏴󠁧󠁢󠁷󠁬󠁳󠁿"] },
 ];
 
-export default function EmojiPicker({ value, onChange, className = "", guildId }: EmojiPickerProps) {
+export default function EmojiPicker({ value, onChange, className = "", guildId, trigger }: EmojiPickerProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [activeCategory, setActiveCategory] = useState("people");
     const [customEmojis, setCustomEmojis] = useState<CustomEmoji[]>([]);
     const [hoveredEmoji, setHoveredEmoji] = useState<{ emoji: string, name: string } | null>(null);
+    const [coords, setCoords] = useState({ top: 0, left: 0 });
+    const [mounted, setMounted] = useState(false);
 
     const pickerRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLDivElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Fetch Custom Emojis
     useEffect(() => {
@@ -67,6 +76,17 @@ export default function EmojiPicker({ value, onChange, className = "", guildId }
         onChange(emoji);
         setIsOpen(false);
         setSearch("");
+    };
+
+    const togglePicker = () => {
+        if (!isOpen && triggerRef.current) {
+            const rect = triggerRef.current.getBoundingClientRect();
+            setCoords({
+                top: rect.bottom + window.scrollY,
+                left: rect.right + window.scrollX - 420 // Align right
+            });
+        }
+        setIsOpen(!isOpen);
     };
 
     // Scroll to category
@@ -101,20 +121,26 @@ export default function EmojiPicker({ value, onChange, className = "", guildId }
     };
 
     return (
-        <div className={`relative ${className}`} ref={pickerRef}>
-            {/* Trigger Button */}
-            <button
-                type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-14 h-10 flex items-center justify-center text-xl bg-white/5 border border-white/10 rounded-lg hover:border-amber-500/50 hover:bg-white/10 transition cursor-pointer"
-            >
-                {value.includes('<') ? <img src={`https://cdn.discordapp.com/emojis/${value.split(':')[2].slice(0, -1)}.png`} className="w-6 h-6" alt="emoji" /> : (value || "😀")}
-            </button>
+        <div className={`relative ${className}`} ref={triggerRef}>
+            {/* Trigger */}
+            <div onClick={togglePicker} className="cursor-pointer">
+                {trigger ? trigger : (
+                    <button
+                        type="button"
+                        className="w-14 h-10 flex items-center justify-center text-xl bg-white/5 border border-white/10 rounded-lg hover:border-amber-500/50 hover:bg-white/10 transition"
+                    >
+                        {value.includes('<') ? <img src={`https://cdn.discordapp.com/emojis/${value.split(':')[2].slice(0, -1)}.png`} className="w-6 h-6" alt="emoji" /> : (value || "😀")}
+                    </button>
+                )}
+            </div>
 
-            {/* Picker Modal */}
-            {isOpen && (
-                <div className="absolute z-[100] top-12 left-0 w-[420px] h-[450px] bg-[#2B2D31] rounded-lg shadow-2xl border border-[#1e1f22] overflow-hidden flex flex-col font-sans select-none animate-in fade-in zoom-in-95 duration-150">
-
+            {/* Picker Modal (Portaled) */}
+            {isOpen && mounted && createPortal(
+                <div 
+                    ref={pickerRef}
+                    style={{ top: coords.top + 8, left: coords.left }}
+                    className="fixed z-[10000] w-[420px] h-[450px] bg-[#2B2D31] rounded-lg shadow-2xl border border-[#1e1f22] overflow-hidden flex flex-col font-sans select-none animate-in fade-in zoom-in-95 duration-150"
+                >
                     {/* Header: Search */}
                     <div className="p-4 bg-[#2B2D31] border-b border-[#1e1f22]">
                         <input
@@ -137,7 +163,6 @@ export default function EmojiPicker({ value, onChange, className = "", guildId }
                                     className={`w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-[#404249] ${activeCategory === 'custom' ? 'bg-[#404249] rounded-[10px]' : ''}`}
                                     title="Server Emojis"
                                 >
-                                    {/* Server Icon Placeholder or Guild Icon if available */}
                                     <span className="text-lg">🏰</span>
                                 </button>
                             )}
@@ -176,7 +201,6 @@ export default function EmojiPicker({ value, onChange, className = "", guildId }
                                 for (const cat of CATEGORIES) {
                                     const el = document.getElementById(`emoji-cat-${cat.id}`);
                                     if (el) {
-                                        // 50px offset for sticky header calculation
                                         if (el.offsetTop <= containerTop + 50 && (el.offsetTop + el.offsetHeight) > containerTop) {
                                             setActiveCategory(cat.id);
                                             break;
@@ -185,7 +209,6 @@ export default function EmojiPicker({ value, onChange, className = "", guildId }
                                 }
                             }}
                         >
-
                             {/* Custom Emojis Section */}
                             {(search ? filteredCategories.custom.length > 0 : customEmojis.length > 0) && (
                                 <div id="emoji-cat-custom" className="mb-4 mt-2">
@@ -230,7 +253,6 @@ export default function EmojiPicker({ value, onChange, className = "", guildId }
                                 </div>
                             ))}
 
-                            {/* No Results */}
                             {search && filteredCategories.categories.length === 0 && filteredCategories.custom.length === 0 && (
                                 <div className="text-center py-10 text-[#949BA4]">
                                     <div className="text-4xl mb-2">🤔</div>
@@ -262,7 +284,8 @@ export default function EmojiPicker({ value, onChange, className = "", guildId }
                             </div>
                         )}
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

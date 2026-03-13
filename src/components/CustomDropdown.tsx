@@ -220,7 +220,7 @@ export default function CustomDropdown({
                 onClick={handleToggle}
                 disabled={disabled}
                 className={`
-                    w-full ${size === 'sm' ? 'p-1 text-[11px]' : 'p-2 text-sm'} bg-[#1e1f22] border border-transparent rounded-[3px] 
+                    w-full ${size === 'sm' ? 'p-1 text-[11px]' : 'px-3 py-2 text-sm'} bg-[#1e1f22] border border-transparent rounded-[3px] 
                     outline-none focus:border-[#5865F2] font-medium text-left
                     flex items-center justify-between gap-1 transition-all
                     ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-[#5865f2]/50 cursor-pointer"}

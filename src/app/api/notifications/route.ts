@@ -50,6 +50,10 @@ export async function POST(request: Request) {
         }
 
         if (id) {
+            // Get old data for comparison
+            const [oldRows]: any = await pool.query('SELECT feed_url, is_enabled FROM notifications_feeds WHERE id = ?', [id]);
+            const oldFeed = oldRows[0];
+
             // Update existing
             await pool.query(`
                 UPDATE notifications_feeds 
@@ -60,8 +64,8 @@ export async function POST(request: Request) {
                 WHERE id = ? AND guild_id = ?
             `, [feed_url, discord_channel_id, JSON.stringify(custom_message_json), is_enabled ? 1 : 0, id, guild_id]);
 
-            // Re-subscribe if it's YouTube
-            if (type === 'youtube') {
+            // Re-subscribe ONLY if URL changed or was disabled but now enabled
+            if (type === 'youtube' && (feed_url !== oldFeed?.feed_url || (!oldFeed?.is_enabled && is_enabled))) {
                 const channelId = await resolveYouTubeChannelId(feed_url);
                 if (channelId) await subscribeToWebSub(channelId);
             }

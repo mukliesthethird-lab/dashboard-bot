@@ -531,13 +531,46 @@ const ActionEditor = ({
                 {/* Role Selector for Role Actions */}
                 {['add_role', 'remove_role', 'toggle_role', 'set_role'].includes(action.type || '') && (
                     <div className="animate-fade-in">
-                        <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Target Role</label>
-                        <CustomDropdown
-                            value={action.role_id || ''}
-                            onChange={(value) => onChange({ role_id: value })}
-                            placeholder="Select Role..."
-                            options={roles.map(r => ({ value: r.id, label: r.name }))}
-                        />
+                        <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Target Roles</label>
+                        <div className="flex flex-wrap gap-1.5 p-2 bg-[#1e1f22] rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
+                            {/* Display both legacy role_id and new roles array */}
+                            {Array.from(new Set([...(action.roles || []), ...(action.role_id ? [action.role_id] : [])])).map((rid) => {
+                                const role = roles.find(r => r.id === rid);
+                                return (
+                                    <div key={rid} className="flex items-center gap-1.5 bg-[#2b2d31] px-2 py-1 rounded-[3px] border border-[#1e1f22] text-xs">
+                                        <span style={{ color: role?.color ? `#${role.color.toString(16).padStart(6, '0')}` : 'inherit' }}>
+                                            {role?.name || rid}
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                const newRoles = (action.roles || (action.role_id ? [action.role_id] : [])).filter(id => id !== rid);
+                                                onChange({ roles: newRoles, role_id: undefined }); // Migrate to roles array
+                                            }}
+                                            className="text-[#4e5058] hover:text-[#da373c] font-bold"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                            <select
+                                className="bg-transparent text-[#b5bac1] text-xs outline-none cursor-pointer hover:text-[#f2f3f5] min-w-[80px]"
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        const currentRoles = action.roles || (action.role_id ? [action.role_id] : []);
+                                        if (!currentRoles.includes(e.target.value)) {
+                                            onChange({ roles: [...currentRoles, e.target.value], role_id: undefined });
+                                        }
+                                    }
+                                    e.target.value = '';
+                                }}
+                            >
+                                <option value="" disabled selected>+ Add Role</option>
+                                {roles.filter(r => !([...(action.roles || []), ...(action.role_id ? [action.role_id] : [])]).includes(r.id)).map(r => (
+                                    <option key={r.id} value={r.id}>{r.name}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 )}
 
@@ -656,6 +689,150 @@ const ActionManager = ({
     );
 };
 
+const ReactionEditor = ({
+    reaction,
+    onChange,
+    onDelete,
+    roles,
+    index
+}: {
+    reaction: any,
+    onChange: (updates: Partial<any>) => void,
+    onDelete: () => void,
+    roles: Role[],
+    index: number
+}) => {
+    return (
+        <div className="bg-[#1e1f22]/50 p-4 rounded-[8px] border border-[#1e1f22] relative group">
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={onDelete} className="text-[#4e5058] hover:text-[#da373c] font-bold p-1">×</button>
+            </div>
+
+            <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Emoji Picker */}
+                    <div>
+                        <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Emoji</label>
+                        <EmojiPicker
+                            value={reaction.emoji || ''}
+                            onChange={(val) => onChange({ emoji: val })}
+                            className="w-full"
+                        />
+                    </div>
+
+                    {/* Roles Selector (Multiple) */}
+                    <div>
+                        <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Roles to Add</label>
+                        <div className="space-y-2">
+                            <div className="flex flex-wrap gap-1.5 p-2 bg-[#1e1f22] rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
+                                {(reaction.role_ids || []).map((rid: string) => {
+                                    const role = roles.find(r => r.id === rid);
+                                    return (
+                                        <div key={rid} className="flex items-center gap-1.5 bg-[#2b2d31] px-2 py-1 rounded-[3px] border border-[#1e1f22] text-xs">
+                                            <span style={{ color: role?.color ? `#${role.color.toString(16).padStart(6, '0')}` : 'inherit' }}>
+                                                {role?.name || rid}
+                                            </span>
+                                            <button
+                                                onClick={() => onChange({ role_ids: (reaction.role_ids || []).filter((id: string) => id !== rid) })}
+                                                className="text-[#4e5058] hover:text-[#da373c] font-bold"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                                <select
+                                    className="bg-transparent text-[#b5bac1] text-xs outline-none cursor-pointer hover:text-[#f2f3f5] min-w-[80px]"
+                                    onChange={(e) => {
+                                        if (e.target.value && !(reaction.role_ids || []).includes(e.target.value)) {
+                                            onChange({ role_ids: [...(reaction.role_ids || []), e.target.value] });
+                                        }
+                                        e.target.value = '';
+                                    }}
+                                >
+                                    <option value="" disabled selected>+ Add Role</option>
+                                    {roles.filter(r => !(reaction.role_ids || []).includes(r.id)).map(r => (
+                                        <option key={r.id} value={r.id}>{r.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Success Message */}
+                <div>
+                    <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Success Message (Sent via DM)</label>
+                    <input
+                        value={reaction.success_message || ''}
+                        onChange={(e) => onChange({ success_message: e.target.value })}
+                        className="w-full p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-sm text-[#dbdee1] placeholder:text-[#4e5058]"
+                        placeholder="e.g. You've been assigned the {role} role!"
+                    />
+                    <p className="text-[10px] text-[#4e5058] mt-1 italic">Use {'{user}'} for mention, {'{server}'} for server name.</p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const ReactionsManager = ({
+    reactions,
+    onChange,
+    roles
+}: {
+    reactions: any[],
+    onChange: (reactions: any[]) => void,
+    roles: Role[]
+}) => {
+    const addReaction = () => {
+        onChange([...(reactions || []), { emoji: '', role_ids: [], success_message: '' }]);
+    };
+
+    const updateReaction = (index: number, updates: Partial<any>) => {
+        const newReactions = [...(reactions || [])];
+        newReactions[index] = { ...newReactions[index], ...updates };
+        onChange(newReactions);
+    };
+
+    const removeReaction = (index: number) => {
+        const newReactions = (reactions || []).filter((_, i) => i !== index);
+        onChange(newReactions);
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="flex justify-between items-center">
+                <label className="text-xs font-black text-[#72767d] uppercase tracking-widest">Emoji Reactions ({(reactions || []).length})</label>
+                <button
+                    onClick={addReaction}
+                    className="text-xs bg-[#5865f2] text-white px-3 py-1.5 rounded-[3px] font-bold hover:bg-[#4752c4] transition"
+                >
+                    + Add Reaction
+                </button>
+            </div>
+
+            <div className="space-y-3">
+                {(reactions || []).map((reaction, i) => (
+                    <ReactionEditor
+                        key={i}
+                        index={i}
+                        reaction={reaction}
+                        onChange={(updates) => updateReaction(i, updates)}
+                        onDelete={() => removeReaction(i)}
+                        roles={roles}
+                    />
+                ))}
+                {(reactions || []).length === 0 && (
+                    <div className="text-center p-4 border-2 border-dashed border-[#1e1f22] rounded-xl text-gray-500 text-sm">
+                        No reaction roles configured.
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 // --- Notification Toast Component ---
 
 
@@ -699,7 +876,7 @@ export default function CreateMessageModal({
     });
 
     const createDefaultMessage = (): ReactionRoleMessage => ({
-        message_id: null, channel_id: '', message_content: '', embeds: [createDefaultEmbed()], component_rows: []
+        message_id: null, channel_id: '', message_content: '', embeds: [createDefaultEmbed()], component_rows: [], reactions: []
     });
 
     // Editor State
@@ -912,7 +1089,8 @@ export default function CreateMessageModal({
                 channel_id: parsed.channel_id || '',
                 message_content: parsed.message_content || parsed.content || '',
                 embeds: embeds,
-                component_rows: componentRows
+                component_rows: componentRows,
+                reactions: Array.isArray(parsed.reactions) ? parsed.reactions : []
             };
 
             // Reset any active editing states
@@ -971,7 +1149,7 @@ export default function CreateMessageModal({
     };
 
     const handleSendMessage = async () => {
-        if (!targetChannel) {
+        if (!targetChannel && !disableChannelSelect) {
             error('Please select a channel!', 3000);
             return;
         }
@@ -983,9 +1161,9 @@ export default function CreateMessageModal({
             setTimeout(() => {
                 onClose(); // Optional: Close modal on success
             }, 2000);
-        } catch (error: any) {
-            console.error(error);
-            error(error.message || 'Failed to send message.', 3000);
+        } catch (err: any) {
+            console.error(err);
+            error(err.message || 'Failed to send message.', 3000);
         } finally {
             setSending(false);
         }
@@ -1263,7 +1441,6 @@ export default function CreateMessageModal({
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-fade-in">
-            <ToastContainer toast={toast} onClose={() => { }} />
             <div className="bg-[#2b2d31] w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-[#1e1f22] animate-scale-in">
 
                 {/* Top Bar */}
@@ -1345,9 +1522,14 @@ export default function CreateMessageModal({
                         <button
                             onClick={handleSendMessage}
                             disabled={sending}
-                            className="px-4 md:px-6 py-2 bg-[#248046] hover:bg-[#1a5c32] text-white font-bold rounded-[3px] shadow-md transition disabled:opacity-50 text-sm md:text-base whitespace-nowrap"
+                            className={`px-4 md:px-6 py-2 bg-[#248046] hover:bg-[#1a5c32] text-white font-bold rounded-[3px] shadow-md transition disabled:opacity-50 text-sm md:text-base whitespace-nowrap ${sending ? 'cursor-not-allowed opacity-70' : ''}`}
                         >
-                            {sending ? '...' : saveLabel}
+                            {sending ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <span>Applying...</span>
+                                </div>
+                            ) : saveLabel}
                         </button>
                     </div>
                 </div>
@@ -1512,7 +1694,32 @@ export default function CreateMessageModal({
                             </div>
                         </AccordionItem>
 
-                        {/* 4. Variables Guide */}
+                        {/* 4. Emoji Reactions */}
+                        <AccordionItem
+                            title={`Emoji Reactions (${(editingMsg.reactions || []).length})`}
+                            isOpen={openSections.includes('reactions')}
+                            onToggle={() => toggleSection('reactions')}
+                            extraActions={
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingMsg({ ...editingMsg, reactions: [...(editingMsg.reactions || []), { emoji: '', role_ids: [], success_message: '' }] });
+                                        if (!openSections.includes('reactions')) toggleSection('reactions');
+                                    }}
+                                    className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded font-bold hover:bg-emerald-500/20 transition"
+                                >
+                                    + Add
+                                </button>
+                            }
+                        >
+                            <ReactionsManager
+                                reactions={editingMsg.reactions || []}
+                                onChange={(arr) => setEditingMsg({ ...editingMsg, reactions: arr })}
+                                roles={roles}
+                            />
+                        </AccordionItem>
+
+                        {/* 5. Variables Guide */}
                         <AccordionItem
                             title={
                                 <div className="flex items-center gap-2">

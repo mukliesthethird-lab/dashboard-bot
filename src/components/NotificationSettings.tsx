@@ -249,6 +249,11 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
             initialMsg = GET_DEFAULT_MSG(feed.type);
         }
 
+        // Sync channel_id for variable preview/validation
+        if (initialMsg) {
+            initialMsg = { ...initialMsg, channel_id: feed.discord_channel_id };
+        }
+
         setEditingMsg(initialMsg);
         setShowEditor(true);
     };
