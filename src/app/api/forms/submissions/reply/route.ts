@@ -37,7 +37,17 @@ export async function POST(request: Request) {
         }
 
         // 2. Create a DM channel with the user
-        const dmChannel: any = await discordRequest('/users/@me/channels', 'POST', { recipient_id: userId }, discordToken);
+        const dmRes = await fetch('https://discord.com/api/v10/users/@me/channels', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bot ${discordToken}`,
+                'Content-Type': 'application/json',
+                'User-Agent': 'DonPolloDashboard/1.0'
+            },
+            body: JSON.stringify({ recipient_id: userId })
+        });
+        
+        const dmChannel = await dmRes.json();
         
         if (!dmChannel.id) {
             console.error('Discord DM Channel Error:', dmChannel);
@@ -49,26 +59,36 @@ export async function POST(request: Request) {
         }
 
         // 3. Send the message to the DM channel
-        const result: any = await discordRequest(`/channels/${dmChannel.id}/messages`, 'POST', {
-            embeds: [
-                {
-                    title: "📨 New Reply from Staff",
-                    description: message,
-                    color: 0x5865F2,
-                    fields: [
-                        {
-                            name: "Sent By",
-                            value: session.user.name || 'Administrator',
-                            inline: true
-                        }
-                    ],
-                    footer: {
-                        text: "Don Pollo Dashboard"
-                    },
-                    timestamp: new Date().toISOString()
-                }
-            ]
-        }, discordToken);
+        const msgRes = await fetch(`https://discord.com/api/v10/channels/${dmChannel.id}/messages`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bot ${discordToken}`,
+                'Content-Type': 'application/json',
+                'User-Agent': 'DonPolloDashboard/1.0'
+            },
+            body: JSON.stringify({
+                embeds: [
+                    {
+                        title: "📨 New Reply from Staff",
+                        description: message,
+                        color: 0x5865F2,
+                        fields: [
+                            {
+                                name: "Sent By",
+                                value: session.user.name || 'Administrator',
+                                inline: true
+                            }
+                        ],
+                        footer: {
+                            text: "Don Pollo Dashboard"
+                        },
+                        timestamp: new Date().toISOString()
+                    }
+                ]
+            })
+        });
+
+        const result = await msgRes.json();
 
         if (!result.id) {
             return NextResponse.json({ error: 'Failed to send DM message', details: result }, { status: 500 });
@@ -86,35 +106,4 @@ export async function POST(request: Request) {
         console.error('Reply API error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
-}
-
-function discordRequest(path: string, method: string, body: any, token: string) {
-    return new Promise((resolve, reject) => {
-        const bodyStr = JSON.stringify(body);
-        const req = https.request({
-            hostname: 'discord.com',
-            port: 443,
-            path: `/api/v10${path}`,
-            method: method,
-            headers: {
-                'Authorization': `Bot ${token}`,
-                'Content-Type': 'application/json',
-                'Content-Length': bodyStr.length,
-                'User-Agent': 'DonPolloDashboard/1.0'
-            }
-        }, (res) => {
-            let data = '';
-            res.on('data', chunk => data += chunk);
-            res.on('end', () => {
-                try {
-                    resolve(JSON.parse(data));
-                } catch (e) {
-                    resolve({ raw: data });
-                }
-            });
-        });
-        req.on('error', reject);
-        req.write(bodyStr);
-        req.end();
-    });
 }

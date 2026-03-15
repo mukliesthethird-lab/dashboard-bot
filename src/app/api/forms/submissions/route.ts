@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { getDiscordToken } from '@/lib/discord-token';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,7 +50,7 @@ export async function GET(request: Request) {
 
 // Helper for Discord DM notifications
 async function sendStatusDM(userId: string, status: string, reason: string | null, reviewer: string) {
-    const token = process.env.DISCORD_TOKEN;
+    const token = getDiscordToken();
     if (!token) return;
 
     try {
