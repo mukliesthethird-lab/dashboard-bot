@@ -19,6 +19,7 @@ interface Submission {
     form_id: number;
     user_id: string;
     username: string;
+    user_avatar?: string;
     responses: Record<string, string>;
     status: 'pending' | 'approved' | 'denied' | 'submitted';
     reviewed_by?: string;
@@ -51,6 +52,9 @@ export default function FormSubmissions({
     const [showDenyModal, setShowDenyModal] = useState(false);
     const [denyReason, setDenyReason] = useState("");
     const [pendingDenyId, setPendingDenyId] = useState<number | null>(null);
+    const [showReplyModal, setShowReplyModal] = useState(false);
+    const [replyMessage, setReplyMessage] = useState("");
+    const [replyingTo, setReplyingTo] = useState<Submission | null>(null);
 
     // Confirm modal state
     const [confirmAction, setConfirmAction] = useState<{
@@ -179,6 +183,36 @@ export default function FormSubmissions({
         } finally {
             setActionLoading(false);
             setConfirmAction({ ...confirmAction, isOpen: false });
+        }
+    };
+
+    const handleSendReply = async () => {
+        if (!replyingTo || !replyMessage.trim()) return;
+        setActionLoading(true);
+        try {
+            const res = await fetch('/api/forms/submissions/reply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    submission_id: replyingTo.id,
+                    guild_id: guildId,
+                    message: replyMessage
+                })
+            });
+
+            if (res.ok) {
+                success("Reply sent to user DM!");
+                setShowReplyModal(false);
+                setReplyMessage("");
+                setReplyingTo(null);
+            } else {
+                const data = await res.json();
+                error(data.error || "Failed to send reply");
+            }
+        } catch (err) {
+            error("Failed to send reply");
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -464,12 +498,15 @@ export default function FormSubmissions({
                                             {/* Title / Author Info */}
                                             <div className="flex items-center gap-2 mt-1">
                                                 <img 
-                                                    src={getAvatarUrl(item.user_id)} 
+                                                    src={item.user_avatar || getAvatarUrl(item.user_id)} 
                                                     alt={item.username}
                                                     className="w-6 h-6 rounded-full"
                                                 />
                                                 <div className="flex flex-col">
-                                                    <span className="font-bold text-white text-[15px] leading-tight hover:underline cursor-pointer">{item.username}</span>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="font-bold text-white text-[15px] leading-tight hover:underline cursor-pointer">{item.username}</span>
+                                                        <span className="text-[10px] text-gray-400 font-mono mt-0.5">({item.user_id})</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -506,6 +543,17 @@ export default function FormSubmissions({
 
                                     {/* Action Buttons (Discord styled) */}
                                     <div className="flex gap-2 mt-2 flex-wrap">
+                                         <button
+                                            onClick={() => {
+                                                setReplyingTo(item);
+                                                setShowReplyModal(true);
+                                            }}
+                                            className="px-4 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white text-sm font-medium rounded-[4px] transition-colors flex items-center gap-2"
+                                        >
+                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.39.84 4.59 2.25 6.31l-1.01 3.03a1 1 0 001.27 1.27l3.03-1.01C9.41 23.16 11.61 24 12 24c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.85 0-3.58-.64-4.95-1.72a1 1 0 00-.73-.27l-1.92.64.64-1.92a1 1 0 00-.27-.73C3.64 15.58 3 13.85 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9z"/></svg>
+                                            Reply
+                                        </button>
+
                                          <button
                                             onClick={() => {
                                                 setSelectedSubmission(item);
@@ -557,7 +605,61 @@ export default function FormSubmissions({
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
-                                    </div>
+                                    
+            {/* Reply Modal */}
+            {showReplyModal && replyingTo && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowReplyModal(false)}>
+                    <div className="bg-[#313338] border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-3 bg-[#5865F2]/10 rounded-full">
+                                <svg className="w-6 h-6 text-[#5865F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.39.84 4.59 2.25 6.31l-1.01 3.03a1 1 0 001.27 1.27l3.03-1.01C9.41 23.16 11.61 24 12 24c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.85 0-3.58-.64-4.95-1.72a1 1 0 00-.73-.27l-1.92.64.64-1.92a1 1 0 00-.27-.73C3.64 15.58 3 13.85 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9z"/></svg>
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-white">Reply to {replyingTo.username}</h2>
+                                <p className="text-gray-400 text-sm">This message will be sent to the user's DM via the bot.</p>
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="block text-[#b5bac1] text-xs font-bold uppercase mb-2">Your Message</label>
+                            <textarea
+                                value={replyMessage}
+                                onChange={(e) => setReplyMessage(e.target.value)}
+                                placeholder={`Hi ${replyingTo.username}, thank you for your submission...`}
+                                rows={5}
+                                className="w-full px-4 py-3 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
+                                autoFocus
+                            />
+                        </div>
+
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => {
+                                    setShowReplyModal(false);
+                                    setReplyMessage("");
+                                    setReplyingTo(null);
+                                }}
+                                className="px-4 py-2 text-white font-medium hover:underline transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSendReply}
+                                disabled={actionLoading || !replyMessage.trim()}
+                                className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] disabled:opacity-50 text-white font-medium rounded-[4px] transition-colors flex items-center gap-2"
+                            >
+                                {actionLoading ? (
+                                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                ) : (
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                                )}
+                                Send Reply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+</div>
                                 </div>
                             );
                         })}
@@ -590,7 +692,7 @@ export default function FormSubmissions({
                         {/* Modal Body */}
                         <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
                             <div className="flex items-center gap-3 mb-6">
-                                <img src={getAvatarUrl(selectedSubmission.user_id)} alt="Avatar" className="w-10 h-10 rounded-full" />
+                                <img src={selectedSubmission.user_avatar || getAvatarUrl(selectedSubmission.user_id)} alt="Avatar" className="w-10 h-10 rounded-full" />
                                 <div>
                                     <div className="text-white font-bold text-lg leading-tight hover:underline cursor-pointer">{selectedSubmission.username}</div>
                                     <div className="text-gray-400 font-mono text-xs">{selectedSubmission.user_id}</div>
@@ -687,6 +789,61 @@ export default function FormSubmissions({
                                 className="flex-1 py-3 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-bold rounded-xl transition"
                             >
                                 {actionLoading ? 'Denying...' : 'Deny Submission'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
+            {/* Reply Modal */}
+            {showReplyModal && replyingTo && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowReplyModal(false)}>
+                    <div className="bg-[#313338] border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-3 bg-[#5865F2]/10 rounded-full">
+                                <svg className="w-6 h-6 text-[#5865F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.39.84 4.59 2.25 6.31l-1.01 3.03a1 1 0 001.27 1.27l3.03-1.01C9.41 23.16 11.61 24 12 24c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.85 0-3.58-.64-4.95-1.72a1 1 0 00-.73-.27l-1.92.64.64-1.92a1 1 0 00-.27-.73C3.64 15.58 3 13.85 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9z"/></svg>
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-white">Reply to {replyingTo.username}</h2>
+                                <p className="text-gray-400 text-sm">This message will be sent to the user's DM via the bot.</p>
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="block text-[#b5bac1] text-xs font-bold uppercase mb-2">Your Message</label>
+                            <textarea
+                                value={replyMessage}
+                                onChange={(e) => setReplyMessage(e.target.value)}
+                                placeholder={`Hi ${replyingTo.username}, thank you for your submission...`}
+                                rows={5}
+                                className="w-full px-4 py-3 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
+                                autoFocus
+                            />
+                        </div>
+
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => {
+                                    setShowReplyModal(false);
+                                    setReplyMessage("");
+                                    setReplyingTo(null);
+                                }}
+                                className="px-4 py-2 text-white font-medium hover:underline transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSendReply}
+                                disabled={actionLoading || !replyMessage.trim()}
+                                className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] disabled:opacity-50 text-white font-medium rounded-[4px] transition-colors flex items-center gap-2"
+                            >
+                                {actionLoading ? (
+                                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                ) : (
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                                )}
+                                Send Reply
                             </button>
                         </div>
                     </div>
