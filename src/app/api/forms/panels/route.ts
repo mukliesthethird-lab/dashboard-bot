@@ -13,6 +13,8 @@ async function sendDiscordRequest(method: 'POST' | 'PATCH' | 'GET' | 'DELETE', p
 
     return new Promise((resolve, reject) => {
         const bodyStr = JSON.stringify(body);
+        console.log(`[Discord Request] ${method} ${path}`, bodyStr);
+        
         const req = https.request({
             hostname: 'discord.com',
             path: `/api/v10${path}`,
@@ -27,6 +29,7 @@ async function sendDiscordRequest(method: 'POST' | 'PATCH' | 'GET' | 'DELETE', p
             let resData = '';
             res.on('data', chunk => resData += chunk);
             res.on('end', () => {
+                console.log(`[Discord Response] ${res.statusCode}`, resData);
                 if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
                     try {
                         resolve(resData ? JSON.parse(resData) : { success: true });
@@ -39,7 +42,10 @@ async function sendDiscordRequest(method: 'POST' | 'PATCH' | 'GET' | 'DELETE', p
             });
         });
 
-        req.on('error', (e) => reject(e));
+        req.on('error', (e) => {
+            console.error(`[Discord Request Error]`, e);
+            reject(e);
+        });
         req.write(bodyStr);
         req.end();
     });
@@ -160,7 +166,17 @@ export async function POST(request: Request) {
                 guild_id
             ]);
 
-            return NextResponse.json({ success: true, message: 'Panel updated and synced with Discord!', id });
+            return NextResponse.json({ 
+                success: true, 
+                message: 'Panel updated and synced with Discord!', 
+                id, 
+                discordRes: { id: newMessageId },
+                debug: {
+                    channel_id,
+                    token_prefix: getDiscordToken().substring(0, 5),
+                    token_length: getDiscordToken().length
+                }
+            });
         } else {
             // Create new panel
             // 1. Send to Discord first
@@ -187,7 +203,17 @@ export async function POST(request: Request) {
                 is_sticky ? 1 : 0
             ]);
 
-            return NextResponse.json({ success: true, message: 'Panel created and sent to Discord!', id: result.insertId });
+            return NextResponse.json({ 
+                success: true, 
+                message: 'Panel created and sent to Discord!', 
+                id: result.insertId, 
+                discordRes,
+                debug: {
+                    channel_id,
+                    token_prefix: getDiscordToken().substring(0, 5),
+                    token_length: getDiscordToken().length
+                }
+            });
         }
     } catch (error: any) {
         console.error('Form Panels API POST error:', error);

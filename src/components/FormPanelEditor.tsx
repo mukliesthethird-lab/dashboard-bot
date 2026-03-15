@@ -223,7 +223,8 @@ export default function FormPanelEditor({
             });
 
             if (res.ok) {
-                success("Panel sent successfully!");
+                const data = await res.json();
+                success(`Panel sent successfully! (ID: ${data.discordRes?.id || 'N/A'})`);
                 onSave();
                 setTimeout(onClose, 1500);
             } else {
