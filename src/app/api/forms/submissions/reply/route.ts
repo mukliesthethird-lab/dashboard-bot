@@ -50,12 +50,21 @@ export async function POST(request: Request) {
 
         // 3. Send the message to the DM channel
         const result: any = await discordRequest(`/channels/${dmChannel.id}/messages`, 'POST', {
-            content: message,
             embeds: [
                 {
-                    title: "Form Reply",
-                    description: `This is a reply to your form submission from **${session.user.name || 'Admin'}**.`,
+                    title: "📨 New Reply from Staff",
+                    description: message,
                     color: 0x5865F2,
+                    fields: [
+                        {
+                            name: "Sent By",
+                            value: session.user.name || 'Administrator',
+                            inline: true
+                        }
+                    ],
+                    footer: {
+                        text: "Don Pollo Dashboard"
+                    },
                     timestamp: new Date().toISOString()
                 }
             ]

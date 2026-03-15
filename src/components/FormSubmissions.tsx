@@ -168,9 +168,10 @@ export default function FormSubmissions({
                 method: action === 'delete' ? 'DELETE' : 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    submissionIds: Array.from(selectedIds),
-                    status: action === 'delete' ? undefined : action === 'approve' ? 'approved' : 'denied',
-                    guildId
+                    ids: Array.from(selectedIds),
+                    status: action === 'delete' ? undefined : (action === 'approve' ? 'approved' : 'denied'),
+                    guild_id: guildId,
+                    reviewed_by: session?.user?.name || "Admin"
                 })
             });
 
