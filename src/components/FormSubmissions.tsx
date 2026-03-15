@@ -45,6 +45,7 @@ export default function FormSubmissions({
     const [actionLoading, setActionLoading] = useState(false);
     const [total, setTotal] = useState(0);
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+    const [avatarCache, setAvatarCache] = useState<Record<string, string>>({});
 
     // Detail modal state
     const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
@@ -293,6 +294,33 @@ export default function FormSubmissions({
         }
     };
 
+    // Auto-fetch missing avatars
+    useEffect(() => {
+        const usersToFetch = submissions
+            .filter(s => !s.user_avatar && !avatarCache[s.user_id])
+            .map(s => s.user_id);
+        
+        if (usersToFetch.length === 0) return;
+
+        // Fetch each missing avatar (only once per unique user)
+        const uniqueUsers = Array.from(new Set(usersToFetch));
+        
+        uniqueUsers.forEach(async (id) => {
+            try {
+                const res = await fetch(`/api/discord/avatar/${id}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.avatarUrl) {
+                        setAvatarCache(prev => ({ ...prev, [id]: data.avatarUrl }));
+                    }
+                }
+            } catch (err) {
+                console.error(`Failed to fetch avatar for ${id}:`, err);
+            }
+        });
+    }, [submissions, avatarCache]);
+
+
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
         return {
@@ -503,7 +531,7 @@ export default function FormSubmissions({
                                             {/* Title / Author Info */}
                                             <div className="flex items-center gap-2 mt-1">
                                                 <img 
-                                                    src={item.user_avatar || getAvatarUrl(item.user_id)} 
+                                                    src={item.user_avatar || avatarCache[item.user_id] || getAvatarUrl(item.user_id)} 
                                                     alt={item.username}
                                                     className="w-6 h-6 rounded-full"
                                                 />
