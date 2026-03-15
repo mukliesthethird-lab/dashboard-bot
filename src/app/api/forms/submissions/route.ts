@@ -56,7 +56,7 @@ export async function PATCH(request: Request) {
         }
 
         const body = await request.json();
-        const { id, guild_id, status, reviewed_by } = body;
+        const { id, guild_id, status, reviewed_by, reason } = body;
 
         if (!id || !guild_id || !status) {
             return NextResponse.json({ error: 'Missing required fields: id, guild_id, status' }, { status: 400 });
@@ -70,9 +70,10 @@ export async function PATCH(request: Request) {
             UPDATE form_submissions SET
                 status = ?,
                 reviewed_by = ?,
+                reason = ?,
                 reviewed_at = NOW()
             WHERE id = ? AND guild_id = ?
-        `, [status, reviewed_by || null, id, guild_id]);
+        `, [status, reviewed_by || null, reason || null, id, guild_id]);
 
         // Log the action
         await pool.query(

@@ -40,7 +40,12 @@ export async function POST(request: Request) {
         const dmChannel: any = await discordRequest('/users/@me/channels', 'POST', { recipient_id: userId }, discordToken);
         
         if (!dmChannel.id) {
-            return NextResponse.json({ error: 'Failed to create DM channel', details: dmChannel }, { status: 500 });
+            console.error('Discord DM Channel Error:', dmChannel);
+            return NextResponse.json({ 
+                error: 'Failed to create DM channel', 
+                details: dmChannel,
+                userId: userId
+            }, { status: 500 });
         }
 
         // 3. Send the message to the DM channel

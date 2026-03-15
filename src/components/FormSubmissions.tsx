@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import EmptyState from "./EmptyState";
 import { useToast, ToastContainer } from "./Toast";
 import ConfirmationModal from "./ConfirmationModal";
@@ -34,6 +35,7 @@ export default function FormSubmissions({
     submissionType,
     onBack
 }: FormSubmissionsProps) {
+    const { data: session } = useSession();
     const [submissions, setSubmissions] = useState<Submission[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -133,10 +135,11 @@ export default function FormSubmissions({
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    submissionId,
+                    id: submissionId,
                     status,
                     reason,
-                    guildId
+                    guild_id: guildId,
+                    reviewed_by: session?.user?.name || "Admin"
                 })
             });
 
@@ -207,7 +210,8 @@ export default function FormSubmissions({
                 setReplyingTo(null);
             } else {
                 const data = await res.json();
-                error(data.error || "Failed to send reply");
+                const errorMessage = data.details?.message || data.error || "Failed to send reply";
+                error(errorMessage + (data.details?.code ? ` (Code: ${data.details.code})` : ""));
             }
         } catch (err) {
             error("Failed to send reply");
