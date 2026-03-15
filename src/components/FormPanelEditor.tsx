@@ -224,7 +224,7 @@ export default function FormPanelEditor({
 
             if (res.ok) {
                 const data = await res.json();
-                success(`Panel sent successfully! (ID: ${data.discordRes?.id || 'N/A'})`);
+                success(`Panel sent successfully! (ID: ${data.discordRes?.id || 'N/A'}, Channel: ${data.debug?.channel_id || 'N/A'})`);
                 onSave();
                 setTimeout(onClose, 1500);
             } else {
