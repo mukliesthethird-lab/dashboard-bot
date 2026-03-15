@@ -2,8 +2,48 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import https from 'https';
+import { getDiscordToken } from '@/lib/discord-token';
 
 export const dynamic = 'force-dynamic';
+
+async function sendDiscordRequest(method: 'POST' | 'PATCH' | 'GET' | 'DELETE', path: string, body: any) {
+    const token = getDiscordToken();
+    if (!token) throw new Error('Bot token not configured');
+
+    return new Promise((resolve, reject) => {
+        const bodyStr = JSON.stringify(body);
+        const req = https.request({
+            hostname: 'discord.com',
+            path: `/api/v10${path}`,
+            method: method,
+            headers: {
+                'Authorization': `Bot ${token}`,
+                'Content-Type': 'application/json',
+                'User-Agent': 'DonPolloDashboard/1.0',
+                'Content-Length': Buffer.byteLength(bodyStr)
+            }
+        }, (res) => {
+            let resData = '';
+            res.on('data', chunk => resData += chunk);
+            res.on('end', () => {
+                if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+                    try {
+                        resolve(resData ? JSON.parse(resData) : { success: true });
+                    } catch (e) {
+                        resolve({ success: true });
+                    }
+                } else {
+                    reject(new Error(`Discord API Error: ${res.statusCode} ${resData}`));
+                }
+            });
+        });
+
+        req.on('error', (e) => reject(e));
+        req.write(bodyStr);
+        req.end();
+    });
+}
 
 // GET - Get panels for a form
 export async function GET(request: Request) {
@@ -69,8 +109,33 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Missing required fields: form_id, guild_id, channel_id' }, { status: 400 });
         }
 
+        // Prepare Discord payload
+        const discordPayload = {
+            content: message_content || '',
+            embeds: embed_data ? [embed_data] : [],
+            components: components || []
+        };
+
         if (id) {
             // Update existing panel
+            // First, try to update the message on Discord if we have a message_id
+            let newMessageId = message_id;
+            
+            if (message_id && channel_id) {
+                try {
+                    await sendDiscordRequest('PATCH', `/channels/${channel_id}/messages/${message_id}`, discordPayload);
+                } catch (err: any) {
+                    console.error('Failed to update Discord message, sending new one:', err.message);
+                    // If patch fails (e.g. message deleted), send a new one
+                    const discordRes: any = await sendDiscordRequest('POST', `/channels/${channel_id}/messages`, discordPayload);
+                    newMessageId = discordRes.id;
+                }
+            } else {
+                // No message_id, send a new one
+                const discordRes: any = await sendDiscordRequest('POST', `/channels/${channel_id}/messages`, discordPayload);
+                newMessageId = discordRes.id;
+            }
+
             await pool.query(`
                 UPDATE form_panels SET
                     channel_id = ?,
@@ -84,7 +149,7 @@ export async function POST(request: Request) {
                 WHERE id = ? AND guild_id = ?
             `, [
                 channel_id,
-                message_id || null,
+                newMessageId || null,
                 message_content || '',
                 embed_data ? JSON.stringify(embed_data) : null,
                 JSON.stringify(components || []),
@@ -95,9 +160,14 @@ export async function POST(request: Request) {
                 guild_id
             ]);
 
-            return NextResponse.json({ success: true, message: 'Panel updated successfully!', id });
+            return NextResponse.json({ success: true, message: 'Panel updated and synced with Discord!', id });
         } else {
             // Create new panel
+            // 1. Send to Discord first
+            const discordRes: any = await sendDiscordRequest('POST', `/channels/${channel_id}/messages`, discordPayload);
+            const newMessageId = discordRes.id;
+
+            // 2. Save to database
             const [result]: any = await pool.query(`
                 INSERT INTO form_panels (
                     form_id, guild_id, channel_id, message_id,
@@ -108,7 +178,7 @@ export async function POST(request: Request) {
                 form_id,
                 guild_id,
                 channel_id,
-                message_id || null,
+                newMessageId || null,
                 message_content || '',
                 embed_data ? JSON.stringify(embed_data) : null,
                 JSON.stringify(components || []),
@@ -117,7 +187,7 @@ export async function POST(request: Request) {
                 is_sticky ? 1 : 0
             ]);
 
-            return NextResponse.json({ success: true, message: 'Panel created successfully!', id: result.insertId });
+            return NextResponse.json({ success: true, message: 'Panel created and sent to Discord!', id: result.insertId });
         }
     } catch (error: any) {
         console.error('Form Panels API POST error:', error);
