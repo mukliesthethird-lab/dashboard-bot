@@ -212,7 +212,7 @@ export default function FormPanelEditor({
                                         name: config.button_emoji.split(':')[1],
                                         animated: config.button_emoji.startsWith('<a:')
                                     } : { name: config.button_emoji },
-                                    custom_id: `form_${form.id}`
+                                    custom_id: `form:open:${form.id}`
                                 }
                             ]
                         }

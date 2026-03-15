@@ -13,7 +13,7 @@ async function sendDiscordRequest(method: 'POST' | 'PATCH' | 'GET' | 'DELETE', p
 
     return new Promise((resolve, reject) => {
         const bodyStr = JSON.stringify(body);
-        console.log(`[Discord Request] ${method} ${path}`, bodyStr);
+
         
         const req = https.request({
             hostname: 'discord.com',
@@ -29,7 +29,7 @@ async function sendDiscordRequest(method: 'POST' | 'PATCH' | 'GET' | 'DELETE', p
             let resData = '';
             res.on('data', chunk => resData += chunk);
             res.on('end', () => {
-                console.log(`[Discord Response] ${res.statusCode}`, resData);
+
                 if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
                     try {
                         resolve(resData ? JSON.parse(resData) : { success: true });
@@ -170,12 +170,7 @@ export async function POST(request: Request) {
                 success: true, 
                 message: 'Panel updated and synced with Discord!', 
                 id, 
-                discordRes: { id: newMessageId },
-                debug: {
-                    channel_id,
-                    token_prefix: getDiscordToken().substring(0, 5),
-                    token_length: getDiscordToken().length
-                }
+                discordRes: { id: newMessageId }
             });
         } else {
             // Create new panel
@@ -207,12 +202,7 @@ export async function POST(request: Request) {
                 success: true, 
                 message: 'Panel created and sent to Discord!', 
                 id: result.insertId, 
-                discordRes,
-                debug: {
-                    channel_id,
-                    token_prefix: getDiscordToken().substring(0, 5),
-                    token_length: getDiscordToken().length
-                }
+                discordRes
             });
         }
     } catch (error: any) {
