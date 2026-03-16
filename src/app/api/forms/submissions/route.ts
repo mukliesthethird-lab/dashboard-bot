@@ -18,20 +18,25 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'guild_id is required' }, { status: 400 });
         }
 
-        let query = 'SELECT * FROM form_submissions WHERE guild_id = ?';
+        let query = `
+            SELECT fs.*, 
+            (SELECT COUNT(*) FROM form_submissions fs2 WHERE fs2.form_id = fs.form_id AND fs2.id <= fs.id) as form_submission_number
+            FROM form_submissions fs 
+            WHERE fs.guild_id = ?
+        `;
         const params: any[] = [guildId];
 
         if (formId) {
-            query += ' AND form_id = ?';
+            query += ' AND fs.form_id = ?';
             params.push(formId);
         }
 
         if (status) {
-            query += ' AND status = ?';
+            query += ' AND fs.status = ?';
             params.push(status);
         }
 
-        query += ' ORDER BY submitted_at DESC';
+        query += ' ORDER BY fs.submitted_at DESC';
 
         const [rows]: any = await pool.query(query, params);
 

@@ -26,6 +26,7 @@ interface Submission {
     reviewed_by?: string;
     reviewed_at?: string;
     submitted_at: string;
+    form_submission_number?: number;
 }
 
 export default function FormSubmissions({
@@ -560,7 +561,7 @@ export default function FormSubmissions({
                                             {/* Footer Info */}
                                             <div className="mt-4 flex items-center justify-between text-[11px] font-medium text-gray-400">
                                                 <div className="flex items-center gap-2">
-                                                    <span>Submission #{item.id}</span>
+                                                    <span>Submission #{item.form_submission_number || item.id}</span>
                                                     <span>•</span>
                                                     <span className="font-mono">{item.user_id}</span>
                                                     {item.reviewed_by && (
@@ -623,7 +624,7 @@ export default function FormSubmissions({
                                         <button
                                             onClick={() => setConfirmAction({
                                                 isOpen: true,
-                                                title: `Delete Submission #${item.id}`,
+                                                title: `Delete Submission #${item.form_submission_number || item.id}`,
                                                 message: `Are you sure you want to permanently delete submission from ${item.username}?`,
                                                 action: () => {
                                                     setSelectedIds(new Set([item.id]));
