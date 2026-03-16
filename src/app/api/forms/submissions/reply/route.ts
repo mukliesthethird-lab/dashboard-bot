@@ -36,18 +36,42 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Discord token not configured' }, { status: 500 });
         }
 
+        // We'll use a robust helper function for https.request that accurately calculates Content-Length
+        const sendDiscordRequest = async (path: string, body: any) => {
+            return new Promise<any>((resolve, reject) => {
+                const payload = JSON.stringify(body);
+                const options = {
+                    hostname: 'discord.com',
+                    port: 443,
+                    path: path,
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bot ${discordToken}`,
+                        'Content-Type': 'application/json',
+                        'Content-Length': Buffer.byteLength(payload)
+                    }
+                };
+
+                const req = https.request(options, (res) => {
+                    let data = '';
+                    res.on('data', (chunk) => { data += chunk; });
+                    res.on('end', () => {
+                        try {
+                            resolve(JSON.parse(data));
+                        } catch (err) {
+                            reject(err);
+                        }
+                    });
+                });
+
+                req.on('error', (err) => reject(err));
+                req.write(payload);
+                req.end();
+            });
+        };
+
         // 2. Create a DM channel with the user
-        const dmRes = await fetch('https://discord.com/api/v10/users/@me/channels', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bot ${discordToken}`,
-                'Content-Type': 'application/json',
-                'User-Agent': 'DonPolloDashboard/1.0'
-            },
-            body: JSON.stringify({ recipient_id: userId })
-        });
-        
-        const dmChannel = await dmRes.json();
+        const dmChannel = await sendDiscordRequest('/api/v10/users/@me/channels', { recipient_id: userId });
         
         if (!dmChannel.id) {
             console.error('Discord DM Channel Error:', dmChannel);
@@ -59,36 +83,26 @@ export async function POST(request: Request) {
         }
 
         // 3. Send the message to the DM channel
-        const msgRes = await fetch(`https://discord.com/api/v10/channels/${dmChannel.id}/messages`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bot ${discordToken}`,
-                'Content-Type': 'application/json',
-                'User-Agent': 'DonPolloDashboard/1.0'
-            },
-            body: JSON.stringify({
-                embeds: [
-                    {
-                        title: "📨 New Reply from Staff",
-                        description: message,
-                        color: 0x5865F2,
-                        fields: [
-                            {
-                                name: "Sent By",
-                                value: session.user.name || 'Administrator',
-                                inline: true
-                            }
-                        ],
-                        footer: {
-                            text: "Don Pollo Dashboard"
-                        },
-                        timestamp: new Date().toISOString()
-                    }
-                ]
-            })
+        const result = await sendDiscordRequest(`/api/v10/channels/${dmChannel.id}/messages`, {
+            embeds: [
+                {
+                    title: "📨 New Reply from Staff",
+                    description: message,
+                    color: 0x5865F2,
+                    fields: [
+                        {
+                            name: "Sent By",
+                            value: session.user.name || 'Administrator',
+                            inline: true
+                        }
+                    ],
+                    footer: {
+                        text: "Don Pollo Dashboard"
+                    },
+                    timestamp: new Date().toISOString()
+                }
+            ]
         });
-
-        const result = await msgRes.json();
 
         if (!result.id) {
             return NextResponse.json({ error: 'Failed to send DM message', details: result }, { status: 500 });

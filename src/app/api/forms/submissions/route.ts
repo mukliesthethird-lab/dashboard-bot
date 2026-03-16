@@ -48,40 +48,66 @@ export async function GET(request: Request) {
     }
 }
 
+import https from 'https';
+
 // Helper for Discord DM notifications
 async function sendStatusDM(userId: string, status: string, reason: string | null, reviewer: string) {
     const token = getDiscordToken();
     if (!token) return;
 
     try {
+        const sendDiscordRequest = async (path: string, body: any) => {
+            return new Promise<any>((resolve, reject) => {
+                const payload = JSON.stringify(body);
+                const options = {
+                    hostname: 'discord.com',
+                    port: 443,
+                    path: path,
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bot ${token}`,
+                        'Content-Type': 'application/json',
+                        'Content-Length': Buffer.byteLength(payload)
+                    }
+                };
+
+                const req = https.request(options, (res) => {
+                    let data = '';
+                    res.on('data', (chunk) => { data += chunk; });
+                    res.on('end', () => {
+                        try {
+                            resolve(JSON.parse(data));
+                        } catch (err) {
+                            reject(err);
+                        }
+                    });
+                });
+
+                req.on('error', (err) => reject(err));
+                req.write(payload);
+                req.end();
+            });
+        };
+
         // Create DM
-        const dmChannelRes = await fetch('https://discord.com/api/v10/users/@me/channels', {
-            method: 'POST',
-            headers: { 'Authorization': `Bot ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ recipient_id: userId })
-        });
-        const dmChannel = await dmChannelRes.json();
+        const dmChannel = await sendDiscordRequest('/api/v10/users/@me/channels', { recipient_id: userId });
         if (!dmChannel.id) return;
 
         // Send Embed
-        await fetch(`https://discord.com/api/v10/channels/${dmChannel.id}/messages`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bot ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                embeds: [{
-                    title: status === 'approved' ? '✅ Submission Approved' : '❌ Submission Denied',
-                    description: status === 'approved' 
-                        ? `Congratulations! Your form submission has been **approved**.`
-                        : `We regret to inform you that your form submission has been **denied**.`,
-                    color: status === 'approved' ? 0x248046 : 0xDA373C,
-                    fields: [
-                        ...(reason ? [{ name: "Reason", value: reason }] : []),
-                        { name: "Reviewed By", value: reviewer, inline: true }
-                    ],
-                    timestamp: new Date().toISOString(),
-                    footer: { text: "Don Pollo Dashboard" }
-                }]
-            })
+        await sendDiscordRequest(`/api/v10/channels/${dmChannel.id}/messages`, {
+            embeds: [{
+                title: status === 'approved' ? '✅ Submission Approved' : '❌ Submission Denied',
+                description: status === 'approved' 
+                    ? `Congratulations! Your form submission has been **approved**.`
+                    : `We regret to inform you that your form submission has been **denied**.`,
+                color: status === 'approved' ? 0x248046 : 0xDA373C,
+                fields: [
+                    ...(reason ? [{ name: "Reason", value: reason }] : []),
+                    { name: "Reviewed By", value: reviewer, inline: true }
+                ],
+                timestamp: new Date().toISOString(),
+                footer: { text: "Don Pollo Dashboard" }
+            }]
         });
     } catch (err) {
         console.error('Failed to send status DM:', err);
