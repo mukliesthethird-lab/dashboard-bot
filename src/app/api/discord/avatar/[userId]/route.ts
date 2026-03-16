@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getDiscordToken } from '@/lib/discord-token';
 
 export async function GET(
-    request: Request,
-    { params }: { params: { userId: string } }
+    request: NextRequest,
+    { params }: { params: Promise<{ userId: string }> }
 ) {
     try {
-        const userId = params.userId;
+        const { userId } = await params;
         const token = getDiscordToken();
 
         if (!token) {
