@@ -78,7 +78,7 @@ export default function FormEditor({
     };
 
     // Add component to current page
-    const addComponent = (type: "text_input" | "select_menu") => {
+    const addComponent = (type: "text_input" | "select_menu" | "file_upload" | "date_picker") => {
         if (currentPage.components.length >= 5) return;
 
         const newComponent: FormComponent = {
@@ -93,10 +93,14 @@ export default function FormEditor({
                 min_length: 0,
                 max_length: 4000,
                 pre_filled_value: ""
-            } : {
+            } : type === "select_menu" ? {
                 options: [{ label: "Option 1", value: "option_1" }],
                 min_values: 1,
                 max_values: 1
+            } : type === "file_upload" ? {
+                // File upload specific
+            } : {
+                // Date picker specific
             })
         };
 
@@ -342,12 +346,16 @@ export default function FormEditor({
                                                         </button>
                                                     </div>
                                                     <span className="text-xl">
-                                                        {comp.type === "text_input" ? "📝" : "📋"}
+                                                        {comp.type === "text_input" ? "📝" : 
+                                                         comp.type === "select_menu" ? "📋" :
+                                                         comp.type === "file_upload" ? "📂" : "📅"}
                                                     </span>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="font-semibold text-white truncate">{comp.label}</p>
                                                         <p className="text-xs text-gray-500">
-                                                            {comp.type === "text_input" ? "Text Input" : "Select Menu"}
+                                                            {comp.type === "text_input" ? "Text Input" : 
+                                                             comp.type === "select_menu" ? "Select Menu" :
+                                                             comp.type === "file_upload" ? "File Upload" : "Date Picker"}
                                                             {comp.required && <span className="text-red-400 ml-2">Required</span>}
                                                         </p>
                                                     </div>
@@ -535,6 +543,20 @@ export default function FormEditor({
                                         className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                     >
                                         📋 Add Select Menu
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("file_upload")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                    >
+                                        📂 Add File Upload
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("date_picker")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-4 py-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                    >
+                                        📅 Add Date Picker
                                     </button>
                                 </div>
                             </div>

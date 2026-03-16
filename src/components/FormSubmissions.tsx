@@ -738,7 +738,27 @@ export default function FormSubmissions({
                                     <div key={question} className="flex flex-col gap-1.5">
                                         <h3 className="font-bold text-white text-[15px]">{question}</h3>
                                         <div className="text-[#dbdee1] text-[15px] whitespace-pre-wrap break-words leading-relaxed pl-2 border-l-2 border-[#4E5058] rounded-sm py-1 bg-[#1E1F22]/30 px-3">
-                                            {answer || <span className="text-gray-500 italic">No response provided</span>}
+                                            {answer ? (
+                                                answer.match(/\.(jpeg|jpg|gif|png|webp)($|\?)/i) || (answer.startsWith('http') && answer.includes('cdn.discordapp.com')) ? (
+                                                    <div className="space-y-2">
+                                                        <a href={answer} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline break-all">
+                                                            {answer}
+                                                        </a>
+                                                        <img 
+                                                            src={answer} 
+                                                            alt="Response attachment" 
+                                                            className="max-w-full rounded-md border border-white/10 mt-2 shadow-lg"
+                                                            onError={(e) => {
+                                                                (e.target as HTMLImageElement).style.display = 'none';
+                                                            }}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    answer
+                                                )
+                                            ) : (
+                                                <span className="text-gray-500 italic">No response provided</span>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

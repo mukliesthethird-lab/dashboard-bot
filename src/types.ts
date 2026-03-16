@@ -107,7 +107,7 @@ export interface FormSelectOption {
 
 export interface FormComponent {
     id: string;
-    type: 'text_input' | 'select_menu';
+    type: 'text_input' | 'select_menu' | 'file_upload' | 'date_picker';
     label: string;
     description?: string;
     placeholder?: string;
