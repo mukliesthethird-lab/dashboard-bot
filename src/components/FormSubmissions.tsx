@@ -598,7 +598,7 @@ export default function FormSubmissions({
                                             View Details
                                         </button>
 
-                                        {submissionType === 'application' && item.status === 'pending' && (
+                                        {item.status === 'pending' && (
                                             <>
                                                 <button
                                                     onClick={() => handleStatusUpdate(item.id, 'approved')}
