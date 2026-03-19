@@ -322,6 +322,59 @@ export default function FormSubmissions({
     }, [submissions, avatarCache]);
 
 
+    const getFileInfo = (url: string) => {
+        try {
+            // Extract filename from Discord URL (usually the last part before query)
+            const urlObj = new URL(url);
+            const pathname = urlObj.pathname;
+            const filename = pathname.split('/').pop() || 'unknown_file';
+            const ext = filename.split('.').pop()?.toLowerCase() || '';
+
+            // Define icons and colors based on extension
+            let icon = (
+                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+            );
+            let colorClass = 'text-blue-400 bg-blue-500/10 border-blue-500/20';
+            let typeLabel = ext.toUpperCase() || 'FILE';
+
+            if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
+                colorClass = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+                icon = (
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                    </svg>
+                );
+                typeLabel = 'ARCHIVE';
+            } else if (['pdf'].includes(ext)) {
+                colorClass = 'text-red-400 bg-red-500/10 border-red-500/20';
+                typeLabel = 'PDF DOCUMENT';
+            } else if (['doc', 'docx', 'txt', 'rtf'].includes(ext)) {
+                colorClass = 'text-blue-400 bg-blue-500/10 border-blue-500/20';
+                typeLabel = 'DOCUMENT';
+            } else if (['json', 'js', 'py', 'ts', 'html', 'css', 'cpp', 'java'].includes(ext)) {
+                colorClass = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+                icon = (
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                );
+                typeLabel = 'CODE';
+            }
+
+            return { filename, ext, icon, colorClass, typeLabel };
+        } catch {
+            return { 
+                filename: 'Attachment', 
+                ext: '', 
+                icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+                colorClass: 'text-gray-400 bg-gray-500/10 border-gray-500/20',
+                typeLabel: 'FILE'
+            };
+        }
+    };
+
     const renderAnswer = (answer: string) => {
         if (!answer) return <span className="italic text-gray-500">No response provided</span>;
 
@@ -333,7 +386,7 @@ export default function FormSubmissions({
             return (
                 <div className="flex flex-wrap gap-2 mt-2">
                     {parts.map((url, i) => {
-                        const isImage = url.match(/\.(jpeg|jpg|gif|png|webp)($|\?)/i) || url.includes('cdn.discordapp.com');
+                        const isImage = url.match(/\.(jpeg|jpg|gif|png|webp|jfif)($|\?)/i);
                         if (isImage) {
                             return (
                                 <div key={i} className="relative group/img">
@@ -350,18 +403,37 @@ export default function FormSubmissions({
                                 </div>
                             );
                         } else {
+                            const fileInfo = getFileInfo(url);
                             return (
                                 <a 
                                     key={i}
                                     href={url} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-3 py-2 bg-[#1e1f22] border border-white/5 rounded-md text-blue-400 hover:text-blue-300 hover:bg-[#2b2d31] transition text-xs font-medium"
+                                    className={`flex items-center gap-4 p-3 ${fileInfo.colorClass} border rounded-lg hover:brightness-125 transition-all group/file max-w-sm w-full`}
                                 >
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Download File {parts.length > 1 ? i + 1 : ''}
+                                    <div className="flex-shrink-0">
+                                        {fileInfo.icon}
+                                    </div>
+                                    <div className="flex flex-col min-w-0 flex-1">
+                                        <span className="text-[13px] font-bold text-white truncate group-hover/file:underline">
+                                            {fileInfo.filename}
+                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-bold opacity-60 tracking-wider">
+                                                {fileInfo.typeLabel}
+                                            </span>
+                                            <span className="text-[10px] opacity-40">•</span>
+                                            <span className="text-[10px] font-bold text-blue-400 group-hover/file:text-blue-300">
+                                                Download
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="opacity-0 group-hover/file:opacity-100 transition-opacity p-2">
+                                        <svg className="w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                    </div>
                                 </a>
                             );
                         }
