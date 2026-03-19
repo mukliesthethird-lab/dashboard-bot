@@ -558,13 +558,13 @@ export default function FormEditor({
                                                                         className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white text-sm"
                                                                     />
                                                                 </div>
-                                                                <div>
+                                                                 <div>
                                                                     <label className="block text-sm font-semibold text-gray-300 mb-2">Max Selections</label>
                                                                     <input
                                                                         type="number"
                                                                         value={comp.max_values || 1}
-                                                                        onChange={(e) => updateComponent(comp.id, { max_values: parseInt(e.target.value) || 1 })}
-                                                                        min={1} max={25}
+                                                                        onChange={(e) => updateComponent(comp.id, { max_values: Math.min(parseInt(e.target.value) || 1, 10) })}
+                                                                        min={1} max={10}
                                                                         className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white text-sm"
                                                                     />
                                                                 </div>
