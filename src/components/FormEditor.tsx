@@ -538,9 +538,13 @@ export default function FormEditor({
                                                                 ))}
                                                                 <button
                                                                     onClick={() => addSelectOption(comp.id)}
-                                                                    className="w-full py-2 border border-dashed border-white/20 rounded-lg text-gray-400 hover:text-amber-400 hover:border-amber-500/50 transition-all font-semibold"
+                                                                    disabled={(comp.options?.length || 0) >= 10}
+                                                                    className="w-full py-2 border border-dashed border-white/20 rounded-lg text-gray-400 hover:text-amber-400 hover:border-amber-500/50 transition-all font-semibold disabled:opacity-30 disabled:cursor-not-allowed"
                                                                 >
-                                                                    + Add {comp.type === 'radio_group' ? 'Radio' : comp.type === 'checkbox_group' ? 'Checkbox' : 'Option'}
+                                                                    {(comp.options?.length || 0) >= 10 
+                                                                        ? "Max 10 options reached" 
+                                                                        : `+ Add ${comp.type === 'radio_group' ? 'Radio' : comp.type === 'checkbox_group' ? 'Checkbox' : 'Option'}`
+                                                                    }
                                                                 </button>
                                                             </div>
                                                         )}
@@ -553,8 +557,8 @@ export default function FormEditor({
                                                                     <input
                                                                         type="number"
                                                                         value={comp.min_values || 1}
-                                                                        onChange={(e) => updateComponent(comp.id, { min_values: parseInt(e.target.value) || 1 })}
-                                                                        min={1} max={25}
+                                                                        onChange={(e) => updateComponent(comp.id, { min_values: Math.min(parseInt(e.target.value) || 1, 10) })}
+                                                                        min={1} max={10}
                                                                         className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white text-sm"
                                                                     />
                                                                 </div>
