@@ -507,7 +507,7 @@ export default function FormSubmissions({
     };
 
     return (
-        <div className="space-y-6 animate-fade-in pb-20">
+        <div className="space-y-6 animate-fade-in pb-20 pt-4 md:pt-6">
             <ToastContainer toast={toast} onClose={hideToast} />
 
             {/* Header / Breadcrumb */}

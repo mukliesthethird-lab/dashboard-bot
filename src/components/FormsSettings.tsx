@@ -359,8 +359,8 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
 
             {/* Submissions Viewer */}
             {viewingSubmissions && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-8 animate-fade-in">
-                    <div className="w-full max-w-7xl max-h-full bg-[#313338] rounded-[8px] shadow-2xl flex flex-col overflow-hidden animate-slide-up">
+                <div className="fixed inset-0 bg-[#05050a]/60 backdrop-blur-md z-[60] flex items-center justify-center p-4 sm:p-8 pt-24 sm:pt-24 animate-fade-in">
+                    <div className="w-full max-w-7xl max-h-full bg-[#313338] border border-white/10 rounded-[8px] shadow-2xl flex flex-col overflow-hidden animate-slide-up">
                         <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
                             <FormSubmissions
                                 guildId={guildId}
