@@ -557,8 +557,8 @@ export default function FormEditor({
                                                                     <input
                                                                         type="number"
                                                                         value={comp.min_values || 1}
-                                                                        onChange={(e) => updateComponent(comp.id, { min_values: Math.min(parseInt(e.target.value) || 1, 10) })}
-                                                                        min={1} max={10}
+                                                                        onChange={(e) => updateComponent(comp.id, { min_values: Math.min(parseInt(e.target.value) || 1, comp.options?.length || 10) })}
+                                                                        min={1} max={comp.options?.length || 10}
                                                                         className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white text-sm"
                                                                     />
                                                                 </div>
@@ -567,8 +567,8 @@ export default function FormEditor({
                                                                     <input
                                                                         type="number"
                                                                         value={comp.max_values || 1}
-                                                                        onChange={(e) => updateComponent(comp.id, { max_values: Math.min(parseInt(e.target.value) || 1, 10) })}
-                                                                        min={1} max={10}
+                                                                        onChange={(e) => updateComponent(comp.id, { max_values: Math.min(parseInt(e.target.value) || 1, comp.options?.length || 10) })}
+                                                                        min={1} max={comp.options?.length || 10}
                                                                         className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white text-sm"
                                                                     />
                                                                 </div>
