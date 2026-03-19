@@ -370,6 +370,45 @@ export default function FormSubmissions({
             );
         }
 
+        // Handle Discord Mentions
+        if (answer.includes('<@') || answer.includes('<#') || answer.includes('<@&')) {
+            const mentionRegex = /(<@!?[0-9]+>|<#[0-9]+>|<@&[0-9]+>)/g;
+            const segments = answer.split(mentionRegex);
+            
+            return (
+                <span>
+                    {segments.map((segment, i) => {
+                        if (segment.match(mentionRegex)) {
+                            const isUser = segment.startsWith('<@') && !segment.startsWith('<@&');
+                            const isRole = segment.startsWith('<@&');
+                            const isChannel = segment.startsWith('<#');
+                            
+                            let bgColor = 'bg-[#5865F2]/20';
+                            let textColor = 'text-[#dee0fc]';
+                            let icon = '@';
+                            
+                            if (isRole) {
+                                bgColor = 'bg-amber-500/10';
+                                textColor = 'text-amber-200';
+                            } else if (isChannel) {
+                                bgColor = 'bg-[#4e5058]/40';
+                                textColor = 'text-[#dbdee1]';
+                                icon = '#';
+                            }
+                            
+                            return (
+                                <span key={i} className={`${bgColor} ${textColor} px-1 rounded-[3px] font-medium cursor-default inline-flex items-center gap-0.5 mx-0.5`}>
+                                    <span className="opacity-70 text-[12px]">{icon}</span>
+                                    {segment.replace(/[<@!#&>]/g, '')}
+                                </span>
+                            );
+                        }
+                        return segment;
+                    })}
+                </span>
+            );
+        }
+
         return answer;
     };
 

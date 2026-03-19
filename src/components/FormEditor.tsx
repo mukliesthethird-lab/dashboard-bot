@@ -78,30 +78,31 @@ export default function FormEditor({
     };
 
     // Add component to current page
-    const addComponent = (type: "text_input" | "select_menu" | "file_upload" | "date_picker") => {
+    const addComponent = (type: FormComponent['type']) => {
         if (currentPage.components.length >= 5) return;
 
         const newComponent: FormComponent = {
             id: generateId(),
             type,
-            label: type === "text_input" ? "New Question" : "Select Option",
+            label: type === "text_input" ? "New Question" : 
+                   type === "text_display" ? "Announcement/Instructions" :
+                   type === "checkbox" ? "Accept Terms" : "Select Option",
             description: "",
             placeholder: "",
             required: false,
-            ...(type === "text_input" ? {
+            ...((type === "text_input") ? {
                 style: "short" as const,
                 min_length: 0,
                 max_length: 4000,
                 pre_filled_value: ""
-            } : type === "select_menu" ? {
+            } : (type === "select_menu" || type === "radio_group" || type === "checkbox_group") ? {
                 options: [{ label: "Option 1", value: "option_1" }],
                 min_values: 1,
+                max_values: (type === "checkbox_group") ? 25 : 1
+            } : (type === "user_select" || type === "role_select" || type === "mentionable_select" || type === "channel_select") ? {
+                min_values: 1,
                 max_values: 1
-            } : type === "file_upload" ? {
-                // File upload specific
-            } : {
-                // Date picker specific
-            })
+            } : {})
         };
 
         updatePage({ components: [...currentPage.components, newComponent] });
@@ -136,7 +137,7 @@ export default function FormEditor({
     // Add select option
     const addSelectOption = (componentId: string) => {
         const comp = currentPage.components.find(c => c.id === componentId);
-        if (!comp || comp.type !== "select_menu") return;
+        if (!comp || !['select_menu', 'radio_group', 'checkbox_group'].includes(comp.type)) return;
 
         const newOption: FormSelectOption = {
             label: `Option ${(comp.options?.length || 0) + 1}`,
@@ -348,14 +349,32 @@ export default function FormEditor({
                                                     <span className="text-xl">
                                                         {comp.type === "text_input" ? "📝" : 
                                                          comp.type === "select_menu" ? "📋" :
-                                                         comp.type === "file_upload" ? "📂" : "📅"}
+                                                         comp.type === "file_upload" ? "📂" : 
+                                                         comp.type === "date_picker" ? "📅" :
+                                                         comp.type === "user_select" ? "👤" :
+                                                         comp.type === "role_select" ? "🛡️" :
+                                                         comp.type === "channel_select" ? "📺" :
+                                                         comp.type === "mentionable_select" ? "🤝" :
+                                                         comp.type === "text_display" ? "ℹ️" :
+                                                         comp.type === "radio_group" ? "🔘" :
+                                                         comp.type === "checkbox_group" ? "✅" : "🔲"
+                                                        }
                                                     </span>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="font-semibold text-white truncate">{comp.label}</p>
                                                         <p className="text-xs text-gray-500">
                                                             {comp.type === "text_input" ? "Text Input" : 
                                                              comp.type === "select_menu" ? "Select Menu" :
-                                                             comp.type === "file_upload" ? "File Upload" : "Date Picker"}
+                                                             comp.type === "file_upload" ? "File Upload" : 
+                                                             comp.type === "date_picker" ? "Date Picker" :
+                                                             comp.type === "user_select" ? "User Select" :
+                                                             comp.type === "role_select" ? "Role Select" :
+                                                             comp.type === "channel_select" ? "Channel Select" :
+                                                             comp.type === "mentionable_select" ? "Mentionable Select" :
+                                                             comp.type === "text_display" ? "Text Display" :
+                                                             comp.type === "radio_group" ? "Radio Group" :
+                                                             comp.type === "checkbox_group" ? "Checkbox Group" : "Checkbox"
+                                                            }
                                                             {comp.required && <span className="text-red-400 ml-2">Required</span>}
                                                         </p>
                                                     </div>
@@ -477,10 +496,25 @@ export default function FormEditor({
                                                             </>
                                                         )}
 
-                                                        {/* Select Menu specific fields */}
-                                                        {comp.type === "select_menu" && (
+                                                        {/* Select/Radio/Checkbox specific fields */}
+                                                        {['select_menu', 'radio_group', 'checkbox_group'].includes(comp.type) && (
                                                             <div className="space-y-3">
-                                                                <label className="block text-sm font-semibold text-gray-300">Options</label>
+                                                                <div className="flex items-center justify-between">
+                                                                    <label className="block text-sm font-semibold text-gray-300">Options</label>
+                                                                    <div className="flex gap-2">
+                                                                        {comp.type === 'select_menu' && (
+                                                                            <div className="flex items-center gap-2 mr-2">
+                                                                                <label className="text-xs text-gray-500">Multi:</label>
+                                                                                <input 
+                                                                                    type="checkbox" 
+                                                                                    checked={(comp.max_values || 1) > 1}
+                                                                                    onChange={(e) => updateComponent(comp.id, { max_values: e.target.checked ? 10 : 1 })}
+                                                                                    className="w-3 h-3 accent-blue-500"
+                                                                                />
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
                                                                 {comp.options?.map((opt, optIdx) => (
                                                                     <div key={optIdx} className="flex items-center gap-2">
                                                                         <input
@@ -504,10 +538,36 @@ export default function FormEditor({
                                                                 ))}
                                                                 <button
                                                                     onClick={() => addSelectOption(comp.id)}
-                                                                    className="w-full py-2 border border-dashed border-white/20 rounded-lg text-gray-400 hover:text-amber-400 hover:border-amber-500/50 transition-all"
+                                                                    className="w-full py-2 border border-dashed border-white/20 rounded-lg text-gray-400 hover:text-amber-400 hover:border-amber-500/50 transition-all font-semibold"
                                                                 >
-                                                                    + Add Option
+                                                                    + Add {comp.type === 'radio_group' ? 'Radio' : comp.type === 'checkbox_group' ? 'Checkbox' : 'Option'}
                                                                 </button>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Advanced Selects (User/Role/etc) */}
+                                                        {['user_select', 'role_select', 'channel_select', 'mentionable_select'].includes(comp.type) && (
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                <div>
+                                                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Min Selections</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={comp.min_values || 1}
+                                                                        onChange={(e) => updateComponent(comp.id, { min_values: parseInt(e.target.value) || 1 })}
+                                                                        min={1} max={25}
+                                                                        className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white text-sm"
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Max Selections</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={comp.max_values || 1}
+                                                                        onChange={(e) => updateComponent(comp.id, { max_values: parseInt(e.target.value) || 1 })}
+                                                                        min={1} max={25}
+                                                                        className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white text-sm"
+                                                                    />
+                                                                </div>
                                                             </div>
                                                         )}
 
@@ -529,34 +589,90 @@ export default function FormEditor({
                                 )}
 
                                 {/* Add Component Buttons */}
-                                <div className="flex gap-2 flex-wrap">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                     <button
                                         onClick={() => addComponent("text_input")}
                                         disabled={currentPage.components.length >= 5}
-                                        className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="flex items-center gap-2 px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
                                     >
-                                        📝 Add Text Input
+                                        📝 Text Input
                                     </button>
                                     <button
                                         onClick={() => addComponent("select_menu")}
                                         disabled={currentPage.components.length >= 5}
-                                        className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="flex items-center gap-2 px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
                                     >
-                                        📋 Add Select Menu
+                                        📋 Select Menu
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("radio_group")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-3 py-2 bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                    >
+                                        🔘 Radio Group
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("checkbox_group")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-3 py-2 bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                    >
+                                        ✅ Checkboxes
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("user_select")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-3 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                    >
+                                        👤 User Select
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("role_select")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-3 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                    >
+                                        🛡️ Role Select
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("channel_select")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-3 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                    >
+                                        📺 Channel Select
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("mentionable_select")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-3 py-2 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                    >
+                                        🆔 Mentionable
                                     </button>
                                     <button
                                         onClick={() => addComponent("file_upload")}
                                         disabled={currentPage.components.length >= 5}
-                                        className="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="flex items-center gap-2 px-3 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
                                     >
-                                        📂 Add File Upload
+                                        📂 File Upload
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("checkbox")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-3 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                    >
+                                        ☑️ Checkbox
+                                    </button>
+                                    <button
+                                        onClick={() => addComponent("text_display")}
+                                        disabled={currentPage.components.length >= 5}
+                                        className="flex items-center gap-2 px-3 py-2 bg-stone-500/20 hover:bg-stone-500/30 text-[#b5bac1] font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                    >
+                                        ℹ️ Text Display
                                     </button>
                                     <button
                                         onClick={() => addComponent("date_picker")}
                                         disabled={currentPage.components.length >= 5}
-                                        className="flex items-center gap-2 px-4 py-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="flex items-center gap-2 px-3 py-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
                                     >
-                                        📅 Add Date Picker
+                                        📅 Date Picker
                                     </button>
                                 </div>
                             </div>
