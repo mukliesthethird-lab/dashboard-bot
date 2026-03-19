@@ -322,6 +322,57 @@ export default function FormSubmissions({
     }, [submissions, avatarCache]);
 
 
+    const renderAnswer = (answer: string) => {
+        if (!answer) return <span className="italic text-gray-500">No response provided</span>;
+
+        // Check for multiple URLs (comma separated)
+        const parts = answer.split(',').map(p => p.trim());
+        const isUrlList = parts.every(p => p.startsWith('http') && (p.includes('cdn.discordapp.com') || p.match(/\.(jpeg|jpg|gif|png|webp|pdf|doc|docx|zip|rar|txt)($|\?)/i)));
+
+        if (isUrlList) {
+            return (
+                <div className="flex flex-wrap gap-2 mt-2">
+                    {parts.map((url, i) => {
+                        const isImage = url.match(/\.(jpeg|jpg|gif|png|webp)($|\?)/i) || url.includes('cdn.discordapp.com');
+                        if (isImage) {
+                            return (
+                                <div key={i} className="relative group/img">
+                                    <a href={url} target="_blank" rel="noopener noreferrer">
+                                        <img 
+                                            src={url} 
+                                            alt={`Upload ${i+1}`} 
+                                            className="h-20 w-20 object-cover rounded-md border border-white/10 hover:border-amber-500/50 transition cursor-zoom-in shadow-lg"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = 'https://cdn.discordapp.com/embed/avatars/0.png';
+                                            }}
+                                        />
+                                    </a>
+                                </div>
+                            );
+                        } else {
+                            return (
+                                <a 
+                                    key={i}
+                                    href={url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 px-3 py-2 bg-[#1e1f22] border border-white/5 rounded-md text-blue-400 hover:text-blue-300 hover:bg-[#2b2d31] transition text-xs font-medium"
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Download File {parts.length > 1 ? i + 1 : ''}
+                                </a>
+                            );
+                        }
+                    })}
+                </div>
+            );
+        }
+
+        return answer;
+    };
+
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
         return {
@@ -551,8 +602,8 @@ export default function FormSubmissions({
                                                         <h3 className="font-bold text-white text-[14px] leading-tight flex items-start gap-1">
                                                             <span>{question}</span>
                                                         </h3>
-                                                        <div className="text-[#dbdee1] text-[14px] whitespace-pre-wrap break-words leading-relaxed pl-1 border-l-2 border-[#4E5058] rounded-sm py-0.5 bg-[#1E1F22]/30 px-2">
-                                                            {answer ? answer : <span className="italic text-gray-500">No response</span>}
+                                                        <div className="text-[#dbdee1] text-[14px] whitespace-pre-wrap break-words leading-relaxed pl-1 border-l-2 border-[#4E5058] rounded-sm py-0.5 bg-[#1E1F22]/30 px-2 overflow-hidden">
+                                                            {renderAnswer(answer)}
                                                         </div>
                                                     </div>
                                                 ))}
@@ -737,28 +788,8 @@ export default function FormSubmissions({
                                 {Object.entries(selectedSubmission.responses).map(([question, answer]) => (
                                     <div key={question} className="flex flex-col gap-1.5">
                                         <h3 className="font-bold text-white text-[15px]">{question}</h3>
-                                        <div className="text-[#dbdee1] text-[15px] whitespace-pre-wrap break-words leading-relaxed pl-2 border-l-2 border-[#4E5058] rounded-sm py-1 bg-[#1E1F22]/30 px-3">
-                                            {answer ? (
-                                                answer.match(/\.(jpeg|jpg|gif|png|webp)($|\?)/i) || (answer.startsWith('http') && answer.includes('cdn.discordapp.com')) ? (
-                                                    <div className="space-y-2">
-                                                        <a href={answer} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline break-all">
-                                                            {answer}
-                                                        </a>
-                                                        <img 
-                                                            src={answer} 
-                                                            alt="Response attachment" 
-                                                            className="max-w-full rounded-md border border-white/10 mt-2 shadow-lg"
-                                                            onError={(e) => {
-                                                                (e.target as HTMLImageElement).style.display = 'none';
-                                                            }}
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    answer
-                                                )
-                                            ) : (
-                                                <span className="text-gray-500 italic">No response provided</span>
-                                            )}
+                                        <div className="text-[#dbdee1] text-[15px] whitespace-pre-wrap break-words leading-relaxed pl-2 border-l-2 border-[#4E5058] rounded-sm py-1 bg-[#1E1F22]/30 px-3 overflow-hidden">
+                                            {renderAnswer(answer)}
                                         </div>
                                     </div>
                                 ))}
