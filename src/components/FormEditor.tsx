@@ -177,9 +177,9 @@ export default function FormEditor({
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative w-full max-w-5xl max-h-[90vh] bg-[#2b2d31] rounded-[8px] shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+            <div className="relative w-full max-w-5xl max-h-[90vh] glass-card rounded-[8px] shadow-2xl overflow-hidden flex flex-col animate-scale-in">
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-[#1e1f22] bg-[#2b2d31]">
+                <div className="flex items-center justify-between p-5 border-b border-white/10 glass-card">
                     <div className="flex items-center gap-3">
                         <span className="text-2xl">📝</span>
                         <div>
@@ -200,7 +200,7 @@ export default function FormEditor({
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-[#1e1f22]">
+                <div className="flex border-b border-white/10">
                     {[
                         { id: "form", label: "Form Editor", icon: "📋" },
                         { id: "settings", label: "Submission Settings", icon: "⚙️" },
@@ -240,7 +240,7 @@ export default function FormEditor({
                                         onChange={(e) => updateForm({ name: e.target.value })}
                                         placeholder="e.g., Staff Application"
                                         maxLength={45}
-                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                     <p className="text-xs text-gray-500 mt-1">{form.name.length}/45</p>
                                 </div>
@@ -254,7 +254,7 @@ export default function FormEditor({
                                         onChange={(e) => updateForm({ title: e.target.value })}
                                         placeholder="e.g., Staff Application Form"
                                         maxLength={45}
-                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                     <p className="text-xs text-gray-500 mt-1">{form.title.length}/45 - Shown at the top of the Discord modal</p>
                                 </div>
@@ -267,7 +267,7 @@ export default function FormEditor({
                                         key={page.id}
                                         className={`flex items-center gap-2 px-3 py-1.5 rounded-[4px] cursor-pointer transition-all ${activePageIndex === idx
                                             ? "bg-[#5865F2] text-white"
-                                            : "bg-[#4e5058] hover:bg-[#686d73] text-white"
+                                            : "bg-white/10 hover:bg-white/20 text-white"
                                             }`}
                                         onClick={() => setActivePageIndex(idx)}
                                     >
@@ -310,7 +310,7 @@ export default function FormEditor({
 
                                 {/* Component List */}
                                 {currentPage.components.length === 0 ? (
-                                    <div className="p-8 border-2 border-dashed border-[#1e1f22] rounded-md text-center">
+                                    <div className="p-8 border-2 border-dashed border-white/10 rounded-md text-center">
                                         <p className="text-gray-400 mb-4">No components yet. Add your first question!</p>
                                     </div>
                                 ) : (
@@ -318,7 +318,7 @@ export default function FormEditor({
                                         {currentPage.components.map((comp, idx) => (
                                             <div
                                                 key={comp.id}
-                                                className={`rounded-[4px] overflow-hidden transition-all bg-[#1e1f22] ${expandedComponent === comp.id
+                                                className={`rounded-[4px] overflow-hidden transition-all bg-black/20 ${expandedComponent === comp.id
                                                     ? "ring-2 ring-[#5865F2]"
                                                     : ""
                                                     }`}
@@ -667,7 +667,7 @@ export default function FormEditor({
                                     <button
                                         onClick={() => addComponent("text_display")}
                                         disabled={currentPage.components.length >= 5}
-                                        className="flex items-center gap-2 px-3 py-2 bg-stone-500/20 hover:bg-stone-500/30 text-[#b5bac1] font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                        className="flex items-center gap-2 px-3 py-2 bg-stone-500/20 hover:bg-stone-500/30 text-gray-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
                                     >
                                         ℹ️ Text Display
                                     </button>
@@ -698,7 +698,7 @@ export default function FormEditor({
                                             key={type.id}
                                             className={`flex items-center gap-3 p-4 rounded-[4px] cursor-pointer transition-all border ${form.submission_type === type.id
                                                 ? "bg-[#5865F2]/10 border-[#5865F2]"
-                                                : "bg-[#1e1f22] border-transparent hover:border-white/10"
+                                                : "bg-black/20 border-transparent hover:border-white/10"
                                                 }`}
                                         >
                                             <input
@@ -739,13 +739,13 @@ export default function FormEditor({
                             {/* Ping Roles */}
                             <div>
                                 <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Ping Roles on Submission</label>
-                                <div className="flex flex-wrap gap-2 p-3 bg-[#1e1f22] rounded-[4px] min-h-[48px]">
+                                <div className="flex flex-wrap gap-2 p-3 bg-black/20 rounded-[4px] min-h-[48px]">
                                     {(form.ping_roles || []).map((roleId) => {
                                         const role = roles.find(r => r.id === roleId);
                                         return (
                                             <span
                                                 key={roleId}
-                                                className="flex items-center gap-1 px-2 py-1 bg-[#2b2d31] rounded-[4px] text-sm font-medium"
+                                                className="flex items-center gap-1 px-2 py-1 glass-card rounded-[4px] text-sm font-medium"
                                                 style={{ color: role ? `#${role.color.toString(16).padStart(6, "0")}` : "white" }}
                                             >
                                                 @{role?.name || roleId}
@@ -784,7 +784,7 @@ export default function FormEditor({
                                         value={form.cooldown_seconds}
                                         onChange={(e) => updateForm({ cooldown_seconds: parseInt(e.target.value) || 0 })}
                                         min={0}
-                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                 </div>
                                 <div>
@@ -795,13 +795,13 @@ export default function FormEditor({
                                         onChange={(e) => updateForm({ max_submissions_per_user: parseInt(e.target.value) || 0 })}
                                         min={0}
                                         placeholder="0 = unlimited"
-                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                 </div>
                             </div>
 
                             {/* Advanced Settings - Role Requirements */}
-                            <div className="pt-6 border-t border-[#1e1f22]">
+                            <div className="pt-6 border-t border-white/10">
                                 <h3 className="text-xs font-bold text-gray-200 uppercase mb-4 flex items-center gap-2">
                                     🔐 Access Requirements
                                 </h3>
@@ -810,13 +810,13 @@ export default function FormEditor({
                                 <div className="mb-4">
                                     <label className="block text-xs font-bold text-gray-300 uppercase mb-1">Required Roles</label>
                                     <p className="text-xs text-gray-400 mb-2">Users must have at least one of these roles to open the form</p>
-                                    <div className="flex flex-wrap gap-2 p-3 bg-[#1e1f22] rounded-[4px] min-h-[48px]">
+                                    <div className="flex flex-wrap gap-2 p-3 bg-black/20 rounded-[4px] min-h-[48px]">
                                         {(form.required_roles || []).map((roleId) => {
                                             const role = roles.find(r => r.id === roleId);
                                             return (
                                                 <span
                                                     key={roleId}
-                                                    className="flex items-center gap-1 px-2 py-1 bg-[#2b2d31] rounded-[4px] text-sm font-medium"
+                                                    className="flex items-center gap-1 px-2 py-1 glass-card rounded-[4px] text-sm font-medium"
                                                     style={{ color: role ? `#${role.color.toString(16).padStart(6, "0")}` : "white" }}
                                                 >
                                                     @{role?.name || roleId}
@@ -850,13 +850,13 @@ export default function FormEditor({
                                 <div className="mb-4">
                                     <label className="block text-xs font-bold text-gray-300 uppercase mb-1">Blacklisted Roles</label>
                                     <p className="text-xs text-gray-400 mb-2">Users with any of these roles cannot open the form</p>
-                                    <div className="flex flex-wrap gap-2 p-3 bg-[#1e1f22] rounded-[4px] min-h-[48px]">
+                                    <div className="flex flex-wrap gap-2 p-3 bg-black/20 rounded-[4px] min-h-[48px]">
                                         {(form.blacklist_roles || []).map((roleId) => {
                                             const role = roles.find(r => r.id === roleId);
                                             return (
                                                 <span
                                                     key={roleId}
-                                                    className="flex items-center gap-1 px-2 py-1 bg-[#2b2d31] rounded-[4px] text-sm text-red-400 font-medium"
+                                                    className="flex items-center gap-1 px-2 py-1 glass-card rounded-[4px] text-sm text-red-400 font-medium"
                                                 >
                                                     @{role?.name || roleId}
                                                     <button
@@ -894,14 +894,14 @@ export default function FormEditor({
                                         onChange={(e) => updateForm({ min_account_age_days: parseInt(e.target.value) || 0 })}
                                         min={0}
                                         placeholder="0 = no requirement"
-                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                     <p className="text-[11px] text-gray-400 mt-1">Set to 0 to disable this requirement</p>
                                 </div>
                             </div>
 
                             {/* Messages & DM Templates */}
-                            <div className="pt-6 border-t border-[#1e1f22]">
+                            <div className="pt-6 border-t border-white/10">
                                 <h3 className="text-xs font-bold text-gray-200 uppercase mb-4 flex items-center gap-2">
                                     💬 Messages & DM Templates
                                 </h3>
@@ -914,7 +914,7 @@ export default function FormEditor({
                                         onChange={(e) => updateForm({ success_message: e.target.value })}
                                         placeholder="Thank you for your submission!"
                                         rows={2}
-                                        className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
+                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
                                     />
                                     <p className="text-[11px] text-gray-400 mt-1">Message shown after successful submission</p>
                                 </div>
@@ -929,7 +929,7 @@ export default function FormEditor({
                                                 onChange={(e) => updateForm({ approve_dm_template: e.target.value })}
                                                 placeholder="Congratulations! Your application has been approved."
                                                 rows={3}
-                                                className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
+                                                className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
                                             />
                                             <p className="text-xs text-gray-500 mt-1">DM sent when application is approved. Use {"{user}"} for username</p>
                                         </div>
@@ -942,7 +942,7 @@ export default function FormEditor({
                                                 onChange={(e) => updateForm({ deny_dm_template: e.target.value })}
                                                 placeholder="Unfortunately, your application has been denied."
                                                 rows={3}
-                                                className="w-full px-3 py-2 bg-[#1e1f22] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
+                                                className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
                                             />
                                             <p className="text-[11px] text-gray-400 mt-1">DM sent when application is denied. Use {"{user}"}, {"{reason}"}</p>
                                         </div>
@@ -950,13 +950,13 @@ export default function FormEditor({
                                         {/* Roles on Approve */}
                                         <div>
                                             <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Add Roles on Approve</label>
-                                            <div className="flex flex-wrap gap-2 p-3 bg-[#1e1f22] rounded-[4px] min-h-[48px]">
+                                            <div className="flex flex-wrap gap-2 p-3 bg-black/20 rounded-[4px] min-h-[48px]">
                                                 {(form.add_roles_on_approve || []).map((roleId) => {
                                                     const role = roles.find(r => r.id === roleId);
                                                     return (
                                                         <span
                                                             key={roleId}
-                                                            className="flex items-center gap-1 px-2 py-1 bg-[#2b2d31] rounded-[4px] text-sm text-green-400 font-medium"
+                                                            className="flex items-center gap-1 px-2 py-1 glass-card rounded-[4px] text-sm text-green-400 font-medium"
                                                         >
                                                             @{role?.name || roleId}
                                                             <button
@@ -993,7 +993,7 @@ export default function FormEditor({
                 </div>
 
                 {/* Modal Floating Save Bar */}
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[250] bg-[#1e1f22] border border-[#2b2d31] pl-6 pr-2 py-2 rounded-full shadow-2xl flex items-center gap-6">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[250] bg-black/20 border border-[#2b2d31] pl-6 pr-2 py-2 rounded-full shadow-2xl flex items-center gap-6">
                     <span className="text-gray-300 font-medium text-sm">Unsaved form changes</span>
                     <div className="flex items-center gap-2">
                         <button
@@ -1026,3 +1026,5 @@ export default function FormEditor({
 
     return createPortal(modalContent, document.body);
 }
+
+

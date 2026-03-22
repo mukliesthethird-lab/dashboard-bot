@@ -71,13 +71,13 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
     });
 
     const categoryColors: Record<string, string> = {
-        'User': 'bg-[#1e1f22]/50 text-[#f2f3f5] border-[#1e1f22] hover:bg-[#4e5058]/30',
-        'Server': 'bg-[#1e1f22]/50 text-[#f2f3f5] border-[#1e1f22] hover:bg-[#4e5058]/30',
-        'Role': 'bg-[#1e1f22]/50 text-[#f2f3f5] border-[#1e1f22] hover:bg-[#4e5058]/30',
-        'Channel': 'bg-[#1e1f22]/50 text-[#f2f3f5] border-[#1e1f22] hover:bg-[#4e5058]/30',
-        'Date': 'bg-[#1e1f22]/50 text-[#f2f3f5] border-[#1e1f22] hover:bg-[#4e5058]/30',
-        'Counter': 'bg-[#1e1f22]/50 text-[#f2f3f5] border-[#1e1f22] hover:bg-[#4e5058]/30',
-        'Notification': 'bg-[#1e1f22]/50 text-[#f2f3f5] border-[#1e1f22] hover:bg-[#4e5058]/30',
+        'User': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
+        'Server': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
+        'Role': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
+        'Channel': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
+        'Date': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
+        'Counter': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
+        'Notification': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
     };
 
     const categoryIcons: Record<string, string> = {
@@ -110,7 +110,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                     <span className="text-2xl">💡</span>
                     <div>
                         <p className="font-bold text-[#5865f2] text-sm">Cara Menggunakan Variables</p>
-                        <p className="text-[#b5bac1] text-xs mt-1">
+                        <p className="text-gray-400 text-xs mt-1">
                             Klik variable untuk menyalin, lalu paste di Message Content, Embed Title, Description, atau Footer.
                         </p>
                     </div>
@@ -125,7 +125,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                     placeholder="Cari variable..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] text-sm outline-none transition text-[#dbdee1] placeholder:text-[#4e5058]"
+                    className="w-full pl-10 pr-4 py-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] text-sm outline-none transition text-gray-200 placeholder:text-gray-500"
                 />
             </div>
 
@@ -135,7 +135,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                     onClick={() => setSelectedCategory(null)}
                     className={`px-3 py-1.5 rounded-[3px] text-xs font-bold transition border ${!selectedCategory
                         ? 'bg-[#5865f2] text-white border-[#5865f2] shadow-sm'
-                        : 'bg-[#1e1f22] text-[#b5bac1] border-transparent hover:border-[#4e5058]/30'
+                        : 'bg-black/20 text-gray-400 border-transparent hover:border-[#4e5058]/30'
                         }`}
                 >
                     Semua ({allVariables.length})
@@ -146,7 +146,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                         onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
                         className={`px-3 py-1.5 rounded-[3px] text-xs font-bold transition border flex items-center gap-1.5 ${selectedCategory === cat
                             ? 'bg-[#5865f2] text-white border-[#5865f2] shadow-sm'
-                            : 'bg-[#1e1f22] text-[#b5bac1] border-transparent hover:border-[#4e5058]/30'
+                            : 'bg-black/20 text-gray-400 border-transparent hover:border-[#4e5058]/30'
                             }`}
                     >
                         <span>{categoryIcons[cat] || '✨'}</span>
@@ -169,12 +169,12 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                         if (catVars.length === 0) return null;
 
                         return (
-                            <div key={cat} className="bg-[#2b2d31] rounded-[8px] border border-[#1e1f22] overflow-hidden">
+                            <div key={cat} className="glass-card rounded-[8px] border border-white/10 overflow-hidden">
                                 {/* Category Header */}
-                                <div className="px-4 py-2 border-b border-[#1e1f22] bg-[#1e1f22]/50 flex items-center gap-2">
+                                <div className="px-4 py-2 border-b border-white/10 bg-black/20/50 flex items-center gap-2">
                                     <span>{categoryIcons[cat] || '✨'}</span>
-                                    <span className="font-bold text-xs uppercase tracking-wider text-[#b5bac1]">{cat} Variables</span>
-                                    <span className="text-[10px] text-[#4e5058] ml-auto">{catVars.length} items</span>
+                                    <span className="font-bold text-xs uppercase tracking-wider text-gray-400">{cat} Variables</span>
+                                    <span className="text-[10px] text-gray-500 ml-auto">{catVars.length} items</span>
                                 </div>
 
                                 {/* Variables List */}
@@ -183,18 +183,18 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                                         <button
                                             key={i}
                                             onClick={() => handleCopy(v.variable)}
-                                            className="w-full text-left px-4 py-3 hover:bg-[#1e1f22] transition group flex items-center gap-4"
+                                            className="w-full text-left px-4 py-3 hover:bg-black/20 transition group flex items-center gap-4"
                                         >
                                             {/* Variable Code */}
                                             <div className="flex-1">
-                                                <code className="text-[13px] font-bold text-[#f2f3f5] bg-[#1e1f22] px-2 py-0.5 rounded-[3px] border border-[#1e1f22] group-hover:border-[#5865f2] transition-colors">
+                                                <code className="text-[13px] font-bold text-white bg-black/20 px-2 py-0.5 rounded-[3px] border border-white/10 group-hover:border-[#5865f2] transition-colors">
                                                     {v.variable}
                                                 </code>
-                                                <p className="text-xs text-[#b5bac1] mt-1">{v.description}</p>
+                                                <p className="text-xs text-gray-400 mt-1">{v.description}</p>
                                             </div>
 
                                             {/* Preview */}
-                                            <div className="text-xs text-gray-500 bg-[#1e1f22] px-2.5 py-1 rounded font-medium">
+                                            <div className="text-xs text-gray-500 bg-black/20 px-2.5 py-1 rounded font-medium">
                                                 → {v.preview}
                                             </div>
 
@@ -220,12 +220,12 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
 // --- Helper Components ---
 
 const AccordionItem = ({ title, children, isOpen, onToggle, extraActions }: { title: React.ReactNode, children: React.ReactNode, isOpen: boolean, onToggle: () => void, extraActions?: React.ReactNode }) => (
-    <div className="border border-[#1e1f22] rounded-[8px] bg-[#2b2d31] overflow-hidden shadow-sm transition-all duration-200">
+    <div className="border border-white/10 rounded-[8px] glass-card overflow-hidden shadow-sm transition-all duration-200">
         <div
-            className="flex items-center justify-between p-4 bg-[#1e1f22]/50 cursor-pointer hover:bg-[#4e5058]/20 transition select-none"
+            className="flex items-center justify-between p-4 bg-black/20/50 cursor-pointer hover:bg-white/10/20 transition select-none"
             onClick={onToggle}
         >
-            <div className="flex items-center gap-3 font-bold text-[#f2f3f5]">
+            <div className="flex items-center gap-3 font-bold text-white">
                 <span className={`transform transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}>▶</span>
                 {title}
             </div>
@@ -234,7 +234,7 @@ const AccordionItem = ({ title, children, isOpen, onToggle, extraActions }: { ti
             </div>
         </div>
         {isOpen && (
-            <div className="p-4 border-t border-[#1e1f22] animate-slide-down">
+            <div className="p-4 border-t border-white/10 animate-slide-down">
                 {children}
             </div>
         )}
@@ -269,10 +269,10 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
     const [activeTab, setActiveTab] = useState<'body' | 'author' | 'fields' | 'footer' | 'images'>('body');
 
     return (
-        <div className="bg-[#2b2d31] rounded-[8px] border border-[#1e1f22] overflow-hidden shadow-sm">
+        <div className="glass-card rounded-[8px] border border-white/10 overflow-hidden shadow-sm">
             {/* Embed Header */}
-            <div className="flex items-center justify-between p-3 bg-[#1e1f22]/50 border-b border-[#1e1f22]">
-                <div className="font-bold text-xs uppercase tracking-wider text-[#b5bac1] flex items-center gap-2">
+            <div className="flex items-center justify-between p-3 bg-black/20/50 border-b border-white/10">
+                <div className="font-bold text-xs uppercase tracking-wider text-gray-400 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: embed.color || '#5865f2' }}></span>
                     Embed #{index + 1}
                 </div>
@@ -282,12 +282,12 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
             </div>
 
             {/* Tabs */}
-            <div className="flex bg-[#1e1f22] border-b border-[#1e1f22] overflow-x-auto no-scrollbar">
+            <div className="flex bg-black/20 border-b border-white/10 overflow-x-auto no-scrollbar">
                 {(['body', 'author', 'fields', 'footer', 'images'] as const).map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider transition border-b-2 flex-shrink-0 ${activeTab === tab ? 'text-[#f2f3f5] border-[#5865f2] bg-[#5865f2]/10' : 'text-[#b5bac1] border-transparent hover:text-[#dbdee1] hover:bg-[#1e1f22]'}`}
+                        className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider transition border-b-2 flex-shrink-0 ${activeTab === tab ? 'text-white border-[#5865f2] bg-[#5865f2]/10' : 'text-gray-400 border-transparent hover:text-gray-200 hover:bg-black/20'}`}
                     >
                         {tab}
                     </button>
@@ -299,35 +299,35 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'body' && (
                     <>
                         <div>
-                            <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Title</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Title</label>
                             <input
                                 value={embed.title}
                                 onChange={e => onChange({ title: e.target.value })}
-                                className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none transition text-[#dbdee1] placeholder:text-[#4e5058]"
+                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none transition text-gray-200 placeholder:text-gray-500"
                                 placeholder="Embed Title"
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Description</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Description</label>
                             <textarea
                                 value={embed.description}
                                 onChange={e => onChange({ description: e.target.value })}
-                                className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none h-24 resize-y transition text-[#dbdee1] placeholder:text-[#4e5058]"
+                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none h-24 resize-y transition text-gray-200 placeholder:text-gray-500"
                                 placeholder="Embed Description"
                             />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Title URL</label>
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Title URL</label>
                                 <input
                                     value={embed.url || ''}
                                     onChange={e => onChange({ url: e.target.value })}
-                                    className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none transition text-[#dbdee1] placeholder:text-[#4e5058]"
+                                    className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none transition text-gray-200 placeholder:text-gray-500"
                                     placeholder="https://..."
                                 />
                             </div>
                             <div>
-                                <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Color</label>
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Color</label>
                                 <div className="flex gap-2 mt-1">
                                     <input
                                         type="color"
@@ -338,7 +338,7 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                                     <input
                                         value={embed.color || '#5865f2'}
                                         onChange={e => onChange({ color: e.target.value })}
-                                        className="flex-1 min-w-0 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] uppercase text-sm text-[#dbdee1]"
+                                        className="flex-1 min-w-0 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] uppercase text-sm text-gray-200"
                                     />
                                 </div>
                             </div>
@@ -349,29 +349,29 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'author' && (
                     <>
                         <div>
-                            <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Author Name</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Author Name</label>
                             <input
                                 value={embed.author_name}
                                 onChange={e => onChange({ author_name: e.target.value })}
-                                className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[#dbdee1] placeholder:text-[#4e5058]"
+                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
                                 placeholder="Author Name"
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Author URL</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Author URL</label>
                             <input
                                 value={embed.author_url || ''}
                                 onChange={e => onChange({ author_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[#dbdee1] placeholder:text-[#4e5058]"
+                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
                                 placeholder="https://..."
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Author Icon URL</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Author Icon URL</label>
                             <input
                                 value={embed.author_icon_url}
                                 onChange={e => onChange({ author_icon_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[#dbdee1] placeholder:text-[#4e5058]"
+                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
                                 placeholder="https://..."
                             />
                         </div>
@@ -381,8 +381,8 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'fields' && (
                     <div className="space-y-3">
                         {embed.fields.map((field, idx) => (
-                            <div key={idx} className="flex gap-2 items-start bg-[#1e1f22]/50 p-3 rounded-[8px] border border-[#1e1f22] shadow-sm">
-                                <span className="text-[10px] font-bold text-[#4e5058] mt-2">#{idx + 1}</span>
+                            <div key={idx} className="flex gap-2 items-start bg-black/20/50 p-3 rounded-[8px] border border-white/10 shadow-sm">
+                                <span className="text-[10px] font-bold text-gray-500 mt-2">#{idx + 1}</span>
                                 <div className="flex-1 space-y-2">
                                     <input
                                         value={field.name}
@@ -391,7 +391,7 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                                             newFields[idx].name = e.target.value;
                                             onChange({ fields: newFields });
                                         }}
-                                        className="w-full p-1.5 text-sm bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none font-bold text-[#f2f3f5]"
+                                        className="w-full p-1.5 text-sm bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none font-bold text-white"
                                         placeholder="Field Name"
                                     />
                                     <textarea
@@ -401,10 +401,10 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                                             newFields[idx].value = e.target.value;
                                             onChange({ fields: newFields });
                                         }}
-                                        className="w-full p-1.5 text-sm bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none resize-none h-16 text-[#dbdee1]"
+                                        className="w-full p-1.5 text-sm bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none resize-none h-16 text-gray-200"
                                         placeholder="Field Value"
                                     />
-                                    <label className="flex items-center gap-2 text-[10px] text-[#b5bac1] font-bold cursor-pointer select-none uppercase tracking-wider">
+                                    <label className="flex items-center gap-2 text-[10px] text-gray-400 font-bold cursor-pointer select-none uppercase tracking-wider">
                                         <input
                                             type="checkbox"
                                             checked={field.inline}
@@ -413,14 +413,14 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                                                 newFields[idx].inline = e.target.checked;
                                                 onChange({ fields: newFields });
                                             }}
-                                            className="rounded-[3px] bg-[#1e1f22] border-transparent text-[#5865f2] focus:ring-[#5865f2] focus:ring-offset-0"
+                                            className="rounded-[3px] bg-black/20 border-transparent text-[#5865f2] focus:ring-[#5865f2] focus:ring-offset-0"
                                         />
                                         Inline Field
                                     </label>
                                 </div>
                                 <button
                                     onClick={() => onChange({ fields: embed.fields.filter((_, i) => i !== idx) })}
-                                    className="text-[#4e5058] hover:text-[#da373c] px-2 transition-colors"
+                                    className="text-gray-500 hover:text-[#da373c] px-2 transition-colors"
                                     title="Remove Field"
                                 >
                                     ×
@@ -429,7 +429,7 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                         ))}
                         <button
                             onClick={() => onChange({ fields: [...embed.fields, { name: '', value: '', inline: false }] })}
-                            className="w-full py-2 border-2 border-dashed border-[#1e1f22] text-[#b5bac1] font-bold rounded-[8px] hover:border-[#5865f2]/50 hover:text-[#f2f3f5] transition-all bg-[#1e1f22]/30"
+                            className="w-full py-2 border-2 border-dashed border-white/10 text-gray-400 font-bold rounded-[8px] hover:border-[#5865f2]/50 hover:text-white transition-all bg-black/20/30"
                         >
                             + Add Field
                         </button>
@@ -439,20 +439,20 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'footer' && (
                     <>
                         <div>
-                            <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Footer Text</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Footer Text</label>
                             <input
                                 value={embed.footer_text}
                                 onChange={e => onChange({ footer_text: e.target.value })}
-                                className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[#dbdee1] placeholder:text-[#4e5058]"
+                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
                                 placeholder="Footer Text"
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Footer Icon URL</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Footer Icon URL</label>
                             <input
                                 value={embed.footer_icon_url}
                                 onChange={e => onChange({ footer_icon_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[#dbdee1] placeholder:text-[#4e5058]"
+                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
                                 placeholder="https://..."
                             />
                         </div>
@@ -462,20 +462,20 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'images' && (
                     <>
                         <div>
-                            <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Image URL (Large)</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Image URL (Large)</label>
                             <input
                                 value={embed.image_url}
                                 onChange={e => onChange({ image_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[#dbdee1] placeholder:text-[#4e5058]"
+                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
                                 placeholder="https://..."
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">Thumbnail URL (Small)</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Thumbnail URL (Small)</label>
                             <input
                                 value={embed.thumbnail_url}
                                 onChange={e => onChange({ thumbnail_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[#dbdee1] placeholder:text-[#4e5058]"
+                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
                                 placeholder="https://..."
                             />
                         </div>
@@ -504,14 +504,14 @@ const ActionEditor = ({
     index: number
 }) => {
     return (
-        <div className="bg-[#1e1f22]/50 p-4 rounded-[8px] border border-[#1e1f22] relative group">
+        <div className="bg-black/20/50 p-4 rounded-[8px] border border-white/10 relative group">
             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={onDelete} className="text-[#4e5058] hover:text-[#da373c] font-bold p-1">×</button>
+                <button onClick={onDelete} className="text-gray-500 hover:text-[#da373c] font-bold p-1">×</button>
             </div>
 
             <div className="space-y-3">
                 <div>
-                    <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Action #{index + 1}</label>
+                    <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Action #{index + 1}</label>
                     <CustomDropdown
                         value={action.type || ''}
                         onChange={(value) => onChange({ type: value })}
@@ -531,13 +531,13 @@ const ActionEditor = ({
                 {/* Role Selector for Role Actions */}
                 {['add_role', 'remove_role', 'toggle_role', 'set_role'].includes(action.type || '') && (
                     <div className="animate-fade-in">
-                        <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Target Roles</label>
-                        <div className="flex flex-wrap gap-1.5 p-2 bg-[#1e1f22] rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
+                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Target Roles</label>
+                        <div className="flex flex-wrap gap-1.5 p-2 bg-black/20 rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
                             {/* Display both legacy role_id and new roles array */}
                             {Array.from(new Set([...(action.roles || []), ...(action.role_id ? [action.role_id] : [])])).map((rid) => {
                                 const role = roles.find(r => r.id === rid);
                                 return (
-                                    <div key={rid} className="flex items-center gap-1.5 bg-[#2b2d31] px-2 py-1 rounded-[3px] border border-[#1e1f22] text-xs">
+                                    <div key={rid} className="flex items-center gap-1.5 glass-card px-2 py-1 rounded-[3px] border border-white/10 text-xs">
                                         <span style={{ color: role?.color ? `#${role.color.toString(16).padStart(6, '0')}` : 'inherit' }}>
                                             {role?.name || rid}
                                         </span>
@@ -546,7 +546,7 @@ const ActionEditor = ({
                                                 const newRoles = (action.roles || (action.role_id ? [action.role_id] : [])).filter(id => id !== rid);
                                                 onChange({ roles: newRoles, role_id: undefined }); // Migrate to roles array
                                             }}
-                                            className="text-[#4e5058] hover:text-[#da373c] font-bold"
+                                            className="text-gray-500 hover:text-[#da373c] font-bold"
                                         >
                                             ✕
                                         </button>
@@ -554,7 +554,7 @@ const ActionEditor = ({
                                 );
                             })}
                             <select
-                                className="bg-transparent text-[#b5bac1] text-xs outline-none cursor-pointer hover:text-[#f2f3f5] min-w-[80px]"
+                                className="bg-transparent text-gray-400 text-xs outline-none cursor-pointer hover:text-white min-w-[80px]"
                                 onChange={(e) => {
                                     if (e.target.value) {
                                         const currentRoles = action.roles || (action.role_id ? [action.role_id] : []);
@@ -577,11 +577,11 @@ const ActionEditor = ({
                 {/* Message Content for Message Actions */}
                 {['send_message', 'send_message_channel', 'dm_user'].includes(action.type || '') && (
                     <div className="animate-fade-in">
-                        <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Message Content</label>
+                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Message Content</label>
                         <textarea
                             value={action.message_content || ''}
                             onChange={(e) => onChange({ message_content: e.target.value })}
-                            className="w-full p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-sm text-[#dbdee1] h-20 resize-y"
+                            className="w-full p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-sm text-gray-200 h-20 resize-y"
                             placeholder="Type your message here..."
                         />
                     </div>
@@ -602,22 +602,22 @@ const ActionEditor = ({
 
                 {/* Custom Success/Failure Messages */}
                 {action.type && action.type !== '' && (
-                    <div className="space-y-3 pt-4 border-t border-[#1e1f22]">
+                    <div className="space-y-3 pt-4 border-t border-white/10">
                         <div>
-                            <label className="block text-[10px] font-bold text-[#4e5058] mb-1 uppercase tracking-wider">Success Message (Optional)</label>
+                            <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Success Message (Optional)</label>
                             <input
                                 value={action.success_message || ''}
                                 onChange={(e) => onChange({ success_message: e.target.value })}
-                                className="w-full p-2 bg-[#1e1f22] border border-transparent focus:border-[#248046] rounded-[3px] outline-none text-sm placeholder-[#4e5058] text-[#dbdee1]"
+                                className="w-full p-2 bg-black/20 border border-transparent focus:border-[#248046] rounded-[3px] outline-none text-sm placeholder-[#4e5058] text-gray-200"
                                 placeholder="e.g. Role added successfully!"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-bold text-[#4e5058] mb-1 uppercase tracking-wider">Failure Message (Optional)</label>
+                            <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Failure Message (Optional)</label>
                             <input
                                 value={action.failure_message || ''}
                                 onChange={(e) => onChange({ failure_message: e.target.value })}
-                                className="w-full p-2 bg-[#1e1f22] border border-transparent focus:border-[#da373c] rounded-[3px] outline-none text-sm placeholder-[#4e5058] text-[#dbdee1]"
+                                className="w-full p-2 bg-black/20 border border-transparent focus:border-[#da373c] rounded-[3px] outline-none text-sm placeholder-[#4e5058] text-gray-200"
                                 placeholder="e.g. Failed to add role."
                             />
                         </div>
@@ -680,7 +680,7 @@ const ActionManager = ({
                     />
                 ))}
                 {actions.length === 0 && (
-                    <div className="text-center p-4 border-2 border-dashed border-[#1e1f22] rounded-xl text-gray-500 text-sm">
+                    <div className="text-center p-4 border-2 border-dashed border-white/10 rounded-xl text-gray-500 text-sm">
                         No actions configured. Click "Add Action" to start.
                     </div>
                 )}
@@ -703,16 +703,16 @@ const ReactionEditor = ({
     index: number
 }) => {
     return (
-        <div className="bg-[#1e1f22]/50 p-4 rounded-[8px] border border-[#1e1f22] relative group">
+        <div className="bg-black/20/50 p-4 rounded-[8px] border border-white/10 relative group">
             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={onDelete} className="text-[#4e5058] hover:text-[#da373c] font-bold p-1">×</button>
+                <button onClick={onDelete} className="text-gray-500 hover:text-[#da373c] font-bold p-1">×</button>
             </div>
 
             <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Emoji Picker */}
                     <div>
-                        <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Emoji</label>
+                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Emoji</label>
                         <EmojiPicker
                             value={reaction.emoji || ''}
                             onChange={(val) => onChange({ emoji: val })}
@@ -722,19 +722,19 @@ const ReactionEditor = ({
 
                     {/* Roles Selector (Multiple) */}
                     <div>
-                        <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Roles to Add</label>
+                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Roles to Add</label>
                         <div className="space-y-2">
-                            <div className="flex flex-wrap gap-1.5 p-2 bg-[#1e1f22] rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
+                            <div className="flex flex-wrap gap-1.5 p-2 bg-black/20 rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
                                 {(reaction.role_ids || []).map((rid: string) => {
                                     const role = roles.find(r => r.id === rid);
                                     return (
-                                        <div key={rid} className="flex items-center gap-1.5 bg-[#2b2d31] px-2 py-1 rounded-[3px] border border-[#1e1f22] text-xs">
+                                        <div key={rid} className="flex items-center gap-1.5 glass-card px-2 py-1 rounded-[3px] border border-white/10 text-xs">
                                             <span style={{ color: role?.color ? `#${role.color.toString(16).padStart(6, '0')}` : 'inherit' }}>
                                                 {role?.name || rid}
                                             </span>
                                             <button
                                                 onClick={() => onChange({ role_ids: (reaction.role_ids || []).filter((id: string) => id !== rid) })}
-                                                className="text-[#4e5058] hover:text-[#da373c] font-bold"
+                                                className="text-gray-500 hover:text-[#da373c] font-bold"
                                             >
                                                 ✕
                                             </button>
@@ -742,7 +742,7 @@ const ReactionEditor = ({
                                     );
                                 })}
                                 <select
-                                    className="bg-transparent text-[#b5bac1] text-xs outline-none cursor-pointer hover:text-[#f2f3f5] min-w-[80px]"
+                                    className="bg-transparent text-gray-400 text-xs outline-none cursor-pointer hover:text-white min-w-[80px]"
                                     onChange={(e) => {
                                         if (e.target.value && !(reaction.role_ids || []).includes(e.target.value)) {
                                             onChange({ role_ids: [...(reaction.role_ids || []), e.target.value] });
@@ -762,14 +762,14 @@ const ReactionEditor = ({
 
                 {/* Success Message */}
                 <div>
-                    <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">Success Message (Sent via DM)</label>
+                    <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Success Message (Sent via DM)</label>
                     <input
                         value={reaction.success_message || ''}
                         onChange={(e) => onChange({ success_message: e.target.value })}
-                        className="w-full p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-sm text-[#dbdee1] placeholder:text-[#4e5058]"
+                        className="w-full p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-sm text-gray-200 placeholder:text-gray-500"
                         placeholder="e.g. You've been assigned the {role} role!"
                     />
-                    <p className="text-[10px] text-[#4e5058] mt-1 italic">Use {'{user}'} for mention, {'{server}'} for server name.</p>
+                    <p className="text-[10px] text-gray-500 mt-1 italic">Use {'{user}'} for mention, {'{server}'} for server name.</p>
                 </div>
             </div>
         </div>
@@ -824,7 +824,7 @@ const ReactionsManager = ({
                     />
                 ))}
                 {(reactions || []).length === 0 && (
-                    <div className="text-center p-4 border-2 border-dashed border-[#1e1f22] rounded-xl text-gray-500 text-sm">
+                    <div className="text-center p-4 border-2 border-dashed border-white/10 rounded-xl text-gray-500 text-sm">
                         No reaction roles configured.
                     </div>
                 )}
@@ -1294,7 +1294,7 @@ export default function CreateMessageModal({
 
     const renderPreview = () => {
         return (
-            <div className="bg-[#313338] rounded-md shadow-sm font-sans text-white text-[15px] leading-[1.375rem] overflow-hidden">
+            <div className="bg-white/5 rounded-md shadow-sm font-sans text-white text-[15px] leading-[1.375rem] overflow-hidden">
                 <div className="p-4">
                     <div className="flex items-center gap-3 mb-1">
                         <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center font-bold text-lg select-none">🐔</div>
@@ -1306,12 +1306,12 @@ export default function CreateMessageModal({
                     </div>
                     <div className="pl-[3.25rem]">
                         {editingMsg.message_content && (
-                            <div className="whitespace-pre-wrap text-[#DBDEE1] mb-2">{preview(editingMsg.message_content)}</div>
+                            <div className="whitespace-pre-wrap text-gray-200 mb-2">{preview(editingMsg.message_content)}</div>
                         )}
 
                         <div className="space-y-2">
                             {editingMsg.embeds.map((e, i) => (
-                                <div key={i} className="bg-[#2B2D31] rounded max-w-[520px] overflow-hidden" style={{ borderLeft: `4px solid ${e.color || '#202225'}` }}>
+                                <div key={i} className="glass-card rounded max-w-[520px] overflow-hidden" style={{ borderLeft: `4px solid ${e.color || '#202225'}` }}>
                                     <div className="flex">
                                         {/* Main Content */}
                                         <div className="flex-1 p-4 space-y-2 min-w-0">
@@ -1352,7 +1352,7 @@ export default function CreateMessageModal({
                                                 )
                                             )}
 
-                                            {e.description && <div className="text-sm text-[#DBDEE1] whitespace-pre-wrap break-words">{preview(e.description)}</div>}
+                                            {e.description && <div className="text-sm text-gray-200 whitespace-pre-wrap break-words">{preview(e.description)}</div>}
 
                                             {/* Fields - Proper 3 column grid for inline fields */}
                                             {e.fields && e.fields.length > 0 && (
@@ -1366,7 +1366,7 @@ export default function CreateMessageModal({
                                                             style={{ minWidth: 0 }}
                                                         >
                                                             <div className="font-semibold text-xs text-white mb-0.5 break-words">{field.name}</div>
-                                                            <div className="text-sm text-[#DBDEE1] whitespace-pre-wrap break-words">{field.value}</div>
+                                                            <div className="text-sm text-gray-200 whitespace-pre-wrap break-words">{field.value}</div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -1410,7 +1410,7 @@ export default function CreateMessageModal({
                                                         comp.style === 3 ? 'bg-[#2D7D46] text-white' :
                                                             comp.style === 4 ? 'bg-[#ED4245] text-white' :
                                                                 comp.type === 2 ? 'bg-[#5865F2] text-white' :
-                                                                    'bg-[#2B2D31] text-[#DBDEE1] border border-[#1e1f22] w-full justify-between'} 
+                                                                    'glass-card text-gray-200 border border-white/10 w-full justify-between'} 
                                             `}>
                                                 <div className="flex items-center gap-2">
                                                     {comp.emoji && renderEmoji(comp.emoji)}
@@ -1441,10 +1441,10 @@ export default function CreateMessageModal({
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-fade-in">
-            <div className="bg-[#2b2d31] w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-[#1e1f22] animate-scale-in">
+            <div className="glass-card w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-white/10 animate-scale-in">
 
                 {/* Top Bar */}
-                <div className="bg-[#212226] border-b border-[#1e1f22] px-3 md:px-6 py-3 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center shadow-sm z-10 shrink-0">
+                <div className="bg-[#212226] border-b border-white/10 px-3 md:px-6 py-3 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center shadow-sm z-10 shrink-0">
                     {/* Row 1: Close, Title, Undo/Redo */}
                     <div className="flex items-center justify-between md:justify-start gap-2 md:gap-4">
                         <div className="flex items-center gap-2 md:gap-4">
@@ -1482,7 +1482,7 @@ export default function CreateMessageModal({
                         </div>
 
                         {/* Import/Export Buttons */}
-                        <div className="flex items-center gap-1 border-l border-[#1e1f22] pl-4">
+                        <div className="flex items-center gap-1 border-l border-white/10 pl-4">
                             <button
                                 onClick={() => setShowImportModal(true)}
                                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold text-gray-400 hover:bg-white/10 rounded-lg transition"
@@ -1535,16 +1535,16 @@ export default function CreateMessageModal({
                 </div>
 
                 {/* Mobile Tab Toggle */}
-                <div className="md:hidden flex border-b border-[#1e1f22] shrink-0">
+                <div className="md:hidden flex border-b border-white/10 shrink-0">
                     <button
                         onClick={() => setMobileView('editor')}
-                        className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'editor' ? 'text-[#f2f3f5] border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-[#b5bac1]'}`}
+                        className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'editor' ? 'text-white border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-gray-400'}`}
                     >
                         ✏️ Editor
                     </button>
                     <button
                         onClick={() => setMobileView('preview')}
-                        className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'preview' ? 'text-[#f2f3f5] border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-[#b5bac1]'}`}
+                        className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'preview' ? 'text-white border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-gray-400'}`}
                     >
                         👁️ Preview
                     </button>
@@ -1563,7 +1563,7 @@ export default function CreateMessageModal({
                         >
                             <div className="space-y-3">
                                 <textarea
-                                    className="w-full h-32 p-3 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none resize-none text-sm text-[#dbdee1] placeholder-[#4e5058]"
+                                    className="w-full h-32 p-3 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none resize-none text-sm text-gray-200 placeholder-[#4e5058]"
                                     placeholder="Message content (above embeds).../
                                     Contoh: Hey {user}, selamat datang di **{server}**!"
                                     value={editingMsg.message_content}
@@ -1576,7 +1576,7 @@ export default function CreateMessageModal({
                                         <button
                                             key={v}
                                             onClick={() => setEditingMsg({ ...editingMsg, message_content: editingMsg.message_content + v })}
-                                            className="px-2 py-1 bg-[#1e1f22] text-[#b5bac1] text-xs font-mono rounded-[3px] border border-transparent hover:border-[#5865f2] transition"
+                                            className="px-2 py-1 bg-black/20 text-gray-400 text-xs font-mono rounded-[3px] border border-transparent hover:border-[#5865f2] transition"
                                         >
                                             {v}
                                         </button>
@@ -1642,7 +1642,7 @@ export default function CreateMessageModal({
                         >
                             <div className="space-y-4">
                                 {(editingMsg.component_rows || []).map((row, ri) => (
-                                    <div key={ri} className="p-4 bg-[#1e1f22] rounded-xl border border-[#1e1f22] relative">
+                                    <div key={ri} className="p-4 bg-black/20 rounded-xl border border-white/10 relative">
                                         <div className="absolute top-2 right-2 flex gap-2">
                                             <span className="text-xs font-bold text-gray-500 uppercase">Row {ri + 1}</span>
                                             <button onClick={() => { const rows = [...editingMsg.component_rows!]; rows.splice(ri, 1); setEditingMsg({ ...editingMsg, component_rows: rows }) }} className="text-gray-500 hover:text-red-400 font-bold">×</button>
@@ -1653,7 +1653,7 @@ export default function CreateMessageModal({
                                                 <button
                                                     key={ci}
                                                     onClick={() => { setActiveComponent({ row: ri, col: ci }); setCompSettings(comp); }}
-                                                    className={`px-3 py-2 rounded-[3px] text-sm font-bold border transition flex items-center gap-2 bg-[#2b2d31] hover:border-[#5865f2] text-[#f2f3f5] ${comp.style === 5 ? 'border-[#5865f2]/50 bg-[#5865f2]/10' : 'border-[#1e1f22]'
+                                                    className={`px-3 py-2 rounded-[3px] text-sm font-bold border transition flex items-center gap-2 glass-card hover:border-[#5865f2] text-white ${comp.style === 5 ? 'border-[#5865f2]/50 bg-[#5865f2]/10' : 'border-white/10'
                                                         } ${comp.type === 3 ? 'w-full justify-between' : ''}`}
                                                 >
                                                     <div className="flex items-center gap-2">
@@ -1664,7 +1664,7 @@ export default function CreateMessageModal({
                                                             <span className="text-[#5865f2] text-xs">🔗</span>
                                                         )}
                                                     </div>
-                                                    {comp.type === 3 && <span className="text-xs text-[#4e5058]">▼</span>}
+                                                    {comp.type === 3 && <span className="text-xs text-gray-500">▼</span>}
                                                 </button>
                                             ))}
 
@@ -1673,7 +1673,7 @@ export default function CreateMessageModal({
                                                 {(row.length === 0 || (row.length < 5 && !row.some(c => c.type === 3))) && (
                                                     <button
                                                         onClick={() => addComponentData(ri, 'button')}
-                                                        className="px-3 py-1.5 rounded-[3px] border-2 border-dashed border-[#1e1f22] text-[#4e5058] hover:border-[#5865f2] hover:text-[#b5bac1] text-xs font-bold transition bg-[#1e1f22]/30"
+                                                        className="px-3 py-1.5 rounded-[3px] border-2 border-dashed border-white/10 text-gray-500 hover:border-[#5865f2] hover:text-gray-400 text-xs font-bold transition bg-black/20/30"
                                                     >
                                                         + Button
                                                     </button>
@@ -1681,7 +1681,7 @@ export default function CreateMessageModal({
                                                 {(row.length === 0) && (
                                                     <button
                                                         onClick={() => addComponentData(ri, 'select_menu')}
-                                                        className="px-3 py-1.5 rounded-[3px] border-2 border-dashed border-[#1e1f22] text-[#4e5058] hover:border-[#5865f2] hover:text-[#b5bac1] text-xs font-bold transition bg-[#1e1f22]/30"
+                                                        className="px-3 py-1.5 rounded-[3px] border-2 border-dashed border-white/10 text-gray-500 hover:border-[#5865f2] hover:text-gray-400 text-xs font-bold transition bg-black/20/30"
                                                     >
                                                         + Select Menu
                                                     </button>
@@ -1748,10 +1748,10 @@ export default function CreateMessageModal({
                 {/* Component Edit Modal Overlay */}
                 {activeComponent && compSettings && (
                     <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-2 md:p-4">
-                        <div className="bg-[#2b2d31] rounded-[8px] shadow-2xl w-full max-w-[600px] border border-[#1e1f22] animate-scale-in max-h-[95vh] md:max-h-[85vh] flex flex-col overflow-hidden">
+                        <div className="glass-card rounded-[8px] shadow-2xl w-full max-w-[600px] border border-white/10 animate-scale-in max-h-[95vh] md:max-h-[85vh] flex flex-col overflow-hidden">
                             {/* Modal Header */}
                             <div className="flex items-center justify-between p-4 md:p-6 pb-0 flex-shrink-0">
-                                <h3 className="font-bold text-lg text-[#f2f3f5]">
+                                <h3 className="font-bold text-lg text-white">
                                     Edit {compSettings.type === 2 ? 'Button' : 'Select Menu'}
                                 </h3>
                                 <button
@@ -1766,13 +1766,13 @@ export default function CreateMessageModal({
                                 <div className="space-y-4">
                                     {/* Label / Placeholder */}
                                     <div>
-                                        <label className="block text-[10px] font-bold text-[#b5bac1] mb-1 uppercase tracking-wider">
+                                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">
                                             {compSettings.type === 2 ? 'Label' : 'Placeholder'}
                                         </label>
                                         <input
                                             value={compSettings.label || compSettings.placeholder || ''}
                                             onChange={(e) => compSettings && saveCompSettings(compSettings.type === 2 ? { label: e.target.value } : { placeholder: e.target.value })}
-                                            className="w-full p-2 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[#dbdee1] placeholder-[#4e5058]"
+                                            className="w-full p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder-[#4e5058]"
                                         />
                                     </div>
 
@@ -1786,7 +1786,7 @@ export default function CreateMessageModal({
                                                 <EmojiPicker value={compSettings.emoji || ''} onChange={(val) => saveCompSettings({ emoji: val })} className="w-full" guildId={guildId} />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] font-bold text-[#b5bac1] mb-2 uppercase tracking-wider">Style</label>
+                                                <label className="block text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-wider">Style</label>
                                                 <div className="grid grid-cols-5 gap-2">
                                                     {[
                                                         { style: 1, label: 'Primary', color: '#5865F2' },
@@ -1800,7 +1800,7 @@ export default function CreateMessageModal({
                                                             onClick={() => saveCompSettings({ style: s.style, url: s.style === 5 ? (compSettings.url || '') : undefined })}
                                                             className={`flex flex-col items-center gap-1 p-2 rounded-[3px] border transition ${compSettings?.style === s.style
                                                                 ? 'border-[#5865f2] bg-[#5865f2]/10'
-                                                                : 'border-[#1e1f22] hover:border-[#4e5058]/30'
+                                                                : 'border-white/10 hover:border-[#4e5058]/30'
                                                                 }`}
                                                         >
                                                             <div
@@ -1827,14 +1827,14 @@ export default function CreateMessageModal({
                                                         value={compSettings.url || ''}
                                                         onChange={(e) => saveCompSettings({ url: e.target.value })}
                                                         placeholder="https://example.com"
-                                                        className="w-full p-3 bg-[#1e1f22] border border-blue-500/30 rounded-lg outline-none focus:border-blue-400 text-white"
+                                                        className="w-full p-3 bg-black/20 border border-blue-500/30 rounded-lg outline-none focus:border-blue-400 text-white"
                                                     />
                                                 </div>
                                             )}
 
                                             {/* Button Action Config - Hide for Link buttons */}
                                             {compSettings.style !== 5 && (
-                                                <div className="pt-2 border-t border-[#1e1f22]">
+                                                <div className="pt-2 border-t border-white/10">
                                                     <ActionManager
                                                         actions={compSettings.actions || []}
                                                         onChange={(arr) => saveCompSettings({ actions: arr })}
@@ -1850,7 +1850,7 @@ export default function CreateMessageModal({
                                     {compSettings.type === 3 && (
                                         <div className="space-y-3">
                                             {/* Allow Multiple Selections Toggle */}
-                                            <div className="flex items-center gap-3 p-3 bg-[#1e1f22] border border-[#1e1f22] rounded-lg">
+                                            <div className="flex items-center gap-3 p-3 bg-black/20 border border-white/10 rounded-lg">
                                                 <input
                                                     type="checkbox"
                                                     id="allow-multiple-modal"
@@ -1882,7 +1882,7 @@ export default function CreateMessageModal({
                                                             type="number"
                                                             value={compSettings.min_values || 0}
                                                             onChange={(e) => saveCompSettings({ min_values: parseInt(e.target.value) || 0 })}
-                                                            className="w-full p-2 bg-[#1e1f22] border border-[#1e1f22] rounded-lg outline-none focus:border-amber-500/50 text-white"
+                                                            className="w-full p-2 bg-black/20 border border-white/10 rounded-lg outline-none focus:border-amber-500/50 text-white"
                                                             min="0" max="25"
                                                         />
                                                     </div>
@@ -1892,7 +1892,7 @@ export default function CreateMessageModal({
                                                             type="number"
                                                             value={compSettings.max_values || 1}
                                                             onChange={(e) => saveCompSettings({ max_values: parseInt(e.target.value) || 1 })}
-                                                            className="w-full p-2 bg-[#1e1f22] border border-[#1e1f22] rounded-lg outline-none focus:border-amber-500/50 text-white"
+                                                            className="w-full p-2 bg-black/20 border border-white/10 rounded-lg outline-none focus:border-amber-500/50 text-white"
                                                             min="1" max="25"
                                                         />
                                                     </div>
@@ -1914,7 +1914,7 @@ export default function CreateMessageModal({
                                             </div>
                                             <div className="max-h-60 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                                                 {(compSettings.options || []).map((opt, idx) => (
-                                                    <div key={idx} className="p-3 bg-[#1e1f22] border border-[#1e1f22] rounded-lg space-y-2">
+                                                    <div key={idx} className="p-3 bg-black/20 border border-white/10 rounded-lg space-y-2">
                                                         <div className="flex justify-between items-start">
                                                             <div className="text-xs font-bold text-gray-400 uppercase">Option {idx + 1}</div>
                                                             <button
@@ -1939,7 +1939,7 @@ export default function CreateMessageModal({
                                                                     newOptions[idx].label = e.target.value;
                                                                     saveCompSettings({ options: newOptions });
                                                                 }}
-                                                                className="w-full p-2 bg-[#1e1f22] border border-[#1e1f22] rounded-lg focus:border-amber-500/50 outline-none text-sm font-bold text-white"
+                                                                className="w-full p-2 bg-black/20 border border-white/10 rounded-lg focus:border-amber-500/50 outline-none text-sm font-bold text-white"
                                                                 placeholder="Label"
                                                             />
                                                             <input
@@ -1950,7 +1950,7 @@ export default function CreateMessageModal({
                                                                     newOptions[idx].value = e.target.value;
                                                                     saveCompSettings({ options: newOptions });
                                                                 }}
-                                                                className="w-full p-2 bg-[#1e1f22] border border-[#1e1f22] rounded-lg focus:border-amber-500/50 outline-none text-sm font-mono text-gray-400"
+                                                                className="w-full p-2 bg-black/20 border border-white/10 rounded-lg focus:border-amber-500/50 outline-none text-sm font-mono text-gray-400"
                                                                 placeholder="Value (unique ID)"
                                                             />
                                                         </div>
@@ -1978,13 +1978,13 @@ export default function CreateMessageModal({
                                                                     newOptions[idx].description = e.target.value;
                                                                     saveCompSettings({ options: newOptions });
                                                                 }}
-                                                                className="flex-1 p-2 bg-[#1e1f22] border border-[#1e1f22] rounded-lg focus:border-amber-500/50 outline-none text-sm text-white"
+                                                                className="flex-1 p-2 bg-black/20 border border-white/10 rounded-lg focus:border-amber-500/50 outline-none text-sm text-white"
                                                                 placeholder="Description (optional)"
                                                             />
                                                         </div>
 
                                                         {/* Option Action Config */}
-                                                        <div className="mt-2 pt-2 border-t border-[#1e1f22]">
+                                                        <div className="mt-2 pt-2 border-t border-white/10">
                                                             <ActionManager
                                                                 actions={opt.actions || []}
                                                                 onChange={(newActions) => {
@@ -2019,9 +2019,9 @@ export default function CreateMessageModal({
                 {/* Import JSON Modal */}
                 {showImportModal && (
                     <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4">
-                        <div className="bg-[#212226] rounded-2xl shadow-2xl w-full max-w-[550px] border border-[#1e1f22] animate-scale-in overflow-hidden max-h-[95vh] flex flex-col">
+                        <div className="bg-[#212226] rounded-2xl shadow-2xl w-full max-w-[550px] border border-white/10 animate-scale-in overflow-hidden max-h-[95vh] flex flex-col">
                             {/* Header */}
-                            <div className="bg-[#1e1f22] p-3 md:p-4 flex items-center justify-between shrink-0 border-b border-[#1e1f22]">
+                            <div className="bg-black/20 p-3 md:p-4 flex items-center justify-between shrink-0 border-b border-white/10">
                                 <div className="flex items-center gap-2 md:gap-3">
                                     <span className="text-xl md:text-2xl">📥</span>
                                     <h3 className="font-bold text-white text-base md:text-lg">Import JSON</h3>
@@ -2048,9 +2048,9 @@ export default function CreateMessageModal({
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="flex-1 border-t border-[#1e1f22]"></div>
+                                    <div className="flex-1 border-t border-white/10"></div>
                                     <span className="text-xs text-gray-500 font-bold">OR</span>
-                                    <div className="flex-1 border-t border-[#1e1f22]"></div>
+                                    <div className="flex-1 border-t border-white/10"></div>
                                 </div>
 
                                 {/* Paste JSON */}
@@ -2060,7 +2060,7 @@ export default function CreateMessageModal({
                                         value={importJson}
                                         onChange={(e) => { setImportJson(e.target.value); setImportError(null); }}
                                         placeholder='{"message_content": "Hello!", "embeds": [], ...}'
-                                        className="w-full h-48 p-3 bg-[#1e1f22] border border-[#1e1f22] rounded-xl text-sm font-mono resize-none outline-none focus:border-amber-500/50 text-white placeholder-gray-600"
+                                        className="w-full h-48 p-3 bg-black/20 border border-white/10 rounded-xl text-sm font-mono resize-none outline-none focus:border-amber-500/50 text-white placeholder-gray-600"
                                     />
                                 </div>
 
@@ -2081,7 +2081,7 @@ export default function CreateMessageModal({
                             </div>
 
                             {/* Footer */}
-                            <div className="border-t border-[#1e1f22] p-4 flex justify-end gap-3 bg-[#1e1f22]">
+                            <div className="border-t border-white/10 p-4 flex justify-end gap-3 bg-black/20">
                                 <button
                                     onClick={() => { setShowImportModal(false); setImportJson(''); setImportError(null); }}
                                     className="px-4 py-2 text-gray-400 font-bold hover:bg-white/10 rounded-lg transition"
@@ -2105,3 +2105,5 @@ export default function CreateMessageModal({
         document.body
     );
 }
+
+

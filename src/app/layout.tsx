@@ -56,7 +56,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-[#0a0a0f] text-white antialiased`}>
         <AuthProvider>
           <Navbar />
-          <div className="relative min-h-screen overflow-x-hidden">
+          <div className="relative min-h-screen">
             {/* Clean dark background - no distracting patterns */}
             <div className="fixed inset-0 z-[-1] bg-[#0a0a0f]">
               {/* Subtle gradient mesh for depth */}

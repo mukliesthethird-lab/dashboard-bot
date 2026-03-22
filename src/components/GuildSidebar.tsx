@@ -98,11 +98,11 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
 
             {/* Sidebar - Desktop: always visible, Mobile: slide in */}
             <aside className={`
-                fixed left-0 top-20 bottom-0 w-72 bg-[#05050a]/80 backdrop-blur-xl border-r border-white/5 z-[100] overflow-y-auto custom-scrollbar
-                transition-transform duration-300 ease-in-out
-                lg:translate-x-0
-                ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-                lg:top-0
+                fixed z-[100] transition-all duration-500 ease-in-out
+                top-20 bottom-0 left-0 w-72 bg-[#05050a]/95 backdrop-blur-xl border-r border-white/5
+                lg:top-4 lg:bottom-4 lg:left-4 lg:w-[280px] lg:rounded-[2rem] lg:bg-[#05050a]/70 lg:backdrop-blur-3xl lg:border lg:border-white/10 lg:shadow-[0_8px_32px_rgba(0,0,0,0.5)]
+                ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                overflow-hidden flex flex-col
             `}>
                 {/* Server Info - Hidden on mobile (shown in header bar instead) */}
                 <div className="p-6 border-b border-white/10 hidden lg:block">
@@ -125,7 +125,7 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
                 </div>
 
                 {/* Navigation Menu */}
-                <nav className="p-4 space-y-1 pt-4 lg:pt-4">
+                <nav className="p-4 space-y-1 pt-4 lg:pt-4 flex-1 overflow-y-auto custom-scrollbar pb-24">
                     {menuItems.map((item) => {
                         const fullPath = basePath + item.href;
                         const isActive = item.href === ""
@@ -169,3 +169,5 @@ export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarP
         </div>
     );
 }
+
+

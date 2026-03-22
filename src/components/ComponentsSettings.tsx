@@ -254,7 +254,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
             {/* EDITOR MODAL */}
             {showEditor && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setShowEditor(null)}>
-                    <div className="bg-[#16161f] w-full max-w-5xl max-h-[80vh] rounded-3xl border-white/20 flex flex-col shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#030305]/80 backdrop-blur-3xl w-full max-w-5xl max-h-[80vh] rounded-3xl border-white/20 flex flex-col shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between p-6 border-b border-white/10">
                             <h2 className="text-2xl font-black text-white flex items-center gap-3">
                                 {showEditor.type === "button" ? "🔘 Button Editor" : "📋 Select Menu Editor"}
@@ -265,7 +265,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
 
                         <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-transparent">
                             {/* Basic Identity */}
-                            <div className="grid grid-cols-2 gap-6 p-6 bg-[#16161f] rounded-2xl border border-white/10 shadow-none">
+                            <div className="grid grid-cols-2 gap-6 p-6 bg-[#030305]/80 backdrop-blur-3xl rounded-2xl border border-white/10 shadow-none">
                                 <div>
                                     <label className="text-xs font-bold text-gray-400 mb-1 block">NAME (DASHBOARD ONLY)</label>
                                     <input type="text" value={formData.name || ''} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full bg-white/5 border-2 border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-bold" placeholder="e.g. Verify Button" />
@@ -279,7 +279,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                             {/* Button Specifics */}
                             {showEditor.type === "button" && (
                                 <div className="space-y-6">
-                                    <div className="p-6 bg-[#16161f] rounded-2xl border border-white/10 shadow-none">
+                                    <div className="p-6 bg-[#030305]/80 backdrop-blur-3xl rounded-2xl border border-white/10 shadow-none">
                                         <h3 className="text-lg font-bold text-white mb-4">Button Appearance</h3>
                                         <div className="flex flex-wrap items-end gap-4">
                                             <div>
@@ -314,7 +314,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                                     />
 
                                     {/* Requirements */}
-                                    <div className="p-6 bg-[#16161f] rounded-2xl border border-white/10 shadow-none">
+                                    <div className="p-6 bg-[#030305]/80 backdrop-blur-3xl rounded-2xl border border-white/10 shadow-none">
                                         <h3 className="text-lg font-bold text-white mb-4">Usage Requirements</h3>
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-4">
@@ -329,7 +329,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                             {/* Select Menu Specifics */}
                             {showEditor.type === "select_menu" && (
                                 <div className="space-y-6">
-                                    <div className="p-6 bg-[#16161f] rounded-2xl border border-white/10 shadow-none">
+                                    <div className="p-6 bg-[#030305]/80 backdrop-blur-3xl rounded-2xl border border-white/10 shadow-none">
                                         <h3 className="text-lg font-bold text-white mb-4">Menu Configuration</h3>
                                         <div className="grid grid-cols-3 gap-4 mb-4">
                                             <div className="col-span-3">
@@ -364,14 +364,14 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                                                                     const newOpts = [...(formData.data?.options || [])];
                                                                     newOpts[idx] = { ...newOpts[idx], label: e.target.value };
                                                                     updateData({ options: newOpts });
-                                                                }} placeholder="Label" className="w-full bg-[#16161f] border-2 border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-400" />
+                                                                }} placeholder="Label" className="w-full bg-[#030305]/80 backdrop-blur-3xl border-2 border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-400" />
                                                             </div>
                                                             <div className="w-1/3">
                                                                 <input type="text" value={opt.value} onChange={e => {
                                                                     const newOpts = [...(formData.data?.options || [])];
                                                                     newOpts[idx] = { ...newOpts[idx], value: e.target.value };
                                                                     updateData({ options: newOpts });
-                                                                }} placeholder="Value" className="w-full bg-[#16161f] border-2 border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono focus:outline-none focus:border-amber-400" />
+                                                                }} placeholder="Value" className="w-full bg-[#030305]/80 backdrop-blur-3xl border-2 border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono focus:outline-none focus:border-amber-400" />
                                                             </div>
                                                             <div className="w-1/3 flex items-center gap-2">
                                                                 <EmojiPicker value={opt.emoji || ''} onChange={e => {
@@ -490,7 +490,7 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
                         + Add Action {showDropdown ? '▲' : '▼'}
                     </button>
                     {showDropdown && (
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-[#16161f] rounded-xl shadow-xl border border-white/10 z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-[#030305]/80 backdrop-blur-3xl rounded-xl shadow-xl border border-white/10 z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                             <div className="fixed inset-0 z-[-1]" onClick={() => setShowDropdown(false)}></div>
                             {ACTION_TYPES.map(t => (
                                 <button key={t.value} onClick={() => addAction(t.value)} className="w-full text-left px-4 py-2 text-gray-300 hover:text-stone-900 hover:bg-white/5 text-sm flex items-center gap-2 font-medium transition-colors">
@@ -504,7 +504,7 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
 
             <div className="flex flex-wrap gap-2 mb-4">
                 {actions.map((act: any, i: number) => (
-                    <button key={i} onClick={() => setEditingAction(i)} className="bg-[#16161f] hover:bg-white/5 px-3 py-1.5 rounded-lg text-gray-200 text-sm font-bold flex items-center gap-2 border-2 border-white/10 transition shadow-none">
+                    <button key={i} onClick={() => setEditingAction(i)} className="bg-[#030305]/80 backdrop-blur-3xl hover:bg-white/5 px-3 py-1.5 rounded-lg text-gray-200 text-sm font-bold flex items-center gap-2 border-2 border-white/10 transition shadow-none">
                         {ACTION_TYPES.find(t => t.value === act.type)?.icon}
                         {ACTION_TYPES.find(t => t.value === act.type)?.label}
                         <span className="opacity-50 text-xs">⚙️</span>
@@ -514,7 +514,7 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
 
             {/* ACTION EDITOR DETAIL */}
             {currentAction && (
-                <div className="bg-[#16161f] rounded-xl p-4 border-2 border-white/10 mt-4 animate-in fade-in slide-in-from-top-2 shadow-none">
+                <div className="bg-[#030305]/80 backdrop-blur-3xl rounded-xl p-4 border-2 border-white/10 mt-4 animate-in fade-in slide-in-from-top-2 shadow-none">
                     <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/10">
                         <div className="font-bold text-white flex items-center gap-2">
                             <span className="text-xl">{ACTION_TYPES.find(t => t.value === currentAction.type)?.icon}</span>
@@ -600,3 +600,5 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
         </div>
     );
 }
+
+

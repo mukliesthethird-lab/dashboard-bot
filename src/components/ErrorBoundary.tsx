@@ -101,3 +101,5 @@ export default function ErrorBoundary({ children }: ErrorBoundaryProps) {
 
     return <>{children}</>;
 }
+
+

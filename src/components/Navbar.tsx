@@ -26,11 +26,16 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 right-0 z-50 transition-all duration-300 ${scrolled
-                ? 'bg-[#05050a]/30 backdrop-blur-xl border-b border-white/5'
-                : 'bg-transparent'
-                } ${isGuildDashboard ? 'left-0 lg:left-72' : 'left-0'}`}>
-                <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
+            <nav className={`fixed z-[110] transition-all duration-500 ${
+                isGuildDashboard
+                    ? (scrolled ? 'top-0 left-0 right-0 lg:top-4 lg:left-[304px] lg:right-6 flex justify-center' : 'top-0 left-0 right-0 lg:left-[288px] flex justify-center')
+                    : (scrolled ? 'top-0 left-0 right-0 md:top-4 md:left-4 md:right-4 lg:left-8 lg:right-8 flex justify-center' : 'top-0 left-0 right-0 flex justify-center')
+            }`}>
+                <div className={`w-full ${isGuildDashboard ? 'max-w-none' : 'max-w-7xl'} h-20 px-4 md:px-6 flex items-center justify-between transition-all duration-500 ${
+                    scrolled
+                        ? 'bg-[#05050a]/70 backdrop-blur-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] border-b md:border border-white/10 md:rounded-full'
+                        : 'bg-transparent border-transparent'
+                }`}>
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group" onClick={() => setMobileMenuOpen(false)}>
                         <div className="relative">
@@ -166,7 +171,7 @@ export default function Navbar() {
             {/* Login Modal */}
             {showLoginModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-[#16161f] rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/10 animate-scale-in">
+                    <div className="bg-[#030305]/80 backdrop-blur-3xl rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/10 animate-scale-in">
                         <div className="text-center">
                             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
                                 <span className="text-5xl">🐔</span>
@@ -201,7 +206,7 @@ export default function Navbar() {
             {/* Logout Confirmation Modal */}
             {showLogoutModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-[#16161f] rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/10 animate-scale-in">
+                    <div className="bg-[#030305]/80 backdrop-blur-3xl rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/10 animate-scale-in">
                         <div className="text-center">
                             <div className="w-20 h-20 mx-auto mb-4 bg-red-500/10 rounded-full flex items-center justify-center">
                                 <svg className="w-10 h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -235,3 +240,5 @@ export default function Navbar() {
         </>
     );
 }
+
+

@@ -93,24 +93,24 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
     return (
         <>
             {/* Compact Export/Import Buttons */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
                 <button
                     onClick={handleExport}
                     disabled={exporting}
-                    className="px-4 py-1.5 rounded-[3px] bg-[#4e5058]/30 hover:bg-[#4e5058]/60 border border-transparent text-[#f2f3f5] font-bold text-xs transition flex items-center gap-2 disabled:opacity-50"
+                    className="px-5 py-2.5 rounded-xl glass hover:bg-white/10 border border-white/10 text-white font-bold text-sm transition-all hover:scale-105 flex items-center gap-2 disabled:opacity-50"
                 >
                     {exporting ? (
-                        <span className="w-4 h-4 border-2 border-[#f2f3f5] border-t-transparent rounded-full animate-spin"></span>
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                     ) : (
-                        <span>📤</span>
+                        <span className="text-lg">📤</span>
                     )}
                     Export Settings
                 </button>
                 <button
                     onClick={() => setShowModal(true)}
-                    className="px-4 py-1.5 rounded-[3px] bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg hover:shadow-indigo-500/25 text-white font-bold text-xs transition flex items-center gap-2"
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] border border-indigo-400/20 text-white font-bold text-sm transition-all hover:scale-105 flex items-center gap-2"
                 >
-                    <span>📥</span> Import Settings
+                    <span className="text-lg">📥</span> Import Settings
                 </button>
             </div>
 
@@ -119,34 +119,34 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
 
             {/* Import Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in" onClick={() => setShowModal(false)}>
-                    <div className="bg-[#0f111a] rounded-[16px] p-8 max-w-md w-full mx-4 shadow-2xl border border-white/5 animate-scale-in" onClick={e => e.stopPropagation()}>
-                        <div className="text-center mb-6">
-                            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
-                                <span className="text-3xl text-indigo-500">📥</span>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in" onClick={() => setShowModal(false)}>
+                    <div className="bg-[#030305]/90 backdrop-blur-3xl rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border border-white/10 animate-scale-in" onClick={e => e.stopPropagation()}>
+                        <div className="text-center mb-8">
+                            <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+                                <span className="text-4xl">📥</span>
                             </div>
-                            <h2 className="text-xl font-black text-white">Import Settings</h2>
-                            <p className="text-gray-400 text-sm mt-1">Upload a previously exported settings file</p>
+                            <h2 className="text-3xl font-black text-white">Import Settings</h2>
+                            <p className="text-gray-400 mt-2 font-medium">Upload a previously exported settings file</p>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             {/* File Upload */}
                             <div>
-                                <label className="block text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Settings File (.json)</label>
+                                <label className="block text-xs font-bold text-indigo-400 mb-2 uppercase tracking-widest pl-1">Settings File (.json)</label>
                                 <div className="relative group">
                                     <input
                                         type="file"
                                         accept=".json"
                                         onChange={handleFileUpload}
-                                        className="w-full px-4 py-3 rounded-[8px] bg-white/5 border border-white/10 focus:border-indigo-500 focus:outline-none font-medium text-sm text-gray-300 file:mr-4 file:py-1 file:px-3 file:rounded-[4px] file:border-0 file:bg-white/10 file:text-white file:font-bold file:text-xs file:cursor-pointer transition-all"
+                                        className="w-full px-4 py-4 rounded-2xl bg-white/5 border border-white/10 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-indigo-500/20 file:text-indigo-300 file:font-bold file:cursor-pointer hover:bg-white/10 transition-all"
                                     />
                                 </div>
                             </div>
 
                             {/* Preview */}
                             {importData && (
-                                <div className="bg-[#1e1f22] rounded-[3px] p-3 border border-[#1e1f22] max-h-32 overflow-auto custom-scrollbar">
-                                    <pre className="text-[11px] font-mono text-[#4e5058] whitespace-pre-wrap break-all">
+                                <div className="bg-black/20 rounded-[3px] p-3 border border-white/10 max-h-32 overflow-auto custom-scrollbar">
+                                    <pre className="text-[11px] font-mono text-gray-500 whitespace-pre-wrap break-all">
                                         {importData.slice(0, 500)}{importData.length > 500 ? "..." : ""}
                                     </pre>
                                 </div>
@@ -208,3 +208,5 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
         </>
     );
 }
+
+

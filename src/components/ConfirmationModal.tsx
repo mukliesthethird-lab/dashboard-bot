@@ -38,7 +38,7 @@ const ConfirmationModal = ({
 
     return createPortal(
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4">
-            <div className="bg-[#16161f] rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden transform transition-all animate-scale-in border border-white/10">
+            <div className="bg-[#030305]/80 backdrop-blur-3xl rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden transform transition-all animate-scale-in border border-white/10">
                 {/* Header */}
                 <div className="p-6 pb-2">
                     <h3 className="text-xl font-black text-white">{title}</h3>
@@ -78,3 +78,5 @@ const ConfirmationModal = ({
 };
 
 export default ConfirmationModal;
+
+

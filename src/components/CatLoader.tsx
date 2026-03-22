@@ -54,3 +54,5 @@ const CatLoader: React.FC<CatLoaderProps> = ({ message = "Loading..." }) => {
 };
 
 export default CatLoader;
+
+

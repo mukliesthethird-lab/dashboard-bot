@@ -59,9 +59,9 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
 
     if (loading) {
         return (
-            <div className="bg-[#0f111a] border border-white/5 rounded-[8px] p-6 shadow-sm">
-                <h2 className="text-sm font-black text-[#f2f3f5] mb-4 uppercase tracking-widest flex items-center gap-2">
-                    <span className="text-lg">📊</span> Recent Activity
+            <div className="glass-card rounded-[2rem] p-8 shadow-2xl border-white/5">
+                <h2 className="text-xl font-black text-white mb-6 uppercase tracking-widest flex items-center gap-3">
+                    <span className="text-2xl">⚡</span> Recent Activity
                 </h2>
                 <CatLoader message="Loading activity..." />
             </div>
@@ -69,34 +69,34 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
     }
 
     return (
-        <div className="bg-[#0f111a] border border-white/5 rounded-[8px] p-6 shadow-sm">
-            <h2 className="text-sm font-black text-[#f2f3f5] mb-4 uppercase tracking-widest flex items-center gap-2">
-                <span className="text-lg">📊</span> Recent Activity
+        <div className="glass-card rounded-[2rem] p-8 shadow-2xl border-white/5 animate-fade-up">
+            <h2 className="text-xl font-black text-white mb-6 uppercase tracking-widest flex items-center gap-3">
+                <span className="text-2xl">⚡</span> Recent Activity
             </h2>
 
             {logs.length === 0 ? (
-                <div className="text-center py-10 bg-white/2 rounded-[8px] border border-dashed border-white/5">
-                    <div className="text-4xl mb-3 opacity-20">📭</div>
-                    <p className="font-bold text-[#b5bac1]">No activity yet</p>
-                    <p className="text-[11px] text-[#4e5058] uppercase tracking-wider mt-1">Actions will appear here</p>
+                <div className="text-center py-12 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                    <div className="text-5xl mb-4 opacity-30">📭</div>
+                    <p className="font-bold text-white text-lg">No activity yet</p>
+                    <p className="text-gray-400 mt-2">Actions will appear here</p>
                 </div>
             ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {logs.map((log) => {
                         const icon = actionIcons[log.action] || actionIcons.default;
                         return (
-                            <div key={log.id} className="flex items-center gap-4 p-3 rounded-[4px] bg-white/3 border border-transparent hover:border-indigo-500/30 hover:bg-white/5 transition-all group">
-                                <div className="w-10 h-10 rounded-full bg-[#16161f] border border-white/5 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <div key={log.id} className="flex items-center gap-5 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-indigo-500/30 hover:bg-white/10 transition-all duration-300 group hover:shadow-[0_0_20px_rgba(99,102,241,0.1)]">
+                                <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-300">
                                     {icon}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-[#f2f3f5] truncate text-sm">{log.action}</div>
-                                    <div className="text-[#b5bac1] text-xs truncate mt-0.5">
-                                        by <span className="font-bold text-[#dbdee1]">{log.username}</span>
-                                        {log.details && <span className="text-[#4e5058]"> • {log.details}</span>}
+                                    <div className="font-bold text-white text-lg truncate group-hover:text-indigo-400 transition-colors">{log.action}</div>
+                                    <div className="text-gray-400 text-sm truncate mt-1">
+                                        by <span className="font-bold text-gray-200">{log.username}</span>
+                                        {log.details && <span className="text-gray-500"> • {log.details}</span>}
                                     </div>
                                 </div>
-                                <div className="text-[#4e5058] text-[10px] font-bold uppercase tracking-tighter flex-shrink-0">
+                                <div className="text-indigo-400/80 text-xs font-bold uppercase tracking-wider flex-shrink-0 bg-indigo-500/5 px-3 py-1.5 rounded-lg border border-indigo-500/10">
                                     {getTimeAgo(log.created_at)}
                                 </div>
                             </div>
@@ -107,3 +107,5 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
         </div>
     );
 }
+
+

@@ -259,7 +259,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             {/* Top Cards: Cases & Reports */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Cases Card */}
-                <div className="bg-[#2b2d31] rounded-[8px] p-6 flex flex-col justify-between hover:bg-[#313338] transition group">
+                <div className="glass-card rounded-[8px] p-6 flex flex-col justify-between hover:bg-white/5 transition group">
                     <div>
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-[#5865F2]/20 text-[#5865F2] flex items-center justify-center text-xl">
@@ -267,17 +267,17 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                             </div>
                             <h2 className="text-xl font-bold text-gray-100">Cases</h2>
                         </div>
-                        <p className="text-[#b5bac1] mb-6">Manage all ban, kick, mute and warn cases.</p>
+                        <p className="text-gray-400 mb-6">Manage all ban, kick, mute and warn cases.</p>
                     </div>
                     <Link href={`/dashboard/${guildId}/moderation/cases`}>
-                        <button className="self-start px-5 py-2.5 bg-[#4e5058] hover:bg-[#686d73] text-white font-medium rounded-[3px] transition flex items-center gap-2">
+                        <button className="self-start px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-[3px] transition flex items-center gap-2">
                             View cases
                         </button>
                     </Link>
                 </div>
 
                 {/* User Reports Card */}
-                <div className="bg-[#2b2d31] rounded-[8px] p-6 flex flex-col justify-between hover:bg-[#313338] transition group">
+                <div className="glass-card rounded-[8px] p-6 flex flex-col justify-between hover:bg-white/5 transition group">
                     <div>
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-[#da373c]/20 text-[#da373c] flex items-center justify-center text-xl">
@@ -285,10 +285,10 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                             </div>
                             <h2 className="text-xl font-bold text-gray-100">User reports</h2>
                         </div>
-                        <p className="text-[#b5bac1] mb-6">Manage incoming reports from your community.</p>
+                        <p className="text-gray-400 mb-6">Manage incoming reports from your community.</p>
                     </div>
                     <Link href={`/dashboard/${guildId}/moderation/reports`}>
-                        <button className="self-start px-5 py-2.5 bg-[#4e5058] hover:bg-[#686d73] text-white font-medium rounded-[3px] transition flex items-center gap-2">
+                        <button className="self-start px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-[3px] transition flex items-center gap-2">
                             View reports
                         </button>
                     </Link>
@@ -303,10 +303,10 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                         <div
                             key={index}
                             onClick={item.isToggle ? undefined : item.onClick}
-                            className={`bg-[#2b2d31] rounded-[8px] p-5 hover:bg-[#35373c] transition-all flex items-center gap-5 group ${!item.isToggle && item.onClick ? 'cursor-pointer' : ''}`}
+                            className={`glass-card rounded-[8px] p-5 hover:bg-[#35373c] transition-all flex items-center gap-5 group ${!item.isToggle && item.onClick ? 'cursor-pointer' : ''}`}
                         >
                             {/* Icon */}
-                            <div className="w-12 h-12 rounded-lg bg-[#313338] text-[#b5bac1] group-hover:text-white flex items-center justify-center text-2xl transition-colors">
+                            <div className="w-12 h-12 rounded-lg bg-white/5 text-gray-400 group-hover:text-white flex items-center justify-center text-2xl transition-colors">
                                 {item.icon}
                             </div>
 
@@ -327,7 +327,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-[#b5bac1] font-medium text-sm">{item.desc}</p>
+                                <p className="text-gray-400 font-medium text-sm">{item.desc}</p>
                             </div>
 
                             {/* Action / Arrow */}
@@ -346,7 +346,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                 ) : item.action ? (
                                     <div>{item.action}</div>
                                 ) : (
-                                    <div className="w-10 h-10 rounded-[3px] bg-[#313338] text-[#b5bac1] group-hover:bg-[#5865F2] group-hover:text-white flex items-center justify-center transition-colors">
+                                    <div className="w-10 h-10 rounded-[3px] bg-white/5 text-gray-400 group-hover:bg-[#5865F2] group-hover:text-white flex items-center justify-center transition-colors">
                                         <svg className="w-6 h-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                         </svg>
@@ -361,30 +361,30 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             {/* Immune Roles Modal */}
             {showImmuneRolesModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowImmuneRolesModal(false)}>
-                    <div className="bg-[#313338] rounded-[8px] p-6 w-full max-w-md max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
-                        <button onClick={() => setShowImmuneRolesModal(false)} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                    <div className="bg-white/5 rounded-[8px] p-6 w-full max-w-md max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setShowImmuneRolesModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                         <h2 className="text-2xl font-bold text-gray-100 mb-2">🛡️ Immune Roles</h2>
-                        <p className="text-[#b5bac1] mb-6 text-sm">Select roles that are immune to moderation actions.</p>
+                        <p className="text-gray-400 mb-6 text-sm">Select roles that are immune to moderation actions.</p>
                         <div className="space-y-1">
                             {roles.map(role => (
-                                <label key={role.id} className="flex items-center gap-3 p-2 rounded-[4px] hover:bg-[#2b2d31] cursor-pointer">
+                                <label key={role.id} className="flex items-center gap-3 p-2 rounded-[4px] hover:glass-card cursor-pointer">
                                     <input
                                         type="checkbox"
                                         checked={settings.immune_roles.includes(role.id)}
                                         onChange={() => toggleImmuneRole(role.id)}
-                                        className="w-5 h-5 rounded-[4px] border-none bg-[#1e1f22] text-[#5865F2] focus:ring-0 cursor-pointer"
+                                        className="w-5 h-5 rounded-[4px] border-none bg-black/20 text-[#5865F2] focus:ring-0 cursor-pointer"
                                     />
                                     <div
                                         className="w-4 h-4 rounded-full"
                                         style={{ backgroundColor: role.color ? `#${role.color.toString(16).padStart(6, '0')}` : '#99aab5' }}
                                     />
-                                    <span className="font-medium text-[#dbdee1]">{role.name}</span>
+                                    <span className="font-medium text-gray-200">{role.name}</span>
                                 </label>
                             ))}
                         </div>
-                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#1e1f22]">
+                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
                             <button
                                 onClick={() => setShowImmuneRolesModal(false)}
                                 className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[3px] transition"
@@ -399,12 +399,12 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             {/* Predefined Reasons Modal */}
             {showReasonsModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowReasonsModal(false)}>
-                    <div className="bg-[#313338] rounded-[8px] p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
-                        <button onClick={() => setShowReasonsModal(false)} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                    <div className="bg-white/5 rounded-[8px] p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setShowReasonsModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                         <h2 className="text-2xl font-bold text-gray-100 mb-2">📋 Predefined Reasons</h2>
-                        <p className="text-[#b5bac1] mb-6 text-sm">Create shortcuts for common punishment reasons.</p>
+                        <p className="text-gray-400 mb-6 text-sm">Create shortcuts for common punishment reasons.</p>
 
                         {/* Add new reason */}
                         <div className="flex gap-2 mb-4">
@@ -413,14 +413,14 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                 placeholder="Alias (e.g., spam)"
                                 value={newReasonKey}
                                 onChange={e => setNewReasonKey(e.target.value)}
-                                className="flex-1 px-3 py-2 bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]"
+                                className="flex-1 px-3 py-2 bg-black/20 text-gray-200 placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]"
                             />
                             <input
                                 type="text"
                                 placeholder="Full reason"
                                 value={newReasonValue}
                                 onChange={e => setNewReasonValue(e.target.value)}
-                                className="flex-[2] px-3 py-2 bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]"
+                                className="flex-[2] px-3 py-2 bg-black/20 text-gray-200 placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2]"
                             />
                             <button
                                 onClick={addPredefinedReason}
@@ -433,9 +433,9 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                         {/* List existing reasons */}
                         <div className="space-y-2">
                             {Object.entries(settings.predefined_reasons).map(([key, value]) => (
-                                <div key={key} className="flex items-center gap-3 p-3 bg-[#2b2d31] rounded-[4px]">
-                                    <span className="px-2 py-1 bg-[#1e1f22] text-[#dbdee1] font-mono text-sm rounded-[3px]">{key}</span>
-                                    <span className="flex-1 text-[#b5bac1] truncate text-sm">{value}</span>
+                                <div key={key} className="flex items-center gap-3 p-3 glass-card rounded-[4px]">
+                                    <span className="px-2 py-1 bg-black/20 text-gray-200 font-mono text-sm rounded-[3px]">{key}</span>
+                                    <span className="flex-1 text-gray-400 truncate text-sm">{value}</span>
                                     <button
                                         onClick={() => removePredefinedReason(key)}
                                         className="p-1.5 text-[#da373c] hover:bg-[#da373c]/10 rounded-[3px] transition"
@@ -451,7 +451,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                             )}
                         </div>
 
-                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#1e1f22]">
+                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
                             <button
                                 onClick={() => setShowReasonsModal(false)}
                                 className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[3px] transition"
@@ -466,16 +466,16 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             {/* Privacy Modal */}
             {showPrivacyModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowPrivacyModal(false)}>
-                    <div className="bg-[#313338] rounded-[8px] p-6 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
-                        <button onClick={() => setShowPrivacyModal(false)} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                    <div className="bg-white/5 rounded-[8px] p-6 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setShowPrivacyModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                         <h2 className="text-2xl font-bold text-gray-100 mb-2">👁️ Privacy Settings</h2>
-                        <p className="text-[#b5bac1] mb-6 text-sm">Choose what information to show users about their cases.</p>
+                        <p className="text-gray-400 mb-6 text-sm">Choose what information to show users about their cases.</p>
 
                         <div className="space-y-2">
-                            <label className="flex items-center justify-between p-3 bg-[#2b2d31] rounded-[4px] cursor-pointer">
-                                <span className="font-medium text-[#dbdee1] text-sm">Show moderator name</span>
+                            <label className="flex items-center justify-between p-3 glass-card rounded-[4px] cursor-pointer">
+                                <span className="font-medium text-gray-200 text-sm">Show moderator name</span>
                                 <div
                                     onClick={() => updateSettings({ privacy_show_moderator: !settings.privacy_show_moderator })}
                                     className={`relative inline-flex h-[24px] w-[40px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.privacy_show_moderator ? "bg-[#23a559]" : "bg-[#80848e]"}`}
@@ -483,8 +483,8 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                     <span className={`pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${settings.privacy_show_moderator ? "translate-x-[16px]" : "translate-x-0"}`} />
                                 </div>
                             </label>
-                            <label className="flex items-center justify-between p-3 bg-[#2b2d31] rounded-[4px] cursor-pointer">
-                                <span className="font-medium text-[#dbdee1] text-sm">Show punishment reason</span>
+                            <label className="flex items-center justify-between p-3 glass-card rounded-[4px] cursor-pointer">
+                                <span className="font-medium text-gray-200 text-sm">Show punishment reason</span>
                                 <div
                                     onClick={() => updateSettings({ privacy_show_reason: !settings.privacy_show_reason })}
                                     className={`relative inline-flex h-[24px] w-[40px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.privacy_show_reason ? "bg-[#23a559]" : "bg-[#80848e]"}`}
@@ -492,8 +492,8 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                     <span className={`pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${settings.privacy_show_reason ? "translate-x-[16px]" : "translate-x-0"}`} />
                                 </div>
                             </label>
-                            <label className="flex items-center justify-between p-3 bg-[#2b2d31] rounded-[4px] cursor-pointer">
-                                <span className="font-medium text-[#dbdee1] text-sm">Show duration</span>
+                            <label className="flex items-center justify-between p-3 glass-card rounded-[4px] cursor-pointer">
+                                <span className="font-medium text-gray-200 text-sm">Show duration</span>
                                 <div
                                     onClick={() => updateSettings({ privacy_show_duration: !settings.privacy_show_duration })}
                                     className={`relative inline-flex h-[24px] w-[40px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.privacy_show_duration ? "bg-[#23a559]" : "bg-[#80848e]"}`}
@@ -503,7 +503,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                             </label>
                         </div>
 
-                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#1e1f22]">
+                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
                             <button
                                 onClick={() => setShowPrivacyModal(false)}
                                 className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[3px] transition"
@@ -518,20 +518,20 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             {/* Punish Settings Modal */}
             {showPunishModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowPunishModal(false)}>
-                    <div className="bg-[#313338] rounded-[8px] p-6 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
-                        <button onClick={() => setShowPunishModal(false)} className="absolute top-4 right-4 text-[#b5bac1] hover:text-[#dbdee1]">
+                    <div className="bg-white/5 rounded-[8px] p-6 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setShowPunishModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                         <h2 className="text-2xl font-bold text-gray-100 mb-2">🔨 Punish Settings</h2>
-                        <p className="text-[#b5bac1] mb-6 text-sm">Set default values for punishments.</p>
+                        <p className="text-gray-400 mb-6 text-sm">Set default values for punishments.</p>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Default Mute Duration</label>
+                                <label className="block text-[12px] font-bold text-gray-400 uppercase tracking-wide mb-2">Default Mute Duration</label>
                                 <select
                                     value={settings.default_mute_duration}
                                     onChange={e => updateSettings({ default_mute_duration: e.target.value })}
-                                    className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2] cursor-pointer"
+                                    className="w-full px-3 py-2 bg-black/20 text-gray-200 rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2] cursor-pointer"
                                 >
                                     <option value="10 minutes">10 minutes</option>
                                     <option value="30 minutes">30 minutes</option>
@@ -544,11 +544,11 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide mb-2">Default Ban Duration</label>
+                                <label className="block text-[12px] font-bold text-gray-400 uppercase tracking-wide mb-2">Default Ban Duration</label>
                                 <select
                                     value={settings.default_ban_duration}
                                     onChange={e => updateSettings({ default_ban_duration: e.target.value })}
-                                    className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2] cursor-pointer"
+                                    className="w-full px-3 py-2 bg-black/20 text-gray-200 rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2] cursor-pointer"
                                 >
                                     <option value="1 day">1 day</option>
                                     <option value="7 days">7 days</option>
@@ -558,7 +558,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                             </div>
                         </div>
 
-                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#1e1f22]">
+                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
                             <button
                                 onClick={() => setShowPunishModal(false)}
                                 className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[3px] transition"
@@ -572,7 +572,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
 
             {/* Unsaved Changes Bar */}
             {hasChanges && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#111214] border border-[#1e1f22] pl-4 pr-3 py-3 rounded-[8px] shadow-2xl animate-fade-in-up flex items-center gap-6 min-w-[400px]">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#030305]/90 backdrop-blur-3xl border border-white/10 pl-4 pr-3 py-3 rounded-[8px] shadow-2xl animate-fade-in-up flex items-center gap-6 min-w-[400px]">
                     <span className="text-white font-medium text-sm flex-1">Careful — you have unsaved changes!</span>
                     <div className="flex items-center gap-2">
                         <button
@@ -595,5 +595,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
         </div>
     );
 }
+
+
 
 

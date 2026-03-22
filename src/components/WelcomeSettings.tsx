@@ -330,12 +330,12 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
     return (
         <div className="space-y-8 animate-fade-in pb-64">
             {/* Header Section */}
-            <div className="bg-[#2b2d31] rounded-[8px] p-8 relative flex flex-col md:flex-row justify-between items-center gap-6 border border-[#1e1f22]">
+            <div className="glass-card rounded-[8px] p-8 relative flex flex-col md:flex-row justify-between items-center gap-6 border border-white/10">
                 <div className="relative z-10 w-full">
-                    <h1 className="text-2xl font-bold text-[#dbdee1] mb-2 flex items-center gap-3">
+                    <h1 className="text-2xl font-bold text-gray-200 mb-2 flex items-center gap-3">
                         <span className="text-[#5865F2]">👋</span> Welcome & Greetings
                     </h1>
-                    <p className="text-[#b5bac1] text-sm max-w-2xl">
+                    <p className="text-gray-400 text-sm max-w-2xl">
                         Customize automatic messages for new members, boosts, and more.
                     </p>
                 </div>
@@ -355,7 +355,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                         <div
                             key={type.type}
                             onClick={() => setActiveMessageType(type.type as MessageType)}
-                            className={`relative bg-[#2b2d31] rounded-[8px] p-6 border transition-all cursor-pointer flex flex-col md:flex-row gap-6 items-start md:items-center ${isActive ? 'border-[#5865F2] ring-1 ring-[#5865F2]/50' : 'border-[#1e1f22] hover:border-[#4e5058]'
+                            className={`relative glass-card rounded-[8px] p-6 border transition-all cursor-pointer flex flex-col md:flex-row gap-6 items-start md:items-center ${isActive ? 'border-[#5865F2] ring-1 ring-[#5865F2]/50' : 'border-white/10 hover:border-[#4e5058]'
                                 }`}
                         >
                             <div className="flex items-center gap-4 flex-1">
@@ -363,8 +363,8 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                     {type.icon}
                                 </div>
                                 <div>
-                                    <h3 className="text-base font-bold text-[#dbdee1]">{type.title}</h3>
-                                    <p className="text-[#b5bac1] text-sm">{type.desc}</p>
+                                    <h3 className="text-base font-bold text-gray-200">{type.title}</h3>
+                                    <p className="text-gray-400 text-sm">{type.desc}</p>
                                 </div>
                             </div>
 
@@ -379,7 +379,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                 [type.type]: { ...prev[type.type as MessageType], channel_id: e.target.value }
                                             }));
                                         }}
-                                        className="px-3 py-2 bg-[#1e1f22] border border-transparent rounded-[3px] text-sm font-medium text-[#dbdee1] outline-none focus:ring-1 focus:ring-[#5865F2] min-w-[200px]"
+                                        className="px-3 py-2 bg-black/20 border border-transparent rounded-[3px] text-sm font-medium text-gray-200 outline-none focus:ring-1 focus:ring-[#5865F2] min-w-[200px]"
                                     >
                                         <option value="">🚫 No Channel</option>
                                         {channels.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
@@ -393,7 +393,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                 setEditingSubtype("add");
                                                 setShowEditor(true);
                                             }}
-                                            className="px-4 py-2 bg-[#4e5058] hover:bg-[#686d73] text-white rounded-[3px] font-medium transition flex items-center gap-2 text-sm"
+                                            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-[3px] font-medium transition flex items-center gap-2 text-sm"
                                         >
                                             ✏️ Edit
                                         </button>
@@ -417,10 +417,10 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
 
                             {/* Role Settings Expander for 'Role' type */}
                             {type.type === "role" && isActive && (
-                                <div className="absolute top-full left-0 right-0 mt-[-8px] pt-8 pb-6 px-6 bg-[#1e1f22] rounded-b-[8px] border-x border-b border-[#5865F2] z-10 animate-slide-down flex flex-col gap-8" onClick={e => e.stopPropagation()}>
+                                <div className="absolute top-full left-0 right-0 mt-[-8px] pt-8 pb-6 px-6 bg-black/20 rounded-b-[8px] border-x border-b border-[#5865F2] z-10 animate-slide-down flex flex-col gap-8" onClick={e => e.stopPropagation()}>
                                     
                                     <div className="flex justify-between items-center">
-                                        <label className="text-[12px] font-bold text-[#b5bac1] uppercase tracking-wide">🎭 Role Trackers ({config.trackers?.length || 0})</label>
+                                        <label className="text-[12px] font-bold text-gray-400 uppercase tracking-wide">🎭 Role Trackers ({config.trackers?.length || 0})</label>
                                         <button 
                                             onClick={addTracker}
                                             className="px-3 py-1 bg-[#5865F2] hover:bg-[#4752c4] text-white rounded-[3px] text-xs font-bold transition"
@@ -431,10 +431,10 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
 
                                     <div className="space-y-6">
                                         {(config.trackers || []).map((tracker, idx) => (
-                                            <div key={tracker.id} className="bg-[#2b2d31] p-5 rounded-[6px] border border-[#313338] space-y-5 relative">
+                                            <div key={tracker.id} className="glass-card p-5 rounded-[6px] border border-white/10 space-y-5 relative">
                                                 <button 
                                                     onClick={() => deleteTracker(tracker.id)}
-                                                    className="absolute top-4 right-4 text-[#4e5058] hover:text-[#da373c] transition"
+                                                    className="absolute top-4 right-4 text-gray-500 hover:text-[#da373c] transition"
                                                 >
                                                     ✕
                                                 </button>
@@ -446,7 +446,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                             type="text" 
                                                             value={tracker.name}
                                                             onChange={(e) => updateTracker(tracker.id, { name: e.target.value })}
-                                                            className="w-full px-3 py-2 bg-[#1e1f22] border border-transparent rounded-[3px] text-sm text-[#dbdee1] focus:ring-1 focus:ring-[#5865F2] outline-none"
+                                                            className="w-full px-3 py-2 bg-black/20 border border-transparent rounded-[3px] text-sm text-gray-200 focus:ring-1 focus:ring-[#5865F2] outline-none"
                                                             placeholder="e.g. Staff Role Updates"
                                                         />
                                                     </div>
@@ -474,8 +474,8 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                                     key={opt.val}
                                                                     onClick={() => updateTracker(tracker.id, { announce_type: opt.val as any })}
                                                                     className={`flex-1 py-1.5 rounded-[3px] text-[11px] font-bold border transition ${tracker.announce_type === opt.val
-                                                                        ? 'border-[#5865F2] bg-[#5865F2]/20 text-[#dbdee1]'
-                                                                        : 'border-transparent bg-[#1e1f22] text-[#b5bac1] hover:bg-[#313338]'
+                                                                        ? 'border-[#5865F2] bg-[#5865F2]/20 text-gray-200'
+                                                                        : 'border-transparent bg-black/20 text-gray-400 hover:bg-white/5'
                                                                         }`}
                                                                 >
                                                                     {opt.label}
@@ -486,17 +486,17 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
 
                                                 <div>
                                                     <label className="block text-[10px] font-black text-[#72767d] uppercase tracking-widest mb-2">Roles to Track</label>
-                                                    <div className="flex flex-wrap gap-1.5 p-2 bg-[#1e1f22] rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
+                                                    <div className="flex flex-wrap gap-1.5 p-2 bg-black/20 rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
                                                         {tracker.tracked_roles.map(roleId => {
                                                             const role = roles.find(r => r.id === roleId);
                                                             return (
-                                                                <div key={roleId} className="flex items-center gap-1.5 bg-[#2b2d31] px-2 py-1 rounded-[3px] border border-[#313338] text-xs">
+                                                                <div key={roleId} className="flex items-center gap-1.5 glass-card px-2 py-1 rounded-[3px] border border-white/10 text-xs">
                                                                     <span style={{ color: role?.color ? `#${role.color.toString(16).padStart(6, '0')}` : 'inherit' }}>
                                                                         {role?.name || roleId}
                                                                     </span>
                                                                     <button
                                                                         onClick={() => updateTracker(tracker.id, { tracked_roles: tracker.tracked_roles.filter(id => id !== roleId) })}
-                                                                        className="text-[#4e5058] hover:text-[#da373c] font-bold"
+                                                                        className="text-gray-500 hover:text-[#da373c] font-bold"
                                                                     >
                                                                         ✕
                                                                     </button>
@@ -520,7 +520,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center justify-between pt-2 border-t border-[#313338]">
+                                                <div className="flex items-center justify-between pt-2 border-t border-white/10">
                                                     <div className="flex items-center gap-2">
                                                         <button
                                                             onClick={() => {
@@ -528,7 +528,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                                 setEditingSubtype("add");
                                                                 setShowEditor(true);
                                                             }}
-                                                            className={`px-3 py-1.5 rounded-[3px] text-xs font-bold transition flex items-center gap-1.5 ${tracker.announce_type === 'remove' ? 'bg-[#4e5058] opacity-50 cursor-not-allowed' : 'bg-[#248046] hover:bg-[#1a6334] text-white'}`}
+                                                            className={`px-3 py-1.5 rounded-[3px] text-xs font-bold transition flex items-center gap-1.5 ${tracker.announce_type === 'remove' ? 'bg-white/10 opacity-50 cursor-not-allowed' : 'bg-[#248046] hover:bg-[#1a6334] text-white'}`}
                                                             disabled={tracker.announce_type === 'remove'}
                                                         >
                                                             ✏️ {tracker.announce_type === 'both' ? 'Edit Add Msg' : 'Edit Msg'}
@@ -556,7 +556,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                                 checked={tracker.enabled}
                                                                 onChange={(e) => updateTracker(tracker.id, { enabled: e.target.checked })}
                                                             />
-                                                            <div className="w-9 h-5 bg-[#4e5058] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#248046]"></div>
+                                                            <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#248046]"></div>
                                                         </div>
                                                     </label>
                                                 </div>
@@ -564,8 +564,8 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                         ))}
 
                                         {(!config.trackers || config.trackers.length === 0) && (
-                                            <div className="text-center py-10 border-2 border-dashed border-[#313338] rounded-[8px]">
-                                                <p className="text-[#b5bac1] text-sm">No role trackers configured.</p>
+                                            <div className="text-center py-10 border-2 border-dashed border-white/10 rounded-[8px]">
+                                                <p className="text-gray-400 text-sm">No role trackers configured.</p>
                                                 <button onClick={addTracker} className="mt-3 text-[#5865F2] hover:underline text-xs font-bold font-black">
                                                     Click here to add your first tracker
                                                 </button>
@@ -648,12 +648,12 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
 
             {/* Unsaved Changes Bar */}
             {JSON.stringify(settings) !== JSON.stringify(originalSettings) && originalSettings && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-[#111214] border border-[#1e1f22] px-4 py-3 rounded-[8px] shadow-2xl animate-fade-in-up flex items-center justify-between gap-6 min-w-[400px]">
-                    <span className="text-[#dbdee1] font-semibold text-sm line-clamp-1">Careful — you have unsaved changes!</span>
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-[#030305]/90 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-[8px] shadow-2xl animate-fade-in-up flex items-center justify-between gap-6 min-w-[400px]">
+                    <span className="text-gray-200 font-semibold text-sm line-clamp-1">Careful — you have unsaved changes!</span>
                     <div className="flex items-center gap-3 shrink-0">
                         <button
                             onClick={resetSettings}
-                            className="text-[#dbdee1] hover:underline text-sm font-medium transition-colors"
+                            className="text-gray-200 hover:underline text-sm font-medium transition-colors"
                         >
                             Reset
                         </button>
@@ -678,3 +678,5 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
         </div>
     );
 }
+
+

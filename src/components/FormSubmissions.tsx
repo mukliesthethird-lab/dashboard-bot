@@ -463,8 +463,8 @@ export default function FormSubmissions({
                                 bgColor = 'bg-amber-500/10';
                                 textColor = 'text-amber-200';
                             } else if (isChannel) {
-                                bgColor = 'bg-[#4e5058]/40';
-                                textColor = 'text-[#dbdee1]';
+                                bgColor = 'bg-white/10/40';
+                                textColor = 'text-gray-200';
                                 icon = '#';
                             }
                             
@@ -514,7 +514,7 @@ export default function FormSubmissions({
             <div className="flex items-center gap-4 mb-4">
                 <button
                     onClick={onBack}
-                    className="p-2.5 rounded-[4px] bg-[#2b2d31] border border-[#1e1f22] text-gray-400 hover:bg-[#1e1f22] hover:text-white transition"
+                    className="p-2.5 rounded-[4px] glass-card border border-white/10 text-gray-400 hover:bg-black/20 hover:text-white transition"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -532,20 +532,20 @@ export default function FormSubmissions({
             </div>
 
             {/* Controls */}
-            <div className="bg-[#2b2d31] rounded-[8px] p-6 border border-[#1e1f22] space-y-4 mb-4">
+            <div className="glass-card rounded-[8px] p-6 border border-white/10 space-y-4 mb-4">
                 <div className="flex flex-col md:flex-row gap-4">
                     <input
                         type="text"
                         placeholder="Search by username or response..."
                         value={searchTerm}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="flex-1 px-5 py-3 bg-[#1e1f22] border-none rounded-[4px] font-medium text-white focus:outline-none focus:ring-0 transition text-sm"
+                        className="flex-1 px-5 py-3 bg-black/20 border-none rounded-[4px] font-medium text-white focus:outline-none focus:ring-0 transition text-sm"
                     />
 
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-4 py-3 bg-[#1e1f22] border-none rounded-[4px] text-white font-medium focus:outline-none focus:ring-0 transition text-sm min-w-[200px]"
+                        className="px-4 py-3 bg-black/20 border-none rounded-[4px] text-white font-medium focus:outline-none focus:ring-0 transition text-sm min-w-[200px]"
                     >
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
@@ -642,11 +642,11 @@ export default function FormSubmissions({
             {/* Submissions Embed Cards */}
             <div className="w-full mt-4">
                  {loading ? (
-                    <div className="bg-[#2b2d31] rounded-[8px] border border-[#1e1f22] p-8">
+                    <div className="glass-card rounded-[8px] border border-white/10 p-8">
                         <CatLoader message="Loading submissions..." />
                     </div>
                 ) : submissions.length === 0 ? (
-                    <div className="bg-[#2b2d31] rounded-[8px] border border-[#1e1f22] p-8">
+                    <div className="glass-card rounded-[8px] border border-white/10 p-8">
                         <EmptyState
                             icon="📋"
                             title="No Submissions Yet"
@@ -664,7 +664,7 @@ export default function FormSubmissions({
                                         <div className="absolute -left-6 top-6 z-10 w-6 h-6 flex items-center justify-center">
                                             <input
                                                 type="checkbox"
-                                                className="w-5 h-5 rounded border-white/20 bg-[#2b2d31] text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500 shadow-xl"
+                                                className="w-5 h-5 rounded border-white/20 glass-card text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500 shadow-xl"
                                                 checked={selectedIds.has(item.id)}
                                                 onChange={() => toggleSelection(item.id)}
                                             />
@@ -672,7 +672,7 @@ export default function FormSubmissions({
                                     )}
 
                                     {/* Discord Embed Card container */}
-                                    <div className={`flex flex-col bg-[#2b2d31] rounded-[4px] border-l-4 ${getEmbedColor(item.status)} overflow-hidden ${isMassEdit && selectedIds.has(item.id) ? 'ring-2 ring-amber-500/50' : ''}`}>
+                                    <div className={`flex flex-col glass-card rounded-[4px] border-l-4 ${getEmbedColor(item.status)} overflow-hidden ${isMassEdit && selectedIds.has(item.id) ? 'ring-2 ring-amber-500/50' : ''}`}>
                                         
                                         {/* Embed Body */}
                                         <div className="p-4 flex flex-col gap-3">
@@ -713,7 +713,7 @@ export default function FormSubmissions({
                                                         <h3 className="font-bold text-white text-[14px] leading-tight flex items-start gap-1">
                                                             <span>{question}</span>
                                                         </h3>
-                                                        <div className="text-[#dbdee1] text-[14px] whitespace-pre-wrap break-words leading-relaxed pl-1 border-l-2 border-[#4E5058] rounded-sm py-0.5 bg-[#1E1F22]/30 px-2 overflow-hidden">
+                                                        <div className="text-gray-200 text-[14px] whitespace-pre-wrap break-words leading-relaxed pl-1 border-l-2 border-[#4E5058] rounded-sm py-0.5 bg-black/20/30 px-2 overflow-hidden">
                                                             {renderAnswer(answer)}
                                                         </div>
                                                     </div>
@@ -755,7 +755,7 @@ export default function FormSubmissions({
                                                 setSelectedSubmission(item);
                                                 setShowDetailModal(true);
                                             }}
-                                            className="px-4 py-2 bg-[#4e5058] hover:bg-[#686d73] text-white text-sm font-medium rounded-[4px] transition-colors"
+                                            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-[4px] transition-colors"
                                         >
                                             View Details
                                         </button>
@@ -805,7 +805,7 @@ export default function FormSubmissions({
             {/* Reply Modal */}
             {showReplyModal && replyingTo && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowReplyModal(false)}>
-                    <div className="bg-[#313338] border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white/5 border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-3 bg-[#5865F2]/10 rounded-full">
                                 <svg className="w-6 h-6 text-[#5865F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.39.84 4.59 2.25 6.31l-1.01 3.03a1 1 0 001.27 1.27l3.03-1.01C9.41 23.16 11.61 24 12 24c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.85 0-3.58-.64-4.95-1.72a1 1 0 00-.73-.27l-1.92.64.64-1.92a1 1 0 00-.27-.73C3.64 15.58 3 13.85 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9z"/></svg>
@@ -817,13 +817,13 @@ export default function FormSubmissions({
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-[#b5bac1] text-xs font-bold uppercase mb-2">Your Message</label>
+                            <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Your Message</label>
                             <textarea
                                 value={replyMessage}
                                 onChange={(e) => setReplyMessage(e.target.value)}
                                 placeholder={`Hi ${replyingTo.username}, thank you for your submission...`}
                                 rows={5}
-                                className="w-full px-4 py-3 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
+                                className="w-full px-4 py-3 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
                                 autoFocus
                             />
                         </div>
@@ -866,10 +866,10 @@ export default function FormSubmissions({
             {/* Detail Modal */}
             {showDetailModal && selectedSubmission && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setShowDetailModal(false)}>
-                    <div className="bg-[#2b2d31] shadow-2xl rounded-[4px] border-l-4 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up" style={{ borderLeftColor: getEmbedColor(selectedSubmission.status).replace('border-[', '').replace(']', '') }} onClick={e => e.stopPropagation()}>
+                    <div className="glass-card shadow-2xl rounded-[4px] border-l-4 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up" style={{ borderLeftColor: getEmbedColor(selectedSubmission.status).replace('border-[', '').replace(']', '') }} onClick={e => e.stopPropagation()}>
                         
                         {/* Modal Header */}
-                        <div className="p-6 pb-4 border-b border-[#1E1F22]/50 flex items-start justify-between">
+                        <div className="p-6 pb-4 border-b border-white/10/50 flex items-start justify-between">
                             <div>
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="font-bold text-white text-sm">Forms</span>
@@ -899,7 +899,7 @@ export default function FormSubmissions({
                                 {Object.entries(selectedSubmission.responses).map(([question, answer]) => (
                                     <div key={question} className="flex flex-col gap-1.5">
                                         <h3 className="font-bold text-white text-[15px]">{question}</h3>
-                                        <div className="text-[#dbdee1] text-[15px] whitespace-pre-wrap break-words leading-relaxed pl-2 border-l-2 border-[#4E5058] rounded-sm py-1 bg-[#1E1F22]/30 px-3 overflow-hidden">
+                                        <div className="text-gray-200 text-[15px] whitespace-pre-wrap break-words leading-relaxed pl-2 border-l-2 border-[#4E5058] rounded-sm py-1 bg-black/20/30 px-3 overflow-hidden">
                                             {renderAnswer(answer)}
                                         </div>
                                     </div>
@@ -908,7 +908,7 @@ export default function FormSubmissions({
                         </div>
 
                         {/* Modal Footer / Actions */}
-                        <div className="p-4 bg-[#2b2d31] border-t border-[#1E1F22]/50 flex items-center justify-between mt-auto">
+                        <div className="p-4 glass-card border-t border-white/10/50 flex items-center justify-between mt-auto">
                             <div className="text-[11px] font-medium text-gray-400">
                                 <span className="font-bold text-gray-300">{formatDate(selectedSubmission.submitted_at).full}</span>
                             </div>
@@ -952,7 +952,7 @@ export default function FormSubmissions({
             {/* Deny Reason Modal */}
             {showDenyModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowDenyModal(false)}>
-                    <div className="bg-[#16161f] border border-white/10 rounded-3xl p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#030305]/80 backdrop-blur-3xl border border-white/10 rounded-3xl p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
                         <h2 className="text-2xl font-black text-white mb-2">❌ Deny Submission</h2>
                         <p className="text-gray-400 mb-6">Provide a reason for denying this submission (optional).</p>
 
@@ -995,7 +995,7 @@ export default function FormSubmissions({
             {/* Reply Modal */}
             {showReplyModal && replyingTo && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowReplyModal(false)}>
-                    <div className="bg-[#313338] border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white/5 border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-3 bg-[#5865F2]/10 rounded-full">
                                 <svg className="w-6 h-6 text-[#5865F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.39.84 4.59 2.25 6.31l-1.01 3.03a1 1 0 001.27 1.27l3.03-1.01C9.41 23.16 11.61 24 12 24c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.85 0-3.58-.64-4.95-1.72a1 1 0 00-.73-.27l-1.92.64.64-1.92a1 1 0 00-.27-.73C3.64 15.58 3 13.85 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9z"/></svg>
@@ -1007,13 +1007,13 @@ export default function FormSubmissions({
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-[#b5bac1] text-xs font-bold uppercase mb-2">Your Message</label>
+                            <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Your Message</label>
                             <textarea
                                 value={replyMessage}
                                 onChange={(e) => setReplyMessage(e.target.value)}
                                 placeholder={`Hi ${replyingTo.username}, thank you for your submission...`}
                                 rows={5}
-                                className="w-full px-4 py-3 bg-[#1e1f22] border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
+                                className="w-full px-4 py-3 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
                                 autoFocus
                             />
                         </div>
@@ -1059,3 +1059,5 @@ export default function FormSubmissions({
         </div>
     );
 }
+
+

@@ -36,8 +36,8 @@ export default function PremiumCard({
                                 </div>
                             )}
                             <div>
-                                {title && <h3 className="text-xl font-bold text-[#f2f3f5]">{title}</h3>}
-                                {description && <p className="text-sm text-[#b5bac1]">{description}</p>}
+                                {title && <h3 className="text-xl font-bold text-white">{title}</h3>}
+                                {description && <p className="text-sm text-gray-400">{description}</p>}
                             </div>
                         </div>
                         {badge && (
@@ -54,3 +54,5 @@ export default function PremiumCard({
         </div>
     );
 }
+
+

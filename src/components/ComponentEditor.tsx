@@ -160,9 +160,9 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
         <div className="space-y-4">
             {/* Rows */}
             {rows.map((row, rowIndex) => (
-                <div key={rowIndex} className="bg-[#2b2d31] rounded-[8px] p-4 border border-[#1e1f22]">
-                    <div className="flex items-center justify-between mb-3 border-b border-[#1e1f22] pb-2">
-                        <span className="text-xs font-bold text-[#b5bac1] uppercase tracking-wider">Row {rowIndex + 1}</span>
+                <div key={rowIndex} className="glass-card rounded-[8px] p-4 border border-white/10">
+                    <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Row {rowIndex + 1}</span>
                         <button onClick={() => removeRow(rowIndex)} className="text-[#da373c] hover:bg-[#da373c]/10 p-1 rounded transition-colors text-sm">🗑️</button>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -174,7 +174,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                         className={`px-4 py-1.5 rounded-[3px] font-bold text-white transition flex items-center gap-2 text-sm ${comp.style === "primary" ? "bg-[#5865F2] hover:bg-[#4752c4]" :
                                             comp.style === "success" ? "bg-[#248046] hover:bg-[#1a6334]" :
                                                 comp.style === "danger" ? "bg-[#da373c] hover:bg-[#a12828]" :
-                                                    "bg-[#4e5058] hover:bg-[#686d73]"
+                                                    "bg-white/10 hover:bg-white/20"
                                             }`}
                                     >
                                         {comp.emoji && <span>{comp.emoji}</span>}
@@ -184,7 +184,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                 ) : (
                                     <button
                                         onClick={() => setEditingComponent({ rowIndex, compIndex })}
-                                        className="px-4 py-1.5 rounded-[3px] font-bold bg-[#1e1f22] text-[#dbdee1] border border-transparent hover:border-[#5865F2] transition flex items-center gap-2 text-sm"
+                                        className="px-4 py-1.5 rounded-[3px] font-bold bg-black/20 text-gray-200 border border-transparent hover:border-[#5865F2] transition flex items-center gap-2 text-sm"
                                     >
                                         📋 {comp.placeholder}
                                         <span className="text-[10px] opacity-75">▼</span>
@@ -198,7 +198,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                         ))}
                         <button
                             onClick={() => setShowAddModal({ rowIndex })}
-                            className="px-4 py-1.5 bg-[#4e5058] hover:bg-[#686d73] text-white rounded-[3px] font-bold transition text-sm"
+                            className="px-4 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-[3px] font-bold transition text-sm"
                         >+ Add</button>
                     </div>
                 </div>
@@ -208,23 +208,23 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
             {rows.length < 5 && (
                 <button
                     onClick={addRow}
-                    className="w-full py-2 bg-[#1e1f22] hover:bg-[#111214] text-[#dbdee1] border border-[#1e1f22] hover:border-[#5865F2] rounded-[3px] font-bold transition-all text-sm"
+                    className="w-full py-2 bg-black/20 hover:bg-[#030305]/90 backdrop-blur-3xl text-gray-200 border border-white/10 hover:border-[#5865F2] rounded-[3px] font-bold transition-all text-sm"
                 >+ Add Action Row</button>
             )}
 
             {/* Add Component Modal */}
             {showAddModal && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={() => setShowAddModal(null)}>
-                    <div className="bg-[#2b2d31] rounded-[8px] p-6 w-80 shadow-2xl border border-[#1e1f22]" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-lg font-bold text-[#dbdee1] mb-4">Add Component</h3>
+                    <div className="glass-card rounded-[8px] p-6 w-80 shadow-2xl border border-white/10" onClick={e => e.stopPropagation()}>
+                        <h3 className="text-lg font-bold text-gray-200 mb-4">Add Component</h3>
                         <div className="space-y-3">
-                            <button onClick={() => addComponent(showAddModal.rowIndex, "button")} className="w-full p-4 bg-[#1e1f22] hover:bg-[#313338] text-[#dbdee1] rounded-[8px] font-bold text-left transition border border-transparent hover:border-[#5865F2] group">
+                            <button onClick={() => addComponent(showAddModal.rowIndex, "button")} className="w-full p-4 bg-black/20 hover:bg-white/5 text-gray-200 rounded-[8px] font-bold text-left transition border border-transparent hover:border-[#5865F2] group">
                                 <div className="text-lg flex items-center gap-2">🔘 <span className="group-hover:text-[#5865F2] transition-colors">Button</span></div>
-                                <div className="text-xs text-[#b5bac1] mt-1 font-normal">Clickable button with actions</div>
+                                <div className="text-xs text-gray-400 mt-1 font-normal">Clickable button with actions</div>
                             </button>
-                            <button onClick={() => addComponent(showAddModal.rowIndex, "select_menu")} className="w-full p-4 bg-[#1e1f22] hover:bg-[#313338] text-[#dbdee1] rounded-[8px] font-bold text-left transition border border-transparent hover:border-[#5865F2] group">
+                            <button onClick={() => addComponent(showAddModal.rowIndex, "select_menu")} className="w-full p-4 bg-black/20 hover:bg-white/5 text-gray-200 rounded-[8px] font-bold text-left transition border border-transparent hover:border-[#5865F2] group">
                                 <div className="text-lg flex items-center gap-2">📋 <span className="group-hover:text-[#5865F2] transition-colors">Select Menu</span></div>
-                                <div className="text-xs text-[#b5bac1] mt-1 font-normal">Dropdown with role selection</div>
+                                <div className="text-xs text-gray-400 mt-1 font-normal">Dropdown with role selection</div>
                             </button>
                         </div>
                     </div>
@@ -234,13 +234,13 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
             {/* Edit Component Modal */}
             {editingComponent && currentComponent && (
                 <div className="fixed inset-0 z-[200] flex items-start justify-center bg-black/70 backdrop-blur-sm overflow-y-auto pt-20 pb-8" onClick={() => { setEditingComponent(null); setEditingAction(null); }}>
-                    <div className="bg-[#2b2d31] rounded-[8px] w-full max-w-2xl mx-4 shadow-2xl border border-[#1e1f22]" onClick={e => e.stopPropagation()}>
+                    <div className="glass-card rounded-[8px] w-full max-w-2xl mx-4 shadow-2xl border border-white/10" onClick={e => e.stopPropagation()}>
                         {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b border-[#1e1f22] bg-[#1e1f22]/50">
-                            <h3 className="text-xl font-bold text-[#f2f3f5]">
+                        <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/20/50">
+                            <h3 className="text-xl font-bold text-white">
                                 {currentComponent.type === "button" ? `🔘 Button: ${(currentComponent as ComponentButton).label}` : `📋 Select Menu`}
                             </h3>
-                            <button onClick={() => { setEditingComponent(null); setEditingAction(null); }} className="w-8 h-8 rounded-full text-[#b5bac1] hover:text-[#f2f3f5] hover:bg-[#4e5058] transition-colors font-bold">×</button>
+                            <button onClick={() => { setEditingComponent(null); setEditingAction(null); }} className="w-8 h-8 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors font-bold">×</button>
                         </div>
 
                         <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
@@ -249,7 +249,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                     {/* Button Settings */}
                                     <div className="grid grid-cols-3 gap-3">
                                         <div>
-                                            <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">Emoji</label>
+                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Emoji</label>
                                             <EmojiPicker
                                                 value={(currentComponent as ComponentButton).emoji}
                                                 onChange={(emoji) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { emoji })}
@@ -257,19 +257,19 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                             />
                                         </div>
                                         <div className="col-span-2">
-                                            <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">Label</label>
+                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Label</label>
                                             <input
                                                 type="text"
                                                 value={(currentComponent as ComponentButton).label}
                                                 onChange={(e) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { label: e.target.value })}
-                                                className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition"
+                                                className="w-full px-3 py-2 bg-black/20 text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Style */}
                                     <div>
-                                        <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-2">Style</label>
+                                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Style</label>
                                         <div className="flex gap-2">
                                             {BUTTON_STYLES.map(style => (
                                                 <button
@@ -278,7 +278,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                     className={`px-4 py-1.5 rounded-[3px] font-bold text-white transition text-xs ${style.value === "primary" ? "bg-[#5865F2] hover:bg-[#4752c4]" :
                                                         style.value === "success" ? "bg-[#248046] hover:bg-[#1a6334]" :
                                                             style.value === "danger" ? "bg-[#da373c] hover:bg-[#a12828]" :
-                                                                "bg-[#4e5058] hover:bg-[#686d73]"
+                                                                "bg-white/10 hover:bg-white/20"
                                                         } ${(currentComponent as ComponentButton).style === style.value ? "ring-2 ring-white ring-offset-2 ring-offset-[#2b2d31]" : "opacity-60 hover:opacity-100"}`}
                                                 >{style.label}</button>
                                             ))}
@@ -288,29 +288,29 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                     {/* Actions */}
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
-                                            <label className="text-sm font-bold text-[#f2f3f5]">⚡ Actions</label>
-                                            <span className="text-xs text-[#b5bac1]">{(currentComponent as ComponentButton).actions.length}/10</span>
+                                            <label className="text-sm font-bold text-white">⚡ Actions</label>
+                                            <span className="text-xs text-gray-400">{(currentComponent as ComponentButton).actions.length}/10</span>
                                         </div>
-                                        <p className="text-xs text-[#b5bac1] mb-3">Set actions that will be executed when the button is clicked.</p>
+                                        <p className="text-xs text-gray-400 mb-3">Set actions that will be executed when the button is clicked.</p>
 
                                         <div className="flex flex-wrap gap-2 mb-3">
                                             {(currentComponent as ComponentButton).actions.map((action, actionIndex) => (
                                                 <button
                                                     key={actionIndex}
                                                     onClick={() => setEditingAction({ actionIndex })}
-                                                    className="px-3 py-1.5 bg-[#1e1f22] hover:bg-[#313338] text-[#dbdee1] rounded-[3px] text-xs font-bold flex items-center gap-2 border border-transparent hover:border-[#5865F2] transition-all"
+                                                    className="px-3 py-1.5 bg-black/20 hover:bg-white/5 text-gray-200 rounded-[3px] text-xs font-bold flex items-center gap-2 border border-transparent hover:border-[#5865F2] transition-all"
                                                 >
                                                     {ACTION_TYPES.find(a => a.value === action.type)?.icon}
                                                     {ACTION_TYPES.find(a => a.value === action.type)?.label}
-                                                    <span className="text-[#b5bac1]">⚙️</span>
+                                                    <span className="text-gray-400">⚙️</span>
                                                 </button>
                                             ))}
                                             <div className="relative group">
                                                 <button className="px-3 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white rounded-[3px] text-xs font-bold transition-colors">+</button>
-                                                <div className="absolute left-0 top-full mt-1 w-56 bg-[#111214] rounded-[8px] shadow-2xl hidden group-hover:block z-20 border border-[#1e1f22] overflow-hidden">
+                                                <div className="absolute left-0 top-full mt-1 w-56 bg-[#030305]/90 backdrop-blur-3xl rounded-[8px] shadow-2xl hidden group-hover:block z-20 border border-white/10 overflow-hidden">
                                                     {["Roles", "Messages", "Voice"].map(category => (
                                                         <div key={category}>
-                                                            <div className="px-3 py-1.5 text-[10px] font-bold text-[#b5bac1] border-b border-[#1e1f22] uppercase tracking-wider bg-[#1e1f22]/50">{category}</div>
+                                                            <div className="px-3 py-1.5 text-[10px] font-bold text-gray-400 border-b border-white/10 uppercase tracking-wider bg-black/20/50">{category}</div>
                                                             {ACTION_TYPES.filter(a => a.category === category).map(actionType => (
                                                                 <button
                                                                     key={actionType.value}
@@ -320,7 +320,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                             actions: [...btn.actions, { type: actionType.value }]
                                                                         });
                                                                     }}
-                                                                    className="w-full px-3 py-2 text-left text-[#dbdee1] hover:bg-[#5865F2] hover:text-white flex items-center gap-2 text-sm transition-colors"
+                                                                    className="w-full px-3 py-2 text-left text-gray-200 hover:bg-[#5865F2] hover:text-white flex items-center gap-2 text-sm transition-colors"
                                                                 >
                                                                     <span>{actionType.icon}</span>
                                                                     <span>{actionType.label}</span>
@@ -334,9 +334,9 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
 
                                         {/* Action Editor */}
                                         {editingAction && (currentComponent as ComponentButton).actions[editingAction.actionIndex] && (
-                                            <div className="bg-[#1e1f22] rounded-[8px] p-4 border border-[#1e1f22]">
+                                            <div className="bg-black/20 rounded-[8px] p-4 border border-white/10">
                                                 <div className="flex items-center justify-between mb-3 border-b border-[#2b2d31] pb-2">
-                                                    <span className="font-bold text-[#f2f3f5] text-sm">
+                                                    <span className="font-bold text-white text-sm">
                                                         {ACTION_TYPES.find(a => a.value === (currentComponent as ComponentButton).actions[editingAction.actionIndex].type)?.icon}{" "}
                                                         {ACTION_TYPES.find(a => a.value === (currentComponent as ComponentButton).actions[editingAction.actionIndex].type)?.label}
                                                     </span>
@@ -355,12 +355,12 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                 {/* Role Actions */}
                                                 {["add_role", "remove_role", "toggle_role"].includes((currentComponent as ComponentButton).actions[editingAction.actionIndex].type) && (
                                                     <div className="space-y-3">
-                                                        <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-2">ROLES</label>
+                                                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">ROLES</label>
                                                         <div className="flex flex-wrap gap-2 mb-2">
                                                             {((currentComponent as ComponentButton).actions[editingAction.actionIndex].roles || []).map(roleId => {
                                                                 const role = roles.find(r => r.id === roleId);
                                                                 return role ? (
-                                                                    <span key={roleId} className="px-2 py-1 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] flex items-center gap-2 text-xs font-bold border border-[#1e1f22]">
+                                                                    <span key={roleId} className="px-2 py-1 glass-card text-gray-200 rounded-[3px] flex items-center gap-2 text-xs font-bold border border-white/10">
                                                                         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: `#${role.color.toString(16).padStart(6, '0')}` }}></span>
                                                                         {role.name}
                                                                         <button
@@ -373,7 +373,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                                 };
                                                                                 updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { actions: newActions });
                                                                             }}
-                                                                            className="ml-1 text-[#b5bac1] hover:text-[#da373c] transition-colors"
+                                                                            className="ml-1 text-gray-400 hover:text-[#da373c] transition-colors"
                                                                         >×</button>
                                                                     </span>
                                                                 ) : null;
@@ -398,10 +398,10 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                     }
                                                                 }
                                                             }}
-                                                            className="w-full px-3 py-2 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
+                                                            className="w-full px-3 py-2 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
                                                         >
-                                                            <option value="" className="bg-[#313338]">+ Add role</option>
-                                                            {roles.map(r => <option key={r.id} value={r.id} className="bg-[#313338]">{r.name}</option>)}
+                                                            <option value="" className="bg-white/5">+ Add role</option>
+                                                            {roles.map(r => <option key={r.id} value={r.id} className="bg-white/5">{r.name}</option>)}
                                                         </select>
                                                     </div>
                                                 )}
@@ -410,7 +410,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                 {(currentComponent as ComponentButton).actions[editingAction.actionIndex].type === "move_voice" && (
                                                     <div className="space-y-3">
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">USER COUNT</label>
+                                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">USER COUNT</label>
                                                             <input
                                                                 type="number"
                                                                 value={(currentComponent as ComponentButton).actions[editingAction.actionIndex].user_count || 0}
@@ -420,12 +420,12 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                     newActions[editingAction.actionIndex] = { ...newActions[editingAction.actionIndex], user_count: parseInt(e.target.value) || 0 };
                                                                     updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { actions: newActions });
                                                                 }}
-                                                                className="w-full px-3 py-2 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
+                                                                className="w-full px-3 py-2 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
                                                                 placeholder="0 = all users"
                                                             />
                                                         </div>
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">SOURCE CHANNEL</label>
+                                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">SOURCE CHANNEL</label>
                                                             <select
                                                                 value={(currentComponent as ComponentButton).actions[editingAction.actionIndex].source_channel || ""}
                                                                 onChange={(e) => {
@@ -434,14 +434,14 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                     newActions[editingAction.actionIndex] = { ...newActions[editingAction.actionIndex], source_channel: e.target.value };
                                                                     updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { actions: newActions });
                                                                 }}
-                                                                className="w-full px-3 py-2 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
+                                                                className="w-full px-3 py-2 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
                                                             >
-                                                                <option value="" className="bg-[#313338]">Click to set a channel</option>
-                                                                {voiceChannels.map(c => <option key={c.id} value={c.id} className="bg-[#313338]">🔊 {c.name}</option>)}
+                                                                <option value="" className="bg-white/5">Click to set a channel</option>
+                                                                {voiceChannels.map(c => <option key={c.id} value={c.id} className="bg-white/5">🔊 {c.name}</option>)}
                                                             </select>
                                                         </div>
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">DESTINATION CHANNEL</label>
+                                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">DESTINATION CHANNEL</label>
                                                             <select
                                                                 value={(currentComponent as ComponentButton).actions[editingAction.actionIndex].destination_channel || ""}
                                                                 onChange={(e) => {
@@ -450,13 +450,13 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                     newActions[editingAction.actionIndex] = { ...newActions[editingAction.actionIndex], destination_channel: e.target.value };
                                                                     updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { actions: newActions });
                                                                 }}
-                                                                className="w-full px-3 py-2 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
+                                                                className="w-full px-3 py-2 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
                                                             >
-                                                                <option value="" className="bg-[#313338]">Click to set a channel</option>
-                                                                {voiceChannels.map(c => <option key={c.id} value={c.id} className="bg-[#313338]">🔊 {c.name}</option>)}
+                                                                <option value="" className="bg-white/5">Click to set a channel</option>
+                                                                {voiceChannels.map(c => <option key={c.id} value={c.id} className="bg-white/5">🔊 {c.name}</option>)}
                                                             </select>
                                                         </div>
-                                                        <div className="flex items-center gap-3 bg-[#2b2d31] p-3 rounded-[3px]">
+                                                        <div className="flex items-center gap-3 glass-card p-3 rounded-[3px]">
                                                             <input
                                                                 type="checkbox"
                                                                 id="exclude-self"
@@ -469,10 +469,10 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                 }}
                                                                 className="w-4 h-4 rounded border-[#4e5058] text-[#5865F2] focus:ring-[#5865F2] accent-[#5865F2]"
                                                             />
-                                                            <label htmlFor="exclude-self" className="text-sm text-[#dbdee1] font-bold cursor-pointer">EXCLUDE SELF</label>
+                                                            <label htmlFor="exclude-self" className="text-sm text-gray-200 font-bold cursor-pointer">EXCLUDE SELF</label>
                                                         </div>
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">ROLE MODE</label>
+                                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">ROLE MODE</label>
                                                             <select
                                                                 value={(currentComponent as ComponentButton).actions[editingAction.actionIndex].role_mode || "ignore"}
                                                                 onChange={(e) => {
@@ -481,11 +481,11 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                     newActions[editingAction.actionIndex] = { ...newActions[editingAction.actionIndex], role_mode: e.target.value as any };
                                                                     updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { actions: newActions });
                                                                 }}
-                                                                className="w-full px-3 py-2 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
+                                                                className="w-full px-3 py-2 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
                                                             >
-                                                                <option value="ignore" className="bg-[#313338]">Ignore roles</option>
-                                                                <option value="require" className="bg-[#313338]">Require roles</option>
-                                                                <option value="exclude" className="bg-[#313338]">Exclude roles</option>
+                                                                <option value="ignore" className="bg-white/5">Ignore roles</option>
+                                                                <option value="require" className="bg-white/5">Require roles</option>
+                                                                <option value="exclude" className="bg-white/5">Exclude roles</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -496,7 +496,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                     <div className="space-y-3">
                                                         {(currentComponent as ComponentButton).actions[editingAction.actionIndex].type === "send_channel" && (
                                                             <div>
-                                                                <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">CHANNEL</label>
+                                                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">CHANNEL</label>
                                                                 <select
                                                                     value={(currentComponent as ComponentButton).actions[editingAction.actionIndex].channel_id || ""}
                                                                     onChange={(e) => {
@@ -505,15 +505,15 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                         newActions[editingAction.actionIndex] = { ...newActions[editingAction.actionIndex], channel_id: e.target.value };
                                                                         updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { actions: newActions });
                                                                     }}
-                                                                    className="w-full px-3 py-2 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
+                                                                    className="w-full px-3 py-2 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
                                                                 >
-                                                                    <option value="" className="bg-[#313338]">Select channel</option>
-                                                                    {textChannels.map(c => <option key={c.id} value={c.id} className="bg-[#313338]"># {c.name}</option>)}
+                                                                    <option value="" className="bg-white/5">Select channel</option>
+                                                                    {textChannels.map(c => <option key={c.id} value={c.id} className="bg-white/5"># {c.name}</option>)}
                                                                 </select>
                                                             </div>
                                                         )}
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">MESSAGE</label>
+                                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">MESSAGE</label>
                                                             <textarea
                                                                 value={(currentComponent as ComponentButton).actions[editingAction.actionIndex].message_content || ""}
                                                                 onChange={(e) => {
@@ -523,7 +523,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                     updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { actions: newActions });
                                                                 }}
                                                                 rows={3}
-                                                                className="w-full px-3 py-2 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm resize-none custom-scrollbar"
+                                                                className="w-full px-3 py-2 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm resize-none custom-scrollbar"
                                                                 placeholder="Message content..."
                                                             />
                                                         </div>
@@ -534,11 +534,11 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                     </div>
 
                                     {/* Requirements */}
-                                    <div className="bg-[#1e1f22] rounded-[8px] p-4 border border-[#1e1f22]">
-                                        <label className="block text-sm font-bold text-[#f2f3f5] mb-2">🔒 Requirements</label>
+                                    <div className="bg-black/20 rounded-[8px] p-4 border border-white/10">
+                                        <label className="block text-sm font-bold text-white mb-2">🔒 Requirements</label>
                                         <div className="grid grid-cols-2 gap-3">
                                             <div>
-                                                <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">Required Roles</label>
+                                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Required Roles</label>
                                                 <select
                                                     value=""
                                                     onChange={(e) => {
@@ -552,10 +552,10 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                             }
                                                         }
                                                     }}
-                                                    className="w-full px-2 py-1 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-xs"
+                                                    className="w-full px-2 py-1 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-xs"
                                                 >
-                                                    <option value="" className="bg-[#313338]">+ Add</option>
-                                                    {roles.map(r => <option key={r.id} value={r.id} className="bg-[#313338]">{r.name}</option>)}
+                                                    <option value="" className="bg-white/5">+ Add</option>
+                                                    {roles.map(r => <option key={r.id} value={r.id} className="bg-white/5">{r.name}</option>)}
                                                 </select>
                                                 <div className="flex flex-wrap gap-1 mt-2">
                                                     {((currentComponent as ComponentButton).required_roles || []).map(roleId => {
@@ -575,7 +575,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">Blacklist Roles</label>
+                                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Blacklist Roles</label>
                                                 <select
                                                     value=""
                                                     onChange={(e) => {
@@ -589,10 +589,10 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                             }
                                                         }
                                                     }}
-                                                    className="w-full px-2 py-1 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-xs"
+                                                    className="w-full px-2 py-1 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-xs"
                                                 >
-                                                    <option value="" className="bg-[#313338]">+ Add</option>
-                                                    {roles.map(r => <option key={r.id} value={r.id} className="bg-[#313338]">{r.name}</option>)}
+                                                    <option value="" className="bg-white/5">+ Add</option>
+                                                    {roles.map(r => <option key={r.id} value={r.id} className="bg-white/5">{r.name}</option>)}
                                                 </select>
                                                 <div className="flex flex-wrap gap-1 mt-2">
                                                     {((currentComponent as ComponentButton).blacklist_roles || []).map(roleId => {
@@ -613,12 +613,12 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                             </div>
                                         </div>
                                         <div className="mt-4">
-                                            <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">Cooldown (seconds)</label>
+                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Cooldown (seconds)</label>
                                             <input
                                                 type="number"
                                                 value={(currentComponent as ComponentButton).cooldown || 0}
                                                 onChange={(e) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { cooldown: parseInt(e.target.value) || 0 })}
-                                                className="w-24 px-2 py-1 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-xs"
+                                                className="w-24 px-2 py-1 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-xs"
                                                 min="0"
                                             />
                                         </div>
@@ -630,16 +630,16 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                             {currentComponent.type === "select_menu" && (
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">Placeholder</label>
+                                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Placeholder</label>
                                         <input
                                             type="text"
                                             value={(currentComponent as ComponentSelectMenu).placeholder}
                                             onChange={(e) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { placeholder: e.target.value })}
-                                            className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition"
+                                            className="w-full px-3 py-2 bg-black/20 text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition"
                                         />
                                     </div>
                                     {/* Multiple Selection Toggle */}
-                                    <div className="flex items-center gap-3 p-3 bg-[#1e1f22] rounded-[3px] border border-[#1e1f22]">
+                                    <div className="flex items-center gap-3 p-3 bg-black/20 rounded-[3px] border border-white/10">
                                         <input
                                             type="checkbox"
                                             id="allow-multiple"
@@ -653,10 +653,10 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                             }}
                                             className="w-5 h-5 rounded border-[#4e5058] text-[#5865F2] focus:ring-[#5865F2] accent-[#5865F2]"
                                         />
-                                        <label htmlFor="allow-multiple" className="text-[#dbdee1] font-bold cursor-pointer select-none text-sm">
+                                        <label htmlFor="allow-multiple" className="text-gray-200 font-bold cursor-pointer select-none text-sm">
                                             Allow Multiple Selections
                                         </label>
-                                        <span className="text-[#b5bac1] text-[10px] ml-auto">
+                                        <span className="text-gray-400 text-[10px] ml-auto">
                                             {((currentComponent as ComponentSelectMenu).max_values || 1) > 1
                                                 ? `Up to ${(currentComponent as ComponentSelectMenu).max_values} options`
                                                 : "Single option only"}
@@ -667,22 +667,22 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                     {((currentComponent as ComponentSelectMenu).max_values || 1) > 1 && (
                                         <div className="grid grid-cols-2 gap-3">
                                             <div>
-                                                <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">Min Selections</label>
+                                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Min Selections</label>
                                                 <input
                                                     type="number"
                                                     value={(currentComponent as ComponentSelectMenu).min_values || 0}
                                                     onChange={(e) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { min_values: parseInt(e.target.value) || 0 })}
-                                                    className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
+                                                    className="w-full px-3 py-2 bg-black/20 text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
                                                     min="0" max="25"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider mb-1">Max Selections</label>
+                                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Max Selections</label>
                                                 <input
                                                     type="number"
                                                     value={(currentComponent as ComponentSelectMenu).max_values || 1}
                                                     onChange={(e) => updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { max_values: parseInt(e.target.value) || 1 })}
-                                                    className="w-full px-3 py-2 bg-[#1e1f22] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
+                                                    className="w-full px-3 py-2 bg-black/20 text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
                                                     min="1" max="25"
                                                 />
                                             </div>
@@ -690,7 +690,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                     )}
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
-                                            <label className="text-sm font-bold text-[#f2f3f5]">Options</label>
+                                            <label className="text-sm font-bold text-white">Options</label>
                                             <button
                                                 onClick={() => {
                                                     const menu = currentComponent as ComponentSelectMenu;
@@ -703,7 +703,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                         </div>
                                         <div className="space-y-2">
                                             {(currentComponent as ComponentSelectMenu).options.map((opt, optIndex) => (
-                                                <div key={optIndex} className="bg-[#1e1f22] rounded-[3px] p-3 border border-[#1e1f22] hover:border-[#5865F2] transition-colors">
+                                                <div key={optIndex} className="bg-black/20 rounded-[3px] p-3 border border-white/10 hover:border-[#5865F2] transition-colors">
                                                     <div className="flex gap-2 mb-2">
                                                         <input
                                                             type="text"
@@ -715,7 +715,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                                 updateComponent(editingComponent.rowIndex, editingComponent.compIndex, { options: newOptions });
                                                             }}
                                                             placeholder="Label"
-                                                            className="flex-1 px-2 py-1 bg-[#2b2d31] text-[#dbdee1] rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
+                                                            className="flex-1 px-2 py-1 glass-card text-gray-200 rounded-[3px] border border-transparent focus:border-[#5865F2] outline-none transition text-sm"
                                                         />
                                                         <button
                                                             onClick={() => {
@@ -727,7 +727,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                                                             className="text-[#da373c] hover:bg-[#da373c]/10 p-1 rounded transition-colors"
                                                         >🗑️</button>
                                                     </div>
-                                                    <div className="text-[10px] text-[#b5bac1] font-bold uppercase tracking-wider">
+                                                    <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                                                         Actions: {opt.actions.length} / 10
                                                     </div>
                                                 </div>
@@ -739,7 +739,7 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
                         </div>
 
                         {/* Footer */}
-                        <div className="flex justify-end p-4 border-t border-[#1e1f22] bg-[#1e1f22]/50">
+                        <div className="flex justify-end p-4 border-t border-white/10 bg-black/20/50">
                             <button onClick={() => { setEditingComponent(null); setEditingAction(null); }} className="px-6 py-2 bg-[#5865F2] hover:bg-[#4752c4] text-white font-bold rounded-[3px] transition-colors text-sm shadow-md">Done</button>
                         </div>
                     </div>
@@ -748,3 +748,5 @@ export default function ComponentEditor({ rows, onChange, roles, channels, guild
         </div>
     );
 }
+
+
