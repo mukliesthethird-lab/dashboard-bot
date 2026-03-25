@@ -10,7 +10,9 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0,
     enableKeepAlive: true,
-    keepAliveInitialDelay: 0
+    keepAliveInitialDelay: 0,
+    supportBigNumbers: true,
+    bigNumberStrings: true
 });
 
 export default pool;

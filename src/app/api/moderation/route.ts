@@ -174,13 +174,13 @@ export async function GET(request: Request) {
                 id: row.case_id,
                 type: row.type,
                 user: {
-                    id: row.user_id,
+                    id: row.user_id?.toString(),
                     username: row.user_username,
                     avatar: row.user_avatar || '0'
                 },
                 reason: row.reason || 'No reason provided',
                 author: {
-                    id: row.author_id,
+                    id: row.author_id?.toString(),
                     username: row.author_username,
                     avatar: row.author_avatar || '0'
                 },
@@ -242,13 +242,14 @@ export async function GET(request: Request) {
                 id: row.id,
                 report_id: row.report_id, // Unique string ID
                 case_number: row.case_number,
+                guild_id: row.guild_id?.toString(),
                 reporter: {
-                    id: row.reporter_id,
+                    id: row.reporter_id?.toString(),
                     username: row.reporter_name || 'Unknown',
                     avatar: row.reporter_avatar // Avatar URL
                 },
                 reportedUser: {
-                    id: row.reported_id,
+                    id: row.reported_id?.toString(),
                     username: row.reported_name || 'Unknown',
                     avatar: row.reported_avatar // Avatar URL
                 },
@@ -282,7 +283,13 @@ function generateCaseId(): string {
 
 // Helper to handle Discord API requests
 async function callDiscordAPI(apiPath: string, method: string, body: any, token: string) {
+    if (!token) {
+        console.error('Discord API Error: Token is missing');
+        return { error: 'No token' };
+    }
+    
     return new Promise((resolve) => {
+        console.log(`[Discord API] ${method} ${apiPath}`, body || '');
         const req = https.request({
             hostname: 'discord.com',
             path: `/api/v10${apiPath}`,
@@ -297,15 +304,23 @@ async function callDiscordAPI(apiPath: string, method: string, body: any, token:
             res.on('data', chunk => data += chunk);
             res.on('end', () => {
                 if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
-                    try { resolve(data ? JSON.parse(data) : { success: true }); }
-                    catch { resolve({ success: true }); }
+                    try { 
+                        const result = data ? JSON.parse(data) : { success: true };
+                        console.log(`[Discord API] Success (${res.statusCode})`);
+                        resolve(result); 
+                    } catch { 
+                        resolve({ success: true }); 
+                    }
                 } else {
-                    console.error(`Discord API Error (${res.statusCode}):`, data);
+                    console.error(`[Discord API] Error (${res.statusCode}):`, data);
                     resolve({ error: res.statusCode, data });
                 }
             });
         });
-        req.on('error', (e) => resolve({ error: 500, message: e.message }));
+        req.on('error', (e) => {
+            console.error('[Discord API] Request failed:', e.message);
+            resolve({ error: 500, message: e.message });
+        });
         if (body) req.write(JSON.stringify(body));
         req.end();
     });
@@ -332,10 +347,42 @@ function parseDuration(duration: string): string | null {
 
 // Helper to send DM
 async function sendDiscordDM(userId: string, content: string | any, token: string) {
-    const channel: any = await callDiscordAPI('/users/@me/channels', 'POST', { recipient_id: userId }, token);
+    // Ensure userId is a string to avoid BigInt precision loss issues if passed as number
+    const targetUserId = userId.toString();
+    console.log(`[Discord DM] Sending to user: ${targetUserId}`);
+    
+    const channel: any = await callDiscordAPI('/users/@me/channels', 'POST', { recipient_id: targetUserId }, token);
     if (channel && channel.id) {
         const body = typeof content === 'string' ? { content } : { embeds: [content] };
-        await callDiscordAPI(`/channels/${channel.id}/messages`, 'POST', body, token);
+        return await callDiscordAPI(`/channels/${channel.id}/messages`, 'POST', body, token);
+    } else {
+        console.error(`[Discord DM] Failed to create DM channel for user: ${targetUserId}`);
+        return { error: 'Failed to create DM channel' };
+    }
+}
+
+// Helper to send log to server channel
+async function sendDiscordLog(guildId: string, category: string, logType: string, embed: any, token: string) {
+    try {
+        const [rows]: any = await pool.query(
+            "SELECT category_channels, type_channels FROM logging_settings WHERE guild_id = ?",
+            [guildId]
+        );
+        
+        if (!rows || rows.length === 0) return;
+
+        const categoryChannels = JSON.parse(rows[0].category_channels || '{}');
+        const typeChannels = JSON.parse(rows[0].type_channels || '{}');
+
+        // Priority 1: Type-specific channel
+        // Priority 2: Category channel
+        const channelId = typeChannels[logType] || categoryChannels[category];
+        
+        if (channelId) {
+            await callDiscordAPI(`/channels/${channelId}/messages`, 'POST', { embeds: [embed] }, token);
+        }
+    } catch (err) {
+        console.error('Error sending discord log:', err);
     }
 }
 
@@ -484,9 +531,23 @@ export async function POST(request: Request) {
             if (!report_ids || report_ids.length === 0) {
                 return NextResponse.json({ error: 'report_ids required' }, { status: 400 });
             }
+            const token = getDiscordToken();
 
-            if (token) {
-                const caseId = generateCaseId();
+            if (!token) {
+                await pool.query(
+                    `UPDATE user_reports SET status = 'resolved' WHERE guild_id = ? AND id IN (${report_ids.map(() => '?').join(',')})`,
+                    [guild_id, ...report_ids]
+                );
+                return NextResponse.json({ 
+                    success: true, 
+                    message: 'Report resolved in database, but Discord actions were skipped because the Bot Token is not configured.',
+                    discord_link_failed: true,
+                    error: 'MISSING_TOKEN'
+                });
+            }
+
+            const caseId = generateCaseId();
+            const results: any[] = [];
                 
                 // Fetch extra info from direct reports for logging
                 const [reportRows]: any = await pool.query(
@@ -497,16 +558,22 @@ export async function POST(request: Request) {
 
                 // 1. Send DM to reporter
                 const actionText = mod_action === 'warn' ? 'Peringatan (Warning)' : mod_action.charAt(0).toUpperCase() + mod_action.slice(1);
-                await sendDiscordDM(
+                const reporterDMRes: any = await sendDiscordDM(
                     reporter_id, 
                     `✅ **Update Laporan:** Halo! Laporan Anda mengenai pelanggaran oleh user <@${reported_id}> telah kami tinjau dan tangani dengan tindakan **${actionText}**. Terima kasih telah membantu menjaga komunitas tetap aman dan nyaman!`, 
                     token
                 );
+                if (reporterDMRes?.error) results.push({ type: 'reporter_dm', error: reporterDMRes.error });
 
                 // 2. Perform Action on reported user & Log Case
+                let logColor = 0x95A5A6; // Default grey
+                let actionTitle = "Action Taken";
+                let actionError: any = null;
+
                 if (mod_action === 'warn') {
-                    // Send DM matching Moderation.py style
-                    await sendDiscordDM(reported_id, {
+                    logColor = 0xF1C40F;
+                    actionTitle = "⚠️ User Warned";
+                     const dmRes: any = await sendDiscordDM(reported_id, {
                         title: "⚠️ Peringatan Diterima",
                         description: `Kamu telah menerima peringatan di server **Don Pollo**`,
                         color: 0xFFCC00,
@@ -516,19 +583,44 @@ export async function POST(request: Request) {
                             { name: "📝 Alasan", value: `\`\`\`${reason}\`\`\``, inline: false }
                         ]
                     }, token);
+                    if (dmRes?.error) actionError = dmRes.error;
                 } else if (mod_action === 'kick') {
+                    logColor = 0xE67E22;
+                    actionTitle = "👢 User Kicked";
                     await sendDiscordDM(reported_id, `👢 You have been kicked from **Don Pollo**\n**Reason:** ${reason}`, token);
-                    await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'DELETE', { reason: `Report resolved (${caseId}): ${reason}` }, token);
+                    const res: any = await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'DELETE', { reason: `Report resolved (${caseId}): ${reason}` }, token);
+                    if (res?.error) actionError = res.error;
                 } else if (mod_action === 'ban') {
+                    logColor = 0xE74C3C;
+                    actionTitle = "🔨 User Banned";
                     await sendDiscordDM(reported_id, `🔨 You have been banned from **Don Pollo**\n**Reason:** ${reason}`, token);
-                    await callDiscordAPI(`/guilds/${guild_id}/bans/${reported_id}`, 'PUT', { delete_message_days: 0, reason: `Report resolved (${caseId}): ${reason}` }, token);
+                    const res: any = await callDiscordAPI(`/guilds/${guild_id}/bans/${reported_id}`, 'PUT', { delete_message_days: 0, reason: `Report resolved (${caseId}): ${reason}` }, token);
+                    if (res?.error) actionError = res.error;
                 } else if (mod_action === 'timeout' || mod_action === 'mute') {
+                    logColor = mod_action === 'timeout' ? 0x9B59B6 : 0x95A5A6;
+                    actionTitle = mod_action === 'timeout' ? "⏰ User Timed Out" : "🔇 User Muted";
                     const until = parseDuration(duration || '1h');
                     await sendDiscordDM(reported_id, `🔇 You have been muted in **Don Pollo** for **${duration}**\n**Reason:** ${reason}`, token);
-                    await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'PATCH', { communication_disabled_until: until, reason: `Report resolved (${caseId}): ${reason}` }, token);
+                    const res: any = await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'PATCH', { communication_disabled_until: until, reason: `Report resolved (${caseId}): ${reason}` }, token);
+                    if (res?.error) actionError = res.error;
                 }
 
-                // 3. Log to moderation_cases table
+                if (actionError) results.push({ type: 'mod_action', error: actionError });
+
+                // 3. Send to Server Log Channel
+                await sendDiscordLog(guild_id, 'moderation', `mod_${mod_action}`, {
+                    title: actionTitle,
+                    color: logColor,
+                    description: `**User:** <@${reported_id}> (\`${reported_id}\`)\n**Moderator:** <@${(session.user as any).id?.toString()}>\n**Reason:** ${reason}`,
+                    fields: [
+                        { name: "📋 Case ID", value: `\`${caseId}\``, inline: true },
+                        { name: "⏱️ Duration", value: duration || 'N/A', inline: true }
+                    ],
+                    footer: { text: "Action via Dashboard" },
+                    timestamp: new Date().toISOString()
+                }, token);
+
+                // 4. Log to moderation_cases table
                 await pool.query(`
                     INSERT INTO moderation_cases
                     (case_id, guild_id, type, user_id, user_username, user_avatar,
@@ -538,10 +630,22 @@ export async function POST(request: Request) {
                     caseId, guild_id, mod_action, 
                     reported_id, reportInfo.reported_name || 'Unknown', reportInfo.reported_avatar || null,
                     reason,
-                    (session.user as any).id, session.user.name || 'Moderator', null, // Dashboard moderator info
+                    (session.user as any).id?.toString(), session.user.name || 'Moderator', null, 
                     duration || null, 'active'
                 ]);
-            }
+
+                if (results.some(r => r.error)) {
+                    // We still update DB but tell the user about Discord errors
+                    await pool.query(
+                        `UPDATE user_reports SET status = 'resolved' WHERE guild_id = ? AND id IN (${report_ids.map(() => '?').join(',')})`,
+                        [guild_id, ...report_ids]
+                    );
+                    return NextResponse.json({ 
+                        success: true, 
+                        message: `Resolved in DB, but Discord API returned errors.`,
+                        details: results 
+                    });
+                }
 
             await pool.query(
                 `UPDATE user_reports SET status = 'resolved' WHERE guild_id = ? AND id IN (${report_ids.map(() => '?').join(',')})`,
