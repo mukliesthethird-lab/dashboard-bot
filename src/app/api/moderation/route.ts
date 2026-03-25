@@ -270,6 +270,16 @@ export async function GET(request: Request) {
     }
 }
 
+// Helper to generate a 10-character alphanumeric Case ID (matching Moderation.py)
+function generateCaseId(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let id = '';
+    for (let i = 0; i < 10; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+}
+
 // Helper to handle Discord API requests
 async function callDiscordAPI(apiPath: string, method: string, body: any, token: string) {
     return new Promise((resolve) => {
@@ -321,10 +331,11 @@ function parseDuration(duration: string): string | null {
 }
 
 // Helper to send DM
-async function sendDiscordDM(userId: string, content: string, token: string) {
+async function sendDiscordDM(userId: string, content: string | any, token: string) {
     const channel: any = await callDiscordAPI('/users/@me/channels', 'POST', { recipient_id: userId }, token);
     if (channel && channel.id) {
-        await callDiscordAPI(`/channels/${channel.id}/messages`, 'POST', { content }, token);
+        const body = typeof content === 'string' ? { content } : { embeds: [content] };
+        await callDiscordAPI(`/channels/${channel.id}/messages`, 'POST', body, token);
     }
 }
 
@@ -475,29 +486,61 @@ export async function POST(request: Request) {
             }
 
             if (token) {
+                const caseId = generateCaseId();
+                
+                // Fetch extra info from direct reports for logging
+                const [reportRows]: any = await pool.query(
+                    'SELECT reporter_name, reported_name, reported_avatar FROM user_reports WHERE id = ?', 
+                    [report_ids[0]]
+                );
+                const reportInfo = reportRows[0] || {};
+
                 // 1. Send DM to reporter
                 const actionText = mod_action === 'warn' ? 'Peringatan (Warning)' : mod_action.charAt(0).toUpperCase() + mod_action.slice(1);
                 await sendDiscordDM(
-                    reporter_id,
-                    `✅ **Update Laporan:** Halo! Laporan Anda mengenai pelanggaran oleh user <@${reported_id}> telah kami tinjau dan tangani dengan tindakan **${actionText}**. Terima kasih telah membantu menjaga komunitas tetap aman dan nyaman!`,
+                    reporter_id, 
+                    `✅ **Update Laporan:** Halo! Laporan Anda mengenai pelanggaran oleh user <@${reported_id}> telah kami tinjau dan tangani dengan tindakan **${actionText}**. Terima kasih telah membantu menjaga komunitas tetap aman dan nyaman!`, 
                     token
                 );
 
-                // 2. Perform Action on reported user
+                // 2. Perform Action on reported user & Log Case
                 if (mod_action === 'warn') {
-                    await sendDiscordDM(
-                        reported_id,
-                        `⚠️ **Peringatan Moderasi:** Anda telah menerima peringatan karena: *${reason}*. Mohon untuk selalu mematuhi peraturan komunitas kami untuk menghindari tindakan lebih lanjut.`,
-                        token
-                    );
+                    // Send DM matching Moderation.py style
+                    await sendDiscordDM(reported_id, {
+                        title: "⚠️ Peringatan Diterima",
+                        description: `Kamu telah menerima peringatan di server **Don Pollo**`,
+                        color: 0xFFCC00,
+                        fields: [
+                            { name: "👮 Moderator", value: session.user.name || 'Dashboard', inline: true },
+                            { name: "📋 Kasus #", value: `\`${caseId}\``, inline: true },
+                            { name: "📝 Alasan", value: `\`\`\`${reason}\`\`\``, inline: false }
+                        ]
+                    }, token);
                 } else if (mod_action === 'kick') {
-                    await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'DELETE', { reason: `Report resolved: ${reason}` }, token);
+                    await sendDiscordDM(reported_id, `👢 You have been kicked from **Don Pollo**\n**Reason:** ${reason}`, token);
+                    await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'DELETE', { reason: `Report resolved (${caseId}): ${reason}` }, token);
                 } else if (mod_action === 'ban') {
-                    await callDiscordAPI(`/guilds/${guild_id}/bans/${reported_id}`, 'PUT', { delete_message_days: 0, reason: `Report resolved: ${reason}` }, token);
+                    await sendDiscordDM(reported_id, `🔨 You have been banned from **Don Pollo**\n**Reason:** ${reason}`, token);
+                    await callDiscordAPI(`/guilds/${guild_id}/bans/${reported_id}`, 'PUT', { delete_message_days: 0, reason: `Report resolved (${caseId}): ${reason}` }, token);
                 } else if (mod_action === 'timeout' || mod_action === 'mute') {
                     const until = parseDuration(duration || '1h');
-                    await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'PATCH', { communication_disabled_until: until, reason: `Report resolved: ${reason}` }, token);
+                    await sendDiscordDM(reported_id, `🔇 You have been muted in **Don Pollo** for **${duration}**\n**Reason:** ${reason}`, token);
+                    await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'PATCH', { communication_disabled_until: until, reason: `Report resolved (${caseId}): ${reason}` }, token);
                 }
+
+                // 3. Log to moderation_cases table
+                await pool.query(`
+                    INSERT INTO moderation_cases
+                    (case_id, guild_id, type, user_id, user_username, user_avatar,
+                     reason, author_id, author_username, author_avatar, duration, status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `, [
+                    caseId, guild_id, mod_action, 
+                    reported_id, reportInfo.reported_name || 'Unknown', reportInfo.reported_avatar || null,
+                    reason,
+                    (session.user as any).id, session.user.name || 'Moderator', null, // Dashboard moderator info
+                    duration || null, 'active'
+                ]);
             }
 
             await pool.query(
