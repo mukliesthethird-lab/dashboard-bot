@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import CatLoader from "./CatLoader";
+import CustomDropdown from "./CustomDropdown";
 
 interface ModerationReportsProps {
     guildId: string;
@@ -40,6 +41,37 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
 
+    const [resolveModal, setResolveModal] = useState<{ isOpen: boolean; report: Report | null }>({ isOpen: false, report: null });
+    const [dismissModal, setDismissModal] = useState<{ isOpen: boolean; report: Report | null }>({ isOpen: false, report: null });
+    const [modAction, setModAction] = useState("warn");
+    const [modDuration, setModDuration] = useState("30m");
+    const [customDuration, setCustomDuration] = useState("");
+    const [dismissMessage, setDismissMessage] = useState("evidence");
+    const [customDismissMessage, setCustomDismissMessage] = useState("");
+
+    const durationOptions = [
+        { value: "30m", label: "30 Minutes" },
+        { value: "1h", label: "1 Hour" },
+        { value: "3d", label: "3 Days" },
+        { value: "7d", label: "7 Days" },
+        { value: "custom", label: "Custom Duration" },
+    ];
+
+    const actionOptions = [
+        { value: "warn", label: "Warning", icon: "⚠️" },
+        { value: "kick", label: "Kick", icon: "👢" },
+        { value: "mute", label: "Mute", icon: "🔇" },
+        { value: "timeout", label: "Timeout", icon: "⏲️" },
+        { value: "ban", label: "Ban", icon: "🔨" },
+    ];
+
+    const dismissTemplates = [
+        { value: "evidence", label: "Insufficient Evidence" },
+        { value: "no_violation", label: "No Rule Violation" },
+        { value: "already_resolved", label: "Already Resolved Elsewere" },
+        { value: "custom", label: "Custom Message" },
+    ];
+
     const fetchReports = useCallback(async (search?: string) => {
         setLoading(true);
         try {
@@ -76,16 +108,72 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
         setSearchTimeout(timeout);
     };
 
-    const handleAction = async (reportId: number, action: 'report-resolve' | 'report-dismiss') => {
-        setActionLoading(reportId);
+    const handleResolve = (report: Report) => {
+        setResolveModal({ isOpen: true, report });
+    };
+
+    const handleDismiss = (report: Report) => {
+        setDismissModal({ isOpen: true, report });
+    };
+
+    const confirmResolve = async () => {
+        if (!resolveModal.report) return;
+        const report = resolveModal.report;
+
+        setActionLoading(report.id);
+        setResolveModal({ isOpen: false, report: null });
+
         try {
             const res = await fetch('/api/moderation', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    action,
+                    action: 'report-resolve',
                     guild_id: guildId,
-                    report_ids: [reportId]
+                    report_ids: [report.id],
+                    mod_action: modAction,
+                    duration: modAction === 'mute' || modAction === 'ban' || modAction === 'timeout' 
+                        ? (modDuration === 'custom' ? customDuration : modDuration) 
+                        : null,
+                    reporter_id: report.reporter.id,
+                    reported_id: report.reportedUser.id,
+                    reason: report.reason
+                })
+            });
+
+            if (res.ok) {
+                fetchReports();
+            }
+        } catch (error) {
+            console.error('Action failed:', error);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const confirmDismiss = async () => {
+        if (!dismissModal.report) return;
+        const report = dismissModal.report;
+
+        setActionLoading(report.id);
+        setDismissModal({ isOpen: false, report: null });
+
+        try {
+            let message = "";
+            if (dismissMessage === "evidence") message = "Halo! Laporan Anda telah kami tinjau, namun bukti yang diberikan kurang mencukupi untuk melakukan tindakan. Terima kasih.";
+            else if (dismissMessage === "no_violation") message = "Halo! Setelah meninjau laporan Anda, kami tidak menemukan pelanggaran aturan dalam kasus ini. Terima kasih.";
+            else if (dismissMessage === "already_resolved") message = "Laporan ini sudah ditangani melalui jalur lain atau laporan sebelumnya. Terima kasih.";
+            else message = customDismissMessage;
+
+            const res = await fetch('/api/moderation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'report-dismiss',
+                    guild_id: guildId,
+                    report_ids: [report.id],
+                    reporter_id: report.reporter.id,
+                    dismiss_message: message
                 })
             });
 
@@ -117,7 +205,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
             case "pending": return <span className="bg-[#f0b232]/10 text-[#f0b232] px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#f0b232]/20">Pending</span>;
             case "reviewed": return <span className="bg-[#5865F2]/10 text-[#5865F2] px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#5865F2]/20">Reviewed</span>;
             case "resolved": return <span className="bg-[#248046]/10 text-[#248046] px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#248046]/20">Resolved</span>;
-            case "dismissed": return <span className="bg-white/10/40 text-gray-400 px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#4e5058]/50">Dismissed</span>;
+            case "dismissed": return <span className="bg-white/10 text-gray-400 px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#4e5058]/50">Dismissed</span>;
         }
     };
 
@@ -145,6 +233,142 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                             onClick={(e) => e.stopPropagation()}
                         />
                         <div className="mt-4 text-[#87898c] text-sm font-medium">Click outside to close</div>
+                    </div>
+                </div>
+            )}
+
+            {/* Resolve Modal */}
+            {resolveModal.isOpen && resolveModal.report && (
+                <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+                    <div className="bg-[#1e1f22] w-full max-w-md rounded-[8px] border border-white/10 shadow-2xl overflow-hidden animate-slide-up">
+                        <div className="p-6 border-b border-white/5">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <span>✅ Resolve Case</span>
+                                <span className="text-xs text-[#87898c] font-mono leading-none mt-1">#{String(resolveModal.report.case_number).padStart(4, '0')}</span>
+                            </h3>
+                            <p className="text-sm text-[#87898c] mt-1">Choose moderation action for <b>{resolveModal.report.reportedUser.username}</b></p>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-[11px] font-bold text-[#87898c] uppercase tracking-wider mb-2">Select Action</label>
+                                <div className="grid grid-cols-5 gap-2">
+                                    {actionOptions.map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            onClick={() => setModAction(opt.value)}
+                                            className={`flex flex-col items-center justify-center gap-2 p-3 rounded-[3px] border transition-all ${modAction === opt.value
+                                                ? 'bg-[#5865F2]/20 border-[#5865F2] text-white'
+                                                : 'bg-black/20 border-white/5 text-[#87898c] hover:border-white/20'
+                                                }`}
+                                        >
+                                            <span className="text-xl">{opt.icon}</span>
+                                            <span className="text-[10px] font-bold uppercase">{opt.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {(modAction === 'mute' || modAction === 'ban' || modAction === 'timeout') && (
+                                <div className="animate-fade-in">
+                                    <label className="block text-[11px] font-bold text-[#87898c] uppercase tracking-wider mb-2">Duration</label>
+                                    <div className="flex gap-2">
+                                        <div className="flex-1">
+                                            <CustomDropdown
+                                                value={modDuration}
+                                                onChange={setModDuration}
+                                                options={durationOptions}
+                                            />
+                                        </div>
+                                        {modDuration === 'custom' && (
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. 1y 2m"
+                                                value={customDuration}
+                                                onChange={(e) => setCustomDuration(e.target.value)}
+                                                className="flex-1 px-3 py-2 bg-black/20 text-gray-200 placeholder-[#87898c] rounded-[3px] border border-white/5 focus:outline-none focus:border-[#5865F2] text-sm"
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="p-3 bg-black/30 rounded-[3px] border border-white/5">
+                                <p className="text-[10px] text-[#87898c] italic">
+                                    Reporter <b>{resolveModal.report.reporter.username}</b> will receive a DM notification about this resolution.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="p-4 bg-black/20 flex justify-end gap-3">
+                            <button
+                                onClick={() => setResolveModal({ isOpen: false, report: null })}
+                                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-gray-200 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmResolve}
+                                className="px-6 py-2 bg-[#248046] hover:bg-[#1a6334] text-white text-sm font-bold rounded-[3px] transition"
+                            >
+                                Confirm & Resolve
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Dismiss Modal */}
+            {dismissModal.isOpen && dismissModal.report && (
+                <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+                    <div className="bg-[#1e1f22] w-full max-w-md rounded-[8px] border border-white/10 shadow-2xl overflow-hidden animate-slide-up">
+                        <div className="p-6 border-b border-white/5">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <span>✖ Dismiss Report</span>
+                            </h3>
+                            <p className="text-sm text-[#87898c] mt-1">Laporan dari <b>{dismissModal.report.reporter.username}</b> akan ditutup tanpa tindakan.</p>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-[11px] font-bold text-[#87898c] uppercase tracking-wider mb-2">Select Reason Template</label>
+                                <CustomDropdown
+                                    value={dismissMessage}
+                                    onChange={setDismissMessage}
+                                    options={dismissTemplates}
+                                />
+                            </div>
+
+                            {dismissMessage === 'custom' && (
+                                <div className="animate-fade-in">
+                                    <label className="block text-[11px] font-bold text-[#87898c] uppercase tracking-wider mb-2">Custom Message</label>
+                                    <textarea
+                                        rows={3}
+                                        placeholder="Enter explanation for the reporter..."
+                                        value={customDismissMessage}
+                                        onChange={(e) => setCustomDismissMessage(e.target.value)}
+                                        className="w-full px-3 py-2 bg-black/20 text-gray-200 placeholder-[#87898c] rounded-[3px] border border-white/5 focus:outline-none focus:border-[#5865F2] text-sm resize-none"
+                                    />
+                                </div>
+                            )}
+
+                            <div className="p-3 bg-black/30 rounded-[3px] border border-white/5">
+                                <p className="text-[10px] text-[#87898c] italic">
+                                    Pesan ini akan dikirimkan langsung ke DM <b>{dismissModal.report.reporter.username}</b>.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="p-4 bg-black/20 flex justify-end gap-3">
+                            <button
+                                onClick={() => setDismissModal({ isOpen: false, report: null })}
+                                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-gray-200 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDismiss}
+                                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded-[3px] transition"
+                            >
+                                Dismiss Report
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -301,14 +525,14 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                                             {(item.status === 'pending' || item.status === 'reviewed') && (
                                                 <div className="flex flex-col gap-2 items-end">
                                                     <button
-                                                        onClick={() => handleAction(item.id, 'report-resolve')}
+                                                        onClick={() => handleResolve(item)}
                                                         disabled={actionLoading === item.id}
                                                         className="w-24 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white text-[11px] font-medium rounded-[3px] transition disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
                                                         {actionLoading === item.id ? '...' : '✔ Resolve'}
                                                     </button>
                                                     <button
-                                                        onClick={() => handleAction(item.id, 'report-dismiss')}
+                                                        onClick={() => handleDismiss(item)}
                                                         disabled={actionLoading === item.id}
                                                         className="w-24 py-1.5 bg-white/10 hover:bg-white/20 text-white text-[11px] font-medium rounded-[3px] transition disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >

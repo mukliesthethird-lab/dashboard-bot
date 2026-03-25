@@ -270,6 +270,64 @@ export async function GET(request: Request) {
     }
 }
 
+// Helper to handle Discord API requests
+async function callDiscordAPI(apiPath: string, method: string, body: any, token: string) {
+    return new Promise((resolve) => {
+        const req = https.request({
+            hostname: 'discord.com',
+            path: `/api/v10${apiPath}`,
+            method: method,
+            headers: {
+                'Authorization': `Bot ${token}`,
+                'Content-Type': body ? 'application/json' : 'text/plain',
+                'User-Agent': 'DonPolloBot/1.0'
+            }
+        }, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+                    try { resolve(data ? JSON.parse(data) : { success: true }); }
+                    catch { resolve({ success: true }); }
+                } else {
+                    console.error(`Discord API Error (${res.statusCode}):`, data);
+                    resolve({ error: res.statusCode, data });
+                }
+            });
+        });
+        req.on('error', (e) => resolve({ error: 500, message: e.message }));
+        if (body) req.write(JSON.stringify(body));
+        req.end();
+    });
+}
+
+// Helper to parse duration string to ISO date
+function parseDuration(duration: string): string | null {
+    if (!duration) return null;
+    const now = new Date();
+    const match = duration.match(/^(\d+)([mhdy])$/);
+    if (!match) return null;
+    const value = parseInt(match[1]);
+    const unit = match[2];
+
+    switch (unit) {
+        case 'm': now.setMinutes(now.getMinutes() + value); break;
+        case 'h': now.setHours(now.getHours() + value); break;
+        case 'd': now.setDate(now.getDate() + value); break;
+        case 'y': now.setFullYear(now.getFullYear() + value); break;
+        default: return null;
+    }
+    return now.toISOString();
+}
+
+// Helper to send DM
+async function sendDiscordDM(userId: string, content: string, token: string) {
+    const channel: any = await callDiscordAPI('/users/@me/channels', 'POST', { recipient_id: userId }, token);
+    if (channel && channel.id) {
+        await callDiscordAPI(`/channels/${channel.id}/messages`, 'POST', { content }, token);
+    }
+}
+
 export async function POST(request: Request) {
     try {
         const session = await getServerSession(authOptions);
@@ -283,6 +341,8 @@ export async function POST(request: Request) {
         if (!guild_id) {
             return NextResponse.json({ error: 'guild_id is required' }, { status: 400 });
         }
+
+        const token = getDiscordToken();
 
         // Save moderation settings
         if (action === 'settings') {
@@ -407,11 +467,37 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: true, message: `Deleted ${case_ids.length} case(s)` });
         }
 
-        // Resolve report (uses id column from Report.py schema)
+        // Resolve report
         if (action === 'report-resolve') {
-            const { report_ids, resolution_note } = body;
+            const { report_ids, mod_action, duration, reporter_id, reported_id, reason } = body;
             if (!report_ids || report_ids.length === 0) {
                 return NextResponse.json({ error: 'report_ids required' }, { status: 400 });
+            }
+
+            if (token) {
+                // 1. Send DM to reporter
+                const actionText = mod_action === 'warn' ? 'Peringatan (Warning)' : mod_action.charAt(0).toUpperCase() + mod_action.slice(1);
+                await sendDiscordDM(
+                    reporter_id,
+                    `✅ **Update Laporan:** Halo! Laporan Anda mengenai pelanggaran oleh user <@${reported_id}> telah kami tinjau dan tangani dengan tindakan **${actionText}**. Terima kasih telah membantu menjaga komunitas tetap aman dan nyaman!`,
+                    token
+                );
+
+                // 2. Perform Action on reported user
+                if (mod_action === 'warn') {
+                    await sendDiscordDM(
+                        reported_id,
+                        `⚠️ **Peringatan Moderasi:** Anda telah menerima peringatan karena: *${reason}*. Mohon untuk selalu mematuhi peraturan komunitas kami untuk menghindari tindakan lebih lanjut.`,
+                        token
+                    );
+                } else if (mod_action === 'kick') {
+                    await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'DELETE', { reason: `Report resolved: ${reason}` }, token);
+                } else if (mod_action === 'ban') {
+                    await callDiscordAPI(`/guilds/${guild_id}/bans/${reported_id}`, 'PUT', { delete_message_days: 0, reason: `Report resolved: ${reason}` }, token);
+                } else if (mod_action === 'timeout' || mod_action === 'mute') {
+                    const until = parseDuration(duration || '1h');
+                    await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'PATCH', { communication_disabled_until: until, reason: `Report resolved: ${reason}` }, token);
+                }
             }
 
             await pool.query(
@@ -422,11 +508,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: true, message: `Resolved ${report_ids.length} report(s)` });
         }
 
-        // Dismiss report (uses id column from Report.py schema)
+        // Dismiss report
         if (action === 'report-dismiss') {
-            const { report_ids, resolution_note } = body;
+            const { report_ids, reporter_id, dismiss_message } = body;
             if (!report_ids || report_ids.length === 0) {
                 return NextResponse.json({ error: 'report_ids required' }, { status: 400 });
+            }
+
+            if (token && reporter_id && dismiss_message) {
+                await sendDiscordDM(reporter_id, `ℹ️ **Update Laporan:** ${dismiss_message}`, token);
             }
 
             await pool.query(
@@ -440,32 +530,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     } catch (error: any) {
         console.error('Moderation API error:', error);
-
-        // Self-healing: Handle missing columns
-        if (error.code === 'ER_BAD_FIELD_ERROR') {
-            try {
-                const match = error.sqlMessage?.match(/Unknown column '(.+?)'/);
-                if (match) {
-                    const column = match[1];
-                    console.log(`Auto-migrating: Adding missing column ${column}...`);
-
-                    let def = 'VARCHAR(255)';
-                    if (column === 'user_notifications' || column.startsWith('privacy_') || column === 'appeals_enabled' || column === 'purge_pinned') {
-                        def = 'BOOLEAN DEFAULT FALSE';
-                    } else if (column === 'report_channel_id' || column === 'appeals_channel_id') {
-                        def = 'BIGINT';
-                    } else if (column === 'immune_roles' || column === 'predefined_reasons' || column === 'locked_channels' || column === 'appeals_config') {
-                        def = 'JSON';
-                    }
-
-                    await pool.query(`ALTER TABLE moderation_settings ADD COLUMN ${column} ${def}`);
-                    return NextResponse.json({ error: 'Database updated, please try again' }, { status: 500 });
-                }
-            } catch (migrationError) {
-                console.error('Migration failed:', migrationError);
-            }
-        }
-
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
