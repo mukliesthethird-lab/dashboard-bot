@@ -345,6 +345,23 @@ function parseDuration(duration: string): string | null {
     return now.toISOString();
 }
 
+// Helper to create standardized embeds
+function createEmbed(title: string, description: string, color: number, fields: any[] = [], footerExtra: string = '') {
+    const footerText = `Don Pollo Dashboard • ${new Date().toLocaleString('en-US', { 
+        year: 'numeric', month: 'numeric', day: 'numeric', 
+        hour: 'numeric', minute: 'numeric', hour12: true 
+    })}`;
+    
+    return {
+        title: title,
+        description: description,
+        color: color,
+        fields: fields,
+        footer: { text: footerText },
+        timestamp: new Date().toISOString()
+    };
+}
+
 // Helper to send DM
 async function sendDiscordDM(userId: string, content: string | any, token: string) {
     // Ensure userId is a string to avoid BigInt precision loss issues if passed as number
@@ -558,11 +575,16 @@ export async function POST(request: Request) {
 
                 // 1. Send DM to reporter
                 const actionText = mod_action === 'warn' ? 'Peringatan (Warning)' : mod_action.charAt(0).toUpperCase() + mod_action.slice(1);
-                const reporterDMRes: any = await sendDiscordDM(
-                    reporter_id, 
-                    `✅ **Update Laporan:** Halo! Laporan Anda mengenai pelanggaran oleh user <@${reported_id}> telah kami tinjau dan tangani dengan tindakan **${actionText}**. Terima kasih telah membantu menjaga komunitas tetap aman dan nyaman!`, 
-                    token
+                const reporterEmbed = createEmbed(
+                    '✅ Report Resolved',
+                    `Halo! Laporan Anda mengenai pelanggaran oleh user <@${reported_id}> telah kami tinjau dan tangani. Terima kasih telah membantu menjaga komunitas tetap aman!`,
+                    0x2ECC71, // Green
+                    [
+                        { name: "📋 Action Taken", value: `\`${actionText}\``, inline: true },
+                        { name: "👮 Moderator", value: `\`${session.user.name || 'Staff'}\``, inline: true }
+                    ]
                 );
+                const reporterDMRes: any = await sendDiscordDM(reporter_id, reporterEmbed, token);
                 if (reporterDMRes?.error) results.push({ type: 'reporter_dm', error: reporterDMRes.error });
 
                 // 2. Perform Action on reported user & Log Case
@@ -570,37 +592,62 @@ export async function POST(request: Request) {
                 let actionTitle = "Action Taken";
                 let actionError: any = null;
 
+                const userFields = [
+                    { name: "👮 Moderator", value: session.user.name || 'Staff', inline: true },
+                    { name: "📋 Case ID", value: `\`${caseId}\``, inline: true },
+                    { name: "📝 Reason", value: `\`\`\`${reason}\`\`\``, inline: false }
+                ];
+
                 if (mod_action === 'warn') {
                     logColor = 0xF1C40F;
                     actionTitle = "⚠️ User Warned";
-                     const dmRes: any = await sendDiscordDM(reported_id, {
-                        title: "⚠️ Peringatan Diterima",
-                        description: `Kamu telah menerima peringatan di server **Don Pollo**`,
-                        color: 0xFFCC00,
-                        fields: [
-                            { name: "👮 Moderator", value: session.user.name || 'Dashboard', inline: true },
-                            { name: "📋 Kasus #", value: `\`${caseId}\``, inline: true },
-                            { name: "📝 Alasan", value: `\`\`\`${reason}\`\`\``, inline: false }
-                        ]
-                    }, token);
+                    const userWarnEmbed = createEmbed(
+                        '⚠️ Peringatan Diterima',
+                        `Kamu telah menerima peringatan di server **Don Pollo**. Harap patuhi peraturan server untuk menghindari tindakan lebih lanjut.`,
+                        0xFFCC00, 
+                        userFields
+                    );
+                    const dmRes: any = await sendDiscordDM(reported_id, userWarnEmbed, token);
                     if (dmRes?.error) actionError = dmRes.error;
                 } else if (mod_action === 'kick') {
                     logColor = 0xE67E22;
                     actionTitle = "👢 User Kicked";
-                    await sendDiscordDM(reported_id, `👢 You have been kicked from **Don Pollo**\n**Reason:** ${reason}`, token);
+                    const userKickEmbed = createEmbed(
+                        '👢 User Kicked',
+                        `Kamu telah dikeluarkan (kicked) dari server **Don Pollo**.`,
+                        0xE67E22,
+                        userFields
+                    );
+                    await sendDiscordDM(reported_id, userKickEmbed, token);
                     const res: any = await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'DELETE', { reason: `Report resolved (${caseId}): ${reason}` }, token);
                     if (res?.error) actionError = res.error;
                 } else if (mod_action === 'ban') {
                     logColor = 0xE74C3C;
                     actionTitle = "🔨 User Banned";
-                    await sendDiscordDM(reported_id, `🔨 You have been banned from **Don Pollo**\n**Reason:** ${reason}`, token);
+                    const userBanEmbed = createEmbed(
+                        '🔨 User Banned',
+                        `Kamu telah diblokir (banned) dari server **Don Pollo**.`,
+                        0xE74C3C,
+                        userFields
+                    );
+                    await sendDiscordDM(reported_id, userBanEmbed, token);
                     const res: any = await callDiscordAPI(`/guilds/${guild_id}/bans/${reported_id}`, 'PUT', { delete_message_days: 0, reason: `Report resolved (${caseId}): ${reason}` }, token);
                     if (res?.error) actionError = res.error;
                 } else if (mod_action === 'timeout' || mod_action === 'mute') {
                     logColor = mod_action === 'timeout' ? 0x9B59B6 : 0x95A5A6;
                     actionTitle = mod_action === 'timeout' ? "⏰ User Timed Out" : "🔇 User Muted";
                     const until = parseDuration(duration || '1h');
-                    await sendDiscordDM(reported_id, `🔇 You have been muted in **Don Pollo** for **${duration}**\n**Reason:** ${reason}`, token);
+                    
+                    const muteFields = [...userFields];
+                    muteFields.push({ name: "⏱️ Duration", value: `\`${duration}\``, inline: true });
+                    
+                    const userMuteEmbed = createEmbed(
+                        actionTitle,
+                        `Kamu telah dibisukan (muted/timeout) di server **Don Pollo**.`,
+                        logColor,
+                        muteFields
+                    );
+                    await sendDiscordDM(reported_id, userMuteEmbed, token);
                     const res: any = await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'PATCH', { communication_disabled_until: until, reason: `Report resolved (${caseId}): ${reason}` }, token);
                     if (res?.error) actionError = res.error;
                 }
@@ -608,17 +655,16 @@ export async function POST(request: Request) {
                 if (actionError) results.push({ type: 'mod_action', error: actionError });
 
                 // 3. Send to Server Log Channel
-                await sendDiscordLog(guild_id, 'moderation', `mod_${mod_action}`, {
-                    title: actionTitle,
-                    color: logColor,
-                    description: `**User:** <@${reported_id}> (\`${reported_id}\`)\n**Moderator:** <@${(session.user as any).id?.toString()}>\n**Reason:** ${reason}`,
-                    fields: [
+                const logEmbed = createEmbed(
+                    actionTitle,
+                    `**User:** <@${reported_id}> (\`${reported_id}\`)\n**Moderator:** <@${(session.user as any).id?.toString()}>\n**Reason:** ${reason}`,
+                    logColor,
+                    [
                         { name: "📋 Case ID", value: `\`${caseId}\``, inline: true },
                         { name: "⏱️ Duration", value: duration || 'N/A', inline: true }
-                    ],
-                    footer: { text: "Action via Dashboard" },
-                    timestamp: new Date().toISOString()
-                }, token);
+                    ]
+                );
+                await sendDiscordLog(guild_id, 'moderation', `mod_${mod_action}`, logEmbed, token);
 
                 // 4. Log to moderation_cases table
                 await pool.query(`
@@ -663,7 +709,16 @@ export async function POST(request: Request) {
             }
 
             if (token && reporter_id && dismiss_message) {
-                await sendDiscordDM(reporter_id, `ℹ️ **Update Laporan:** ${dismiss_message}`, token);
+                const dismissEmbed = createEmbed(
+                    'ℹ️ Report Dismissed',
+                    `Halo! Laporan Anda telah ditinjau oleh staff dan diputuskan untuk tidak ditindaklanjuti saat ini.`,
+                    0x3498DB, // Blue
+                    [
+                        { name: "📝 Pesan Staff", value: `\`\`\`${dismiss_message}\`\`\``, inline: false },
+                        { name: "👮 Moderator", value: `\`${session.user.name || 'Staff'}\``, inline: true }
+                    ]
+                );
+                await sendDiscordDM(reporter_id, dismissEmbed, token);
             }
 
             await pool.query(
