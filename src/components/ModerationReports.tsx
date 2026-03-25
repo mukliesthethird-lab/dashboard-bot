@@ -60,7 +60,6 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
     const actionOptions = [
         { value: "warn", label: "Warning", icon: "⚠️" },
         { value: "kick", label: "Kick", icon: "👢" },
-        { value: "mute", label: "Mute", icon: "🔇" },
         { value: "timeout", label: "Timeout", icon: "⏲️" },
         { value: "ban", label: "Ban", icon: "🔨" },
     ];
@@ -82,7 +81,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                 search: search ?? searchTerm
             });
 
-            const res = await fetch(`/api/moderation?${params}`);
+            const res = await fetch(`/api/moderation?${params}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 setReports(data.reports || []);
@@ -121,6 +120,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
         const report = resolveModal.report;
 
         setActionLoading(report.id);
+        const reportIdToUpdate = report.id; // Keep ref
         setResolveModal({ isOpen: false, report: null });
 
         try {
@@ -132,7 +132,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                     guild_id: guildId,
                     report_ids: [report.id],
                     mod_action: modAction,
-                    duration: modAction === 'mute' || modAction === 'ban' || modAction === 'timeout' 
+                    duration: modAction === 'ban' || modAction === 'timeout' 
                         ? (modDuration === 'custom' ? customDuration : modDuration) 
                         : null,
                     reporter_id: report.reporter.id,
@@ -142,6 +142,11 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
             });
 
             if (res.ok) {
+                // Optimistic update
+                setReports(prev => prev.map(r => 
+                    r.id === reportIdToUpdate ? { ...r, status: 'resolved' } : r
+                ));
+                // Optional: fully refetch to sync other potential changes
                 fetchReports();
             }
         } catch (error) {
@@ -156,6 +161,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
         const report = dismissModal.report;
 
         setActionLoading(report.id);
+        const reportIdToUpdate = report.id; // Keep ref
         setDismissModal({ isOpen: false, report: null });
 
         try {
@@ -178,6 +184,10 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
             });
 
             if (res.ok) {
+                // Optimistic update
+                setReports(prev => prev.map(r => 
+                    r.id === reportIdToUpdate ? { ...r, status: 'dismissed' } : r
+                ));
                 fetchReports();
             }
         } catch (error) {

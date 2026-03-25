@@ -329,11 +329,26 @@ async function callDiscordAPI(apiPath: string, method: string, body: any, token:
 // Helper to parse duration string to ISO date
 function parseDuration(duration: string): string | null {
     if (!duration) return null;
-    const now = new Date();
-    const match = duration.match(/^(\d+)([mhdy])$/);
-    if (!match) return null;
+    // Allow spaces and handle common units
+    const clean = duration.toLowerCase().replace(/\s+/g, '');
+    const match = clean.match(/^(\d+)([mhdy])$/);
+    if (!match) {
+        // Try to handle "30 minutes", "1 hour" etc
+        const longMatch = clean.match(/^(\d+)(minutes|hours|days|year)s?$/);
+        if (!longMatch) return null;
+        const val = parseInt(longMatch[1]);
+        const unit = longMatch[2];
+        const now = new Date();
+        if (unit.startsWith('minute')) now.setMinutes(now.getMinutes() + val);
+        else if (unit.startsWith('hour')) now.setHours(now.getHours() + val);
+        else if (unit.startsWith('day')) now.setDate(now.getDate() + val);
+        else if (unit.startsWith('year')) now.setFullYear(now.getFullYear() + val);
+        return now.toISOString();
+    }
+    
     const value = parseInt(match[1]);
     const unit = match[2];
+    const now = new Date();
 
     switch (unit) {
         case 'm': now.setMinutes(now.getMinutes() + value); break;
@@ -619,7 +634,7 @@ export async function POST(request: Request) {
                         userFields
                     );
                     await sendDiscordDM(reported_id, userKickEmbed, token);
-                    const res: any = await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'DELETE', { reason: `Report resolved (${caseId}): ${reason}` }, token);
+                    const res: any = await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id.toString()}`, 'DELETE', { reason: `Report resolved (${caseId}): ${reason}` }, token);
                     if (res?.error) actionError = res.error;
                 } else if (mod_action === 'ban') {
                     logColor = 0xE74C3C;
@@ -631,24 +646,25 @@ export async function POST(request: Request) {
                         userFields
                     );
                     await sendDiscordDM(reported_id, userBanEmbed, token);
-                    const res: any = await callDiscordAPI(`/guilds/${guild_id}/bans/${reported_id}`, 'PUT', { delete_message_days: 0, reason: `Report resolved (${caseId}): ${reason}` }, token);
+                    const res: any = await callDiscordAPI(`/guilds/${guild_id}/bans/${reported_id.toString()}`, 'PUT', { delete_message_days: 0, reason: `Report resolved (${caseId}): ${reason}` }, token);
                     if (res?.error) actionError = res.error;
-                } else if (mod_action === 'timeout' || mod_action === 'mute') {
-                    logColor = mod_action === 'timeout' ? 0x9B59B6 : 0x95A5A6;
-                    actionTitle = mod_action === 'timeout' ? "⏰ User Timed Out" : "🔇 User Muted";
+                } else if (mod_action === 'timeout') {
+                    logColor = 0x9B59B6;
+                    actionTitle = "⏰ User Timed Out";
                     const until = parseDuration(duration || '1h');
                     
-                    const muteFields = [...userFields];
-                    muteFields.push({ name: "⏱️ Duration", value: `\`${duration}\``, inline: true });
+                    const timeoutFields = [...userFields];
+                    timeoutFields.push({ name: "⏱️ Duration", value: `\`${duration}\``, inline: true });
                     
-                    const userMuteEmbed = createEmbed(
+                    const userTimeoutEmbed = createEmbed(
                         actionTitle,
-                        `Kamu telah dibisukan (muted/timeout) di server **Don Pollo**.`,
+                        `Kamu telah dibisukan (timeout) di server **Don Pollo**.`,
                         logColor,
-                        muteFields
+                        timeoutFields
                     );
-                    await sendDiscordDM(reported_id, userMuteEmbed, token);
-                    const res: any = await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id}`, 'PATCH', { communication_disabled_until: until, reason: `Report resolved (${caseId}): ${reason}` }, token);
+                    await sendDiscordDM(reported_id, userTimeoutEmbed, token);
+                    console.log(`[Timeout] Setting timeout for ${reported_id.toString()} until ${until}`);
+                    const res: any = await callDiscordAPI(`/guilds/${guild_id}/members/${reported_id.toString()}`, 'PATCH', { communication_disabled_until: until, reason: `Report resolved (${caseId}): ${reason}` }, token);
                     if (res?.error) actionError = res.error;
                 }
 
