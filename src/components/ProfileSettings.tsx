@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import CatLoader from "./CatLoader";
+import { useSession } from "next-auth/react";
 
 interface ProfileSettingsProps {
     isOpen: boolean;
@@ -9,6 +10,7 @@ interface ProfileSettingsProps {
 }
 
 export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProps) {
+    const { data: session } = useSession();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     
@@ -102,14 +104,45 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
 
     if (!isOpen) return null;
 
-    // Calculate XP Progress
+    // Calculate XP Progress (Exact formula from Experience.py)
     const xp = userStats?.xp || 0;
-    const level = userStats?.level || 1;
-    const xpNeededForCurrent = ((level - 1) ** 2) * 50;
-    const xpNeededForNext = (level ** 2) * 50;
-    const progressXP = xp - xpNeededForCurrent;
-    const neededXP = xpNeededForNext - xpNeededForCurrent;
-    const progressPercent = neededXP > 0 ? Math.min(100, Math.max(0, Math.floor((progressXP / neededXP) * 100))) : 0;
+    
+    // Level = floor(sqrt(XP / 50)) + 1
+    const level = xp <= 0 ? 1 : Math.floor(Math.sqrt(xp / 50)) + 1;
+    
+    // XP to reach current level: (level-1)^2 * 50
+    const currentLevelXP = ((level - 1) ** 2) * 50;
+    // XP to reach next level: (level)^2 * 50
+    const nextLevelXP = (level ** 2) * 50;
+    
+    const progressXP = xp - currentLevelXP;
+    const neededXPInLevel = nextLevelXP - currentLevelXP;
+    const progressPercent = neededXPInLevel > 0 
+        ? Math.min(100, Math.floor((progressXP / neededXPInLevel) * 100)) 
+        : 0;
+
+    // Rank Logic from Profile.py
+    const getRank = (lvl: number) => {
+        if (lvl >= 100) return "Dewa Ohio";
+        if (lvl >= 50) return "Puh Sepuh";
+        if (lvl >= 20) return "Elite";
+        if (lvl >= 10) return "Warga Aktif";
+        return "Pemula";
+    };
+
+    const userRank = getRank(level);
+    const userName = session?.user?.name || "User Profile";
+    const userAvatar = session?.user?.image || "/donpollo-icon.jpg";
+
+    // Badge Icon Mapping
+    const getBadgeIcon = (id: number) => {
+        const icons: { [key: number]: string } = {
+            1: "👑", 2: "🎣", 3: "🛡️", 4: "🤴", 5: "🏺", 
+            10: "🐟", 11: "🌌", 16: "🥇", 17: "🥈", 18: "🥉",
+            33: "🏘️", 34: "🔱", 36: "👴"
+        };
+        return icons[id] || "✨";
+    };
 
     return (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
@@ -268,13 +301,17 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                     <div className="absolute inset-0 p-[5.5cqw] flex flex-col z-[2] font-sans">
                                         {/* Avatar & Info row */}
                                         <div className="flex gap-[5cqw] items-start">
-                                            <div className="w-[20cqw] h-[20cqw] rounded-full border-[0.6cqw] border-[#5865F2] overflow-hidden shrink-0 shadow-[0_0_2cqw_rgba(88,101,242,0.3)]">
-                                                <img src="/donpollo-icon.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                                            <div className="w-[20cqw] h-[20cqw] rounded-full border-[0.6cqw] border-[#5865F2] overflow-hidden shrink-0 shadow-[0_0_2cqw_rgba(88,101,242,0.3)] bg-[#1e1e23]">
+                                                <img 
+                                                    src={userAvatar} 
+                                                    alt="Avatar" 
+                                                    className="w-full h-full object-cover" 
+                                                    onError={(e) => { (e.target as HTMLImageElement).src = "/donpollo-icon.jpg" }}
+                                                />
                                             </div>
                                             <div className="flex-1 pt-[1cqw]">
-                                                {/* Wait, the username might not be available in stats, fallback to a placeholder */}
-                                                <h4 className="text-[5.3cqw] font-bold text-white leading-tight drop-shadow-md tracking-tight">
-                                                    User Profile
+                                                <h4 className="text-[5.3cqw] font-bold text-white leading-tight drop-shadow-md tracking-tight truncate max-w-[40cqw]">
+                                                    {userName}
                                                 </h4>
                                                 <p className="text-[2.9cqw] font-medium text-[#9a9dbd] mt-[0.5cqw]">
                                                     Level {level}
@@ -300,7 +337,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                             {[
                                                 { label: "Koin", val: userStats?.balance?.toLocaleString() || '0', icon: "💰", color: "#FFD700" },
                                                 { label: "Tangkapan", val: userStats?.total_catches?.toLocaleString() || '0', icon: "🐟", color: "#00FA9A" },
-                                                { label: "Rank", val: "Pemula", icon: "💠", color: "#87CEFA" }
+                                                { label: "Rank", val: userRank, icon: "💠", color: "#87CEFA" }
                                             ].map((stat, i) => (
                                                 <div key={i} className="flex-1 h-[8.3cqw] bg-[#666666]/30 backdrop-blur-md rounded-[1.3cqw] flex items-center p-[1cqw] gap-[1cqw] border border-white/10">
                                                     <div className="w-[5cqw] h-[5cqw] rounded-full bg-white/10 flex items-center justify-center text-[2.5cqw] shrink-0">
@@ -320,17 +357,24 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                                 <span className="opacity-50 text-[1.2cqw]">---</span> Badge Showcase <span className="opacity-50 text-[1.2cqw]">---</span>
                                             </div>
                                             <div className="flex gap-[1.5cqw]">
-                                                {selectedBadges.map((b_id, i) => (
-                                                    <div key={i} className="w-[6.1cqw] h-[6.1cqw] rounded-full bg-[#FFD700]/10 border-[0.2cqw] border-[#FFD700] flex items-center justify-center text-[3cqw] shadow-[0_0_1cqw_rgba(255,215,0,0.2)]">
-                                                        👑
+                                            {selectedBadges.map((b_id, i) => {
+                                                const badge = badges.find(b => b.id === b_id);
+                                                return (
+                                                    <div 
+                                                        key={i} 
+                                                        className="w-[6.1cqw] h-[6.1cqw] rounded-full bg-[#FFD700]/10 border-[0.2cqw] border-[#FFD700] flex items-center justify-center text-[3.2cqw] shadow-[0_0_1cqw_rgba(255,215,0,0.2)]"
+                                                        title={badge?.name}
+                                                    >
+                                                        {getBadgeIcon(b_id)}
                                                     </div>
-                                                ))}
-                                                {selectedBadges.length === 0 && (
-                                                     <div className="w-[6.1cqw] h-[6.1cqw] rounded-full bg-[#FFD700]/10 border-[0.2cqw] border-[#FFD700] flex items-center justify-center text-[3cqw] shadow-[0_0_1cqw_rgba(255,215,0,0.2)] opacity-20">
-                                                        👑
-                                                     </div>
-                                                )}
-                                            </div>
+                                                );
+                                            })}
+                                            {selectedBadges.length === 0 && (
+                                                 <div className="w-[6.1cqw] h-[6.1cqw] rounded-full bg-[#FFD700]/10 border-[0.2cqw] border-[#FFD700] flex items-center justify-center text-[3.2cqw] shadow-[0_0_1cqw_rgba(255,215,0,0.2)] opacity-20">
+                                                    👑
+                                                 </div>
+                                            )}
+                                        </div>
                                         </div>
                                     </div>
 

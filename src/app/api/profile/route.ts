@@ -39,11 +39,23 @@ export async function GET(request: Request) {
             [userId]
         );
 
+        // Fetch fishing stats
+        const [fishRows]: any = await pool.query(
+            'SELECT total_catches FROM fishing_profile WHERE user_id = ?',
+            [userId]
+        );
+
+        const stats = statRows.length > 0 ? statRows[0] : { level: 1, xp: 0, balance: 0 };
+        const fishStats = fishRows.length > 0 ? fishRows[0] : { total_catches: 0 };
+
         return NextResponse.json({
             customization: customRows.length > 0 ? customRows[0] : { background_id: 0, shown_badges: '[]' },
             backgrounds: bgRows,
             badges: badgeRows,
-            stats: statRows.length > 0 ? statRows[0] : { level: 1, xp: 0, balance: 0 }
+            stats: { 
+                ...stats, 
+                total_catches: fishStats.total_catches 
+            }
         });
     } catch (error: any) {
         console.error('Profile API error:', error);
