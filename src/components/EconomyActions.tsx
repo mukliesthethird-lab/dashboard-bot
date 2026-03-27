@@ -269,7 +269,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
             {/* Give Money Modal - Dark Theme */}
             {showGiveMoney && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
-                    <div className="bg-white/5 rounded-[8px] p-8 max-w-md w-full mx-4 shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] rounded-[8px] p-8 max-w-md w-full mx-4 shadow-2xl relative" onClick={e => e.stopPropagation()}>
                         <button onClick={closeModal} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
@@ -349,7 +349,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
             {/* Reset User Modal - Dark Theme */}
             {showResetUser && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
-                    <div className="bg-white/5 rounded-[8px] p-8 max-w-md w-full mx-4 shadow-2xl relative border border-[#da373c]/50" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] rounded-[8px] p-8 max-w-md w-full mx-4 shadow-2xl relative border border-[#da373c]/50" onClick={e => e.stopPropagation()}>
                         <button onClick={closeModal} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
@@ -415,7 +415,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
             {/* Leaderboard Modal - Dark Theme */}
             {showLeaderboard && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
-                    <div className="bg-white/5 rounded-[8px] p-6 max-w-lg w-full mx-4 shadow-2xl border border-white/10 max-h-[85vh] flex flex-col relative" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] rounded-[8px] p-6 max-w-lg w-full mx-4 shadow-2xl border border-white/10 max-h-[85vh] flex flex-col relative" onClick={e => e.stopPropagation()}>
                         <button onClick={closeModal} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition z-10">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>

@@ -604,7 +604,7 @@ export default function FormPanelEditor({
                     </div>
 
                     {/* RIGHT COLUMN: Preview */}
-                    <div className="hidden md:flex flex-1 bg-white/5 items-center justify-center p-8 overflow-y-auto border-l border-white/10">
+                    <div className="hidden md:flex flex-1 bg-[#0a0a0f]/80 items-center justify-center p-8 overflow-y-auto border-l border-white/10">
                         <div className="w-full max-w-[550px] space-y-4">
                             <h3 className="text-[10px] font-black text-[#949ba4] uppercase tracking-[0.2em] text-center mb-6">Live Preview</h3>
                             

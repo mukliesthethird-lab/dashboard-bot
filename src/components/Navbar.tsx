@@ -74,11 +74,13 @@ export default function Navbar() {
                                     </Link>
                                 )}
                                 <div className="flex items-center gap-3">
-                                    <img
-                                        src={session.user?.image || "https://cdn.discordapp.com/embed/avatars/0.png"}
-                                        alt="User"
-                                        className="w-9 h-9 rounded-full border-2 border-white/20"
-                                    />
+                                    <Link href="/profile" className="hover:scale-110 transition-transform active:scale-95">
+                                        <img
+                                            src={session.user?.image || "https://cdn.discordapp.com/embed/avatars/0.png"}
+                                            alt="User"
+                                            className={`w-9 h-9 rounded-full border-2 transition-all ${pathname === '/profile' ? 'border-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]' : 'border-white/20'}`}
+                                        />
+                                    </Link>
                                     <button
                                         onClick={() => setShowLogoutModal(true)}
                                         className="text-gray-400 hover:text-red-400 font-semibold text-sm transition-colors"
@@ -139,14 +141,14 @@ export default function Navbar() {
                                         Dashboard
                                     </Link>
                                     <div className="flex items-center justify-between px-4 py-3 glass rounded-xl">
-                                        <div className="flex items-center gap-3">
+                                        <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3">
                                             <img
                                                 src={session.user?.image || "https://cdn.discordapp.com/embed/avatars/0.png"}
                                                 alt="User"
-                                                className="w-10 h-10 rounded-full border-2 border-white/20"
+                                                className={`w-10 h-10 rounded-full border-2 transition-all ${pathname === '/profile' ? 'border-indigo-500' : 'border-white/20'}`}
                                             />
                                             <span className="font-semibold text-white">{session.user?.name}</span>
-                                        </div>
+                                        </Link>
                                         <button
                                             onClick={() => { setMobileMenuOpen(false); setShowLogoutModal(true); }}
                                             className="text-red-400 font-semibold text-sm"

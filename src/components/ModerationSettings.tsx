@@ -361,7 +361,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             {/* Immune Roles Modal */}
             {showImmuneRolesModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowImmuneRolesModal(false)}>
-                    <div className="bg-white/5 rounded-[8px] p-6 w-full max-w-md max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] rounded-[8px] p-6 w-full max-w-md max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
                         <button onClick={() => setShowImmuneRolesModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
@@ -399,7 +399,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             {/* Predefined Reasons Modal */}
             {showReasonsModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowReasonsModal(false)}>
-                    <div className="bg-white/5 rounded-[8px] p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] rounded-[8px] p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
                         <button onClick={() => setShowReasonsModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
@@ -466,7 +466,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             {/* Privacy Modal */}
             {showPrivacyModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowPrivacyModal(false)}>
-                    <div className="bg-white/5 rounded-[8px] p-6 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] rounded-[8px] p-6 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
                         <button onClick={() => setShowPrivacyModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
@@ -518,7 +518,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             {/* Punish Settings Modal */}
             {showPunishModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowPunishModal(false)}>
-                    <div className="bg-white/5 rounded-[8px] p-6 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] rounded-[8px] p-6 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
                         <button onClick={() => setShowPunishModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>

@@ -434,7 +434,7 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
             {/* Edit Modal */}
             {showEditModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowEditModal(false)}>
-                    <div className="bg-white/5 rounded-[8px] p-8 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] rounded-[8px] p-8 w-full max-w-md shadow-2xl relative" onClick={e => e.stopPropagation()}>
                         <button onClick={() => setShowEditModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>

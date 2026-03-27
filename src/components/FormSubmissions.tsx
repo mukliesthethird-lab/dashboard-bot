@@ -805,7 +805,7 @@ export default function FormSubmissions({
             {/* Reply Modal */}
             {showReplyModal && replyingTo && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowReplyModal(false)}>
-                    <div className="bg-white/5 border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-3 bg-[#5865F2]/10 rounded-full">
                                 <svg className="w-6 h-6 text-[#5865F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.39.84 4.59 2.25 6.31l-1.01 3.03a1 1 0 001.27 1.27l3.03-1.01C9.41 23.16 11.61 24 12 24c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.85 0-3.58-.64-4.95-1.72a1 1 0 00-.73-.27l-1.92.64.64-1.92a1 1 0 00-.27-.73C3.64 15.58 3 13.85 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9z"/></svg>
@@ -995,7 +995,7 @@ export default function FormSubmissions({
             {/* Reply Modal */}
             {showReplyModal && replyingTo && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowReplyModal(false)}>
-                    <div className="bg-white/5 border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-3 bg-[#5865F2]/10 rounded-full">
                                 <svg className="w-6 h-6 text-[#5865F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.39.84 4.59 2.25 6.31l-1.01 3.03a1 1 0 001.27 1.27l3.03-1.01C9.41 23.16 11.61 24 12 24c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.85 0-3.58-.64-4.95-1.72a1 1 0 00-.73-.27l-1.92.64.64-1.92a1 1 0 00-.27-.73C3.64 15.58 3 13.85 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9z"/></svg>

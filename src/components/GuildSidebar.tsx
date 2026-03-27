@@ -18,6 +18,7 @@ const menuItems = [
     { name: "Welcome", icon: "👋", href: "/welcome" },
     { name: "Logging", icon: "📝", href: "/logging" },
     { name: "Roles", icon: "🎭", href: "/roles" },
+    { name: "Leveling", icon: "📈", href: "/leveling" },
     { name: "Notification", icon: "🔔", href: "/notifications" },
     { name: "Forms", icon: "📋", href: "/forms" },
 ];

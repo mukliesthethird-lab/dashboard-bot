@@ -1294,7 +1294,7 @@ export default function CreateMessageModal({
 
     const renderPreview = () => {
         return (
-            <div className="bg-white/5 rounded-md shadow-sm font-sans text-white text-[15px] leading-[1.375rem] overflow-hidden">
+            <div className="bg-[#0a0a0f] rounded-md shadow-sm font-sans text-white text-[15px] leading-[1.375rem] overflow-hidden">
                 <div className="p-4">
                     <div className="flex items-center gap-3 mb-1">
                         <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center font-bold text-lg select-none">🐔</div>
