@@ -186,33 +186,93 @@ export default function ProfileSettings() {
                                 <span>📱</span> Card Preview
                             </h3>
                         </div>
-                        <div className="p-8 flex items-center justify-center bg-[#05050a]">
-                            {/* Visual representation of the profile card */}
-                            <div className="relative w-full max-w-[400px] aspect-[9/5] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group">
-                                {/* Background */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 to-purple-900/40" />
+                        <div className="p-4 flex items-center justify-center bg-[#05050a]">
+                            {/* Realistic Profile Card Preview */}
+                            <div className="relative w-full max-w-[500px] aspect-[1.8/1] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group select-none">
+                                {/* Background Image/Gradient */}
+                                {selectedBackgroundId === 0 ? (
+                                    <div className="absolute inset-0 bg-gradient-to-br from-[#1e1e23] to-[#0a0a0f]" />
+                                ) : (
+                                    <div className="absolute inset-0 bg-gray-900 overflow-hidden">
+                                        <div className="absolute inset-0 bg-black/30 z-[1]" />
+                                        {/* Mock background image */}
+                                        <div className="w-full h-full bg-indigo-900/40 relative">
+                                             <div className="absolute inset-0 bg-[url('/donpollo-icon.jpg')] opacity-10 blur-xl scale-150" />
+                                             <div className="absolute bottom-4 left-6 text-white/50 text-[10px] font-black uppercase tracking-tighter">
+                                                {backgrounds.find(b => b.id === selectedBackgroundId)?.name || 'Custom BG'}
+                                             </div>
+                                        </div>
+                                    </div>
+                                )}
                                 
-                                {/* Content Overlay */}
-                                <div className="absolute inset-0 p-6 flex flex-col justify-between">
-                                    <div className="flex gap-4">
-                                        <div className="w-16 h-16 rounded-2xl bg-white/10 border-2 border-indigo-500/50" />
-                                        <div className="flex-1 space-y-1">
-                                            <div className="h-5 w-24 bg-white/20 rounded-md" />
-                                            <div className="h-3 w-16 bg-white/10 rounded-md" />
-                                            <div className="mt-4 h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                                                <div className="h-full w-2/3 bg-indigo-500" />
+                                {/* Content Overlay (Following Profile.py layout) */}
+                                <div className="absolute inset-0 p-[5.5%] flex flex-col justify-between z-[2]">
+                                    {/* Top Section (Avatar, Name, Level) */}
+                                    <div className="flex gap-[4.5%]">
+                                        {/* Avatar (180x180 at 50,50 in 900x500 = ~11% pos, ~20% size) */}
+                                        <div className="relative w-[20%] aspect-square rounded-full border-[3px] border-indigo-500/80 shadow-[0_0_15px_rgba(99,102,241,0.4)] overflow-hidden shrink-0">
+                                            <img 
+                                                src={"/donpollo-icon.jpg"} 
+                                                alt="Preview Avatar" 
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        
+                                        {/* Text Section (at 260px in 900px = ~28%) */}
+                                        <div className="flex-1 pt-[1%] space-y-[2%]">
+                                            <h4 className="text-[min(1.8vw,1.5rem)] font-black text-white leading-tight truncate drop-shadow-lg">
+                                                {"Username Here"}
+                                            </h4>
+                                            <p className="text-[min(1.2vw,1rem)] font-bold text-indigo-300/90 tracking-wide uppercase">
+                                                Level {userStats?.level || 1}
+                                            </p>
+                                            
+                                            {/* XP Bar (at 170px for 25px height in 500px = ~5%) */}
+                                            <div className="w-[65%] h-[5%] bg-[#32323c] rounded-full overflow-hidden mt-[4%] border border-white/5">
+                                                <div className="h-full w-2/3 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+                                            </div>
+                                            <div className="text-[10px] font-black text-white/40 mt-1 uppercase tracking-widest pl-1">
+                                                {userStats?.xp?.toLocaleString() || '1,250'} / 2,000 XP
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    {/* Badges row */}
-                                    <div className="flex gap-2">
-                                        {selectedBadges.map((b, i) => (
-                                            <div key={i} className="w-7 h-7 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-[10px]">✨</div>
+                                    {/* Stats Grid (at 300px in 500px = ~60%) */}
+                                    <div className="grid grid-cols-3 gap-[3%] mt-[5%]">
+                                        {[
+                                            { label: "Koin", val: userStats?.balance?.toLocaleString() || '5,420', color: "text-amber-400", bg: "bg-amber-400/5" },
+                                            { label: "Catches", val: userStats?.total_catches?.toLocaleString() || '12', color: "text-emerald-400", bg: "bg-emerald-400/5" },
+                                            { label: "Rank", val: "Elite", color: "text-indigo-400", bg: "bg-indigo-400/5" }
+                                        ].map((stat, i) => (
+                                            <div key={i} className={`p-[10%] rounded-2xl ${stat.bg} border border-white/5 backdrop-blur-[2px] space-y-[2%]`}>
+                                                <span className={`text-[min(.8vw,8px)] font-black uppercase tracking-tighter ${stat.color} opacity-70`}>{stat.label}</span>
+                                                <div className="text-[min(1.1vw,.9rem)] font-black text-white truncate">{stat.val}</div>
+                                            </div>
                                         ))}
-                                        {Array.from({ length: 5 - selectedBadges.length }).map((_, i) => (
-                                            <div key={i} className="w-7 h-7 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-[10px] opacity-20">?</div>
-                                        ))}
+                                    </div>
+
+                                    {/* Badges Section (at 410px in 500px = ~82%) */}
+                                    <div className="mt-auto pt-[2%]">
+                                        <div className="text-[min(.7vw,7px)] font-black text-amber-500/50 uppercase tracking-[.25em] mb-[3%]">
+                                            Badge Showcase
+                                        </div>
+                                        <div className="flex gap-[2.5%]">
+                                            {selectedBadges.map((b_id, i) => {
+                                                const badge = badges.find(b => b.id === b_id);
+                                                return (
+                                                    <div 
+                                                        key={i} 
+                                                        className="w-[8%] aspect-square rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-[min(1vw,10px)] relative group/badge"
+                                                        title={badge?.name}
+                                                    >
+                                                        ✨
+                                                    </div>
+                                                );
+                                            })}
+                                            {Array.from({ length: 5 - selectedBadges.length }).map((_, i) => (
+                                                <div key={i} className="w-[8%] aspect-square rounded-full bg-white/5 border border-white/5 opacity-10" />
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
