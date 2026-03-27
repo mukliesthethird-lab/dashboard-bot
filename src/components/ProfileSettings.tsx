@@ -187,8 +187,8 @@ export default function ProfileSettings() {
                             </h3>
                         </div>
                         <div className="p-4 flex items-center justify-center bg-[#05050a]">
-                            {/* Realistic Profile Card Preview */}
-                            <div className="relative w-full max-w-[500px] aspect-[1.8/1] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group select-none">
+                            {/* Realistic Profile Card Preview (900x500 scaled down) */}
+                            <div className="relative w-full max-w-[900px] h-auto aspect-[9/5] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group select-none scale-[0.6] sm:scale-[0.8] lg:scale-100 origin-center">
                                 {/* Background Image/Gradient */}
                                 {selectedBackgroundId === 0 ? (
                                     <div className="absolute inset-0 bg-gradient-to-br from-[#1e1e23] to-[#0a0a0f]" />
@@ -205,12 +205,12 @@ export default function ProfileSettings() {
                                     </div>
                                 )}
                                 
-                                {/* Content Overlay (Following Profile.py layout) */}
-                                <div className="absolute inset-0 p-[5.5%] flex flex-col justify-between z-[2]">
+                                {/* Content Overlay (Following user screenshot) */}
+                                <div className="absolute inset-0 p-[7%] flex flex-col z-[2] font-sans">
                                     {/* Top Section (Avatar, Name, Level) */}
-                                    <div className="flex gap-[4.5%]">
-                                        {/* Avatar (180x180 at 50,50 in 900x500 = ~11% pos, ~20% size) */}
-                                        <div className="relative w-[20%] aspect-square rounded-full border-[3px] border-indigo-500/80 shadow-[0_0_15px_rgba(99,102,241,0.4)] overflow-hidden shrink-0">
+                                    <div className="flex gap-[6%] items-start">
+                                        {/* Avatar (with thick blue border) */}
+                                        <div className="relative w-[180px] h-[180px] rounded-full border-[6px] border-[#5865F2] overflow-hidden shrink-0 shadow-[0_0_20px_rgba(88,101,242,0.3)]">
                                             <img 
                                                 src={"/donpollo-icon.jpg"} 
                                                 alt="Preview Avatar" 
@@ -218,60 +218,69 @@ export default function ProfileSettings() {
                                             />
                                         </div>
                                         
-                                        {/* Text Section (at 260px in 900px = ~28%) */}
-                                        <div className="flex-1 pt-[1%] space-y-[2%]">
-                                            <h4 className="text-[min(1.8vw,1.5rem)] font-black text-white leading-tight truncate drop-shadow-lg">
-                                                {"Username Here"}
+                                        {/* Text Section */}
+                                        <div className="flex-1 pt-[2%]">
+                                            <h4 className="text-[48px] font-bold text-white leading-tight drop-shadow-md tracking-tight">
+                                                {"Odokawwa"}
                                             </h4>
-                                            <p className="text-[min(1.2vw,1rem)] font-bold text-indigo-300/90 tracking-wide uppercase">
+                                            <p className="text-[26px] font-medium text-[#9a9dbd] mt-1">
                                                 Level {userStats?.level || 1}
                                             </p>
                                             
-                                            {/* XP Bar (at 170px for 25px height in 500px = ~5%) */}
-                                            <div className="w-[65%] h-[5%] bg-[#32323c] rounded-full overflow-hidden mt-[4%] border border-white/5">
-                                                <div className="h-full w-2/3 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
-                                            </div>
-                                            <div className="text-[10px] font-black text-white/40 mt-1 uppercase tracking-widest pl-1">
-                                                {userStats?.xp?.toLocaleString() || '1,250'} / 2,000 XP
+                                            {/* XP Bar Row */}
+                                            <div className="flex items-center gap-4 mt-4 w-full">
+                                                <div className="flex-1 h-[28px] bg-[#2a2a30] rounded-full overflow-hidden border border-white/5">
+                                                    <div className="h-full w-[82%] bg-[#5865F2] rounded-full shadow-[0_0_15px_rgba(88,101,242,0.5)]" />
+                                                </div>
+                                                <div className="text-[18px] font-bold text-white opacity-80 shrink-0">
+                                                    82%
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    {/* Stats Grid (at 300px in 500px = ~60%) */}
-                                    <div className="grid grid-cols-3 gap-[3%] mt-[5%]">
+                                    {/* Stats Grid */}
+                                    <div className="flex gap-[3%] mt-[10%]">
                                         {[
-                                            { label: "Koin", val: userStats?.balance?.toLocaleString() || '5,420', color: "text-amber-400", bg: "bg-amber-400/5" },
-                                            { label: "Catches", val: userStats?.total_catches?.toLocaleString() || '12', color: "text-emerald-400", bg: "bg-emerald-400/5" },
-                                            { label: "Rank", val: "Elite", color: "text-indigo-400", bg: "bg-indigo-400/5" }
+                                            { label: "Koin", val: userStats?.balance?.toLocaleString() || '1,055', icon: "💰", color: "#FFD700" },
+                                            { label: "Tangkapan", val: userStats?.total_catches?.toLocaleString() || '1', icon: "🐟", color: "#00FA9A" },
+                                            { label: "Rank", val: "Pemula", icon: "💠", color: "#87CEFA" }
                                         ].map((stat, i) => (
-                                            <div key={i} className={`p-[10%] rounded-2xl ${stat.bg} border border-white/5 backdrop-blur-[2px] space-y-[2%]`}>
-                                                <span className={`text-[min(.8vw,8px)] font-black uppercase tracking-tighter ${stat.color} opacity-70`}>{stat.label}</span>
-                                                <div className="text-[min(1.1vw,.9rem)] font-black text-white truncate">{stat.val}</div>
+                                            <div key={i} className="flex-1 h-[75px] bg-[#666666]/50 rounded-[12px] flex items-center p-3 gap-3 border border-white/10 backdrop-blur-sm">
+                                                <div className="w-[45px] h-[45px] rounded-full bg-white/20 flex items-center justify-center text-[22px] shadow-inner shrink-0">
+                                                    {stat.icon}
+                                                </div>
+                                                <div className="flex flex-col min-w-0">
+                                                    <span className="text-[14px] font-bold text-[#b0b3c5] uppercase tracking-tight truncate leading-tight">{stat.label}</span>
+                                                    <div className="text-[22px] font-bold text-white truncate leading-tight mt-0.5">{stat.val}</div>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
 
-                                    {/* Badges Section (at 410px in 500px = ~82%) */}
-                                    <div className="mt-auto pt-[2%]">
-                                        <div className="text-[min(.7vw,7px)] font-black text-amber-500/50 uppercase tracking-[.25em] mb-[3%]">
-                                            Badge Showcase
+                                    {/* Badges Section */}
+                                    <div className="mt-8">
+                                        <div className="text-[18px] font-bold text-[#FFD700] uppercase tracking-tight mb-4 flex items-center gap-2">
+                                            <span className="opacity-50">---</span> Badge Showcase <span className="opacity-50">---</span>
                                         </div>
-                                        <div className="flex gap-[2.5%]">
+                                        <div className="flex gap-4">
                                             {selectedBadges.map((b_id, i) => {
                                                 const badge = badges.find(b => b.id === b_id);
                                                 return (
                                                     <div 
                                                         key={i} 
-                                                        className="w-[8%] aspect-square rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-[min(1vw,10px)] relative group/badge"
+                                                        className="w-[55px] h-[55px] rounded-full bg-[#FFD700]/10 border-[2px] border-[#FFD700] flex items-center justify-center text-[28px] shadow-[0_0_10px_rgba(255,215,0,0.2)]"
                                                         title={badge?.name}
                                                     >
-                                                        ✨
+                                                        👑
                                                     </div>
                                                 );
                                             })}
-                                            {Array.from({ length: 5 - selectedBadges.length }).map((_, i) => (
-                                                <div key={i} className="w-[8%] aspect-square rounded-full bg-white/5 border border-white/5 opacity-10" />
-                                            ))}
+                                            {selectedBadges.length === 0 && (
+                                                 <div className="w-[55px] h-[55px] rounded-full bg-[#FFD700]/10 border-[2px] border-[#FFD700] flex items-center justify-center text-[28px] shadow-[0_0_10px_rgba(255,215,0,0.2)]">
+                                                    👑
+                                                 </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
