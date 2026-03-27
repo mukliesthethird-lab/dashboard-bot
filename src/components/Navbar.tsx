@@ -4,12 +4,14 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import ProfileSettings from "./ProfileSettings";
 
 export default function Navbar() {
     const { data: session } = useSession();
     const pathname = usePathname();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showProfileModal, setShowProfileModal] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
@@ -74,13 +76,13 @@ export default function Navbar() {
                                     </Link>
                                 )}
                                 <div className="flex items-center gap-3">
-                                    <Link href="/profile" className="hover:scale-110 transition-transform active:scale-95">
+                                    <button onClick={() => setShowProfileModal(true)} className="hover:scale-110 transition-transform active:scale-95">
                                         <img
                                             src={session.user?.image || "https://cdn.discordapp.com/embed/avatars/0.png"}
                                             alt="User"
-                                            className={`w-9 h-9 rounded-full border-2 transition-all ${pathname === '/profile' ? 'border-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]' : 'border-white/20'}`}
+                                            className={`w-9 h-9 rounded-full border-2 transition-all border-white/20 hover:border-indigo-500`}
                                         />
-                                    </Link>
+                                    </button>
                                     <button
                                         onClick={() => setShowLogoutModal(true)}
                                         className="text-gray-400 hover:text-red-400 font-semibold text-sm transition-colors"
@@ -141,14 +143,14 @@ export default function Navbar() {
                                         Dashboard
                                     </Link>
                                     <div className="flex items-center justify-between px-4 py-3 glass rounded-xl">
-                                        <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3">
+                                        <button onClick={() => { setMobileMenuOpen(false); setShowProfileModal(true); }} className="flex items-center gap-3 text-left">
                                             <img
                                                 src={session.user?.image || "https://cdn.discordapp.com/embed/avatars/0.png"}
                                                 alt="User"
-                                                className={`w-10 h-10 rounded-full border-2 transition-all ${pathname === '/profile' ? 'border-indigo-500' : 'border-white/20'}`}
+                                                className="w-10 h-10 rounded-full border-2 transition-all border-white/20"
                                             />
                                             <span className="font-semibold text-white">{session.user?.name}</span>
-                                        </Link>
+                                        </button>
                                         <button
                                             onClick={() => { setMobileMenuOpen(false); setShowLogoutModal(true); }}
                                             className="text-red-400 font-semibold text-sm"
@@ -239,8 +241,10 @@ export default function Navbar() {
                     </div>
                 </div>
             )}
+
+            {/* Profile Settings Modal */}
+            <ProfileSettings isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} />
         </>
     );
 }
-
 
