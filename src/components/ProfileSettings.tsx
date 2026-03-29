@@ -16,12 +16,10 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
     
     // Data
     const [backgrounds, setBackgrounds] = useState<any[]>([]);
-    const [badges, setBadges] = useState<any[]>([]);
     const [userStats, setUserStats] = useState<any>(null);
     
     // Selection
     const [selectedBackgroundId, setSelectedBackgroundId] = useState<number>(0);
-    const [selectedBadges, setSelectedBadges] = useState<number[]>([]);
 
     const [originalState, setOriginalState] = useState<any>(null);
 
@@ -35,19 +33,13 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                 const data = await res.json();
 
                 if (data.backgrounds) setBackgrounds(data.backgrounds);
-                if (data.badges) setBadges(data.badges);
                 if (data.stats) setUserStats(data.stats);
 
                 if (data.customization) {
                     setSelectedBackgroundId(data.customization.background_id || 0);
-                    const userBadges = typeof data.customization.shown_badges === 'string' 
-                        ? JSON.parse(data.customization.shown_badges) 
-                        : data.customization.shown_badges || [];
-                    setSelectedBadges(userBadges);
                     
                     setOriginalState({
-                        background_id: data.customization.background_id || 0,
-                        shown_badges: userBadges
+                        background_id: data.customization.background_id || 0
                     });
                 }
             } catch (error) {
@@ -66,15 +58,13 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    background_id: selectedBackgroundId,
-                    shown_badges: selectedBadges
+                    background_id: selectedBackgroundId
                 })
             });
 
             if (res.ok) {
                 setOriginalState({
-                    background_id: selectedBackgroundId,
-                    shown_badges: selectedBadges
+                    background_id: selectedBackgroundId
                 });
                 onClose(); // Auto close on save success
             }
@@ -85,30 +75,15 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
         }
     };
 
-    const toggleBadge = (id: number) => {
-        if (selectedBadges.includes(id)) {
-            setSelectedBadges(selectedBadges.filter(b => b !== id));
-        } else {
-            if (selectedBadges.length >= 5) {
-                alert("You can only showcase up to 5 badges!");
-                return;
-            }
-            setSelectedBadges([...selectedBadges, id]);
-        }
-    };
-
     const hasChanges = originalState && (
-        selectedBackgroundId !== originalState.background_id ||
-        JSON.stringify(selectedBadges.sort()) !== JSON.stringify(originalState.shown_badges.sort())
+        selectedBackgroundId !== originalState.background_id
     );
 
     if (!isOpen) return null;
 
-    // Calculate XP Progress (Exact formula from Experience.py)
+    // Use values directly from database (synced with Bot logic)
     const xp = userStats?.xp || 0;
-    
-    // Level = floor(sqrt(XP / 50)) + 1
-    const level = xp <= 0 ? 1 : Math.floor(Math.sqrt(xp / 50)) + 1;
+    const level = userStats?.level || 1;
     
     // XP to reach current level: (level-1)^2 * 50
     const currentLevelXP = ((level - 1) ** 2) * 50;
@@ -121,7 +96,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
         ? Math.min(100, Math.floor((progressXP / neededXPInLevel) * 100)) 
         : 0;
 
-    // Rank Logic from Profile.py
+    // Rank Logic from Profile.py (Synced)
     const getRank = (lvl: number) => {
         if (lvl >= 100) return "Dewa Ohio";
         if (lvl >= 50) return "Puh Sepuh";
@@ -134,15 +109,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
     const userName = session?.user?.name || "User Profile";
     const userAvatar = session?.user?.image || "/donpollo-icon.jpg";
 
-    // Badge Icon Mapping
-    const getBadgeIcon = (id: number) => {
-        const icons: { [key: number]: string } = {
-            1: "👑", 2: "🎣", 3: "🛡️", 4: "🤴", 5: "🏺", 
-            10: "🐟", 11: "🌌", 16: "🥇", 17: "🥈", 18: "🥉",
-            33: "🏘️", 34: "🔱", 36: "👴"
-        };
-        return icons[id] || "✨";
-    };
+
 
     return (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
@@ -175,48 +142,28 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                             
                             {/* Realistic Account Stats matching user image */}
                             <div className="bg-[#0b0a10] p-6 rounded-[2rem] border border-[#3a2a60]/40 shadow-2xl">
-                                <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] mb-4">Account Stats</h3>
+                                <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] mb-4">Master Statistics</h3>
                                 <div className="w-full h-[1px] bg-gradient-to-r from-white/10 to-transparent mb-6" />
-                                <div className="space-y-6">
-                                    {/* Level */}
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-full bg-[#1a1a2e] flex items-center justify-center text-xl shadow-inner border border-indigo-900/30">
-                                                📊
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-white font-black text-lg leading-tight">Level {level}</span>
-                                                <span className="text-gray-500 text-[11px] font-bold">Current Milestone</span>
-                                            </div>
-                                        </div>
-                                        <span className="text-2xl drop-shadow-[0_0_10px_rgba(255,100,0,0.5)]">🔥</span>
-                                    </div>
+                                
+                                <div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {/* Primary Stats */}
+                                    <StatRow icon="📊" label={`Level ${level}`} sub={userRank} color="bg-indigo-900/30" border="border-indigo-900/30" />
+                                    <StatRow icon="✨" label={`${xp.toLocaleString()} XP`} sub="Total Experience" color="bg-emerald-900/30" border="border-emerald-900/30" />
+                                    <StatRow icon="💰" label={`$${userStats?.balance?.toLocaleString() || 0}`} sub="Hand Balance" color="bg-amber-900/30" border="border-amber-900/30" />
                                     
-                                    {/* XP */}
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-full bg-[#102a20] flex items-center justify-center text-xl shadow-inner border border-emerald-900/30">
-                                                ✨
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-white font-black text-lg leading-tight">{xp.toLocaleString()} XP</span>
-                                                <span className="text-gray-500 text-[11px] font-bold">Total Experience</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {/* Activity Stats */}
+                                    <div className="pt-2 pb-1 border-b border-white/5"><span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Activity Log</span></div>
+                                    <StatRow icon="💬" label={`${(userStats?.total_messages || 0).toLocaleString()}`} sub="Messages Sent" color="bg-blue-900/20" border="border-blue-900/20" />
+                                    <StatRow icon="🎤" label={`${Math.floor((userStats?.voice_seconds || 0) / 3600)}h ${Math.floor(((userStats?.voice_seconds || 0) % 3600) / 60)}m`} sub="Voice Interaction" color="bg-purple-900/20" border="border-purple-900/20" />
+                                    <StatRow icon="🎵" label={`${(userStats?.total_songs_played || 0).toLocaleString()}`} sub="Songs Played" color="bg-rose-900/20" border="border-rose-900/20" />
+                                    <StatRow icon="📅" label={`${userStats?.daily_streak || 0} Days`} sub="Login Streak" color="bg-orange-900/20" border="border-orange-900/20" />
 
-                                    {/* Balance */}
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-full bg-[#3a2a10] flex items-center justify-center text-xl shadow-inner border border-amber-900/30">
-                                                💰
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-white font-black text-lg leading-tight">${userStats?.balance?.toLocaleString() || 0}</span>
-                                                <span className="text-gray-500 text-[11px] font-bold">Hand Balance</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {/* Game Stats */}
+                                    <div className="pt-2 pb-1 border-b border-white/5"><span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Achievements</span></div>
+                                    <StatRow icon="🎣" label={`${(userStats?.total_catches || 0).toLocaleString()}`} sub="Total Catches" color="bg-cyan-900/20" border="border-cyan-900/20" />
+                                    <StatRow icon="🌟" label={`${userStats?.rare_catches || 0}`} sub="Rare & Legendary" color="bg-fuchsia-900/20" border="border-fuchsia-900/20" />
+                                    <StatRow icon="🎰" label={`$${(userStats?.total_gamble_amount || 0).toLocaleString()}`} sub="Gambling Turnover" color="bg-red-900/20" border="border-red-900/20" />
+                                    <StatRow icon="🖼️" label={`${userStats?.unlocked_backgrounds || 0}`} sub="Custom Backgrounds" color="bg-slate-900/20" border="border-slate-900/20" />
                                 </div>
                             </div>
 
@@ -238,38 +185,17 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                             <div 
                                                 key={bg.id}
                                                 onClick={() => setSelectedBackgroundId(bg.id)}
-                                                className={`relative aspect-[16/9] rounded-xl border-2 transition-all cursor-pointer overflow-hidden ${selectedBackgroundId === bg.id ? 'border-indigo-500' : 'border-white/5 hover:border-white/20'}`}
+                                                className={`relative aspect-[16/9] rounded-xl border-2 transition-all cursor-pointer overflow-hidden ${selectedBackgroundId === bg.id ? 'border-[#5865F2]' : 'border-white/5 hover:border-white/20'}`}
                                             >
-                                                <div className="absolute inset-0 bg-gray-800" />
-                                                <div className="absolute bottom-0 left-0 right-0 p-1 bg-black/60"><p className="text-[8px] font-bold text-gray-200 truncate">{bg.name}</p></div>
-                                                {selectedBackgroundId === bg.id && <div className="absolute top-1 right-1 bg-indigo-500 text-white p-0.5 rounded-full text-[8px]">✅</div>}
+                                                <img src={bg.url || bg.path} className="absolute inset-0 w-full h-full object-cover" alt={bg.name} />
+                                                <div className="absolute bottom-0 left-0 right-0 p-[2px] bg-black/60 backdrop-blur-sm"><p className="text-[9px] font-bold text-gray-100 truncate text-center">{bg.name}</p></div>
+                                                {selectedBackgroundId === bg.id && <div className="absolute top-1 right-1 bg-[#5865F2] text-white p-0.5 rounded-full text-[8px] shadow-lg">✅</div>}
                                             </div>
                                         ))}
                                     </div>
                                 </div>
 
-                                {/* Badge Selector */}
-                                <div>
-                                    <div className="flex justify-between items-center mb-3">
-                                        <h4 className="text-sm font-bold text-white">Showcase Badges</h4>
-                                        <span className="text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full">{selectedBadges.length}/5</span>
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {badges.map(badge => {
-                                            const isSelected = selectedBadges.includes(badge.id);
-                                            return (
-                                                <div 
-                                                    key={badge.id}
-                                                    onClick={() => toggleBadge(badge.id)}
-                                                    className={`h-10 px-3 flex items-center gap-2 rounded-lg border cursor-pointer transition-all ${isSelected ? 'border-indigo-500 bg-indigo-500/10 text-white' : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'}`}
-                                                >
-                                                    <span className="text-sm">✨</span>
-                                                    <span className="text-xs font-bold whitespace-nowrap">{badge.name}</span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
 
@@ -286,22 +212,24 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                     
                                     {/* Background */}
                                     {selectedBackgroundId === 0 ? (
-                                        <div className="absolute inset-0 bg-gradient-to-br from-[#1e1e23] to-[#0a0a0f]" />
+                                        <div className="absolute inset-0 bg-[#2b2d31]" />
                                     ) : (
-                                        <div className="absolute inset-0 bg-gray-900 overflow-hidden">
-                                            <div className="absolute inset-0 bg-black/30 z-[1]" />
-                                            <div className="absolute inset-0 bg-[url('/donpollo-icon.jpg')] opacity-10 blur-xl scale-150" />
-                                            <div className="absolute bottom-[2cqw] left-[3cqw] text-white/50 text-[1cqw] font-black uppercase tracking-tighter">
-                                                {backgrounds.find(b => b.id === selectedBackgroundId)?.name || 'Custom BG'}
-                                            </div>
+                                        <div className="absolute inset-0 bg-[#2b2d31] overflow-hidden">
+                                            <img 
+                                                src={backgrounds.find(b => b.id === selectedBackgroundId)?.url || backgrounds.find(b => b.id === selectedBackgroundId)?.path} 
+                                                className="absolute inset-0 w-full h-full object-cover z-[0]" 
+                                                alt="Background Profile"
+                                            />
+                                            <div className="absolute inset-0 bg-black/40 z-[1]" />
+                                            {/* Name overlay removed since image is now rendered */}
                                         </div>
                                     )}
 
                                     {/* Foreground Layout */}
                                     <div className="absolute inset-0 p-[5.5cqw] flex flex-col z-[2] font-sans">
                                         {/* Avatar & Info row */}
-                                        <div className="flex gap-[5cqw] items-start">
-                                            <div className="w-[20cqw] h-[20cqw] rounded-full border-[0.6cqw] border-[#5865F2] overflow-hidden shrink-0 shadow-[0_0_2cqw_rgba(88,101,242,0.3)] bg-[#1e1e23]">
+                                        <div className="flex gap-[4cqw] items-center">
+                                            <div className="w-[17cqw] h-[17cqw] rounded-full border-[0.3cqw] border-[#2b2d31] overflow-hidden shrink-0 bg-[#1e1e23] shadow-[0_0_2cqw_rgba(88,101,242,0.8)] outline outline-[#5865F2] outline-[0.3cqw]">
                                                 <img 
                                                     src={userAvatar} 
                                                     alt="Avatar" 
@@ -309,75 +237,53 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                                     onError={(e) => { (e.target as HTMLImageElement).src = "/donpollo-icon.jpg" }}
                                                 />
                                             </div>
-                                            <div className="flex-1 pt-[1cqw]">
-                                                <h4 className="text-[5.3cqw] font-bold text-white leading-tight drop-shadow-md tracking-tight truncate max-w-[40cqw]">
+                                            <div className="flex-1">
+                                                <h4 className="text-[6cqw] font-normal text-white leading-tight font-sans tracking-wide">
                                                     {userName}
                                                 </h4>
-                                                <p className="text-[2.9cqw] font-medium text-[#9a9dbd] mt-[0.5cqw]">
+                                                <p className="text-[3.3cqw] font-normal text-[#B5BAC1] mt-[0.5cqw]">
                                                     Level {level}
                                                 </p>
                                                 
                                                 {/* XP Bar */}
-                                                <div className="flex items-center gap-[1.5cqw] mt-[1.5cqw] w-full">
-                                                    <div className="flex-1 h-[3.1cqw] bg-[#2a2a30] rounded-full overflow-hidden border border-white/5">
+                                                <div className="flex items-center gap-[2cqw] mt-[1cqw] w-full">
+                                                    <div className="flex-1 h-[2.5cqw] bg-[#3f4147] rounded-full overflow-hidden">
                                                         <div 
-                                                            className="h-full bg-[#5865F2] rounded-full shadow-[0_0_1.5cqw_rgba(88,101,242,0.5)] transition-all duration-500 ease-out" 
+                                                            className="h-full bg-[#5865F2] rounded-full" 
                                                             style={{ width: `${progressPercent}%` }}
                                                         />
                                                     </div>
-                                                    <div className="text-[2cqw] font-bold text-white opacity-80 shrink-0 min-w-[3cqw]">
+                                                    <div className="text-[2.2cqw] font-normal text-white shrink-0">
                                                         {progressPercent}%
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Stats Row */}
-                                        <div className="flex gap-[3.5cqw] mt-[4cqw] w-[95%]">
+                                        {/* Stats Row (3 Boxes matching Discord) */}
+                                        <div className="flex gap-[1.5cqw] mt-[2.5cqw] w-[95%]">
                                             {[
-                                                { label: "Koin", val: userStats?.balance?.toLocaleString() || '0', icon: "💰", color: "#FFD700" },
-                                                { label: "Tangkapan", val: userStats?.total_catches?.toLocaleString() || '0', icon: "🐟", color: "#00FA9A" },
-                                                { label: "Rank", val: userRank, icon: "💠", color: "#87CEFA" }
+                                                { label: "Koin", val: userStats?.balance?.toLocaleString() || '0', icon: (
+                                                    <div className="w-[3.5cqw] h-[3.5cqw] rounded-full bg-[#f1c40f] flex items-center justify-center border-[0.2cqw] border-black/20 overflow-hidden shadow-inner font-black text-black text-[2.2cqw] leading-none">$</div>
+                                                ) },
+                                                { label: "Tangkapan", val: userStats?.total_catches?.toLocaleString() || '0', icon: (
+                                                    <div className="w-[3.5cqw] h-[3.5cqw] rounded-full flex items-center justify-center font-bold text-[#1abc9c] text-[2.2cqw] leading-none bg-[#1abc9c]/10">🐟</div>
+                                                ) },
+                                                { label: "Rank", val: userRank, icon: (
+                                                    <div className="w-[3.5cqw] h-[3.5cqw] rounded-full flex items-center justify-center font-bold text-[#3498db] text-[2.2cqw] leading-none bg-[#3498db]/10">💠</div>
+                                                ) }
                                             ].map((stat, i) => (
-                                                <div key={i} className="flex-1 h-[8.3cqw] bg-[#666666]/30 backdrop-blur-md rounded-[1.3cqw] flex items-center p-[1cqw] gap-[1cqw] border border-white/10">
-                                                    <div className="w-[5cqw] h-[5cqw] rounded-full bg-white/10 flex items-center justify-center text-[2.5cqw] shrink-0">
-                                                        {stat.icon}
-                                                    </div>
-                                                    <div className="flex flex-col min-w-0 pr-[1cqw] justify-center h-full">
-                                                        <span className="text-[1.5cqw] font-bold text-[#b0b3c5] uppercase tracking-tight truncate leading-[1.2]">{stat.label}</span>
-                                                        <div className="text-[2.4cqw] font-bold text-white truncate leading-[1.2]">{stat.val}</div>
+                                                <div key={i} className="flex-1 bg-[#232428] rounded-[1cqw] flex items-center py-[1cqw] px-[1.5cqw] gap-[1.5cqw]">
+                                                    {stat.icon}
+                                                    <div className="flex flex-col min-w-0 justify-center">
+                                                        <span className="text-[1.8cqw] font-normal text-[#B5BAC1] leading-tight">{stat.label}</span>
+                                                        <div className="text-[2.2cqw] font-bold text-white truncate leading-none mt-[0.2cqw]">{stat.val}</div>
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
 
-                                        {/* Badges Showcase */}
-                                        <div className="mt-[3.5cqw]">
-                                            <div className="text-[1.8cqw] font-bold text-[#FFD700] uppercase tracking-tight mb-[1.5cqw] flex items-center gap-[1cqw]">
-                                                <span className="opacity-50 text-[1.2cqw]">---</span> Badge Showcase <span className="opacity-50 text-[1.2cqw]">---</span>
-                                            </div>
-                                            <div className="flex gap-[1.5cqw]">
-                                            {selectedBadges.map((b_id, i) => {
-                                                const badge = badges.find(b => b.id === b_id);
-                                                return (
-                                                    <div 
-                                                        key={i} 
-                                                        className="w-[6.1cqw] h-[6.1cqw] rounded-full bg-[#FFD700]/10 border-[0.2cqw] border-[#FFD700] flex items-center justify-center text-[3.2cqw] shadow-[0_0_1cqw_rgba(255,215,0,0.2)]"
-                                                        title={badge?.name}
-                                                    >
-                                                        {getBadgeIcon(b_id)}
-                                                    </div>
-                                                );
-                                            })}
-                                            {selectedBadges.length === 0 && (
-                                                 <div className="w-[6.1cqw] h-[6.1cqw] rounded-full bg-[#FFD700]/10 border-[0.2cqw] border-[#FFD700] flex items-center justify-center text-[3.2cqw] shadow-[0_0_1cqw_rgba(255,215,0,0.2)] opacity-20">
-                                                    👑
-                                                 </div>
-                                            )}
-                                        </div>
-                                        </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -391,7 +297,6 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                         <button
                             onClick={() => {
                                 setSelectedBackgroundId(originalState.background_id);
-                                setSelectedBadges(originalState.shown_badges);
                             }}
                             className="px-6 py-2.5 text-gray-400 hover:text-white font-bold transition-colors"
                         >
@@ -406,6 +311,21 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                         </button>
                     </div>
                 )}
+            </div>
+        </div>
+    );
+}
+function StatRow({ icon, label, sub, color, border }: { icon: string, label: string, sub: string, color: string, border: string }) {
+    return (
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                <div className={`w-11 h-11 rounded-full ${color} flex items-center justify-center text-lg shadow-inner border ${border}`}>
+                    {icon}
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-white font-black text-base leading-tight">{label}</span>
+                    <span className="text-gray-500 text-[10px] font-bold uppercase">{sub}</span>
+                </div>
             </div>
         </div>
     );
