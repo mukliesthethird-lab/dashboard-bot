@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import EmojiPicker from "./EmojiPicker";
 import ConfirmationModal from "./ConfirmationModal";
 import CatLoader from "./CatLoader";
+import { ToastContainer, useToast } from "./Toast";
 
 interface Role { id: string; name: string; color: number; }
 interface Channel { id: string; name: string; type?: number; }
@@ -81,15 +82,13 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+    const { toast, success, error, hideToast } = useToast();
 
     // For nested editing: Action of a component OR Action of an option
     const [editingAction, setEditingAction] = useState<{
         optionIndex: number | null; // null = button actions
         actionIndex: number
     } | null>(null);
-
-    // For Select Menu Option Editing
-    // We edit options inline, but manage their actions via the same system
 
     useEffect(() => {
         fetchAll();
@@ -105,9 +104,8 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
             setComponents(Array.isArray(c) ? c : []);
             setRoles(Array.isArray(r) ? r : []);
             setChannels(Array.isArray(ch) ? ch : []);
-        } catch (error) {
-            console.error("Failed to fetch data:", error);
-            // Default to empty arrays on error to prevent crashes
+        } catch (err) {
+            console.error("Failed to fetch data:", err);
             setComponents([]);
             setRoles([]);
             setChannels([]);
@@ -126,7 +124,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
             data: type === "button" ? {
                 label: "New Button", style: "primary", actions: [], required_roles: [], blacklist_roles: [], cooldown: 0
             } : {
-                placeholder: "Select option", min_values: 1, max_values: 1, options: [], actions: [] // actions unused for menu root usually
+                placeholder: "Select option", min_values: 1, max_values: 1, options: [], actions: []
             }
         });
         setShowEditor({ type });
@@ -145,36 +143,46 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
 
     const confirmDeleteComponent = async () => {
         if (!confirmDeleteId) return;
-        setConfirmDeleteId(null); // Close immediately or wait? Better wait if async. But consistent with RolesSettings.
-        // Actually RolesSettings waited in finally. Let's do that.
         try {
             await fetch(`/api/components?id=${confirmDeleteId}&guild_id=${guildId}`, { method: "DELETE" });
             await fetchAll();
-        } catch (e) {
-            console.error(e);
-            alert("Failed to delete");
+            success("Component deleted successfully.");
+        } catch (err) {
+            console.error(err);
+            error("Failed to delete component.");
+        } finally {
+            setConfirmDeleteId(null);
         }
     };
 
     const handleSave = async () => {
-        if (!formData.name || !formData.custom_id) return alert("Missing fields");
+        if (!formData.name || !formData.custom_id) return error("Missing fields (Name & Custom ID)");
         setSaving(true);
         const method = editingId ? "PUT" : "POST";
-        await fetch("/api/components", {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...formData, id: editingId })
-        });
+        try {
+            const res = await fetch("/api/components", {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...formData, id: editingId })
+            });
+            if (res.ok) {
+                success(editingId ? "Component updated!" : "Component created!");
+                setShowEditor(null);
+                fetchAll();
+            } else {
+                error("Failed to save component.");
+            }
+        } catch (err) {
+            console.error(err);
+            error("Network error. Please try again.");
+        }
         setSaving(false);
-        setShowEditor(null);
-        fetchAll();
     };
 
     const updateData = (updates: Partial<ComponentData>) => {
         setFormData(p => ({ ...p, data: { ...p.data!, ...updates } }));
     };
 
-    // Action Helpers
     const getActions = (optionIndex: number | null) => {
         if (optionIndex === null) return formData.data?.actions || [];
         return formData.data?.options?.[optionIndex]?.actions || [];
@@ -254,7 +262,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
             {/* EDITOR MODAL */}
             {showEditor && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setShowEditor(null)}>
-                    <div className="bg-[#030305]/80 backdrop-blur-3xl w-full max-w-5xl max-h-[80vh] rounded-3xl border-white/20 flex flex-col shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#030305]/80 backdrop-blur-3xl w-full max-w-5xl max-h-[80vh] rounded-3xl border border-white/20 flex flex-col shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between p-6 border-b border-white/10">
                             <h2 className="text-2xl font-black text-white flex items-center gap-3">
                                 {showEditor.type === "button" ? "🔘 Button Editor" : "📋 Select Menu Editor"}
@@ -301,14 +309,14 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                                         </div>
                                     </div>
 
-                                    {/* Action Manager (Button) - Passing null as optionIndex */}
+                                    {/* Action Manager (Button) */}
                                     <ActionManager
                                         actions={getActions(null)}
                                         onUpdate={(acts: ActionConfig[]) => updateActions(null, acts)}
                                         roles={roles}
                                         channels={textChannels}
                                         voiceChannels={voiceChannels}
-                                        editingAction={editingAction?.optionIndex === null ? editingAction : null} // Only pass if optionIndex matches
+                                        editingAction={editingAction?.optionIndex === null ? editingAction : null}
                                         setEditingAction={(idx: number) => setEditingAction({ optionIndex: null, actionIndex: idx })}
                                         closeEditor={() => setEditingAction(null)}
                                     />
@@ -318,7 +326,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                                         <h3 className="text-lg font-bold text-white mb-4">Usage Requirements</h3>
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-4">
-                                                <label className="lex-shrink-0 text-sm text-gray-400 font-bold">Cooldown (seconds)</label>
+                                                <label className="flex-shrink-0 text-sm text-gray-400 font-bold">Cooldown (seconds)</label>
                                                 <input type="number" value={formData.data?.cooldown || 0} onChange={e => updateData({ cooldown: parseInt(e.target.value) })} className="w-24 bg-white/5 border-2 border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-400" />
                                             </div>
                                         </div>
@@ -373,7 +381,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                                                                     updateData({ options: newOpts });
                                                                 }} placeholder="Value" className="w-full bg-[#030305]/80 backdrop-blur-3xl border-2 border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono focus:outline-none focus:border-amber-400" />
                                                             </div>
-                                                            <div className="w-1/3 flex items-center gap-2">
+                                                            <div className="flex items-center gap-2">
                                                                 <EmojiPicker value={opt.emoji || ''} onChange={e => {
                                                                     const newOpts = [...(formData.data?.options || [])];
                                                                     newOpts[idx] = { ...newOpts[idx], emoji: e };
@@ -382,7 +390,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                                                                 <button onClick={() => {
                                                                     const newOpts = (formData.data?.options || []).filter((_, i) => i !== idx);
                                                                     updateData({ options: newOpts });
-                                                                }} className="ml-auto text-red-400 hover:text-red-500 p-2 hover:bg-red-50 rounded-lg">🗑️</button>
+                                                                }} className="ml-auto text-red-400 hover:text-red-500 p-2 hover:bg-stone-100 rounded-lg transition-colors">🗑️</button>
                                                             </div>
                                                         </div>
 
@@ -406,46 +414,42 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
                                 </div>
                             )}
                         </div>
-
-                        
                     </div>
                 </div>
             )}
 
-            
-            {/* Modal Floating Save Bar */}
+            {/* Standard Global Save Bar */}
             {showEditor && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] bg-[#0f0f15] border border-white/10 pl-6 pr-2 py-2 rounded-full shadow-2xl animate-fade-in-up flex items-center gap-6">
-                    <span className="text-gray-300 font-medium tracking-wide">Unsaved component changes</span>
-                    <div className="flex items-center gap-2">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[130] bg-[#030305]/95 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-xl shadow-2xl animate-fade-up flex items-center justify-between gap-6 min-w-[360px]">
+                    <span className="text-gray-200 font-bold text-xs uppercase tracking-tight line-clamp-1">Careful — you have unsaved changes!</span>
+                    <div className="flex items-center gap-3 shrink-0">
                         <button
                             onClick={() => setShowEditor(null)}
-                            className="px-4 py-2 text-gray-400 hover:text-white font-bold transition-colors hover:bg-white/5 rounded-full"
+                            className="text-gray-400 hover:text-white text-xs font-black uppercase tracking-widest transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="px-6 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 hover:text-emerald-300 font-bold rounded-full transition-all flex items-center gap-2 group"
+                            className="px-5 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white font-black rounded-lg transition-all flex items-center gap-2 group text-xs uppercase tracking-tighter disabled:opacity-50"
                         >
                             {saving ? (
                                 <>
-                                    <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     Saving...
                                 </>
                             ) : (
-                                <>
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Save Component
-                                </>
+                                "Save Component"
                             )}
                         </button>
                     </div>
                 </div>
-            )}\n\n            <ConfirmationModal
+            )}
+
+            <ToastContainer toast={toast} onClose={hideToast} />
+
+            <ConfirmationModal
                 isOpen={confirmDeleteId !== null}
                 onClose={() => setConfirmDeleteId(null)}
                 onConfirm={confirmDeleteComponent}
@@ -458,7 +462,7 @@ export default function ComponentsSettings({ guildId }: { guildId: string }) {
     );
 }
 
-// Sub-component for Action Management to avoid duplication
+// Sub-component for Action Management
 function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, editingAction, setEditingAction, closeEditor, mini }: any) {
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -493,7 +497,7 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
                         <div className="absolute right-0 top-full mt-2 w-48 bg-[#030305]/80 backdrop-blur-3xl rounded-xl shadow-xl border border-white/10 z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                             <div className="fixed inset-0 z-[-1]" onClick={() => setShowDropdown(false)}></div>
                             {ACTION_TYPES.map(t => (
-                                <button key={t.value} onClick={() => addAction(t.value)} className="w-full text-left px-4 py-2 text-gray-300 hover:text-stone-900 hover:bg-white/5 text-sm flex items-center gap-2 font-medium transition-colors">
+                                <button key={t.value} onClick={() => addAction(t.value)} className="w-full text-left px-4 py-2 text-gray-300 hover:bg-white/5 text-sm flex items-center gap-2 font-medium transition-colors">
                                     <span>{t.icon}</span> {t.label}
                                 </button>
                             ))}
@@ -504,26 +508,24 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
 
             <div className="flex flex-wrap gap-2 mb-4">
                 {actions.map((act: any, i: number) => (
-                    <button key={i} onClick={() => setEditingAction(i)} className="bg-[#030305]/80 backdrop-blur-3xl hover:bg-white/5 px-3 py-1.5 rounded-lg text-gray-200 text-sm font-bold flex items-center gap-2 border-2 border-white/10 transition shadow-none">
+                    <button key={i} onClick={() => setEditingAction(i)} className="bg-[#030305]/80 backdrop-blur-3xl hover:bg-white/5 px-3 py-1.5 rounded-lg text-gray-200 text-sm font-bold flex items-center gap-2 border-2 border-white/10 transition">
                         {ACTION_TYPES.find(t => t.value === act.type)?.icon}
                         {ACTION_TYPES.find(t => t.value === act.type)?.label}
-                        <span className="opacity-50 text-xs">⚙️</span>
+                        <span className="opacity-50 text-xs text-stone-900">⚙️</span>
                     </button>
                 ))}
             </div>
 
-            {/* ACTION EDITOR DETAIL */}
             {currentAction && (
-                <div className="bg-[#030305]/80 backdrop-blur-3xl rounded-xl p-4 border-2 border-white/10 mt-4 animate-in fade-in slide-in-from-top-2 shadow-none">
+                <div className="bg-[#030305]/80 backdrop-blur-3xl rounded-xl p-4 border-2 border-white/10 mt-4 animate-in fade-in slide-in-from-top-2">
                     <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/10">
                         <div className="font-bold text-white flex items-center gap-2">
                             <span className="text-xl">{ACTION_TYPES.find(t => t.value === currentAction.type)?.icon}</span>
                             {ACTION_TYPES.find(t => t.value === currentAction.type)?.label}
                         </div>
-                        <button onClick={() => removeAction(editingAction.actionIndex)} className="text-red-400 text-xs font-bold hover:text-red-600 bg-red-50 px-2 py-1 rounded hover:bg-red-100 transition">Delete Action</button>
+                        <button onClick={() => removeAction(editingAction.actionIndex)} className="text-red-400 text-xs font-bold hover:text-red-600 bg-red-500/10 px-2 py-1 rounded transition-colors">Delete Action</button>
                     </div>
 
-                    {/* Dynamic Fields based on Action Type */}
                     <div className="space-y-4">
                         {["add_role", "remove_role", "toggle_role"].includes(currentAction.type) && (
                             <div>
@@ -535,10 +537,10 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
                                 <div className="flex flex-wrap gap-2">
                                     {(currentAction.roles || []).map((rid: string) => {
                                         const r = roles.find((role: any) => role.id === rid);
-                                        return r ? <span key={rid} className="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-white flex items-center gap-1 font-bold shadow-none">
-                                            <span className="w-2 h-2 rounded-full" style={{ background: `#${r.color.toString(16)}` }}></span>
+                                        return r ? <span key={rid} className="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-white flex items-center gap-1 font-bold">
+                                            <span className="w-2 h-2 rounded-full" style={{ background: `#${r.color.toString(16).padStart(6, '0')}` }}></span>
                                             {r.name}
-                                            <button onClick={() => updateCurrentAction({ roles: currentAction.roles.filter((x: string) => x !== rid) })} className="hover:text-red-500 text-stone-400">×</button>
+                                            <button onClick={() => updateCurrentAction({ roles: currentAction.roles.filter((x: string) => x !== rid) })} className="hover:text-red-500 text-gray-400">×</button>
                                         </span> : null
                                     })}
                                 </div>
@@ -600,5 +602,3 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
         </div>
     );
 }
-
-

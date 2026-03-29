@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         const settings = settingsRows.length > 0 ? settingsRows[0] : {
             guild_id: guildId,
             enabled: false,
-            message: '🎊 Hadeh... si {user} naik level ke **{level}**! Berisik amat lo.',
+            message: '{user} naik level ke **{level}**!',
             channel_id: null
         };
 

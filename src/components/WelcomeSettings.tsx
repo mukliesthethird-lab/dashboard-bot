@@ -646,25 +646,25 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                 cancelText="Cancel"
             />
 
-            {/* Unsaved Changes Bar */}
+            {/* Standard Global Save Bar */}
             {JSON.stringify(settings) !== JSON.stringify(originalSettings) && originalSettings && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-[#030305]/90 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-[8px] shadow-2xl animate-fade-in-up flex items-center justify-between gap-6 min-w-[400px]">
-                    <span className="text-gray-200 font-semibold text-sm line-clamp-1">Careful — you have unsaved changes!</span>
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[130] bg-[#030305]/95 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-xl shadow-2xl animate-fade-up flex items-center justify-between gap-6 min-w-[360px]">
+                    <span className="text-gray-200 font-bold text-xs uppercase tracking-tight line-clamp-1">Careful — you have unsaved changes!</span>
                     <div className="flex items-center gap-3 shrink-0">
                         <button
                             onClick={resetSettings}
-                            className="text-gray-200 hover:underline text-sm font-medium transition-colors"
+                            className="text-gray-400 hover:text-white text-xs font-black uppercase tracking-widest transition-colors"
                         >
                             Reset
                         </button>
                         <button
                             onClick={() => setShowConfirm(true)}
                             disabled={saving}
-                            className="px-4 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white font-medium rounded-[3px] transition-all flex items-center gap-2 group text-sm"
+                            className="px-5 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white font-black rounded-lg transition-all flex items-center gap-2 group text-xs uppercase tracking-tighter disabled:opacity-50"
                         >
                             {saving ? (
                                 <>
-                                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     Saving...
                                 </>
                             ) : (

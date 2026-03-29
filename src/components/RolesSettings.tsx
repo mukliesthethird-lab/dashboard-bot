@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import EmojiPicker from "./EmojiPicker";
+import { ToastContainer, useToast } from "./Toast";
 
 import { ReactionRoleMessage, Channel, Role, GlobalRolesSettings } from "../types";
 import CreateMessageModal from "./CreateMessageModal";
@@ -34,14 +35,13 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
     const [globalSettings, setGlobalSettings] = useState<GlobalRolesSettings>({ join_roles_enabled: false, join_roles: [], reaction_roles_enabled: false });
     const [originalGlobalSettings, setOriginalGlobalSettings] = useState<GlobalRolesSettings | null>(null);
     const [savingGlobal, setSavingGlobal] = useState(false);
+    const { toast, success, error, hideToast } = useToast();
 
     // Data State
     const [settings, setSettings] = useState<{ messages: ReactionRoleMessage[] }>({ messages: [] });
     const [channels, setChannels] = useState<Channel[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
     const [loading, setLoading] = useState(true);
-    const [levelingRoles, setLevelingRoles] = useState<{ role_id: string, level: number }[]>([]);
-    const [originalLevelingRoles, setOriginalLevelingRoles] = useState<{ role_id: string, level: number }[]>([]);
 
     // Editor State
     const [showEditor, setShowEditor] = useState(false);
@@ -56,19 +56,17 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
         const loadData = async () => {
             setLoading(true);
             try {
-                const [messagesRes, channelsRes, rolesRes, settingsRes, levelingRes] = await Promise.all([
+                const [messagesRes, channelsRes, rolesRes, settingsRes] = await Promise.all([
                     fetch(`/api/roles?action=messages&guild_id=${guildId}`),
                     fetch(`/api/welcome?action=channels&guild_id=${guildId}`),
                     fetch(`/api/welcome?action=roles&guild_id=${guildId}`),
-                    fetch(`/api/roles?guild_id=${guildId}`),
-                    fetch(`/api/leveling?guild_id=${guildId}`)
+                    fetch(`/api/roles?guild_id=${guildId}`)
                 ]);
 
                 const messagesData = await messagesRes.json();
                 const channelsData = await channelsRes.json();
                 const rolesData = await rolesRes.json();
                 const settingsData = await settingsRes.json();
-                const levelingData = await levelingRes.json();
 
                 setSettings({ messages: Array.isArray(messagesData) ? messagesData : [] });
                 if (Array.isArray(channelsData)) setChannels(channelsData);
@@ -84,10 +82,6 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                     setOriginalGlobalSettings(loaded);
                 }
 
-                if (levelingData && levelingData.roles) {
-                    setLevelingRoles(levelingData.roles);
-                    setOriginalLevelingRoles(levelingData.roles);
-                }
             } catch (error) {
                 console.error("Failed to load data", error);
             }
@@ -111,19 +105,13 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
             });
             if (res.ok) {
                 setOriginalGlobalSettings(globalSettings);
-                
-                // Also save leveling roles if changed
-                if (JSON.stringify(levelingRoles) !== JSON.stringify(originalLevelingRoles)) {
-                    await fetch('/api/leveling', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ guild_id: guildId, roles: levelingRoles })
-                    });
-                    setOriginalLevelingRoles(levelingRoles);
-                }
+                success("Roles configuration saved!");
+            } else {
+                error("Failed to save changes.");
             }
         } catch (e) {
             console.error(e);
+            error("Network error. Please try again.");
         }
         setSavingGlobal(false);
     };
@@ -132,7 +120,6 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
         if (originalGlobalSettings) {
             setGlobalSettings(originalGlobalSettings);
         }
-        setLevelingRoles(originalLevelingRoles);
     };
 
     const handleDeleteClick = (msg: ReactionRoleMessage) => {
@@ -154,9 +141,10 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
             const messagesRes = await fetch(`/api/roles?action=messages&guild_id=${guildId}`);
             const messagesData = await messagesRes.json();
             setSettings({ messages: Array.isArray(messagesData) ? messagesData : [] });
-        } catch (error) {
-            console.error("Error deleting message:", error);
-            alert("Error deleting message");
+            success("Message deleted successfully.");
+        } catch (err) {
+            console.error("Error deleting message:", err);
+            error("Failed to delete message.");
         } finally {
             setConfirmDeleteId(null);
         }
@@ -294,86 +282,6 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                 </div>
             </div>
 
-            {/* Leveling Roles Section */}
-            <div className="glass-card rounded-[8px] p-6 border border-white/10 overflow-hidden relative">
-                <div className="flex items-center gap-3 mb-1">
-                    <span className="text-xl">📈</span>
-                    <h3 className="font-bold text-gray-200 text-lg">Leveling Roles</h3>
-                </div>
-                <p className="text-gray-400 text-sm mb-6">Assign roles to users when they reach specific levels</p>
-
-                <div className="space-y-4 max-w-2xl">
-                    <div className="grid grid-cols-12 gap-4 mb-2 items-center px-4 py-2 bg-white/5 rounded-[8px] border border-white/5 text-gray-500 text-[10px] font-black uppercase tracking-widest">
-                        <div className="col-span-6">Discord Role</div>
-                        <div className="col-span-4">Level Requirement</div>
-                        <div className="col-span-2 text-right">Action</div>
-                    </div>
-
-                    {levelingRoles.length === 0 && (
-                        <div className="text-center py-8 bg-black/10 rounded-xl border border-dashed border-white/10">
-                            <p className="text-gray-500 text-sm">No leveling roles configured yet.</p>
-                        </div>
-                    )}
-
-                    {levelingRoles.map((lr, idx) => {
-                        const role = roles.find(r => r.id === lr.role_id);
-                        return (
-                            <div key={idx} className="grid grid-cols-12 gap-4 items-center bg-black/20 p-4 rounded-[8px] border border-white/10 group transition-all hover:border-indigo-500/30">
-                                <div className="col-span-6 flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: role ? '#' + role.color.toString(16).padStart(6, '0') : '#99aab5' }} />
-                                    <span className="text-gray-200 font-bold text-sm truncate">{role ? role.name : 'Unknown Role'}</span>
-                                </div>
-                                <div className="col-span-4">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-gray-400 text-xs">Level</span>
-                                        <input 
-                                            type="number" 
-                                            value={lr.level} 
-                                            onChange={(e) => {
-                                                const newRoles = [...levelingRoles];
-                                                newRoles[idx].level = parseInt(e.target.value) || 0;
-                                                setLevelingRoles(newRoles);
-                                            }}
-                                            className="w-16 bg-black/40 border border-white/5 rounded-md px-2 py-1 text-white font-bold text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-span-2 text-right">
-                                    <button 
-                                        onClick={() => setLevelingRoles(levelingRoles.filter((_, i) => i !== idx))}
-                                        className="text-red-400 hover:text-red-300 transition-colors p-2"
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
-                            </div>
-                        );
-                    })}
-
-                    <div className="grid grid-cols-12 gap-4 mt-6 pt-6 border-t border-white/5">
-                        <div className="col-span-6">
-                            <select 
-                                onChange={(e) => {
-                                    if (e.target.value) {
-                                        if (levelingRoles.some(r => r.role_id === e.target.value)) {
-                                            alert("Role already has a level requirement!");
-                                        } else {
-                                            setLevelingRoles([...levelingRoles, { role_id: e.target.value, level: 1 }]);
-                                        }
-                                        e.target.value = '';
-                                    }
-                                }}
-                                className="w-full bg-black/20 border border-white/10 rounded-[8px] px-4 py-3 text-gray-300 text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
-                            >
-                                <option value="">+ Add a Level Role</option>
-                                {roles.filter(r => !levelingRoles.some(lr => lr.role_id === r.id)).map(r => (
-                                    <option key={r.id} value={r.id}>{r.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {/* Modals */}
             <CreateMessageModal
@@ -397,25 +305,25 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                 isDestructive={true}
             />
 
-            {/* Unsaved Changes Bar */}
-            {(JSON.stringify(globalSettings) !== JSON.stringify(originalGlobalSettings) || JSON.stringify(levelingRoles) !== JSON.stringify(originalLevelingRoles)) && originalGlobalSettings && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-[#030305]/90 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-[8px] shadow-2xl animate-fade-in-up flex items-center justify-between gap-6 min-w-[400px]">
-                    <span className="text-gray-200 font-semibold text-sm line-clamp-1">Careful — you have unsaved changes!</span>
+            {/* Standard Global Save Bar */}
+            {JSON.stringify(globalSettings) !== JSON.stringify(originalGlobalSettings) && originalGlobalSettings && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[130] bg-[#030305]/95 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-xl shadow-2xl animate-fade-up flex items-center justify-between gap-6 min-w-[360px]">
+                    <span className="text-gray-200 font-bold text-xs uppercase tracking-tight line-clamp-1">Careful — you have unsaved changes!</span>
                     <div className="flex items-center gap-3 shrink-0">
                         <button
                             onClick={resetGlobalSettings}
-                            className="text-gray-200 hover:underline text-sm font-medium transition-colors"
+                            className="text-gray-400 hover:text-white text-xs font-black uppercase tracking-widest transition-colors"
                         >
                             Reset
                         </button>
                         <button
                             onClick={handleSaveGlobal}
                             disabled={savingGlobal}
-                            className="px-4 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white font-medium rounded-[3px] transition-all flex items-center gap-2 group text-sm"
+                            className="px-5 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white font-black rounded-lg transition-all flex items-center gap-2 group text-xs uppercase tracking-tighter disabled:opacity-50"
                         >
                             {savingGlobal ? (
                                 <>
-                                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     Saving...
                                 </>
                             ) : (
@@ -425,6 +333,8 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                     </div>
                 </div>
             )}
+
+            <ToastContainer toast={toast} onClose={hideToast} />
         </div>
     );
 }

@@ -354,7 +354,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                 </div>
                                 <button
                                     onClick={() => handleAddFeed('youtube')}
-                                    className="w-full py-2 bg-[#248046] hover:bg-[#1a6334] text-white text-sm font-bold rounded-[3px] transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-2.5 bg-[#248046] hover:bg-[#1a6334] text-white text-xs font-black uppercase tracking-tight rounded-xl transition-all flex items-center justify-center gap-2 group shadow-lg shadow-emerald-900/20"
                                 >
                                     <span>➕</span> Add YouTube Feed
                                 </button>
@@ -458,7 +458,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                 </div>
                                 <button
                                     onClick={() => handleAddFeed('live')}
-                                    className="w-full py-2 bg-[#248046] hover:bg-[#1a6334] text-white text-sm font-bold rounded-[3px] transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-2.5 bg-[#248046] hover:bg-[#1a6334] text-white text-xs font-black uppercase tracking-tight rounded-xl transition-all flex items-center justify-center gap-2 group shadow-lg shadow-emerald-900/20"
                                 >
                                     <span>➕</span> Add Live Feed
                                 </button>
