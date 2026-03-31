@@ -32,7 +32,7 @@ export default function AnalyticsCharts({ guildId }: AnalyticsChartsProps) {
     const [activeTab, setActiveTab] = useState<'members' | 'messages' | 'xp'>('members');
 
     useEffect(() => {
-        fetch('/api/stats')
+        fetch(`/api/stats?guild_id=${guildId}`)
             .then(res => res.json())
             .then(stats => {
                 if (stats.history) {

@@ -6,11 +6,9 @@ import { getDiscordToken } from '@/lib/discord-token';
 export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
 
-// Simple cache for stats (1 minute TTL)
-let statsCache: { data: any; expires: number } | null = null;
+// Simple cache for stats (1 minute TTL), keyed by guild_id or 'global'
+let statsCache: Record<string, { data: any; expires: number }> = {};
 const CACHE_TTL = 60 * 1000; // 1 minute
-
-
 
 // Fetch bot guilds count from Discord API
 async function fetchBotGuildsCount(token: string): Promise<number> {
@@ -48,21 +46,29 @@ async function fetchBotGuildsCount(token: string): Promise<number> {
     });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const guildId = searchParams.get('guild_id');
+        const cacheKey = guildId || 'global';
+
         // Check cache first
-        if (statsCache && statsCache.expires > Date.now()) {
-            return NextResponse.json(statsCache.data);
+        if (statsCache[cacheKey] && statsCache[cacheKey].expires > Date.now()) {
+            return NextResponse.json(statsCache[cacheKey].data);
         }
 
-        // Fetch real active users, total xp, and total messages from database
+        const guildCondition = guildId ? 'WHERE guild_id = ?' : '';
+        const guildParams = guildId ? [guildId] : [];
+
+        // Fetch real active users, total xp, and total messages from database (these remain global for now, or you could filter users if table supported it)
         const [totalsResult]: any = await pool.query(
             'SELECT COUNT(DISTINCT user_id) as count, SUM(xp) as xp, SUM(total_messages) as messages FROM slot_users'
         );
         
-        // Fetch Peak Activity Hour from true server_analytics (Discord chat)
+        // Fetch Peak Activity Hour from true server_analytics (Discord chat) filtering by guild if provided
         const [peakResult]: any = await pool.query(
-            'SELECT log_hour as peak_hour, SUM(messages_count) as count FROM server_analytics GROUP BY log_hour ORDER BY count DESC LIMIT 1'
+            `SELECT log_hour as peak_hour, SUM(messages_count) as count FROM server_analytics ${guildCondition} GROUP BY log_hour ORDER BY count DESC LIMIT 1`,
+            guildParams
         );
         
         // Format the peak hour to 12-hour AM/PM format
@@ -75,9 +81,9 @@ export async function GET() {
         }
         
         // Ensure values are numbers, not strings from the DB driver
-        const activeUsers = Number(totalsResult[0]?.count || 0);
-        const totalXp = Number(totalsResult[0]?.xp || 0);
-        const totalMessages = Number(totalsResult[0]?.messages || 0);
+        let activeUsers = Number(totalsResult[0]?.count || 0);
+        let totalXp = Number(totalsResult[0]?.xp || 0);
+        let totalMessages = Number(totalsResult[0]?.messages || 0);
 
         // Fetch servers count from Discord API
         const token = getDiscordToken();
@@ -93,7 +99,7 @@ export async function GET() {
         // Calculate uptime (based on when the stats API was first called)
         const uptime = "99.9%";
 
-        // Fetch 7-day history from true server_analytics
+        // Fetch 7-day history from true server_analytics (filtered by guild)
         const [historyResult]: any = await pool.query(
             `SELECT 
                 log_date as date, 
@@ -101,8 +107,10 @@ export async function GET() {
                 SUM(messages_count) as messages, 
                 SUM(xp_gained) as xp 
              FROM server_analytics 
+             ${guildCondition}
              GROUP BY log_date 
-             ORDER BY log_date DESC LIMIT 7`
+             ORDER BY log_date DESC LIMIT 7`,
+             guildParams
         );
         
         const generateTrueHistoricalData = () => {
@@ -145,7 +153,7 @@ export async function GET() {
         };
 
         // Cache the result
-        statsCache = {
+        statsCache[cacheKey] = {
             data: stats,
             expires: Date.now() + CACHE_TTL
         };
