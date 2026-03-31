@@ -19,10 +19,22 @@ interface ActivityLogProps {
 const actionIcons: Record<string, string> = {
     "Dashboard accessed": "👁️",
     "Settings updated": "⚙️",
-    "Moderation enabled": "🛡️",
-    "Welcome configured": "👋",
-    "Logging enabled": "📝",
-    "Auto roles setup": "🎭",
+    "Moderation settings updated": "🛡️",
+    "Welcome settings updated": "👋",
+    "Leveling settings updated": "🆙",
+    "Roles settings updated": "🎭",
+    "Reaction roles updated": "✨",
+    "Reaction role message deleted": "🗑️",
+    "Form updated": "📋",
+    "Form deleted": "❌",
+    "Form enabled": "✅",
+    "Form disabled": "🚫",
+    "Economy: Money Given": "💰",
+    "Economy: User Reset": "🧹",
+    "Fishing: Rod Given": "🎣",
+    "Fishing: Material Given": "🔩",
+    "Fishing: Buff Given": "🚬",
+    "Fishing: User Reset": "🌊",
     default: "📌"
 };
 

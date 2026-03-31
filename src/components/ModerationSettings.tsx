@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import CustomDropdown from "./CustomDropdown";
 import CatLoader from "./CatLoader";
+import { logActivity } from "@/lib/logger";
 
 interface ModerationSettingsProps {
     guildId: string;
@@ -129,6 +130,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             });
             if (res.ok) {
                 setOriginalSettings(settings); // Update original to match current
+                await logActivity(guildId, "Moderation settings updated", "General moderation config changed.");
             }
         } catch (error) {
             console.error('Failed to save settings:', error);

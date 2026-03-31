@@ -7,6 +7,7 @@ import ToastContainer, { useToast } from "./Toast";
 import CatLoader from "./CatLoader";
 import CustomDropdown from "./CustomDropdown";
 import { ReactionRoleMessage, EmbedData, Component, BotAction, Role, Channel } from "../types";
+import { logActivity } from "@/lib/logger";
 
 
 
@@ -307,6 +308,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
             if (res.ok) {
                 setOriginalSettings(settings);
                 success("Settings saved! ✅");
+                await logActivity(guildId, "Welcome settings updated", "Settings for join, leave, boost, and roles updated.");
             } else {
                 error(data.error || "Failed");
             }

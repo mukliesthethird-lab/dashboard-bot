@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import CatLoader from "./CatLoader";
 import ToastContainer, { useToast } from "./Toast";
+import { logActivity } from "@/lib/logger";
 
 interface User {
     user_id: string;
@@ -128,6 +129,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
 
             if (res.ok) {
                 success(`Successfully gave $${amount} to @${selectedUser.username}!`);
+                await logActivity(guildId, "Economy: Money Given", `Gave $${amount} to @${selectedUser.username}`);
                 setSelectedUser(null);
                 setAmount("");
                 fetchStats();
@@ -158,6 +160,7 @@ export default function EconomyActions({ guildId }: EconomyActionsProps) {
 
             if (res.ok) {
                 success(`Reset @${selectedUser.username}'s balance!`);
+                await logActivity(guildId, "Economy: User Reset", `Reset balance for @${selectedUser.username}`);
                 setSelectedUser(null);
                 fetchStats();
                 setShowResetUser(false);

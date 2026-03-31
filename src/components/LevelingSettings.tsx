@@ -7,6 +7,7 @@ import PremiumCard from "./PremiumCard";
 import CustomDropdown from "./CustomDropdown";
 import { ToastContainer, useToast } from "./Toast";
 import { Channel, Role } from "../types";
+import { logActivity } from "@/lib/logger";
 
 interface LevelingSettingsProps {
     guildId: string;
@@ -94,6 +95,7 @@ export default function LevelingSettings({ guildId }: LevelingSettingsProps) {
             if (res.ok) {
                 setOriginalState({ enabled, message, channel_id: channelId, roles: [...levelingRoles] });
                 success("Successfully updated leveling settings!");
+                await logActivity(guildId, "Leveling settings updated", "Status: " + (enabled ? "Enabled" : "Disabled"));
             } else {
                 error("Failed to update settings. Please try again.");
             }

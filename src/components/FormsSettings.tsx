@@ -9,6 +9,7 @@ import FormSubmissions from "./FormSubmissions";
 import FormPanelEditor from "./FormPanelEditor";
 import CatLoader from "./CatLoader";
 import EmptyState from "./EmptyState";
+import { logActivity } from "@/lib/logger";
 
 interface FormsSettingsProps {
     guildId: string;
@@ -106,7 +107,8 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
 
             if (response.ok) {
                 success(result.message || "Form saved successfully!");
-
+                await logActivity(guildId, "Form updated", `Form "${form.name}" was ${form.id ? "updated" : "created"}.`);
+                
                 // Refresh forms list
                 const formsRes = await fetch(`/api/forms?guild_id=${guildId}`);
                 if (formsRes.ok) {
@@ -139,6 +141,7 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
 
             if (response.ok) {
                 success(result.message || "Form deleted!");
+                await logActivity(guildId, "Form deleted", `Form "${form.name}" was removed.`);
                 setForms(forms.filter(f => f.id !== form.id));
             } else {
                 error(result.error || "Failed to delete form");
@@ -167,11 +170,9 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
             });
 
             if (response.ok) {
-                if (newStatus) {
-                    success(`${form.name} is now Active!`);
-                } else {
-                    error(`${form.name} is now Disabled!`);
-                }
+                const actionText = newStatus ? "enabled" : "disabled";
+                success(`${form.name} is now ${newStatus ? "Active" : "Disabled"}!`);
+                await logActivity(guildId, `Form ${actionText}`, `Form "${form.name}" status changed to ${actionText}.`);
             } else {
                 // Revert state if failed
                 setForms(forms.map(f => f.id === form.id ? form : f));

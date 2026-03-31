@@ -7,6 +7,7 @@ import ActivityLog from "@/components/ActivityLog";
 import SettingsExportImport from "@/components/SettingsExportImport";
 import DashboardHeader from "@/components/DashboardHeader";
 import PremiumCard from "@/components/PremiumCard";
+import AnalyticsCharts from "@/components/AnalyticsCharts";
 import { getDiscordToken } from "@/lib/discord-token";
 
 interface Guild {
@@ -121,43 +122,56 @@ export default async function GuildDashboard({
                         </PremiumCard>
                     </div>
 
+                    {/* Analytics Section - THE NEW CENTERPIECE */}
+                    <div className="mb-8">
+                        <PremiumCard
+                            title="Server Analytics"
+                            description="Real-time visualizations of community growth and activity"
+                            icon={<span className="text-2xl text-blue-400">📊</span>}
+                        >
+                            <AnalyticsCharts guildId={guildId} />
+                        </PremiumCard>
+                    </div>
+
                     {/* Quick Actions */}
-                    <PremiumCard
-                        title="Quick Actions"
-                        description="Frequently used tools and settings"
-                        icon={<span className="text-2xl">⚡</span>}
-                        className="mb-8"
-                    >
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-4">
-                            <a href={`/dashboard/${guildId}/welcome`} className="group p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 hover:border-emerald-500/50 hover:bg-emerald-500/20 transition-all duration-300 text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">👋</div>
-                                <div className="font-bold text-gray-300 text-xs">Welcome</div>
-                            </a>
-                            <a href={`/dashboard/${guildId}/roles`} className="group p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/20 transition-all duration-300 text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">🎭</div>
-                                <div className="font-bold text-gray-300 text-xs">Roles</div>
-                            </a>
-                            <a href={`/dashboard/${guildId}/moderation`} className="group p-4 rounded-xl bg-red-500/10 border border-red-500/20 hover:border-red-500/50 hover:bg-red-500/20 transition-all duration-300 text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">🛡️</div>
-                                <div className="font-bold text-gray-300 text-xs">Moderation</div>
-                            </a>
-                            <a href={`/dashboard/${guildId}/logging`} className="group p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 hover:border-cyan-500/50 hover:bg-cyan-500/20 transition-all duration-300 text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">📋</div>
-                                <div className="font-bold text-gray-300 text-xs">Logging</div>
-                            </a>
-                            <a href={`/dashboard/${guildId}/economy`} className="group p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 hover:border-indigo-500/50 hover:bg-indigo-500/20 transition-all duration-300 text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">💰</div>
-                                <div className="font-bold text-gray-300 text-xs">Economy</div>
-                            </a>
-                            <a href={`/dashboard/${guildId}/fishing`} className="group p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/20 transition-all duration-300 text-center">
-                                <div className="text-2xl mb-1 group-hover:scale-110 group-hover:-rotate-6 transition">🎣</div>
-                                <div className="font-bold text-gray-300 text-xs">Fishing</div>
-                            </a>
+                    <div className="mb-8 p-[1px] bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-[8px]">
+                        <div className="bg-[#0a0a0f] rounded-[8px] p-6 border border-white/5">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-3 bg-white/5 rounded-xl text-yellow-500">
+                                    <span className="text-2xl">⚡</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white uppercase tracking-tighter">Fast Navigation</h3>
+                                    <p className="text-sm text-gray-400 font-medium">Quick access to server configuration modules</p>
+                                </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                                {[
+                                    { href: 'welcome', icon: '👋', label: 'Welcome', color: 'emerald' },
+                                    { href: 'roles', icon: '🎭', label: 'Roles', color: 'purple' },
+                                    { href: 'moderation', icon: '🛡️', label: 'Moderation', color: 'red' },
+                                    { href: 'logging', icon: '📋', label: 'Logging', color: 'cyan' },
+                                    { href: 'economy', icon: '💰', label: 'Economy', color: 'indigo' },
+                                    { href: 'fishing', icon: '🎣', label: 'Fishing', color: 'blue' },
+                                ].map((item) => (
+                                    <a 
+                                        key={item.href} 
+                                        href={`/dashboard/${guildId}/${item.href}`} 
+                                        className="group flex flex-col items-center justify-center p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all duration-300"
+                                    >
+                                        <div className="text-2xl mb-2 group-hover:scale-110 group-hover:-rotate-3 transition duration-300">{item.icon}</div>
+                                        <div className="font-bold text-gray-400 text-xs uppercase tracking-widest group-hover:text-white transition-colors">{item.label}</div>
+                                    </a>
+                                ))}
+                            </div>
                         </div>
-                    </PremiumCard>
+                    </div>
 
                     {/* Recent Activity - Now using real component */}
-                    <ActivityLog guildId={guildId} />
+                    <div className="mb-8">
+                        <ActivityLog guildId={guildId} />
+                    </div>
                 </div>
             </main>
         </div>

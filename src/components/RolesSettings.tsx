@@ -10,6 +10,7 @@ import ConfirmationModal from "./ConfirmationModal";
 import CatLoader from "./CatLoader";
 import DashboardHeader from "./DashboardHeader";
 import PremiumCard from "./PremiumCard";
+import { logActivity } from "@/lib/logger";
 
 interface RolesSettingsProps {
     guildId: string;
@@ -106,6 +107,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
             if (res.ok) {
                 setOriginalGlobalSettings(globalSettings);
                 success("Roles configuration saved!");
+                await logActivity(guildId, "Roles settings updated", "General roles and join-roles configuration changed.");
             } else {
                 error("Failed to save changes.");
             }
@@ -142,6 +144,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
             const messagesData = await messagesRes.json();
             setSettings({ messages: Array.isArray(messagesData) ? messagesData : [] });
             success("Message deleted successfully.");
+            await logActivity(guildId, "Reaction role message deleted", "A reaction role message was removed from the server.");
         } catch (err) {
             console.error("Error deleting message:", err);
             error("Failed to delete message.");
@@ -175,6 +178,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
         const messagesRes = await fetch(`/api/roles?action=messages&guild_id=${guildId}`);
         const messagesData = await messagesRes.json();
         setSettings({ messages: Array.isArray(messagesData) ? messagesData : [] });
+        await logActivity(guildId, "Reaction roles updated", `Reaction role message was ${isUpdate ? "updated" : "created"}.`);
     };
 
 

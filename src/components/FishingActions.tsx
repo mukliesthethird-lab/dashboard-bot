@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import CatLoader from "./CatLoader";
 import ToastContainer, { useToast } from "./Toast";
+import { logActivity } from "@/lib/logger";
 
 interface User {
     user_id: string;
@@ -181,6 +182,7 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             const data = await res.json();
             if (res.ok) {
                 success(`Gave ${selectedRod} +${rodLevel} to @${selectedUser.username}!`);
+                await logActivity(guildId, "Fishing: Rod Given", `Gave ${selectedRod} +${rodLevel} to @${selectedUser.username}`);
                 setSelectedUser(null);
                 setRodLevel("0");
                 fetchStats();
@@ -212,6 +214,7 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             const data = await res.json();
             if (res.ok) {
                 success(`Gave ${materialAmount}x ${selectedMaterial} to @${selectedUser.username}!`);
+                await logActivity(guildId, "Fishing: Material Given", `Gave ${materialAmount}x ${selectedMaterial} to @${selectedUser.username}`);
                 setSelectedUser(null);
                 fetchStats();
             } else {
@@ -242,6 +245,7 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             const data = await res.json();
             if (res.ok) {
                 success(`Gave ${buffAmount}x ${selectedBuff} to @${selectedUser.username}!`);
+                await logActivity(guildId, "Fishing: Buff Given", `Gave ${buffAmount}x ${selectedBuff} to @${selectedUser.username}`);
                 setSelectedUser(null);
                 fetchStats();
             } else {
@@ -266,6 +270,7 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             const data = await res.json();
             if (res.ok) {
                 success(`Reset @${selectedUser.username}'s fishing data!`);
+                await logActivity(guildId, "Fishing: User Reset", `Reset fishing data for @${selectedUser.username}`);
                 setSelectedUser(null);
                 fetchStats();
                 setShowResetUser(false);
