@@ -386,7 +386,7 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
                                             </span>
                                             <span className="text-gray-300 font-semibold">{catchItem.username}</span>
                                         </div>
-                                        <div className="text-gray-400 italic">{catchItem.fish_name} ({(Number(catchItem.weight) / 1000).toFixed(1)}kg)</div>
+                                        <div className="text-gray-400 italic">{catchItem.fish_name} ({Number(catchItem.weight).toFixed(1)}kg)</div>
                                         <div className="text-[10px] text-gray-500">Live</div>
                                     </div>
                                 )) : (
