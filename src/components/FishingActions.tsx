@@ -94,6 +94,14 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
     const [rarityDist, setRarityDist] = useState<any>({ Common: 0, Uncommon: 0, Rare: 0, Epic: 0, Legendary: 0 });
     const [loadingCatches, setLoadingCatches] = useState(false);
 
+    // Encyclopedia states
+    const [encyclopediaData, setEncyclopediaData] = useState<any>(null);
+    const [activeRarity, setActiveRarity] = useState('Common');
+    const [encyclopediaSearch, setEncyclopediaSearch] = useState("");
+    const [loadingEncyclopedia, setLoadingEncyclopedia] = useState(false);
+    const [showFishDetail, setShowFishDetail] = useState(false);
+    const [selectedFish, setSelectedFish] = useState<any>(null);
+
     // Leaderboard search and pagination
     const [leaderboardSearch, setLeaderboardSearch] = useState("");
     const [leaderboardPage, setLeaderboardPage] = useState(1);
@@ -139,6 +147,29 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             })
             .catch(() => setLoadingCatches(false));
     };
+
+    const fetchEncyclopedia = () => {
+        if (encyclopediaData) return;
+        setLoadingEncyclopedia(true);
+        fetch('/api/fishing?action=encyclopedia')
+            .then(res => res.json())
+            .then(data => {
+                setEncyclopediaData(data);
+                setLoadingEncyclopedia(false);
+            })
+            .catch(() => setLoadingEncyclopedia(false));
+    };
+
+    const viewFishDetail = (f: any, rarity: string) => {
+        setSelectedFish({ ...f, rarity });
+        setShowFishDetail(true);
+    };
+
+    useEffect(() => {
+        if (showFishEncyclopedia) {
+            fetchEncyclopedia();
+        }
+    }, [showFishEncyclopedia]);
 
     useEffect(() => {
         fetchStats();
@@ -309,31 +340,111 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
 
             {/* Fish Encyclopedia Modal */}
             {showFishEncyclopedia && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
-                    <div className="bg-[#0a0a0f] rounded-[8px] p-8 max-w-2xl w-full mx-4 shadow-2xl relative border border-white/10 max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                        <button onClick={closeModal} className="absolute top-4 right-4 text-gray-400 hover:text-gray-200"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
-                        <div className="text-center mb-6 shrink-0">
-                            <h2 className="text-2xl font-bold text-gray-100">📖 Fish Encyclopedia</h2>
-                            <p className="text-gray-400 mt-1 text-sm">Discover the inhabitants of the deep</p>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in" onClick={closeModal}>
+                    <div className="bg-[#0a0a0f] rounded-2xl p-8 max-w-4xl w-full mx-4 shadow-2xl relative border border-white/10 max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                        <button onClick={closeModal} className="absolute top-4 right-6 text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-full">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        
+                        <div className="text-center mb-8 shrink-0">
+                            <h2 className="text-3xl font-extrabold text-white tracking-tight flex items-center justify-center gap-3">
+                                <span className="text-4xl">📓</span> 
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Fish Encyclopedia</span>
+                            </h2>
+                            <p className="text-gray-400 mt-2 text-sm">Discover the inhabitants of the deep waters</p>
                         </div>
-                        <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar">
-                            {[
-                                { rarity: "Common", color: "text-gray-400", weight: "50%", examples: "Mas, Lele, Nila, Sepat, Mujair", price: "$8 - $15" },
-                                { rarity: "Uncommon", color: "text-green-400", weight: "30%", examples: "Gurame, Patin, Bawal, Toman, Bandeng", price: "$20 - $50" },
-                                { rarity: "Rare", color: "text-[#5865F2]", weight: "15%", examples: "Kakap Merah, Kerapu, Salmon, Tenggiri", price: "$65 - $150" },
-                                { rarity: "Epic", color: "text-purple-400", weight: "4%", examples: "Arowana Merah, Koi Jumbo, Marlin, Sailfish", price: "$500 - $5,000" },
-                                { rarity: "Legendary", color: "text-[#f0b232]", weight: "1%", examples: "Megalodon, Hiu Putih, Manta Ray, Oarfish", price: "$6,000 - $20,000" }
-                            ].map((group) => (
-                                <div key={group.rarity} className="glass-card p-4 rounded-[4px] border border-white/5">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h3 className={`font-bold ${group.color} uppercase text-sm tracking-wider`}>{group.rarity} ({group.weight})</h3>
-                                        <span className="text-xs font-bold text-gray-500">{group.price}</span>
-                                    </div>
-                                    <p className="text-sm text-gray-300 leading-relaxed italic">"{group.examples}..."</p>
+
+                        {/* Controls: Rarity Tabs & Search */}
+                        <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5 mb-6 shrink-0">
+                            <div className="flex flex-wrap gap-1.5 justify-center">
+                                {['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'].map(r => (
+                                    <button 
+                                        key={r}
+                                        onClick={() => setActiveRarity(r)}
+                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${activeRarity === r ? 'bg-white/10 text-white shadow-lg border border-white/10' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5 border border-transparent'}`}
+                                    >
+                                        {r}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="relative w-full md:w-64">
+                                <input 
+                                    type="text" 
+                                    placeholder="Search fish name..." 
+                                    value={encyclopediaSearch}
+                                    onChange={(e) => setEncyclopediaSearch(e.target.value)}
+                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all font-medium"
+                                />
+                                <span className="absolute left-3.5 top-3 text-gray-500 text-xs">🔍</span>
+                            </div>
+                        </div>
+
+                        {/* Fish Grid */}
+                        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar min-h-[300px]">
+                            {loadingEncyclopedia ? (
+                                <div className="flex flex-col items-center justify-center py-20 animate-pulse">
+                                    <div className="w-12 h-12 rounded-full border-2 border-blue-500/30 border-t-blue-500 animate-spin mb-4"></div>
+                                    <p className="text-gray-500 font-medium">Gathering fish data...</p>
                                 </div>
-                            ))}
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-4 pt-6">
+                                    {encyclopediaData && (encyclopediaData[activeRarity] || [])
+                                        .filter((f: any) => f.name.toLowerCase().includes(encyclopediaSearch.toLowerCase()))
+                                        .map((f: any) => {
+                                            const rarityColors: any = {
+                                                'Common': 'border-white/10 text-gray-400 bg-[#16161a] hover:border-white/40',
+                                                'Uncommon': 'border-emerald-500/40 text-emerald-400 bg-[#16161a] hover:border-emerald-400',
+                                                'Rare': 'border-blue-500/40 text-blue-400 bg-[#16161a] hover:border-blue-400',
+                                                'Epic': 'border-purple-500/40 text-purple-400 bg-[#16161a] hover:border-purple-400',
+                                                'Legendary': 'border-orange-500/40 text-orange-400 bg-[#16161a] hover:border-orange-400'
+                                            };
+                                            return (
+                                                <div 
+                                                    key={f.name} 
+                                                    onClick={() => viewFishDetail(f, activeRarity)}
+                                                    className={`group relative border-2 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-[#1c1c22] cursor-pointer ${rarityColors[activeRarity]}`}
+                                                >
+                                                    <div className="flex items-start gap-4">
+                                                        <div className="relative w-20 h-20 shrink-0 bg-black/40 rounded-xl overflow-hidden border border-white/5">
+                                                            <img src={f.image_url} alt={f.name} className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105" />
+                                                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                                                                <span className="text-[10px] text-white font-bold tracking-widest uppercase bg-black/60 px-3 py-1 rounded border border-white/20 scale-90 group-hover:scale-100 transition-transform">Detail</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <h4 className="text-white font-bold truncate text-lg transition-colors">{f.name}</h4>
+                                                            <div className={`inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest mb-2 ${rarityColors[activeRarity].split(' ').slice(0,3).join(' ')}`}>
+                                                                {activeRarity}
+                                                            </div>
+                                                            <div className="grid grid-cols-2 gap-2 mt-1">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[9px] text-gray-500 uppercase font-bold tracking-tight">Weight</span>
+                                                                    <span className="text-gray-300 font-mono text-[11px] font-semibold">{f.min_weight}-{f.max_weight}<span className="text-[9px] ml-0.5">kg</span></span>
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[9px] text-gray-500 uppercase font-bold tracking-tight text-right">Price</span>
+                                                                    <span className="text-[#248046] font-black text-[11px] text-right">${f.base_price.toLocaleString()}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    {(!encyclopediaData || !(encyclopediaData[activeRarity] || []).some((f: any) => f.name.toLowerCase().includes(encyclopediaSearch.toLowerCase()))) && (
+                                        <div className="col-span-full py-24 text-center">
+                                            <div className="text-5xl mb-4 grayscale opacity-30">🐠</div>
+                                            <p className="text-gray-500 italic font-medium">No fish discovered in this category matching your search.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
-                        <div className="mt-6 pt-4 border-t border-white/10 shrink-0"><button onClick={closeModal} className="w-full py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-[3px] transition text-sm">Close</button></div>
+                        
+                        <div className="mt-6 pt-4 border-t border-white/10 shrink-0 flex justify-between items-center">
+                            <span className="text-[10px] text-gray-600 italic">* Values shown represent base ecosystem data. Actual catches vary by rod quality.</span>
+                            <button onClick={closeModal} className="px-8 py-2.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 hover:text-blue-300 border border-blue-500/20 rounded-xl transition-all font-bold text-sm">Close Encyclopedia</button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -537,6 +648,63 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             )}
 
             {/* Toast Container */}
+            {/* Fish Detail Modal */}
+            {showFishDetail && selectedFish && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in" onClick={() => setShowFishDetail(false)}>
+                    <div className="bg-[#0a0a0f] rounded-3xl max-w-lg w-full mx-4 shadow-2xl relative border border-white/10 overflow-hidden" onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setShowFishDetail(false)} className="absolute top-4 right-6 text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-full z-10">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        
+                        <div className="relative group text-left">
+                            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-transparent"></div>
+                            <div className="relative w-full aspect-video bg-black/40 flex items-center justify-center overflow-hidden">
+                                <img src={selectedFish.image_url} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" onError={(e: any) => { e.target.src = 'https://cdn-icons-png.flaticon.com/512/2274/2274532.png'; }} />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] to-transparent"></div>
+                                <div className="absolute top-4 left-4 flex gap-2">
+                                    <span className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-[10px] font-black uppercase text-white tracking-widest">{selectedFish.rarity}</span>
+                                </div>
+                            </div>
+                            <div className="p-8 relative -mt-12">
+                                <div className="bg-[#12121a] rounded-2xl p-6 border border-white/5 shadow-2xl">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <h3 className="text-3xl font-black text-white tracking-tighter">{selectedFish.name}</h3>
+                                        <div className="text-right">
+                                            <div className="text-[10px] text-gray-500 uppercase font-black tracking-widest">Base Value</div>
+                                            <div className="text-2xl font-black text-[#248046] tracking-tighter">${(selectedFish.base_price || 0).toLocaleString()}</div>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-400 text-sm leading-relaxed mb-6 italic">
+                                        {selectedFish.description || (
+                                         selectedFish.rarity === 'Legendary' ? 'The stuff of myths. These ancient giants require the finest gear and absolute mastery.' :
+                                         selectedFish.rarity === 'Epic' ? 'Exotic species with unique biological markers, highly valued in the marketplace.' :
+                                         selectedFish.rarity === 'Rare' ? 'A prized catch for established fishers, found only in specific currents.' :
+                                         selectedFish.rarity === 'Uncommon' ? 'More elusive than common species, requiring a bit more patience to reel in.' :
+                                         'A frequent inhabitant of the shallow waters, easily caught with basic equipment.'
+                                        )}
+                                    </p>
+                                    <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-6 mt-6">
+                                        <div className="bg-white/5 p-4 rounded-2xl border border-white/5 text-center transition-colors hover:bg-white/[0.08]">
+                                            <div className="text-[9px] text-gray-500 uppercase font-black tracking-widest mb-1">Min Weight</div>
+                                            <div className="text-white font-mono font-bold text-xl">{selectedFish.min_weight} <span className="text-[10px] text-gray-500 font-sans">KG</span></div>
+                                        </div>
+                                        <div className="bg-white/5 p-4 rounded-2xl border border-white/5 text-center transition-colors hover:bg-white/[0.08]">
+                                            <div className="text-[9px] text-gray-500 uppercase font-black tracking-widest mb-1">Max Weight</div>
+                                            <div className="text-white font-mono font-bold text-xl">{selectedFish.max_weight} <span className="text-[10px] text-gray-500 font-sans">KG</span></div>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => setShowFishDetail(false)}
+                                        className="w-full mt-6 py-3 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 hover:text-blue-300 border border-blue-500/20 rounded-xl transition-all font-black text-xs uppercase tracking-widest"
+                                    >
+                                        Return to Encyclopedia
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             <ToastContainer toast={toast} onClose={hideToast} />
         </>
     );
