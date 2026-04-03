@@ -78,10 +78,14 @@ function fetchDiscordUser(userId: string, token: string): Promise<any> {
     });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const type = searchParams.get('type') || 'balance';
+        const field = type === 'xp' ? 'xp' : 'balance';
+
         const [rows]: any = await pool.query(
-            'SELECT CAST(user_id AS CHAR) as user_id, balance as total FROM slot_users ORDER BY balance DESC LIMIT 10'
+            `SELECT CAST(user_id AS CHAR) as user_id, ${field} as total FROM slot_users ORDER BY ${field} DESC LIMIT 10`
         );
 
         const token = getToken();
@@ -116,3 +120,4 @@ export async function GET() {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
+

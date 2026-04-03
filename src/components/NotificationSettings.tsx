@@ -305,13 +305,11 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                 title="Notification"
                 subtitle="Manage your social media feeds and automated notifications for YouTube, Live streams, and more."
                 icon="🔔"
-                gradientFrom="amber-400"
-                gradientTo="orange-500"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
                 {/* YouTube Content */}
-                <div className="glass-card rounded-[8px] border border-white/10 overflow-hidden flex flex-col shadow-lg">
+                <div className="bg-[#0a0a0f] rounded-[8px] border border-white/10 overflow-hidden flex flex-col shadow-lg">
                     <div className="p-4 border-b border-white/10 bg-black/20/30 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-[8px] bg-[#da373c]/10 flex items-center justify-center text-[#da373c]">
                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
@@ -326,7 +324,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                     </div>
                     <div className="p-4 space-y-6">
                         {/* Add Form */}
-                        <div className="bg-black/20/50 p-4 rounded-[8px] border border-white/10">
+                        <div className="bg-black/20 p-4 rounded-[8px] border border-white/10">
                             <h4 className="text-[10px] font-bold text-[#da373c] uppercase tracking-widest mb-4">Add New Channel</h4>
                             <div className="space-y-4">
                                 <div>
@@ -369,7 +367,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                             </h4>
                             <div className="space-y-2">
                                 {feeds.filter(f => f.type === 'youtube').map(feed => (
-                                    <div key={feed.id} className="bg-black/20/50 border border-white/10 rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
+                                    <div key={feed.id} className="bg-black/20 border border-white/10 rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
                                                 <p className="text-sm font-bold text-white truncate max-w-[150px]">{feed.feed_url.split('/').pop()}</p>
@@ -419,7 +417,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                 </div>
 
                 {/* Live Streams */}
-                <div className="glass-card rounded-[8px] border border-white/10 overflow-hidden flex flex-col shadow-lg">
+                <div className="bg-[#0a0a0f] rounded-[8px] border border-white/10 overflow-hidden flex flex-col shadow-lg">
                     <div className="p-4 border-b border-white/10 bg-black/20/30 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-[8px] bg-[#5865f2]/10 flex items-center justify-center text-[#5865f2]">
                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0h1.714v5.143h-1.714zM4.714 0L1.714 3v15.429h5.143v4.285l4.286-4.285h3.428L22.286 12V0zm15.857 11.142l-3.428 3.429h-3.429l-3 3v-3H6.857V1.714h13.714z" /></svg>
@@ -431,7 +429,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                     </div>
                     <div className="p-4 space-y-6">
                         {/* Add Form */}
-                        <div className="bg-black/20/50 p-4 rounded-[8px] border border-white/10">
+                        <div className="bg-black/20 p-4 rounded-[8px] border border-white/10">
                             <h4 className="text-[10px] font-bold text-[#5865f2] uppercase tracking-widest mb-4">Add New Stream</h4>
                             <div className="space-y-4">
                                 <div>
@@ -473,7 +471,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                             </h4>
                             <div className="space-y-2">
                                 {feeds.filter(f => f.type === 'live').map(feed => (
-                                    <div key={feed.id} className="bg-black/20/50 border border-white/10 rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
+                                    <div key={feed.id} className="bg-black/20 border border-white/10 rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
                                                 <p className="text-sm font-bold text-white truncate max-w-[150px]">{feed.feed_url.split('/').pop()}</p>
@@ -525,7 +523,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                 {/* Coming Soon / More Platforms */}
                 <div className="md:col-span-2 group relative">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-[#5865f2] to-[#4e5058] rounded-[8px] blur opacity-5 group-hover:opacity-10 transition duration-500" />
-                    <div className="relative glass-card border border-dashed border-white/10 p-8 rounded-[8px] flex flex-col items-center justify-center text-center">
+                    <div className="relative bg-[#0a0a0f] border border-dashed border-white/10 p-8 rounded-[8px] flex flex-col items-center justify-center text-center">
                         <div className="w-16 h-16 bg-black/20 rounded-full flex items-center justify-center mb-4">
                             <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

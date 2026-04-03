@@ -177,9 +177,9 @@ export default function FormEditor({
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative w-full max-w-5xl max-h-[90vh] glass-card rounded-[8px] shadow-2xl overflow-hidden flex flex-col animate-scale-in">
+            <div className="relative w-full max-w-5xl max-h-[90vh] bg-[#0a0a0f] rounded-[8px] shadow-2xl overflow-hidden flex flex-col animate-scale-in border border-white/10">
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-white/10 glass-card">
+                <div className="flex items-center justify-between p-5 border-b border-white/10 bg-[#0a0a0f]">
                     <div className="flex items-center gap-3">
                         <span className="text-2xl">📝</span>
                         <div>
@@ -993,28 +993,21 @@ export default function FormEditor({
                 </div>
 
                 {/* Modal Floating Save Bar */}
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[250] bg-black/20 border border-[#2b2d31] pl-6 pr-2 py-2 rounded-full shadow-2xl flex items-center gap-6">
-                    <span className="text-gray-300 font-medium text-sm">Unsaved form changes</span>
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[250] bg-[#030305]/90 backdrop-blur-3xl border border-white/10 pl-4 pr-3 py-3 rounded-[8px] shadow-2xl animate-fade-in-up flex items-center gap-6 min-w-[400px]">
+                    <span className="text-white font-medium text-sm flex-1">Careful — you have unsaved changes!</span>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={onClose}
-                            className="px-4 py-1.5 text-gray-300 hover:text-white hover:underline transition-colors text-sm"
+                            className="px-3 py-1.5 text-white hover:underline font-medium text-sm transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={() => onSave(form)}
                             disabled={saving || !form.name || !form.title}
-                            className="px-6 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white font-medium rounded-[3px] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                            className="px-4 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white font-medium text-sm rounded-[3px] transition-colors flex items-center gap-2"
                         >
-                            {saving ? (
-                                <>
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    Saving...
-                                </>
-                            ) : (
-                                "Save Changes"
-                            )}
+                            {saving ? "Saving..." : "Save Changes"}
                         </button>
                     </div>
                 </div>

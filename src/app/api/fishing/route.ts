@@ -132,6 +132,44 @@ export async function GET(request: Request) {
             });
         }
 
+        if (action === 'recent_catches') {
+            const [catchesRaw]: any = await pool.query(
+                `SELECT CAST(user_id AS CHAR) as user_id, fish_name, rarity, weight, price 
+                 FROM fish_inventory 
+                 WHERE rarity IN ('Epic', 'Legendary') 
+                 ORDER BY id DESC LIMIT 10`
+            );
+
+            const [distRaw]: any = await pool.query(
+                'SELECT rarity, COUNT(*) as count FROM fish_inventory GROUP BY rarity'
+            );
+
+            // Map distribution to a stable object
+            const distribution = { Common: 0, Uncommon: 0, Rare: 0, Epic: 0, Legendary: 0 };
+            distRaw.forEach((row: any) => {
+                if (row.rarity in distribution) {
+                    distribution[row.rarity as keyof typeof distribution] = row.count;
+                }
+            });
+
+            const enrichedCatches = [];
+            for (const c of catchesRaw) {
+                const discordUser = token ? await fetchDiscordUser(c.user_id, token) : null;
+                enrichedCatches.push({
+                    ...c,
+                    username: discordUser?.global_name || discordUser?.username || 'Unknown',
+                    avatar: discordUser?.avatar
+                        ? `https://cdn.discordapp.com/avatars/${c.user_id}/${discordUser.avatar}.png`
+                        : null
+                });
+                await new Promise(r => setTimeout(r, 50));
+            }
+            return NextResponse.json({
+                recent: enrichedCatches,
+                distribution
+            });
+        }
+
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     } catch (error: any) {
         console.error('Fishing API error:', error);

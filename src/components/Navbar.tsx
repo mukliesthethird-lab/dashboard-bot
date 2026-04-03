@@ -175,7 +175,7 @@ export default function Navbar() {
             {/* Login Modal */}
             {showLoginModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-[#030305]/80 backdrop-blur-3xl rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/10 animate-scale-in">
+                    <div className="bg-[#0a0a0f] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
                         <div className="text-center">
                             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
                                 <span className="text-5xl">🐔</span>
@@ -210,7 +210,7 @@ export default function Navbar() {
             {/* Logout Confirmation Modal */}
             {showLogoutModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-[#030305]/80 backdrop-blur-3xl rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/10 animate-scale-in">
+                    <div className="bg-[#0a0a0f] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
                         <div className="text-center">
                             <div className="w-20 h-20 mx-auto mb-4 bg-red-500/10 rounded-full flex items-center justify-center">
                                 <svg className="w-10 h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

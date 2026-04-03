@@ -1441,7 +1441,7 @@ export default function CreateMessageModal({
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-fade-in">
-            <div className="glass-card w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-white/10 animate-scale-in">
+            <div className="bg-[#0a0a0f] w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-white/10 animate-scale-in">
 
                 {/* Top Bar */}
                 <div className="bg-[#212226] border-b border-white/10 px-3 md:px-6 py-3 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center shadow-sm z-10 shrink-0">
@@ -1748,7 +1748,7 @@ export default function CreateMessageModal({
                 {/* Component Edit Modal Overlay */}
                 {activeComponent && compSettings && (
                     <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-2 md:p-4">
-                        <div className="glass-card rounded-[8px] shadow-2xl w-full max-w-[600px] border border-white/10 animate-scale-in max-h-[95vh] md:max-h-[85vh] flex flex-col overflow-hidden">
+                        <div className="bg-[#0a0a0f] rounded-[8px] shadow-2xl w-full max-w-[600px] border border-white/10 animate-scale-in max-h-[95vh] md:max-h-[85vh] flex flex-col overflow-hidden">
                             {/* Modal Header */}
                             <div className="flex items-center justify-between p-4 md:p-6 pb-0 flex-shrink-0">
                                 <h3 className="font-bold text-lg text-white">
@@ -2019,7 +2019,7 @@ export default function CreateMessageModal({
                 {/* Import JSON Modal */}
                 {showImportModal && (
                     <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4">
-                        <div className="bg-[#212226] rounded-2xl shadow-2xl w-full max-w-[550px] border border-white/10 animate-scale-in overflow-hidden max-h-[95vh] flex flex-col">
+                        <div className="bg-[#0a0a0f] rounded-[8px] shadow-2xl w-full max-w-[550px] border border-white/10 animate-scale-in overflow-hidden max-h-[95vh] flex flex-col">
                             {/* Header */}
                             <div className="bg-black/20 p-3 md:p-4 flex items-center justify-between shrink-0 border-b border-white/10">
                                 <div className="flex items-center gap-2 md:gap-3">

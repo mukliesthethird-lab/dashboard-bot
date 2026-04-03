@@ -120,7 +120,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
             {/* Import Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in" onClick={() => setShowModal(false)}>
-                    <div className="bg-[#030305]/90 backdrop-blur-3xl rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border border-white/10 animate-scale-in" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] border border-white/10 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
                         <div className="text-center mb-8">
                             <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
                                 <span className="text-4xl">📥</span>

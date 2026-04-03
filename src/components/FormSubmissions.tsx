@@ -866,7 +866,7 @@ export default function FormSubmissions({
             {/* Detail Modal */}
             {showDetailModal && selectedSubmission && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setShowDetailModal(false)}>
-                    <div className="glass-card shadow-2xl rounded-[4px] border-l-4 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up" style={{ borderLeftColor: getEmbedColor(selectedSubmission.status).replace('border-[', '').replace(']', '') }} onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#0a0a0f] shadow-2xl rounded-[4px] border-y border-r border-white/10 border-l-4 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up" style={{ borderLeftColor: getEmbedColor(selectedSubmission.status).replace('border-[', '').replace(']', '') }} onClick={e => e.stopPropagation()}>
                         
                         {/* Modal Header */}
                         <div className="p-6 pb-4 border-b border-white/10/50 flex items-start justify-between">

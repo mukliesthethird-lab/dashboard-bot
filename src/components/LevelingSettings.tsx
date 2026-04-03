@@ -36,6 +36,12 @@ export default function LevelingSettings({ guildId }: LevelingSettingsProps) {
     const [originalState, setOriginalState] = useState<any>(null);
     const { toast, success, error, hideToast } = useToast();
 
+    // Leaderboard State
+    const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [leaderboardType, setLeaderboardType] = useState<'balance' | 'xp'>('xp');
+    const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
+    const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
+
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -76,6 +82,22 @@ export default function LevelingSettings({ guildId }: LevelingSettingsProps) {
         };
         loadData();
     }, [guildId]);
+
+    const fetchLeaderboard = async (type: 'balance' | 'xp') => {
+        setLoadingLeaderboard(true);
+        setLeaderboardType(type);
+        try {
+            const res = await fetch(`/api/leaderboard?type=${type}`);
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                setLeaderboardData(data);
+            }
+        } catch (err) {
+            error("Failed to fetch leaderboard");
+        } finally {
+            setLoadingLeaderboard(false);
+        }
+    };
 
     const handleSave = async () => {
         setSaving(true);
@@ -150,6 +172,17 @@ export default function LevelingSettings({ guildId }: LevelingSettingsProps) {
                         />
                     </div>
                 </div>
+
+                <button
+                    onClick={() => {
+                        setShowLeaderboard(true);
+                        fetchLeaderboard('xp');
+                    }}
+                    className="lg:col-span-1 bg-[#0b0a10] p-4 rounded-3xl border border-white/5 flex items-center justify-center gap-3 shadow-xl hover:bg-white/5 transition-all group"
+                >
+                    <span className="text-2xl group-hover:scale-110 transition-transform">🏆</span>
+                    <span className="text-sm font-black text-gray-100 uppercase tracking-tighter">Leaderboard</span>
+                </button>
             </div>
 
             {/* Main Configuration Matrix */}
@@ -322,6 +355,68 @@ export default function LevelingSettings({ guildId }: LevelingSettingsProps) {
             )}
 
             <ToastContainer toast={toast} onClose={hideToast} />
+
+            {/* Leaderboard Modal */}
+            {showLeaderboard && (
+                <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in px-4" onClick={() => setShowLeaderboard(false)}>
+                    <div className="bg-[#0b0a10] border border-white/10 w-full max-w-xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-fade-up relative" onClick={e => e.stopPropagation()}>
+                        <div className="p-8 pb-4 text-center relative">
+                            <button 
+                                onClick={() => setShowLeaderboard(false)}
+                                className="absolute top-6 right-8 text-gray-500 hover:text-white transition-colors"
+                            >
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                            <div className="inline-flex items-center justify-center p-3 bg-indigo-500/10 rounded-2xl mb-4">
+                                <span className="text-3xl animate-pulse">⚡</span>
+                            </div>
+                            <h2 className="text-3xl font-black text-white tracking-tight uppercase">Global EXP Matrix</h2>
+                            <p className="text-indigo-400/60 text-sm font-bold uppercase tracking-widest mt-1">Top 10 Data Stream</p>
+                        </div>
+
+                        {/* List */}
+                        <div className="px-8 pb-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                            {loadingLeaderboard ? (
+                                <div className="space-y-3">
+                                    {[1, 2, 3, 4, 5].map(i => (
+                                        <div key={i} className="h-16 bg-white/[0.02] border border-white/5 rounded-2xl animate-pulse" />
+                                    ))}
+                                </div>
+                            ) : leaderboardData.length === 0 ? (
+                                <div className="py-12 text-center">
+                                    <span className="text-4xl block mb-4 opacity-20">👻</span>
+                                    <p className="text-gray-600 font-bold uppercase tracking-widest text-sm">No data records found</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {leaderboardData.map((user, index) => (
+                                        <div 
+                                            key={user.user_id}
+                                            className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${index === 0 ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-white/[0.02] border-white/5 hover:border-white/10'}`}
+                                        >
+                                            <div className="w-8 text-center font-black text-gray-500">
+                                                {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                                            </div>
+                                            <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10">
+                                                <img src={user.avatar || "https://cdn.discordapp.com/embed/avatars/0.png"} alt="" className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-bold text-gray-200 truncate truncate text-sm">@{user.username}</div>
+                                                <div className="text-[10px] text-gray-600 font-bold uppercase">{user.user_id}</div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className={`font-black ${leaderboardType === 'xp' ? 'text-indigo-400' : 'text-amber-400'} text-sm`}>
+                                                    {leaderboardType === 'xp' ? `${user.total.toLocaleString()} XP` : `$${user.total.toLocaleString()}`}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

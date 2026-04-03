@@ -242,7 +242,7 @@ export default function FormPanelEditor({
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-fade-in">
-            <div className="glass-card w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-white/10 animate-scale-in">
+            <div className="bg-[#0a0a0f] border border-white/10 w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border animate-scale-in">
                 <ToastContainer toast={toast} onClose={hideToast} />
 
                 {/* Top Bar */}
