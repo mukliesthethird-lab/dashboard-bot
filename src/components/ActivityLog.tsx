@@ -119,5 +119,3 @@ export default function ActivityLog({ guildId }: ActivityLogProps) {
         </div>
     );
 }
-
-

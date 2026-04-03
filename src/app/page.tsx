@@ -391,6 +391,9 @@ export default function Home() {
             <ul className="space-y-4">
               <li><Link href="/dashboard" className="text-gray-400 hover:text-indigo-400 transition-colors">Dashboard</Link></li>
               <li><Link href="/leaderboard" className="text-gray-400 hover:text-indigo-400 transition-colors">Leaderboard</Link></li>
+              <li><Link href="/commands" className="text-gray-400 hover:text-indigo-400 transition-colors">Commands Wiki</Link></li>
+              <li><Link href="/status" className="text-gray-400 hover:text-indigo-400 transition-colors">System Status</Link></li>
+              <li><Link href="/donate" className="text-gray-400 hover:text-amber-400 transition-colors font-bold flex items-center gap-2"><span>☕</span> Donate to Creator</Link></li>
               <li><a href="https://bit.ly/bantengfam" className="text-gray-400 hover:text-indigo-400 transition-colors">Support</a></li>
             </ul>
           </div>

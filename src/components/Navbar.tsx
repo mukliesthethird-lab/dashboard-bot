@@ -57,12 +57,43 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center gap-2">
                         <Link
                             href="/leaderboard"
-                            className={`px-4 py-2 rounded-full font-semibold transition-all ${pathname === '/leaderboard'
+                            className={`px-4 py-2 rounded-full font-bold transition-all ${pathname === '/leaderboard'
                                 ? 'bg-indigo-500/20 text-indigo-400'
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
-                            🏆 Leaderboard
+                             Leaderboard
+                        </Link>
+
+                        <Link
+                            href="/commands"
+                            className={`px-4 py-2 rounded-full font-bold transition-all ${pathname === '/commands'
+                                ? 'bg-indigo-500/20 text-indigo-400'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
+                        >
+                             Commands
+                        </Link>
+
+                        <Link
+                            href="/status"
+                            className={`px-4 py-2 rounded-full font-bold transition-all ${pathname === '/status'
+                                ? 'bg-indigo-500/20 text-indigo-400'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
+                        >
+                             Status
+                        </Link>
+
+                        <Link 
+                            href="/donate"
+                            className={`px-4 py-2 rounded-full font-bold transition-all ${
+                                pathname === '/donate'
+                                    ? 'bg-amber-500/20 text-amber-400 font-black'
+                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            }`}
+                        >
+                            Donate
                         </Link>
 
                         {session ? (
@@ -125,12 +156,57 @@ export default function Navbar() {
                             <Link
                                 href="/leaderboard"
                                 onClick={() => setMobileMenuOpen(false)}
-                                className={`block px-4 py-3 rounded-xl font-semibold transition ${pathname === '/leaderboard'
+                                className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/leaderboard'
                                     ? 'bg-indigo-500/20 text-indigo-400'
                                     : 'text-gray-300 hover:bg-white/5'
                                     }`}
                             >
                                 🏆 Leaderboard
+                            </Link>
+
+                            <Link
+                                href="/commands"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/commands'
+                                    ? 'bg-indigo-500/20 text-indigo-400'
+                                    : 'text-gray-300 hover:bg-white/5'
+                                    }`}
+                            >
+                                📜 Commands Wiki
+                            </Link>
+
+                            <Link
+                                href="/encyclopedia"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/encyclopedia'
+                                    ? 'bg-indigo-500/20 text-indigo-400'
+                                    : 'text-gray-300 hover:bg-white/5'
+                                    }`}
+                            >
+                                🎣 Fishing Encyclopedia
+                            </Link>
+
+                            <Link
+                                href="/status"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/status'
+                                    ? 'bg-indigo-500/20 text-indigo-400'
+                                    : 'text-gray-300 hover:bg-white/5'
+                                    }`}
+                            >
+                                ⚡ System Status
+                            </Link>
+
+                            <Link 
+                                href="/donate"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={`block px-4 py-3 rounded-xl font-bold transition ${
+                                    pathname === '/donate'
+                                        ? 'bg-amber-500/20 text-amber-400'
+                                        : 'text-gray-300 hover:bg-white/5'
+                                }`}
+                            >
+                                ☕ Donate to Creator
                             </Link>
 
                             {session ? (
