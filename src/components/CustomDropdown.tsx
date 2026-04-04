@@ -7,6 +7,7 @@ interface DropdownOption {
     value: string;
     label: string;
     icon?: string;
+    style?: React.CSSProperties;
 }
 
 interface CustomDropdownProps {
@@ -193,6 +194,7 @@ export default function CustomDropdown({
                         data-option
                         onClick={() => handleSelect(option.value)}
                         onMouseEnter={() => setHighlightedIndex(index)}
+                        style={option.style}
                         className={`
                             px-3 py-2 text-sm cursor-pointer transition-colors flex items-center gap-2
                             ${option.value === value

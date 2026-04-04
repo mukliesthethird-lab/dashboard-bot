@@ -21,9 +21,8 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'User ID not found in session' }, { status: 400 });
         }
 
-        // Fetch user customization
         const [customRows]: any = await pool.query(
-            'SELECT background_id, shown_badges FROM profile_customization WHERE user_id = ?',
+            'SELECT background_id, shown_badges, font_family, text_color, xp_bar_color FROM profile_customization WHERE user_id = ?',
             [userId]
         );
 
@@ -76,8 +75,8 @@ export async function GET(request: Request) {
 
         const unlockedBgCount = unlockedBgRows[0]?.count || 0;
 
-        return NextResponse.json({
-            customization: customRows.length > 0 ? customRows[0] : { background_id: 0, shown_badges: '[]' },
+        const responseData = {
+            customization: customRows.length > 0 ? customRows[0] : { background_id: 0, shown_badges: '[]', font_family: 'Arial', text_color: '#FFFFFF', xp_bar_color: '#6366f1' },
             backgrounds: bgRows,
             badges: [],
             stats: { 
@@ -85,7 +84,8 @@ export async function GET(request: Request) {
                 ...fishStats,
                 unlocked_backgrounds: unlockedBgCount
             }
-        });
+        };
+        return NextResponse.json(responseData);
     } catch (error: any) {
         console.error('Profile API error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
@@ -112,16 +112,22 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { background_id } = body;
+        const { background_id, font_family, text_color, xp_bar_color } = body;
 
         await pool.query(`
-            INSERT INTO profile_customization (user_id, background_id)
-            VALUES (?, ?)
+            INSERT INTO profile_customization (user_id, background_id, font_family, text_color, xp_bar_color)
+            VALUES (?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
-                background_id = VALUES(background_id)
+                background_id = VALUES(background_id),
+                font_family = VALUES(font_family),
+                text_color = VALUES(text_color),
+                xp_bar_color = VALUES(xp_bar_color)
         `, [
             userId,
-            background_id || 0
+            background_id || 0,
+            font_family || 'Arial',
+            text_color || '#FFFFFF',
+            xp_bar_color || '#6366f1'
         ]);
 
         return NextResponse.json({ success: true, message: 'Profile customization saved!' });
