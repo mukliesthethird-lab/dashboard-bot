@@ -97,7 +97,7 @@ export default function MarketPage() {
 
     return (
         <div className="space-y-6 pt-16 lg:pt-0 max-w-7xl mx-auto px-4 pb-20">
-            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+            <Toast toast={toast} onClose={() => setToast(null)} />
             
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
