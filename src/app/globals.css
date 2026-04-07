@@ -985,3 +985,7 @@ select {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+/* Hide TradingView Attribution Logo */
+#tv-attr-logo {
+    display: none !important;
+}

@@ -8,9 +8,11 @@ const dbConfig = {
     port: Number(process.env.DB_PORT) || 3306,
     waitForConnections: true,
     connectionLimit: 10,
+    maxIdle: 5,
+    idleTimeout: 30000,
     queueLimit: 0,
     enableKeepAlive: true,
-    keepAliveInitialDelay: 0,
+    keepAliveInitialDelay: 10000,
     supportBigNumbers: true,
     bigNumberStrings: true,
     timezone: 'Z'

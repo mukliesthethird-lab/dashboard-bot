@@ -28,16 +28,14 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`fixed z-[110] transition-all duration-500 ${
-                isGuildDashboard
-                    ? (scrolled ? 'top-0 left-0 right-0 lg:top-4 lg:left-[304px] lg:right-6 flex justify-center' : 'top-0 left-0 right-0 lg:left-[288px] flex justify-center')
-                    : (scrolled ? 'top-0 left-0 right-0 md:top-4 md:left-4 md:right-4 lg:left-8 lg:right-8 flex justify-center' : 'top-0 left-0 right-0 flex justify-center')
-            }`}>
-                <div className={`w-full ${isGuildDashboard ? 'max-w-none' : 'max-w-7xl'} h-20 px-4 md:px-6 flex items-center justify-between transition-all duration-500 ${
-                    scrolled
-                        ? 'bg-[#05050a]/70 backdrop-blur-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] border-b md:border border-white/10 md:rounded-full'
-                        : 'bg-transparent border-transparent'
+            <nav className={`fixed z-[110] transition-all duration-500 ${isGuildDashboard
+                ? (scrolled ? 'top-0 left-0 right-0 lg:top-4 lg:left-[304px] lg:right-6 flex justify-center' : 'top-0 left-0 right-0 lg:left-[288px] flex justify-center')
+                : (scrolled ? 'top-0 left-0 right-0 md:top-4 md:left-4 md:right-4 lg:left-8 lg:right-8 flex justify-center' : 'top-0 left-0 right-0 flex justify-center')
                 }`}>
+                <div className={`w-full ${isGuildDashboard ? 'max-w-none' : 'max-w-7xl'} h-20 px-4 md:px-6 flex items-center justify-between transition-all duration-500 ${scrolled
+                    ? 'bg-[#05050a]/70 backdrop-blur-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] border-b md:border border-white/10 md:rounded-full'
+                    : 'bg-transparent border-transparent'
+                    }`}>
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group" onClick={() => setMobileMenuOpen(false)}>
                         <div className="relative">
@@ -62,7 +60,7 @@ export default function Navbar() {
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
-                             Leaderboard
+                            Leaderboard
                         </Link>
 
                         <Link
@@ -72,7 +70,7 @@ export default function Navbar() {
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
-                             Commands
+                            Commands
                         </Link>
 
                         <Link
@@ -82,16 +80,35 @@ export default function Navbar() {
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
-                             Status
+                            Status
                         </Link>
 
-                        <Link 
+                        <Link
+                            href="/market"
+                            className={`px-4 py-2 rounded-full font-bold transition-all flex items-center gap-1 ${pathname === '/market'
+                                ? 'bg-indigo-500/20 text-indigo-400'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
+                        >
+                            Market
+                        </Link>
+
+                        <Link
+                            href="/casino"
+                            className={`px-4 py-2 rounded-full font-bold transition-all flex items-center gap-1 ${pathname === '/casino'
+                                ? 'bg-indigo-500/20 text-indigo-400'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
+                        >
+                            Casino
+                        </Link>
+
+                        <Link
                             href="/donate"
-                            className={`px-4 py-2 rounded-full font-bold transition-all ${
-                                pathname === '/donate'
-                                    ? 'bg-amber-500/20 text-amber-400 font-black'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                            }`}
+                            className={`px-4 py-2 rounded-full font-bold transition-all ${pathname === '/donate'
+                                ? 'bg-amber-500/20 text-amber-400 font-black'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
                         >
                             Donate
                         </Link>
@@ -197,14 +214,35 @@ export default function Navbar() {
                                 ⚡ System Status
                             </Link>
 
-                            <Link 
+                            <Link
+                                href="/market"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/market'
+                                    ? 'bg-indigo-500/20 text-indigo-400'
+                                    : 'text-gray-300 hover:bg-white/5'
+                                    }`}
+                            >
+                                📈 Live Market
+                            </Link>
+
+                            <Link
+                                href="/casino"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/casino'
+                                    ? 'bg-indigo-500/20 text-indigo-400'
+                                    : 'text-gray-300 hover:bg-white/5'
+                                    }`}
+                            >
+                                🎰 Casino Games
+                            </Link>
+
+                            <Link
                                 href="/donate"
                                 onClick={() => setMobileMenuOpen(false)}
-                                className={`block px-4 py-3 rounded-xl font-bold transition ${
-                                    pathname === '/donate'
-                                        ? 'bg-amber-500/20 text-amber-400'
-                                        : 'text-gray-300 hover:bg-white/5'
-                                }`}
+                                className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/donate'
+                                    ? 'bg-amber-500/20 text-amber-400'
+                                    : 'text-gray-300 hover:bg-white/5'
+                                    }`}
                             >
                                 ☕ Donate to Creator
                             </Link>
