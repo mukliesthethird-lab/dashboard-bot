@@ -2,180 +2,213 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { LIQUIDITY, WHALE_IMPACT_MAP as WHALE_IMPACT } from '@/lib/marketSimulator';
 
-// Value-Based Liquidity Factors — higher = harder to move the price
-const LIQUIDITY: Record<string, number> = {
-    POLLO:   5_000_000,
-    OHIO:    3_000_000,
-    SIGMA:   1_000_000,
-    FISH:      500_000,
-    BONE:      250_000,
-    MEW:       100_000,
-    DYTO: 1_000_000_000,
+export const dynamic = 'force-dynamic';
+
+// Max single-trade price impact per asset
+const MAX_IMPACT: Record<string, number> = {
+    DYTO:  0.04,
+    JOKOW: 0.07,
+    POLLO: 0.12,
+    OHIO:  0.12,
+    SIGMA: 0.18,
+    BONE:  0.22,
+    MEW:   0.28,
+};
+
+// If impact exceeds this threshold → it's a whale trade → log to market_events
+const WHALE_THRESHOLD: Record<string, number> = {
+    DYTO:  0.025,
+    JOKOW: 0.040,
+    POLLO: 0.070,
+    OHIO:  0.070,
+    SIGMA: 0.090,
+    BONE:  0.110,
+    MEW:   0.130,
 };
 
 export async function POST(req: Request) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+    const userId = (session.user as any)?.id;
+    if (!userId) {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    let body: any;
     try {
-        const session = await getServerSession(authOptions);
-        if (!session || !session.user) {
-            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-        }
-        const user = session.user as any;
-        if (!user.id) {
-            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-        }
+        body = await req.json();
+    } catch {
+        return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
+    }
 
-        const { symbol, amount, type } = await req.json();
-        const userId = user.id;
-        const sym = symbol.toUpperCase();
+    const { symbol, amount, type } = body;
 
-        if (amount <= 0) {
-            return NextResponse.json({ success: false, error: 'Amount must be positive' }, { status: 400 });
-        }
+    if (!symbol || !amount || Number(amount) <= 0 || !['buy', 'sell'].includes(type)) {
+        return NextResponse.json({ success: false, error: 'Invalid request parameters' }, { status: 400 });
+    }
 
-        const conn = await pool.getConnection();
+    const sym = String(symbol).toUpperCase();
+    const tradeAmount = Number(amount);
 
-        try {
-            await conn.beginTransaction();
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
 
-            // 1. Get Asset
-            const [assetRows]: any = await conn.execute(
-                'SELECT id, current_price FROM market_assets WHERE symbol = ?',
-                [sym]
-            );
-
-            if (!assetRows || assetRows.length === 0) {
-                await conn.rollback();
-                return NextResponse.json({ success: false, error: 'Asset not found' }, { status: 404 });
-            }
-
-            const asset = assetRows[0];
-            const currentPrice = Number(asset.current_price);
-            const totalCost = currentPrice * amount;
-
-            // 2. Value-Based Price Impact
-            const liquidity = LIQUIDITY[sym] ?? 1_000_000;
-            const impactPct = totalCost / liquidity;
-            const cappedImpact = Math.min(impactPct, 0.10); // max 10% single-trade impact
-
-            let newPrice = currentPrice;
-
-            // 3. Process Trade
-            if (type === 'buy') {
-                const [userRows]: any = await conn.execute(
-                    'SELECT balance FROM slot_users WHERE user_id = ?',
-                    [userId]
-                );
-
-                if (!userRows || Number(userRows[0].balance) < totalCost) {
-                    await conn.rollback();
-                    return NextResponse.json({ success: false, error: 'Insufficient balance' }, { status: 400 });
-                }
-
-                // Buy pushes price UP
-                newPrice = currentPrice * (1 + cappedImpact);
-
-                await conn.execute(
-                    'UPDATE slot_users SET balance = balance - ? WHERE user_id = ?',
-                    [totalCost, userId]
-                );
-
-                const [portRows]: any = await conn.execute(
-                    'SELECT amount_owned FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
-                    [userId, asset.id]
-                );
-
-                if (portRows && portRows.length > 0) {
-                    await conn.execute(
-                        'UPDATE user_portfolio SET amount_owned = amount_owned + ? WHERE user_id = ? AND asset_id = ?',
-                        [amount, userId, asset.id]
-                    );
-                } else {
-                    await conn.execute(
-                        'INSERT INTO user_portfolio (user_id, asset_id, amount_owned) VALUES (?, ?, ?)',
-                        [userId, asset.id, amount]
-                    );
-                }
-            } else if (type === 'sell') {
-                const [portRows]: any = await conn.execute(
-                    'SELECT amount_owned FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
-                    [userId, asset.id]
-                );
-
-                if (!portRows || portRows.length === 0 || Number(portRows[0].amount_owned) < amount) {
-                    await conn.rollback();
-                    return NextResponse.json({ success: false, error: 'Insufficient shares' }, { status: 400 });
-                }
-
-                // Sell pushes price DOWN (slightly amplified for realism)
-                newPrice = Math.max(1, currentPrice * (1 - cappedImpact * 1.2));
-
-                await conn.execute(
-                    'UPDATE slot_users SET balance = balance + ? WHERE user_id = ?',
-                    [totalCost, userId]
-                );
-
-                if (Number(portRows[0].amount_owned) === amount) {
-                    await conn.execute(
-                        'DELETE FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
-                        [userId, asset.id]
-                    );
-                } else {
-                    await conn.execute(
-                        'UPDATE user_portfolio SET amount_owned = amount_owned - ? WHERE user_id = ? AND asset_id = ?',
-                        [amount, userId, asset.id]
-                    );
-                }
-            } else {
-                await conn.rollback();
-                return NextResponse.json({ success: false, error: 'Invalid trade type' }, { status: 400 });
-            }
-
-            // 4. Update Global Price
-            await conn.execute(
-                'UPDATE market_assets SET previous_price = ?, current_price = ? WHERE id = ?',
-                [currentPrice, newPrice, asset.id]
-            );
-
-            // 5. Instant Candle Sync — spike shows up on chart immediately
-            const candle_ts = Math.floor(Date.now() / 15000) * 15;
-            const [candleRows]: any = await conn.execute(
-                'SELECT * FROM market_candles WHERE symbol = ? AND timestamp = ?',
-                [sym, candle_ts]
-            );
-
-            if (candleRows && candleRows.length > 0) {
-                const c = candleRows[0];
-                const high = Math.max(Number(c.high), newPrice);
-                const low = Math.min(Number(c.low), newPrice);
-                await conn.execute(
-                    'UPDATE market_candles SET high = ?, low = ?, close = ? WHERE id = ?',
-                    [high, low, newPrice, c.id]
-                );
-            } else {
-                await conn.execute(
-                    'INSERT INTO market_candles (symbol, open, high, low, close, timestamp) VALUES (?, ?, ?, ?, ?, ?)',
-                    [sym, currentPrice, Math.max(currentPrice, newPrice), Math.min(currentPrice, newPrice), newPrice, candle_ts]
-                );
-            }
-
-            await conn.commit();
-            return NextResponse.json({ 
-                success: true, 
-                message: `Successfully ${type}ed ${amount} ${sym}`,
-                newPrice,
-                impact: `${(cappedImpact * 100).toFixed(4)}%`
-            });
-
-        } catch (e: any) {
+        // 1. Fetch asset
+        const [assetRows]: any = await conn.execute(
+            'SELECT * FROM market_assets WHERE symbol = ?', [sym]
+        );
+        if (!assetRows.length) {
             await conn.rollback();
-            throw e;
-        } finally {
-            conn.release();
+            return NextResponse.json({ success: false, error: 'Asset not found' }, { status: 404 });
         }
+
+        const asset = assetRows[0];
+        const curPrice = Number(asset.current_price);
+        const floor = Number(asset.floor_price) || 1;
+        const totalCost = curPrice * tradeAmount;
+
+        // 2. Calculate price impact (Value-Based Liquidity Model)
+        const liquidity = LIQUIDITY[sym] ?? 1_000_000;
+        const rawImpact = totalCost / liquidity;
+        const maxImpact = MAX_IMPACT[sym] ?? 0.10;
+        const cappedImpact = Math.min(rawImpact, maxImpact);
+        const isWhale = cappedImpact >= (WHALE_THRESHOLD[sym] ?? 0.05);
+
+        let newPrice = curPrice;
+
+        if (type === 'buy') {
+            // Validate balance
+            const [ur]: any = await conn.execute(
+                'SELECT balance FROM slot_users WHERE user_id = ?', [userId]
+            );
+            if (!ur.length || Number(ur[0].balance) < totalCost) {
+                await conn.rollback();
+                return NextResponse.json({ success: false, error: 'Saldo tidak cukup' }, { status: 400 });
+            }
+
+            // Buy pushes price UP
+            newPrice = curPrice * (1 + cappedImpact);
+
+            // Deduct balance
+            await conn.execute(
+                'UPDATE slot_users SET balance = balance - ? WHERE user_id = ?',
+                [totalCost, userId]
+            );
+
+            // Update portfolio with average buy price tracking
+            const [pr]: any = await conn.execute(
+                'SELECT amount_owned, avg_buy_price, total_invested FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
+                [userId, asset.id]
+            );
+            if (pr.length > 0) {
+                const oldAmt = Number(pr[0].amount_owned);
+                const newAmt = oldAmt + tradeAmount;
+                const newAvg = ((Number(pr[0].avg_buy_price) * oldAmt) + (curPrice * tradeAmount)) / newAmt;
+                await conn.execute(
+                    'UPDATE user_portfolio SET amount_owned = ?, avg_buy_price = ?, total_invested = total_invested + ? WHERE user_id = ? AND asset_id = ?',
+                    [newAmt, newAvg, totalCost, userId, asset.id]
+                );
+            } else {
+                await conn.execute(
+                    'INSERT INTO user_portfolio (user_id, asset_id, amount_owned, avg_buy_price, total_invested) VALUES (?,?,?,?,?)',
+                    [userId, asset.id, tradeAmount, curPrice, totalCost]
+                );
+            }
+
+        } else {
+            // SELL — validate portfolio
+            const [pr]: any = await conn.execute(
+                'SELECT amount_owned, total_invested FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
+                [userId, asset.id]
+            );
+            if (!pr.length || Number(pr[0].amount_owned) < tradeAmount) {
+                await conn.rollback();
+                return NextResponse.json({ success: false, error: 'Lembar tidak cukup untuk dijual' }, { status: 400 });
+            }
+
+            // Sell pushes price DOWN (symmetric with buy — no amplification)
+            newPrice = Math.max(floor, curPrice * (1 - cappedImpact));
+
+            // Add proceeds to balance
+            await conn.execute(
+                'UPDATE slot_users SET balance = balance + ? WHERE user_id = ?',
+                [totalCost, userId]
+            );
+
+            // Update portfolio — reduce proportionally
+            const remaining = Number(pr[0].amount_owned) - tradeAmount;
+            if (remaining <= 0.000001) {
+                await conn.execute(
+                    'DELETE FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
+                    [userId, asset.id]
+                );
+            } else {
+                const proportion = tradeAmount / Number(pr[0].amount_owned);
+                const investedRemoved = proportion * Number(pr[0].total_invested);
+                await conn.execute(
+                    'UPDATE user_portfolio SET amount_owned = ?, total_invested = GREATEST(0, total_invested - ?) WHERE user_id = ? AND asset_id = ?',
+                    [remaining, investedRemoved, userId, asset.id]
+                );
+            }
+        }
+
+        // 3. Update global asset price + ATH
+        const finalPrice = Math.max(floor, Math.round(newPrice * 10000) / 10000);
+        await conn.execute(
+            `UPDATE market_assets
+             SET previous_price = ?, current_price = ?,
+                 ath = GREATEST(COALESCE(ath, 0), ?)
+             WHERE id = ?`,
+            [curPrice, finalPrice, finalPrice, asset.id]
+        );
+
+        // 4. Instant candle sync — trade appears on chart immediately
+        const candleTs = Math.floor(Date.now() / 10000) * 10;
+        const [cr]: any = await conn.execute(
+            'SELECT id FROM market_candles WHERE symbol = ? AND timestamp = ?',
+            [sym, candleTs]
+        );
+        if (cr.length > 0) {
+            await conn.execute(
+                'UPDATE market_candles SET high = GREATEST(high, ?), low = LEAST(low, ?), close = ? WHERE id = ?',
+                [finalPrice, finalPrice, finalPrice, cr[0].id]
+            );
+        } else {
+            await conn.execute(
+                'INSERT IGNORE INTO market_candles (symbol, open, high, low, close, timestamp) VALUES (?,?,?,?,?,?)',
+                [sym, curPrice, Math.max(curPrice, finalPrice), Math.max(floor, Math.min(curPrice, finalPrice)), finalPrice, candleTs]
+            );
+        }
+
+        // 5. Log whale event if this was a significant trade
+        if (isWhale) {
+            const evtType = type === 'buy' ? 'whale_pump' : 'whale_dump';
+            const pctDisplay = cappedImpact * 100 * (type === 'sell' ? -1 : 1);
+            await conn.execute(
+                'INSERT INTO market_events (symbol, event_type, price_change_pct, old_price, new_price) VALUES (?,?,?,?,?)',
+                [sym, evtType, +pctDisplay.toFixed(4), curPrice, finalPrice]
+            );
+        }
+
+        await conn.commit();
+        return NextResponse.json({
+            success: true,
+            message: `Berhasil ${type === 'buy' ? 'membeli' : 'menjual'} ${tradeAmount} ${sym}`,
+            newPrice: finalPrice,
+            impact: `${(cappedImpact * 100).toFixed(3)}%`,
+            whaleAlert: isWhale,
+        });
 
     } catch (error: any) {
+        try { await conn.rollback(); } catch {}
         console.error('Trade API Error:', error);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    } finally {
+        conn.release();
     }
 }
