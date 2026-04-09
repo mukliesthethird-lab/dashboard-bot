@@ -1,39 +1,65 @@
 import pool from './db';
 
-// ── Module-level locks & state (shared across requests in same Node process) ────
+// ── Module-level state ─────────────────────────────────────────────────────────
 let lastSimulationMs = 0;
 const SIM_INTERVAL_MS = 2000;
 
-// Momentum tracker: each asset can be in an UP/DOWN/SIDEWAYS trend for N ticks
+// ── CANDLE PERIOD: 30 seconds per candle ────────────────────────────────────────
+// Each candle covers a 30s window. Multiple sim ticks per candle = proper OHLC with range.
+const CANDLE_PERIOD_S = 30;
+
+// Momentum tracker
 interface Momentum { dir: 1 | -1 | 0; ticks: number; }
 const momentum: Record<string, Momentum> = {};
 
-// ── MARKET PARAMETERS (Aggressive — for visible candlestick movement) ──────────
+// ── Bot activity log (in-memory, last 50 actions) ────────────────────────────
+export interface BotActivity {
+    id: number;
+    symbol: string;
+    action: 'BUY' | 'SELL' | 'WHALE_PUMP' | 'WHALE_DUMP' | 'CRASH' | 'RECOVERY';
+    amount: number;
+    price: number;
+    pct: number;
+    ts: number;
+}
+const botActivityLog: BotActivity[] = [];
+let activityIdCounter = 1;
 
-// Max impact per bot trade per tick (3-5x more than before for visible movement)
+function logBotActivity(entry: Omit<BotActivity, 'id' | 'ts'>) {
+    botActivityLog.unshift({ ...entry, id: activityIdCounter++, ts: Date.now() });
+    if (botActivityLog.length > 50) botActivityLog.pop();
+}
+
+export function getBotActivity(): BotActivity[] {
+    return botActivityLog.slice(0, 30);
+}
+
+// ── MARKET PARAMETERS ──────────────────────────────────────────────────────────
+// Higher volatility per tick = visible candle bodies & wicks over 30s periods
+
 const BOT_MAX_IMPACT: Record<string, number> = {
-    DYTO:  0.015,   // 1.5% max per bot tick
-    JOKOW: 0.022,   // 2.2%
-    POLLO: 0.050,   // 5%
-    OHIO:  0.060,   // 6%
-    SIGMA: 0.085,   // 8.5%
-    BONE:  0.130,   // 13%
-    MEW:   0.180,   // 18%
+    DYTO:  0.025,   // 2.5% max swing per tick
+    JOKOW: 0.035,
+    POLLO: 0.070,
+    OHIO:  0.080,
+    SIGMA: 0.110,
+    BONE:  0.160,
+    MEW:   0.220,
 };
 
 const WHALE_IMPACT: Record<string, [number, number]> = {
-    DYTO:  [0.050, 0.090],
-    JOKOW: [0.070, 0.130],
-    POLLO: [0.120, 0.220],
-    OHIO:  [0.120, 0.230],
-    SIGMA: [0.180, 0.320],
-    BONE:  [0.220, 0.420],
-    MEW:   [0.280, 0.550],
+    DYTO:  [0.060, 0.120],
+    JOKOW: [0.080, 0.160],
+    POLLO: [0.140, 0.260],
+    OHIO:  [0.130, 0.270],
+    SIGMA: [0.200, 0.380],
+    BONE:  [0.280, 0.500],
+    MEW:   [0.320, 0.600],
 };
 
 const CRASH_PROBABILITY: Record<string, number> = {
-    DYTO:  0.0008, JOKOW: 0.0010, POLLO: 0.0020,
-    OHIO:  0.0025, SIGMA: 0.0040, BONE:  0.0060, MEW: 0.0080,
+    DYTO:  0.0010, JOKOW: 0.0013, POLLO: 0.0025,
+    OHIO:  0.0030, SIGMA: 0.0050, BONE:  0.0070, MEW: 0.0100,
 };
 
 const CORRELATIONS: Record<string, Array<{ symbol: string; factor: number }>> = {
@@ -54,44 +80,64 @@ export const LIQUIDITY: Record<string, number> = {
 
 export const WHALE_IMPACT_MAP = WHALE_IMPACT;
 
-// ── Gaussian random (Box-Muller) ──────────────────────────────────────────────
+// ── Gaussian random (Box-Muller) ───────────────────────────────────────────────
 function gauss(mean = 0, std = 1): number {
     const u = Math.max(Math.random(), 1e-10);
     const v = Math.random();
     return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v) * std + mean;
 }
 
-// ── Upsert price + candle (NO transaction — autocommit per statement) ─────────
-async function applyPrice(sym: string, assetId: number, oldPrice: number, rawNew: number, floor: number): Promise<number> {
-    const final = Math.max(floor, Math.round(rawNew * 10000) / 10000);
-    const ts = Math.floor(Date.now() / 10000) * 10;
-    const hi = Math.max(oldPrice, final);
-    const lo = Math.max(floor, Math.min(oldPrice, final));
+// ── Get current candle timestamp bucket ───────────────────────────────────────
+function candleBucket(): number {
+    return Math.floor(Date.now() / (CANDLE_PERIOD_S * 1000)) * CANDLE_PERIOD_S;
+}
+
+// ── Upsert candle with proper OHLC accrual ────────────────────────────────────
+// Each sim tick contributes to the SAME candle for its 30s window.
+// open = first price of window, high = max, low = min, close = latest.
+async function applyPrice(
+    sym: string, assetId: number,
+    oldPrice: number, rawNew: number, floor: number
+): Promise<number> {
+    const final = Math.max(floor, Math.round(rawNew * 100) / 100);
+    const ts = candleBucket(); // 30-second bucket
 
     await pool.execute(
         `UPDATE market_assets SET previous_price = ?, current_price = ?, ath = GREATEST(COALESCE(ath, 0), ?) WHERE id = ?`,
         [oldPrice, final, final, assetId]
     );
+
+    // Proper OHLC: open only set on INSERT (first tick of candle)
+    // high = running max, low = running min, close = latest price
     await pool.execute(
-        `INSERT INTO market_candles (symbol, open, high, low, close, timestamp) VALUES (?,?,?,?,?,?)
-         ON DUPLICATE KEY UPDATE high = GREATEST(high, ?), low = LEAST(low, ?), close = ?`,
-        [sym, oldPrice, hi, lo, final, ts, hi, lo, final]
+        `INSERT INTO market_candles (symbol, open, high, low, close, timestamp)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE
+           high  = GREATEST(high, ?),
+           low   = LEAST(low, ?),
+           close = ?`,
+        [sym, oldPrice, final, final, final, ts,
+              final,        final,              final]
     );
+
     return final;
 }
 
-// ── MAIN SIMULATION (no transaction — fast, no lock contention) ───────────────
+// ── Delete all existing candles (reset) ───────────────────────────────────────
+export async function resetAllCandles(): Promise<void> {
+    await pool.execute('DELETE FROM market_candles');
+}
+
+// ── MAIN SIMULATION ───────────────────────────────────────────────────────────
 export async function runSimulation(): Promise<{ skipped: boolean; reason?: string }> {
     const now = Date.now();
-
-    // Fast in-memory guard (no DB needed to check this)
     if (now - lastSimulationMs < SIM_INTERVAL_MS) {
         return { skipped: true, reason: 'too_soon' };
     }
-    lastSimulationMs = now; // Claim slot immediately
+    lastSimulationMs = now;
 
     try {
-        // Update market_config timestamp (best-effort, ignore errors)
+        // Update last_simulation timestamp
         const nowSec = Math.floor(now / 1000);
         pool.execute(
             `INSERT INTO market_config (cfg_key, cfg_value) VALUES ('last_simulation', ?) ON DUPLICATE KEY UPDATE cfg_value = ?`,
@@ -119,67 +165,75 @@ export async function runSimulation(): Promise<{ skipped: boolean; reason?: stri
 
             let newPrice = cur;
 
-            // ── CRASH RECOVERY ────────────────────────────────────────────────
+            // ── CRASH RECOVERY ─────────────────────────────────────────────────
             if (Number(asset.crash_mode) === 1) {
                 const target = Number(asset.crash_recovery_target);
                 if (cur >= target) {
                     await pool.execute('UPDATE market_assets SET crash_mode = 0, crash_recovery_target = 0 WHERE id = ?', [asset.id]);
                 } else {
-                    const bounce = Math.abs(gauss(botMax * 0.3, botMax * 0.4)) + botMax * 0.1;
+                    const bounce = Math.abs(gauss(botMax * 0.5, botMax * 0.5)) + botMax * 0.15;
                     newPrice = Math.min(target, cur * (1 + bounce));
                     const fp = await applyPrice(sym, asset.id, cur, newPrice, floor);
+                    const pct = ((fp - cur) / cur) * 100;
+                    logBotActivity({ symbol: sym, action: 'RECOVERY', amount: 1, price: fp, pct });
                     netChange[sym] = (fp - cur) / cur;
                     finalPrices[sym] = fp;
                     continue;
                 }
             }
 
-            // ── CRASH TRIGGER ─────────────────────────────────────────────────
+            // ── CRASH TRIGGER ──────────────────────────────────────────────────
             if (Math.random() < crashProb) {
-                const crashPct = 0.30 + Math.random() * 0.25;
+                const crashPct = 0.30 + Math.random() * 0.30;
                 newPrice = Math.max(floor, cur * (1 - crashPct));
                 await pool.execute(
                     'UPDATE market_assets SET crash_mode = 1, crash_recovery_target = ? WHERE id = ?',
-                    [cur * 0.75, asset.id]
+                    [cur * 0.80, asset.id]
                 );
                 pool.execute(
                     'INSERT INTO market_events (symbol, event_type, price_change_pct, old_price, new_price) VALUES (?,?,?,?,?)',
                     [sym, 'crash', +(-crashPct * 100).toFixed(4), cur, newPrice]
                 ).catch(() => {});
-                // Force bearish momentum after crash
-                momentum[sym] = { dir: -1, ticks: 12 };
+                momentum[sym] = { dir: -1, ticks: 15 };
                 const fp = await applyPrice(sym, asset.id, cur, newPrice, floor);
+                logBotActivity({ symbol: sym, action: 'CRASH', amount: 1, price: fp, pct: -crashPct * 100 });
                 netChange[sym] = (fp - cur) / cur;
                 finalPrices[sym] = fp;
                 continue;
             }
 
-            // ── WHALE EVENTS (3% pump, 3% dump) ──────────────────────────────
+            // ── WHALE EVENTS (4% pump, 4% dump) ───────────────────────────────
             const whaleRoll = Math.random();
-            if (whaleRoll < 0.030) {
+            if (whaleRoll < 0.040) {
                 const pct = wMin + Math.random() * (wMax - wMin);
                 newPrice = cur * (1 + pct);
                 pool.execute(
                     'INSERT INTO market_events (symbol, event_type, price_change_pct, old_price, new_price) VALUES (?,?,?,?,?)',
                     [sym, 'whale_pump', +(pct * 100).toFixed(4), cur, newPrice]
                 ).catch(() => {});
-                // Whale pump resets momentum to bullish
-                momentum[sym] = { dir: 1, ticks: Math.floor(Math.random() * 12) + 6 };
-            } else if (whaleRoll < 0.060) {
-                const pct = wMin + Math.random() * (wMax - wMin) * 1.2;
+                momentum[sym] = { dir: 1, ticks: Math.floor(Math.random() * 15) + 8 };
+                const fp = await applyPrice(sym, asset.id, cur, newPrice, floor);
+                logBotActivity({ symbol: sym, action: 'WHALE_PUMP', amount: Math.floor(Math.random() * 500) + 100, price: fp, pct: pct * 100 });
+                netChange[sym] = (fp - cur) / cur;
+                finalPrices[sym] = fp;
+                continue;
+            } else if (whaleRoll < 0.080) {
+                const pct = wMin + Math.random() * (wMax - wMin) * 1.3;
                 newPrice = Math.max(floor, cur * (1 - pct));
                 pool.execute(
                     'INSERT INTO market_events (symbol, event_type, price_change_pct, old_price, new_price) VALUES (?,?,?,?,?)',
                     [sym, 'whale_dump', +(-pct * 100).toFixed(4), cur, newPrice]
                 ).catch(() => {});
-                momentum[sym] = { dir: -1, ticks: Math.floor(Math.random() * 12) + 6 };
+                momentum[sym] = { dir: -1, ticks: Math.floor(Math.random() * 15) + 8 };
+                const fp = await applyPrice(sym, asset.id, cur, newPrice, floor);
+                logBotActivity({ symbol: sym, action: 'WHALE_DUMP', amount: Math.floor(Math.random() * 500) + 100, price: fp, pct: -pct * 100 });
+                netChange[sym] = (fp - cur) / cur;
+                finalPrices[sym] = fp;
+                continue;
             } else {
-                // ── MOMENTUM TRENDING SYSTEM ──────────────────────────────────
-                // Each asset has a trend direction that persists for 8-27 ticks (~16-54 seconds)
+                // ── MOMENTUM TRENDING + BOT TRADE ─────────────────────────────
                 let mom = momentum[sym] ?? { dir: 0, ticks: 0 };
-
                 if (mom.ticks <= 0) {
-                    // Randomly assign new trend: 45% up, 35% down, 20% sideways
                     const roll = Math.random();
                     const newDir: 1 | -1 | 0 = roll < 0.45 ? 1 : roll < 0.80 ? -1 : 0;
                     mom = { dir: newDir, ticks: Math.floor(Math.random() * 20) + 8 };
@@ -187,22 +241,34 @@ export async function runSimulation(): Promise<{ skipped: boolean; reason?: stri
                 mom.ticks--;
                 momentum[sym] = mom;
 
-                // Buy bias = base 50% + momentum bias (±35%) + sentiment bias (±10%)
-                const sentBias = sentiment === 'bullish' ? 0.10 : sentiment === 'bearish' ? -0.10 : 0;
-                const momBias = mom.dir * 0.35;
+                const sentBias = sentiment === 'bullish' ? 0.12 : sentiment === 'bearish' ? -0.12 : 0;
+                const momBias = mom.dir * 0.38;
                 const buyBias = Math.max(0.05, Math.min(0.95, 0.50 + momBias + sentBias));
 
-                // 90% chance bot trades (increased from 80% — more active candles)
-                if (Math.random() < 0.90) {
+                // 95% chance bot trades actively
+                if (Math.random() < 0.95) {
                     const isBuy = Math.random() < buyBias;
-                    // Gaussian: most trades near mean, few at extreme
-                    const impact = Math.min(Math.abs(gauss(botMax * 0.55, botMax * 0.45)), botMax);
+
+                    // Use Gaussian for realistic price impact — centered around mid-range
+                    const rawImpact = Math.abs(gauss(botMax * 0.5, botMax * 0.5));
+                    const impact = Math.min(rawImpact, botMax);
+
                     newPrice = isBuy
                         ? cur * (1 + impact)
                         : Math.max(floor, cur * (1 - impact));
+
+                    const tradePct = ((newPrice - cur) / cur) * 100;
+                    const tradeAmt = Math.floor(Math.random() * 300) + 10;
+                    logBotActivity({
+                        symbol: sym,
+                        action: isBuy ? 'BUY' : 'SELL',
+                        amount: tradeAmt,
+                        price: Math.round(newPrice),
+                        pct: tradePct,
+                    });
                 } else {
-                    // 10% passive micro-jitter
-                    newPrice = Math.max(floor, cur * (1 + gauss(0, botMax * 0.15)));
+                    // 5% micro-jitter (no log — too noisy)
+                    newPrice = Math.max(floor, cur * (1 + gauss(0, botMax * 0.20)));
                 }
             }
 
@@ -215,7 +281,7 @@ export async function runSimulation(): Promise<{ skipped: boolean; reason?: stri
             finalPrices[sym] = fp;
         }
 
-        // ── CORRELATION PASS (parallel) ───────────────────────────────────────
+        // ── CORRELATION PASS ─────────────────────────────────────────────────
         const corrTasks: Promise<void>[] = [];
         for (const [sym, pct] of Object.entries(netChange)) {
             if (Math.abs(pct) < 0.003) continue;
@@ -224,7 +290,7 @@ export async function runSimulation(): Promise<{ skipped: boolean; reason?: stri
                 if (!ca || Number(ca.crash_mode) === 1) continue;
                 const cp = finalPrices[cs] ?? Number(ca.current_price);
                 const cf = Number(ca.floor_price) || 1;
-                const corrPct = pct * factor * (0.6 + Math.random() * 0.8);
+                const corrPct = pct * factor * (0.5 + Math.random() * 1.0);
                 const np = Math.max(cf, cp * (1 + corrPct));
                 if (Math.abs(np - cp) < cp * 0.0005) continue;
                 corrTasks.push(
@@ -234,7 +300,7 @@ export async function runSimulation(): Promise<{ skipped: boolean; reason?: stri
         }
         await Promise.all(corrTasks);
 
-        // ── SENTIMENT ROTATION (~0.8% chance per tick ≈ every ~4 min) ─────────
+        // ── SENTIMENT ROTATION ──────────────────────────────────────────────
         if (Math.random() < 0.008) {
             const pool_s = ['bullish', 'bearish', 'neutral', 'neutral', 'neutral'];
             const sentUpdates = assets
@@ -246,12 +312,12 @@ export async function runSimulation(): Promise<{ skipped: boolean; reason?: stri
             await Promise.all(sentUpdates);
         }
 
-        // ── FILL PENDING LIMIT ORDERS ─────────────────────────────────────────
+        // ── FILL PENDING LIMIT ORDERS ────────────────────────────────────────
         const [pending]: any = await pool.execute(
             `SELECT lo.*, ma.current_price AS asset_price
              FROM limit_orders lo JOIN market_assets ma ON lo.symbol = ma.symbol
              WHERE lo.status = 'pending'`
-        ).catch(() => [[]]); // Ignore if table doesn't exist yet
+        ).catch(() => [[]]);
 
         for (const order of (pending as any[])) {
             const cp = Number(order.asset_price);
@@ -313,7 +379,7 @@ export async function runSimulation(): Promise<{ skipped: boolean; reason?: stri
 
         return { skipped: false };
     } catch (err) {
-        lastSimulationMs = 0; // Allow immediate retry on error
+        lastSimulationMs = 0;
         throw err;
     }
 }

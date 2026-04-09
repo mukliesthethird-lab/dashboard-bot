@@ -85,8 +85,11 @@ export async function GET() {
             return NextResponse.json({ success: true, assets: [], candles: {}, events: [], user: null });
         }
 
-        // ── Batch fetch ALL candles in ONE query (was 7 separate queries) ───
-        const windowStart = Math.floor(Date.now() / 10000) * 10 - 990; // last ~100 candles
+        // ── Batch fetch ALL candles in ONE query ──────────────────────────────
+        // 30-second candle periods. Fetch last 150 candles = ~75 min of history.
+        const CANDLE_PERIOD_S = 30;
+        const now10 = Math.floor(Date.now() / (CANDLE_PERIOD_S * 1000)) * CANDLE_PERIOD_S;
+        const windowStart = now10 - 149 * CANDLE_PERIOD_S;
         const [allCandlesRaw]: any = await pool.execute(
             `SELECT symbol, open, high, low, close, timestamp AS time
              FROM market_candles
@@ -108,39 +111,67 @@ export async function GET() {
             });
         }
 
-        // ── Auto-seed candles for assets that have none ──────────────────────
+        // ── Auto-seed candles for assets that have none or too few ─────────────
+        // Seeds 150 bars of historical data with realistic volatile OHLC candles.
+        const CANDLE_PERIOD_S_SEED = 30;
         const seedTasks: Promise<void>[] = [];
         for (const asset of assets) {
-            if ((candlesData[asset.symbol]?.length ?? 0) > 0) continue;
+            if ((candlesData[asset.symbol]?.length ?? 0) >= 10) continue;
 
             seedTasks.push((async () => {
-                const now10 = Math.floor(Date.now() / 10000) * 10;
-                const vol = Number(asset.volatility) || 0.04;
+                // Clear any partial data first
+                await pool.execute('DELETE FROM market_candles WHERE symbol = ?', [asset.symbol]);
+
+                const now30 = Math.floor(Date.now() / (CANDLE_PERIOD_S_SEED * 1000)) * CANDLE_PERIOD_S_SEED;
+
+                // vol = per-candle (30s) volatility.
+                // Asset volatility column is typically daily, so we scale down to 30s:
+                // vol_30s ≈ vol_daily * sqrt(30/(24*3600)) ≈ vol_daily * 0.019
+                // We use vol directly from DB but clamp to reasonable range [0.005, 0.035]
+                const rawVol = Number(asset.volatility) || 0.04;
+                const vol = Math.min(Math.max(rawVol * 0.3, 0.005), 0.035);
+
                 const base = Number(asset.current_price);
                 const floor = Number(asset.floor_price) || 1;
+
+                // Build a realistic price walk backwards from the current price
                 let last = base;
                 const rows: any[] = [];
 
-                for (let i = 99; i >= 0; i--) {
-                    const t = now10 - i * 10;
+                for (let i = 149; i >= 0; i--) {
+                    const t = now30 - i * CANDLE_PERIOD_S_SEED;
                     const open = last;
+
+                    // Box-Muller Gaussian for realistic drift
                     const u1 = Math.max(Math.random(), 1e-10);
-                    const gauss = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * Math.random());
-                    const close = Math.max(floor, open * (1 + gauss * vol * 0.7));
-                    const hi = Math.max(open, close) * (1 + Math.random() * vol * 0.3);
-                    const lo = Math.max(floor, Math.min(open, close) * (1 - Math.random() * vol * 0.3));
+                    const gaussVal = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * Math.random());
+
+                    // Close can swing ±vol from open, capped at ±4%
+                    const rawDelta = gaussVal * vol;
+                    const cappedDelta = Math.max(-0.04, Math.min(0.04, rawDelta));
+                    const close = Math.max(floor, open * (1 + cappedDelta));
+
+                    // Wicks: high above max(o,c), low below min(o,c)
+                    const body_high = Math.max(open, close);
+                    const body_low  = Math.min(open, close);
+                    const wickRange = vol * 0.5;
+                    const hi = body_high * (1 + Math.random() * wickRange);
+                    const lo = Math.max(floor, body_low * (1 - Math.random() * wickRange));
+
                     rows.push([asset.symbol, open, hi, lo, close, t]);
                     last = close;
                 }
 
-                await pool.query(
-                    'INSERT IGNORE INTO market_candles (symbol, open, high, low, close, timestamp) VALUES ?',
-                    [rows]
-                );
+                if (rows.length > 0) {
+                    await pool.query(
+                        'INSERT IGNORE INTO market_candles (symbol, open, high, low, close, timestamp) VALUES ?',
+                        [rows]
+                    );
+                }
 
-                // Add to response
+                // Fetch and assign fresh data
                 const [fresh]: any = await pool.execute(
-                    'SELECT open, high, low, close, timestamp AS time FROM market_candles WHERE symbol = ? ORDER BY timestamp ASC LIMIT 100',
+                    'SELECT open, high, low, close, timestamp AS time FROM market_candles WHERE symbol = ? ORDER BY timestamp ASC LIMIT 150',
                     [asset.symbol]
                 );
                 candlesData[asset.symbol] = fresh.map((c: any) => ({
