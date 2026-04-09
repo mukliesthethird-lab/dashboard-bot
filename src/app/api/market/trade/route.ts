@@ -183,15 +183,11 @@ export async function POST(req: Request) {
             );
         }
 
-        // 5. Log whale event if this was a significant trade
-        if (isWhale) {
-            const evtType = type === 'buy' ? 'whale_pump' : 'whale_dump';
-            const pctDisplay = cappedImpact * 100 * (type === 'sell' ? -1 : 1);
-            await conn.execute(
-                'INSERT INTO market_events (symbol, event_type, price_change_pct, old_price, new_price) VALUES (?,?,?,?,?)',
-                [sym, evtType, +pctDisplay.toFixed(4), curPrice, finalPrice]
-            );
-        }
+        // 6. Signal bots that a user trade occurred (Organic V4 Trend Leadership)
+        await conn.execute(
+            'INSERT INTO market_config (cfg_key, cfg_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE cfg_value = ?',
+            [`user_signal_${sym}`, type, type]
+        );
 
         await conn.commit();
         return NextResponse.json({

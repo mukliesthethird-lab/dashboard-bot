@@ -53,6 +53,16 @@ const MAX_TICK_MOVE = {
     OHIO:  0.05, SIGMA: 0.07, BONE:  0.10, MEW: 0.15
 };
 
+const BEHAVIOR_PROFILES: Record<string, any> = {
+    DYTO:  { retailFactor: [0.0001, 0.0003], whaleFactor: [0.008, 0.015], krocoDensity: [15, 30], whaleProb: 0.005, waveSticky: 2.5, jitter: 0.05 },
+    JOKOW: { retailFactor: [0.0001, 0.0005], whaleFactor: [0.010, 0.020], krocoDensity: [12, 25], whaleProb: 0.006, waveSticky: 2.0, jitter: 0.08 },
+    POLLO: { retailFactor: [0.0008, 0.0018], whaleFactor: [0.015, 0.035], krocoDensity: [10, 20], whaleProb: 0.010, waveSticky: 1.5, jitter: 0.15 },
+    OHIO:  { retailFactor: [0.0010, 0.0025], whaleFactor: [0.020, 0.045], krocoDensity: [8, 18],  whaleProb: 0.012, waveSticky: 1.2, jitter: 0.20 },
+    SIGMA: { retailFactor: [0.0015, 0.0040], whaleFactor: [0.025, 0.060], krocoDensity: [6, 15],  whaleProb: 0.015, waveSticky: 0.8, jitter: 0.30 },
+    BONE:  { retailFactor: [0.0030, 0.0080], whaleFactor: [0.040, 0.100], krocoDensity: [4, 12],  whaleProb: 0.020, waveSticky: 0.4, jitter: 0.50 },
+    MEW:   { retailFactor: [0.0050, 0.0150], whaleFactor: [0.060, 0.200], krocoDensity: [2, 8],   whaleProb: 0.030, waveSticky: 0.2, jitter: 0.80 },
+};
+
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 
 function gauss(mean = 0, std = 1): number {
@@ -102,7 +112,7 @@ function updateWave(sym: string) {
             symbol: sym,
             dir: dir,
             intensity: 0.5 + Math.random() * 0.8,
-            remainingTicks: randInt(60, 240)
+            remainingTicks: randInt(40, 180) * (BEHAVIOR_PROFILES[sym]?.waveSticky || 1.0)
         };
     } else {
         wave.remainingTicks--;
@@ -145,6 +155,13 @@ export async function runSimulation() {
         const nowSec = Math.floor(now / 1000);
         pool.execute(`UPDATE market_config SET cfg_value = ? WHERE cfg_key = 'last_simulation'`, [String(nowSec)]).catch(() => {});
 
+        // Fetch User Sentiment Signals from Config for all assets
+        const [configRows]: any = await pool.execute('SELECT cfg_key, cfg_value FROM market_config WHERE cfg_key LIKE "user_signal_%"');
+        const userSignals = configRows.reduce((acc: any, row: any) => {
+            acc[row.cfg_key.replace("user_signal_", "")] = row.cfg_value;
+            return acc;
+        }, {});
+
         const [assets]: any = await pool.execute('SELECT * FROM market_assets');
         
         for (const asset of assets) {
@@ -152,41 +169,65 @@ export async function runSimulation() {
             updateWave(sym);
             
             const cur = Number(asset.current_price);
+            const prev = Number(asset.previous_price) || cur;
             const floor = Number(asset.floor_price) || 1;
             const initP = Number(asset.initial_price) || cur;
             const ceil = initP * (Number(asset.ceiling_multiplier) || 12);
             const sentiment = asset.sentiment || 'neutral';
+            const profile = BEHAVIOR_PROFILES[sym] || BEHAVIOR_PROFILES.DYTO;
+            const depth = LIQUIDITY_DEPTH[sym] || 1_000_000;
             
             let runningPrice = cur;
             const wave = waves[sym];
+            const signal = userSignals[sym] || null;
 
-            const mmTrades = randInt(2, 4);
-            for (let i = 0; i < mmTrades; i++) {
-                const vol = randInt(2, 12);
-                const impact = getSlippageImpact(sym, vol, Math.random() < 0.5, surge.active);
+            // ─── AGENT 1: KROCO BOTS (Small activity 1-100 lembar) ───────────
+            const krocoTrades = randInt(profile.krocoDensity[0], profile.krocoDensity[1]);
+            for (let i = 0; i < krocoTrades; i++) {
+                const vol = randInt(1, 100); 
+                const impact = getSlippageImpact(sym, vol, Math.random() < 0.55, surge.active);
                 runningPrice = runningPrice * (1 + impact);
             }
 
+            // ─── AGENT 2: RETAIL & TREND FOLLOWERS ───────────
+            // Social Following Bias: if user signal exists, shift the probability
+            let userBias = 0;
+            if (signal === 'buy') userBias = 0.20;
+            if (signal === 'sell') userBias = -0.15;
+
             const sentBias = sentiment === 'bullish' ? 0.10 : sentiment === 'bearish' ? -0.10 : 0;
             const waveBias = wave.dir * 0.45 * wave.intensity;
-            const buyProb  = Math.max(0.1, Math.min(0.9, 0.5 + sentBias + waveBias));
-            const retailTrades = randInt(3, 8);
+            const buyProb  = Math.max(0.05, Math.min(0.95, 0.5 + sentBias + waveBias + userBias));
+            
+            const retailTrades = randInt(2, 5); 
             for (let i = 0; i < retailTrades; i++) {
                 const isBuy = Math.random() < buyProb;
-                const vol = Math.max(1, Math.min(350, Math.ceil(Math.abs(gauss(50, 100)))));
+                const minV = depth * profile.retailFactor[0];
+                const maxV = depth * profile.retailFactor[1];
+                const vol = Math.max(minV, Math.min(maxV, Math.ceil(Math.abs(gauss(minV * 2, maxV / 2)))));
                 const impact = getSlippageImpact(sym, vol, isBuy, surge.active);
                 runningPrice = runningPrice * (1 + impact);
             }
 
-            const whaleProb = surge.active ? 0.08 : 0.02;
+            // ─── AGENT 3: WHALES (Event Driven / Recovery Mode) ───────────
+            // 💡 WHALE RECOVERY: If price dropped > 5% recently AND signal is sell, whales step in to stabilize
+            const priceDropped = ((prev - cur) / prev) > 0.05;
+            const isRecoveryNeeded = priceDropped && signal === 'sell';
+            
+            const whaleProb = isRecoveryNeeded ? 0.80 : (surge.active ? 0.08 : profile.whaleProb);
+            
             if (Math.random() < whaleProb) {
-                const isPump = Math.random() < (buyProb + 0.1);
-                const vol = randInt(1000, 3500);
+                // If recovery mode, WHALE ONLY BUYS
+                const isPump = isRecoveryNeeded ? true : (Math.random() < (buyProb + 0.1)); 
+                const minW = depth * profile.whaleFactor[0];
+                const maxW = depth * profile.whaleFactor[1];
+                const vol = randInt(minW, maxW); 
                 const impact = getSlippageImpact(sym, vol, isPump, surge.active);
                 runningPrice = runningPrice * (1 + impact);
+                
                 pool.execute(
                     'INSERT INTO market_events (symbol, event_type, price_change_pct, old_price, new_price) VALUES (?,?,?,?,?)',
-                    [sym, isPump ? 'whale_pump' : 'whale_dump', +(impact * 100).toFixed(4), cur, runningPrice]
+                    [sym, isRecoveryNeeded ? 'whale_recovery' : (isPump ? 'whale_pump' : 'whale_dump'), +(impact * 100).toFixed(4), cur, runningPrice]
                 ).catch(() => {});
             }
 
@@ -199,9 +240,10 @@ export async function runSimulation() {
                     runningPrice = Math.min(target, runningPrice * (1 + impact));
                 }
             } else {
-                const curCrashProb = sym === 'DYTO' || sym === 'JOKOW' ? 0.00005 : 0.0005;
-                if (Math.random() < curCrashProb) {
-                    const drop = 0.18 + Math.random() * 0.15;
+                // Ultra-rare random crash (0.0001 = once every 10,000 seconds / ~2.7 hours per coin)
+                const crashProb = 0.0001;
+                if (Math.random() < crashProb) {
+                    const drop = 0.15 + Math.random() * 0.15;
                     runningPrice = runningPrice * (1 - drop);
                     await pool.execute('UPDATE market_assets SET crash_mode = 1, crash_recovery_target = ? WHERE id = ?', [cur, asset.id]);
                     pool.execute('INSERT INTO market_events (symbol, event_type, price_change_pct, old_price, new_price) VALUES (?,?,?,?,?)',

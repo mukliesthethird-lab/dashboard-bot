@@ -70,14 +70,14 @@ CREATE TABLE IF NOT EXISTS market_events (
   INDEX (symbol)
 );
 
--- Step 8: Insert 7 aset baru dengan harga fresh
+-- Step 8: Insert 7 aset baru dengan harga fresh (Tuned for V4 Organic Growth)
 INSERT INTO market_assets (symbol, name, current_price, previous_price, volatility, floor_price, ceiling_multiplier, initial_price, ath, crash_mode, crash_recovery_target, sentiment) VALUES
-('DYTO',  'Dyto',    30000000, 30000000, 0.008, 1, 1.00,  30000000, 30000000, 0, 0, 'neutral'),
-('JOKOW', 'Jokowin', 25000000, 25000000, 0.012, 1, 1.00,  25000000, 25000000, 0, 0, 'neutral'),
+('DYTO',  'Dyto',    30000000, 30000000, 0.008, 1, 12.00, 30000000, 30000000, 0, 0, 'neutral'),
+('JOKOW', 'Jokowin', 25000000, 25000000, 0.012, 1, 12.00, 25000000, 25000000, 0, 0, 'neutral'),
 ('POLLO', 'Pollo',   1500000,  1500000,  0.025, 1, 5.00,  1500000,  1500000,  0, 0, 'neutral'),
 ('OHIO',  'Ohio',    1000000,  1000000,  0.030, 1, 5.00,  1000000,  1000000,  0, 0, 'neutral'),
 ('SIGMA', 'Sigma',   750000,   750000,   0.045, 1, 10.00, 750000,   750000,   0, 0, 'neutral'),
-('BONE',  'Bone',    5000,     5000,     0.060, 1, 10.00, 5000,     5000,     0, 0, 'neutral'),
-('MEW',   'Mew',     2500,     2500,     0.080, 1, 10.00, 2500,     2500,     0, 0, 'neutral');
+('BONE',  'Bone',    5000,     5000,     0.060, 1, 15.00, 5000,     5000,     0, 0, 'neutral'),
+('MEW',   'Mew',     2500,     2500,     0.080, 1, 20.00, 2500,     2500,     0, 0, 'neutral');
 
 -- Done! Pastikan kamu menjalankan ini SEBELUM server Next.js di-restart.
