@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { LIQUIDITY, WHALE_IMPACT_MAP as WHALE_IMPACT } from '@/lib/marketSimulator';
+import { LIQUIDITY, WHALE_IMPACT_MAP as WHALE_IMPACT, getSlippageImpact } from '@/lib/marketSimulator';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,12 +72,10 @@ export async function POST(req: Request) {
         const floor = Number(asset.floor_price) || 1;
         const totalCost = curPrice * tradeAmount;
 
-        // 2. Calculate price impact (Value-Based Liquidity Model)
-        const liquidity = LIQUIDITY[sym] ?? 1_000_000;
-        const rawImpact = totalCost / liquidity;
-        const maxImpact = MAX_IMPACT[sym] ?? 0.10;
-        const cappedImpact = Math.min(rawImpact, maxImpact);
-        const isWhale = cappedImpact >= (WHALE_THRESHOLD[sym] ?? 0.05);
+        // 2. Calculate price impact using V3 Structural Slippage Model
+        // We use 'false' for isSurge here to maintain baseline stability for manual trades
+        const cappedImpact = Math.abs(getSlippageImpact(sym, tradeAmount, type === 'buy', false));
+        const isWhale = Math.abs(cappedImpact) >= (WHALE_THRESHOLD[sym] ?? 0.05);
 
         let newPrice = curPrice;
 
@@ -167,8 +165,8 @@ export async function POST(req: Request) {
             [curPrice, finalPrice, finalPrice, asset.id]
         );
 
-        // 4. Instant candle sync — trade appears on chart immediately
-        const candleTs = Math.floor(Date.now() / 10000) * 10;
+        // 4. Instant candle sync — trade appears on chart immediately (30s Bucket)
+        const candleTs = Math.floor(Date.now() / 30000) * 30;
         const [cr]: any = await conn.execute(
             'SELECT id FROM market_candles WHERE symbol = ? AND timestamp = ?',
             [sym, candleTs]

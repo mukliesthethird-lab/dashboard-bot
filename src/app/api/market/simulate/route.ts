@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { runSimulation, getBotActivity, resetAllCandles } from '@/lib/marketSimulator';
+import { runSimulation, resetAllCandles } from '@/lib/marketSimulator';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +14,7 @@ export async function GET() {
     }
 }
 
-/** POST /api/market/simulate — Special actions: reset or get bot activity */
+/** POST /api/market/simulate — Special actions */
 export async function POST(request: Request) {
     try {
         const body = await request.json().catch(() => ({}));
@@ -22,10 +22,6 @@ export async function POST(request: Request) {
         if (body.action === 'reset') {
             await resetAllCandles();
             return NextResponse.json({ success: true, message: 'All candle data cleared. Will re-seed on next ticker fetch.' });
-        }
-
-        if (body.action === 'bot_activity') {
-            return NextResponse.json({ success: true, activity: getBotActivity() });
         }
 
         return NextResponse.json({ success: false, error: 'Unknown action' }, { status: 400 });

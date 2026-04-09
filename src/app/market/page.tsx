@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import {
     BarChart2, Zap, Wallet, X, AlertTriangle,
     ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, Clock,
-    Bot, RefreshCw, Activity
+    RefreshCw
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
@@ -13,7 +13,7 @@ import type { TradingChartHandle } from "@/components/TradingChart";
 
 const TradingChart = dynamic(() => import("@/components/TradingChart"), { ssr: false });
 
-const TICK_INTERVAL = 1500; // Poll every 1.5s
+const TICK_INTERVAL = 1000; // Poll every 1s to match hyper-active simulator
 
 const SENTIMENT_CFG: Record<string, { label: string; color: string; bg: string }> = {
     bullish: { label: 'BULL', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
@@ -45,7 +45,6 @@ export default function ProMarketTerminal() {
     // Market state
     const [crashedAssets, setCrashedAssets] = useState<Set<string>>(new Set());
     const [sentimentMap, setSentimentMap] = useState<Record<string, string>>({});
-    const [botActivity, setBotActivity] = useState<any[]>([]);
     const [resetting, setResetting] = useState(false);
 
     // Market Order
@@ -95,17 +94,6 @@ export default function ProMarketTerminal() {
         } catch {}
     };
 
-    const fetchBotActivity = async () => {
-        try {
-            const res = await fetch('/api/market/simulate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'bot_activity' }),
-            });
-            const data = await res.json();
-            if (data.success && data.activity) setBotActivity(data.activity);
-        } catch {}
-    };
 
     const handleResetChart = async () => {
         if (resetting) return;
@@ -208,19 +196,11 @@ export default function ProMarketTerminal() {
         fetch('/api/market/simulate').catch(() => {});
         const simInterval = setInterval(() => {
             fetch('/api/market/simulate').catch(() => {});
-        }, 2000);
+        }, 1000);
         return () => clearInterval(simInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loaded]);
 
-    // ── BOT ACTIVITY FEED ──────────────────────────────────────────────────────
-    useEffect(() => {
-        if (isFirstRun.current) return;
-        fetchBotActivity();
-        const actInterval = setInterval(fetchBotActivity, 2500);
-        return () => clearInterval(actInterval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loaded]);
 
     // On asset switch — snap chart and price immediately
     useEffect(() => {
@@ -472,7 +452,7 @@ export default function ProMarketTerminal() {
 
                     {/* Chart header with reset button */}
                     <div className="bg-[#0b0c10] border border-white/5 rounded-2xl flex-1 relative overflow-hidden flex flex-col">
-                        <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
+                        <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
                             <button
                                 onClick={handleResetChart}
                                 disabled={resetting}
@@ -494,55 +474,7 @@ export default function ProMarketTerminal() {
                         )}
                     </div>
 
-                    {/* ── BOT ACTIVITY FEED ─────────────────────────────────── */}
-                    <div className="bg-[#0b0c10] border border-white/5 rounded-2xl p-3 shrink-0" style={{ maxHeight: '140px' }}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                                <Bot className="w-3 h-3 text-indigo-400" />
-                                Bot Activity
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <Activity className="w-2.5 h-2.5 text-emerald-400 animate-pulse" />
-                                <span className="text-[9px] text-emerald-500">LIVE</span>
-                            </div>
-                        </div>
-                        <div className="overflow-hidden" style={{ maxHeight: '90px' }}>
-                            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                                <AnimatePresence mode="popLayout">
-                                    {botActivity.length === 0 ? (
-                                        <div className="text-[9px] text-gray-600 py-2 flex items-center gap-1">
-                                            <span className="animate-pulse">◉</span> Menunggu aktivitas bot...
-                                        </div>
-                                    ) : botActivity.map((act) => {
-                                        const isPositive = act.action === 'BUY' || act.action === 'WHALE_PUMP' || act.action === 'RECOVERY';
-                                        const isCrash    = act.action === 'CRASH';
-                                        const isWhale    = act.action === 'WHALE_PUMP' || act.action === 'WHALE_DUMP';
-                                        const color = isCrash ? 'text-red-400' : isWhale ? 'text-yellow-400' : act.action === 'RECOVERY' ? 'text-blue-400' : isPositive ? 'text-emerald-400' : 'text-red-400';
-                                        const bg    = isCrash ? 'bg-red-500/10 border-red-500/20' : isWhale ? 'bg-yellow-500/10 border-yellow-500/20' : act.action === 'RECOVERY' ? 'bg-blue-500/10 border-blue-500/20' : isPositive ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20';
-                                        const emoji = isCrash ? '💥' : act.action === 'WHALE_PUMP' ? '🐋' : act.action === 'WHALE_DUMP' ? '🐻' : act.action === 'RECOVERY' ? '🔄' : isPositive ? '▲' : '▼';
-                                        return (
-                                            <motion.div
-                                                key={act.id}
-                                                initial={{ opacity: 0, x: -20, scale: 0.9 }}
-                                                animate={{ opacity: 1, x: 0, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.8 }}
-                                                transition={{ duration: 0.25 }}
-                                                className={`shrink-0 px-2.5 py-1.5 rounded-lg border text-[9px] font-bold ${bg} ${color} whitespace-nowrap`}
-                                            >
-                                                <span>{emoji} BOT {act.action}</span>
-                                                <span className="ml-1 opacity-60 font-normal">{act.symbol}</span>
-                                                <span className="ml-1">{act.amount.toLocaleString()} lbr</span>
-                                                <span className="ml-1 opacity-70">@ {act.price.toLocaleString()}</span>
-                                                <span className="ml-1">
-                                                    ({act.pct >= 0 ? '+' : ''}{act.pct.toFixed(2)}%)
-                                                </span>
-                                            </motion.div>
-                                        );
-                                    })}
-                                </AnimatePresence>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
                 {/* ── RIGHT: TRADING PANEL ──────────────────────────────────── */}
