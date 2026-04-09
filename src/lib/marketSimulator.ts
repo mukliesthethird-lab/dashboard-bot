@@ -164,6 +164,16 @@ export async function runSimulation() {
 
         const [assets]: any = await pool.execute('SELECT * FROM market_assets');
         
+        // ─── V5 CORRELATION TRACKER ───
+        // Calculate DYTO movement to influence other assets
+        const dytoAsset = assets.find((a: any) => a.symbol === 'DYTO');
+        let dytoPct = 0;
+        if (dytoAsset) {
+            const dCur = Number(dytoAsset.current_price);
+            const dPrev = Number(dytoAsset.previous_price) || dCur;
+            dytoPct = (dCur - dPrev) / dPrev;
+        }
+
         for (const asset of assets) {
             const sym = asset.symbol;
             updateWave(sym);
@@ -181,11 +191,20 @@ export async function runSimulation() {
             const wave = waves[sym];
             const signal = userSignals[sym] || null;
 
+            // ─── V5 MARKET CORRELATION ───
+            // DYTO leads the market. If DYTO is up, others get a boost.
+            let correlationBias = 0;
+            if (sym !== 'DYTO') {
+                if (dytoPct > 0.01) correlationBias = 0.12;       // Strong pump
+                else if (dytoPct > 0.002) correlationBias = 0.04; // Mild pump
+                else if (dytoPct < -0.01) correlationBias = -0.10; // Panic sell
+            }
+
             // ─── AGENT 1: KROCO BOTS (Small activity 1-100 lembar) ───────────
             const krocoTrades = randInt(profile.krocoDensity[0], profile.krocoDensity[1]);
             for (let i = 0; i < krocoTrades; i++) {
                 const vol = randInt(1, 100); 
-                const impact = getSlippageImpact(sym, vol, Math.random() < 0.55, surge.active);
+                const impact = getSlippageImpact(sym, vol, Math.random() < 0.55 + correlationBias, surge.active);
                 runningPrice = runningPrice * (1 + impact);
             }
 
@@ -197,7 +216,7 @@ export async function runSimulation() {
 
             const sentBias = sentiment === 'bullish' ? 0.10 : sentiment === 'bearish' ? -0.10 : 0;
             const waveBias = wave.dir * 0.45 * wave.intensity;
-            const buyProb  = Math.max(0.05, Math.min(0.95, 0.5 + sentBias + waveBias + userBias));
+            const buyProb  = Math.max(0.05, Math.min(0.95, 0.5 + sentBias + waveBias + userBias + correlationBias));
             
             const retailTrades = randInt(2, 5); 
             for (let i = 0; i < retailTrades; i++) {
@@ -240,8 +259,8 @@ export async function runSimulation() {
                     runningPrice = Math.min(target, runningPrice * (1 + impact));
                 }
             } else {
-                // Ultra-rare random crash (0.0001 = once every 10,000 seconds / ~2.7 hours per coin)
-                const crashProb = 0.0001;
+                // Ultra-rare random crash (0.00002 = ~14 hours per coin)
+                const crashProb = 0.00002;
                 if (Math.random() < crashProb) {
                     const drop = 0.15 + Math.random() * 0.15;
                     runningPrice = runningPrice * (1 - drop);
@@ -251,6 +270,65 @@ export async function runSimulation() {
                     ).catch(() => {});
                 }
             }
+
+            // ─── V5 MATCHING ENGINE (Process Limit Orders) ───────────
+            const [pendingOrders]: any = await pool.execute(
+                "SELECT * FROM limit_orders WHERE asset_id = ? AND status = 'pending'",
+                [asset.id]
+            );
+
+            for (const order of pendingOrders) {
+                const target = Number(order.target_price);
+                const isBuy = order.type === 'buy';
+                const triggered = isBuy ? (runningPrice <= target) : (runningPrice >= target);
+
+                if (triggered) {
+                    const amount = Number(order.amount);
+                    const totalCost = amount * runningPrice;
+                    
+                    try {
+                        // For SELL: execute trade logic
+                        if (!isBuy) {
+                            await pool.execute('UPDATE slot_users SET balance = balance + ? WHERE user_id = ?', [totalCost, order.user_id]);
+                            await pool.execute(
+                                'UPDATE user_portfolio SET amount_owned = amount_owned - ? WHERE user_id = ? AND asset_id = ?',
+                                [amount, order.user_id, asset.id]
+                            );
+                            // Cleanup empty portfolio
+                            await pool.execute('DELETE FROM user_portfolio WHERE user_id = ? AND asset_id = ? AND amount_owned <= 0.0001', [order.user_id, asset.id]);
+                        } else {
+                            // For BUY: Balance was already escrowed, just add to portfolio
+                            const [pr]: any = await pool.execute(
+                                'SELECT id FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
+                                [order.user_id, asset.id]
+                            );
+                            if (pr.length > 0) {
+                                await pool.execute(
+                                    'UPDATE user_portfolio SET amount_owned = amount_owned + ?, total_invested = total_invested + ? WHERE id = ?',
+                                    [amount, totalCost, pr[0].id]
+                                );
+                            } else {
+                                await pool.execute(
+                                    'INSERT INTO user_portfolio (user_id, asset_id, amount_owned, avg_buy_price, total_invested) VALUES (?,?,?,?,?)',
+                                    [order.user_id, asset.id, amount, runningPrice, totalCost]
+                                );
+                            }
+                        }
+
+                        // Mark Order as FILLED
+                        await pool.execute(
+                            "UPDATE limit_orders SET status = 'filled', filled_at = NOW() WHERE id = ?",
+                            [order.id]
+                        );
+
+                        // Price Impact from Limit Order
+                        const impact = getSlippageImpact(sym, amount, isBuy, false);
+                        runningPrice = runningPrice * (1 + impact);
+
+                    } catch (e) { console.error('Matching Engine Error:', e); }
+                }
+            }
+
             await applyPriceUpdate(sym, asset.id, cur, runningPrice, floor, ceil);
         }
         return { skipped: false };

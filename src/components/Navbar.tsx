@@ -94,8 +94,8 @@ export default function Navbar() {
                         </Link>
 
                         <Link
-                            href="/casino"
-                            className={`px-4 py-2 rounded-full font-bold transition-all flex items-center gap-1 ${pathname === '/casino'
+                            href={pathname?.includes('/dashboard/') ? `${pathname.split('/').slice(0, 3).join('/')}/casino` : '/casino'}
+                            className={`px-4 py-2 rounded-full font-bold transition-all flex items-center gap-1 ${pathname?.includes('/casino')
                                 ? 'bg-indigo-500/20 text-indigo-400'
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
@@ -226,9 +226,9 @@ export default function Navbar() {
                             </Link>
 
                             <Link
-                                href="/casino"
+                                href={pathname?.includes('/dashboard/') ? `${pathname.split('/').slice(0, 3).join('/')}/casino` : '/casino'}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/casino'
+                                className={`block px-4 py-3 rounded-xl font-bold transition ${pathname?.includes('/casino')
                                     ? 'bg-indigo-500/20 text-indigo-400'
                                     : 'text-gray-300 hover:bg-white/5'
                                     }`}

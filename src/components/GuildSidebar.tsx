@@ -24,8 +24,6 @@ const menuItems = [
     { name: "Leveling", icon: "📈", href: "/leveling" },
     { name: "Notification", icon: "🔔", href: "/notifications" },
     { name: "Forms", icon: "📋", href: "/forms" },
-    { name: "Market Trader", icon: "💹", href: "/market" },
-    { name: "Live Casino", icon: "🎰", href: "/casino" },
 ];
 
 export default function GuildSidebar({ guildId, guildName, guildIcon }: SidebarProps) {

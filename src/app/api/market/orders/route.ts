@@ -51,30 +51,65 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Tipe order tidak valid' }, { status: 400 });
     }
 
-    const sym = String(symbol).toUpperCase();
-    const [assetRows]: any = await pool.execute(
-        'SELECT id, current_price FROM market_assets WHERE symbol = ?', [sym]
-    );
-    if (!assetRows.length) return NextResponse.json({ error: 'Aset tidak ditemukan' }, { status: 404 });
-    const asset = assetRows[0];
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
 
-    // For SELL orders: validate user actually owns enough shares
-    if (type === 'sell') {
-        const [pr]: any = await pool.execute(
-            'SELECT amount_owned FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
-            [userId, asset.id]
+        // 1. Fetch asset
+        const sym = String(symbol).toUpperCase();
+        const [assetRows]: any = await conn.execute(
+            'SELECT id, current_price FROM market_assets WHERE symbol = ?', [sym]
         );
-        if (!pr.length || Number(pr[0].amount_owned) < Number(amount)) {
-            return NextResponse.json({ error: 'Lembar saham tidak cukup untuk limit sell' }, { status: 400 });
+        if (!assetRows.length) {
+            await conn.rollback();
+            return NextResponse.json({ error: 'Aset tidak ditemukan' }, { status: 404 });
         }
+        const asset = assetRows[0];
+
+        // 2. Escrow Logic
+        if (type === 'sell') {
+            // Validate ownership for Limit Sell
+            const [pr]: any = await conn.execute(
+                'SELECT amount_owned FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
+                [userId, asset.id]
+            );
+            if (!pr.length || Number(pr[0].amount_owned) < Number(amount)) {
+                await conn.rollback();
+                return NextResponse.json({ error: 'Lembar saham tidak cukup untuk limit sell' }, { status: 400 });
+            }
+        } else {
+            // Deduct balance for Limit Buy (Escrow)
+            const totalCost = Number(amount) * Number(target_price);
+            const [ur]: any = await conn.execute(
+                'SELECT balance FROM slot_users WHERE user_id = ?', [userId]
+            );
+            if (!ur.length || Number(ur[0].balance) < totalCost) {
+                await conn.rollback();
+                return NextResponse.json({ error: 'Saldo tidak cukup untuk memasang limit buy' }, { status: 400 });
+            }
+            
+            await conn.execute(
+                'UPDATE slot_users SET balance = balance - ? WHERE user_id = ?',
+                [totalCost, userId]
+            );
+        }
+
+        // 3. Create Order
+        await conn.execute(
+            'INSERT INTO limit_orders (user_id, asset_id, symbol, type, amount, target_price) VALUES (?,?,?,?,?,?)',
+            [userId, asset.id, sym, type, Number(amount), Number(target_price)]
+        );
+
+        await conn.beginTransaction();
+        await conn.commit();
+        return NextResponse.json({ success: true, message: 'Limit order berhasil dipasang!' });
+
+    } catch (e: any) {
+        try { await conn.rollback(); } catch {}
+        return NextResponse.json({ error: e.message }, { status: 500 });
+    } finally {
+        conn.release();
     }
-
-    await pool.execute(
-        'INSERT INTO limit_orders (user_id, asset_id, symbol, type, amount, target_price) VALUES (?,?,?,?,?,?)',
-        [userId, asset.id, sym, type, Number(amount), Number(target_price)]
-    );
-
-    return NextResponse.json({ success: true, message: 'Limit order berhasil dipasang!' });
 }
 
 // DELETE /api/market/orders — Cancel a pending order
@@ -91,14 +126,42 @@ export async function DELETE(request: Request) {
     const { id } = body;
     if (!id) return NextResponse.json({ error: 'ID order tidak valid' }, { status: 400 });
 
-    const [result]: any = await pool.execute(
-        "UPDATE limit_orders SET status = 'cancelled' WHERE id = ? AND user_id = ? AND status = 'pending'",
-        [id, userId]
-    );
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
 
-    if ((result as any).affectedRows === 0) {
-        return NextResponse.json({ error: 'Order tidak ditemukan atau sudah diproses' }, { status: 404 });
+        // 1. Fetch order to check type for refund logic
+        const [orderRows]: any = await conn.execute(
+            'SELECT * FROM limit_orders WHERE id = ? AND user_id = ? AND status = "pending"',
+            [id, userId]
+        );
+        if (!orderRows.length) {
+            await conn.rollback();
+            return NextResponse.json({ error: 'Order tidak ditemukan atau sudah diproses' }, { status: 404 });
+        }
+        const order = orderRows[0];
+
+        // 2. Refund balance if it was a BUY order
+        if (order.type === 'buy') {
+            const refund = Number(order.amount) * Number(order.target_price);
+            await conn.execute(
+                'UPDATE slot_users SET balance = balance + ? WHERE user_id = ?',
+                [refund, userId]
+            );
+        }
+
+        // 3. Update status to cancelled
+        await conn.execute(
+            "UPDATE limit_orders SET status = 'cancelled' WHERE id = ?",
+            [id]
+        );
+
+        await conn.commit();
+        return NextResponse.json({ success: true });
+    } catch (e: any) {
+        try { await conn.rollback(); } catch {}
+        return NextResponse.json({ error: e.message }, { status: 500 });
+    } finally {
+        conn.release();
     }
-
-    return NextResponse.json({ success: true });
 }

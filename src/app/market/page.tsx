@@ -45,6 +45,7 @@ export default function ProMarketTerminal() {
     // Market state
     const [crashedAssets, setCrashedAssets] = useState<Set<string>>(new Set());
     const [sentimentMap, setSentimentMap] = useState<Record<string, string>>({});
+    const [dytoDirection, setDytoDirection] = useState<'up' | 'down' | 'neutral'>('neutral');
     const [resetting, setResetting] = useState(false);
 
     // Market Order
@@ -139,6 +140,16 @@ export default function ProMarketTerminal() {
             setSentimentMap(newSentiments);
             setCrashedAssets(newCrashed);
 
+            // Update DYTO Correlation state
+            const dyto = data.assets.find((a: any) => a.symbol === 'DYTO');
+            if (dyto) {
+                const diff = Number(dyto.current_price) - Number(dyto.previous_price);
+                const pct = (diff / Number(dyto.previous_price)) * 100;
+                if (pct > 0.2) setDytoDirection('up');
+                else if (pct < -0.2) setDytoDirection('down');
+                else setDytoDirection('neutral');
+            }
+
             // Update chart + price header
             if (data.candles) {
                 lastFetchRef.current = data.candles;
@@ -202,16 +213,21 @@ export default function ProMarketTerminal() {
     }, [loaded]);
 
 
-    // On asset switch — snap chart and price immediately
     useEffect(() => {
         if (!selectedAsset || isFirstRun.current) return;
+        
+        // Reset local price indicators to prevent stale display
         const latest = assets.find(a => a.symbol === selectedAsset.symbol);
         if (latest) {
             const p = Number(latest.current_price);
             setCurrentPrice(p);
             setPriceDiff(+(p - Number(latest.previous_price)).toFixed(2));
-            generateOrderBook(p);
+            generateOrderBook(p); 
+        } else {
+            // If asset not in list yet, clear order book to avoid confusion
+            setOrderBook({ bids: [], asks: [] });
         }
+
         if (chartRef.current && lastFetchRef.current[selectedAsset.symbol]) {
             chartRef.current.setData(lastFetchRef.current[selectedAsset.symbol]);
         }
@@ -310,9 +326,14 @@ export default function ProMarketTerminal() {
     const ownedAmount = userStats.portfolio.find(p => p.symbol === selectedAsset?.symbol)?.amount_owned || 0;
     const selectedPosition = userStats.portfolio.find(p => p.symbol === selectedAsset?.symbol) ?? null;
     const isSelectedCrashed = crashedAssets.has(selectedAsset?.symbol ?? '');
-    const isUp = priceDiff >= 0;
-    const pctChange = selectedAsset && Number(selectedAsset.previous_price) > 0
-        ? ((priceDiff / Number(selectedAsset.previous_price)) * 100).toFixed(2)
+
+    // Use derived state for price to ensure header always matches selected asset
+    const activeAssetData = assets.find(a => a.symbol === selectedAsset?.symbol);
+    const displayPrice = activeAssetData ? Number(activeAssetData.current_price) : currentPrice;
+    const displayDiff = activeAssetData ? +(Number(activeAssetData.current_price) - Number(activeAssetData.previous_price)).toFixed(2) : priceDiff;
+    const displayIsUp = displayDiff >= 0;
+    const displayPct = activeAssetData && Number(activeAssetData.previous_price) > 0
+        ? ((displayDiff / Number(activeAssetData.previous_price)) * 100).toFixed(2)
         : '0.00';
 
     // ── RENDER ───────────────────────────────────────────────────────────────
@@ -408,23 +429,33 @@ export default function ProMarketTerminal() {
 
                             <div className="hidden sm:block">
                                 <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Live Price</p>
-                                <p className={`text-xl font-black tabular-nums ${isUp ? 'text-emerald-400' : 'text-red-400'}`}>
-                                    {currentPrice.toLocaleString()}
+                                <p className={`text-xl font-black tabular-nums ${displayIsUp ? 'text-emerald-400' : 'text-red-400'}`}>
+                                    {displayPrice.toLocaleString()}
                                 </p>
                             </div>
 
                             <div className="hidden md:block">
                                 <p className="text-[10px] text-gray-500 uppercase font-bold">Change</p>
-                                <p className={`text-sm font-bold flex items-center gap-1 ${isUp ? 'text-emerald-400' : 'text-red-400'}`}>
-                                    {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                                    {isUp ? '+' : ''}{priceDiff.toLocaleString()} ({isUp ? '+' : ''}{pctChange}%)
+                                <p className={`text-sm font-bold flex items-center gap-1 ${displayIsUp ? 'text-emerald-400' : 'text-red-400'}`}>
+                                    {displayIsUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                                    {displayIsUp ? '+' : ''}{displayDiff.toLocaleString()} ({displayIsUp ? '+' : ''}{displayPct}%)
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-[10px] font-bold">
-                            <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" />
-                            MAINNET LIVE
+                        <div className="flex items-center gap-2">
+                            {dytoDirection !== 'neutral' && selectedAsset?.symbol !== 'DYTO' && (
+                                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black border animate-pulse ${
+                                    dytoDirection === 'up' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
+                                }`}>
+                                    <Zap className="w-3 h-3" />
+                                    DYTO {dytoDirection === 'up' ? 'PUMPING' : 'DUMPING'} — MARKET LEADING
+                                </div>
+                            )}
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-[10px] font-bold">
+                                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" />
+                                MAINNET LIVE
+                            </div>
                         </div>
                     </div>
 
@@ -485,17 +516,17 @@ export default function ProMarketTerminal() {
 
                         {/* Tab Navigation */}
                         <div className="flex gap-1 p-1 bg-black/40 rounded-xl border border-white/5">
-                            {(['trade', 'limit', 'orders'] as const).map(tab => (
+                            {(['trade', 'limit'] as const).map(tab => (
                                 <button
                                     key={tab}
-                                    onClick={() => { setRightTab(tab); if (tab === 'orders') fetchOrders(); }}
+                                    onClick={() => setRightTab(tab)}
                                     className={`flex-1 py-1.5 rounded-lg text-[10px] font-black transition-all ${
                                         rightTab === tab
                                             ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
                                             : 'text-gray-500 hover:text-white'
                                     }`}
                                 >
-                                    {tab === 'trade' ? 'MARKET' : tab === 'limit' ? 'LIMIT' : 'ORDERS'}
+                                    {tab === 'trade' ? 'MARKET' : 'LIMIT'}
                                 </button>
                             ))}
                         </div>
@@ -548,7 +579,7 @@ export default function ProMarketTerminal() {
                                         <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
                                             <div className="flex justify-between text-[10px] text-gray-500 font-bold">
                                                 <span>EST. VALUE</span>
-                                                <span className="text-white">{(Number(tradeAmount) * currentPrice).toLocaleString()} Koin</span>
+                                                <span className="text-white">{(Number(tradeAmount) * displayPrice).toLocaleString()} Koin</span>
                                             </div>
                                             <div className="flex justify-between text-[10px] text-gray-500 font-bold">
                                                 <span>BALANCE</span>
@@ -598,7 +629,7 @@ export default function ProMarketTerminal() {
                                             <label className="block text-[10px] font-bold text-gray-500 px-1 mb-1">TARGET PRICE</label>
                                             <input
                                                 type="number" step="any"
-                                                placeholder={`Harga sekarang: ${currentPrice.toLocaleString()}`}
+                                                placeholder={`Harga sekarang: ${displayPrice.toLocaleString()}`}
                                                 value={limitPrice}
                                                 onChange={e => setLimitPrice(e.target.value)}
                                                 className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition placeholder:text-gray-700 placeholder:font-normal placeholder:text-xs"
@@ -653,38 +684,47 @@ export default function ProMarketTerminal() {
                             </div>
                         )}
 
-                        {/* ── OPEN ORDERS TAB ── */}
-                        {rightTab === 'orders' && (
-                            <div className="space-y-2 max-h-[260px] overflow-y-auto">
-                                {openOrders.length === 0 ? (
-                                    <div className="text-center py-8 text-gray-600">
-                                        <Clock className="w-6 h-6 mx-auto mb-2 opacity-30" />
-                                        <p className="text-xs">Tidak ada open order</p>
+                    </div>
+                    
+                    {/* ── OPEN ORDERS (Always Visible) ── */}
+                    <div className="bg-[#0b0c10] border border-white/5 rounded-2xl flex flex-col overflow-hidden max-h-[200px]">
+                        <div className="p-3 border-b border-white/5 bg-white/5 flex items-center justify-between">
+                            <span className="text-[10px] font-black text-white flex items-center gap-2 uppercase tracking-widest">
+                                <Clock className="w-3 h-3 text-indigo-400" /> Open Orders
+                            </span>
+                            <span className="text-[10px] text-gray-500 font-bold">{openOrders.length}</span>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-2 space-y-1.5 scrollbar-hide">
+                            {openOrders.length === 0 ? (
+                                <div className="text-center py-6 text-gray-700 text-[10px] font-bold uppercase tracking-widest bg-black/20 rounded-xl border border-dashed border-white/5">
+                                    No Active Orders
+                                </div>
+                            ) : openOrders.map(order => (
+                                <div key={order.id} className="p-2.5 bg-white/5 rounded-xl border border-white/5 flex flex-col gap-1 transition-all hover:border-indigo-500/30 group">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className={`text-[8px] font-black px-1 py-0.5 rounded shadow-sm ${
+                                                order.type === 'buy' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                            }`}>{order.type.toUpperCase()}</span>
+                                            <span className="font-black text-[10px]">{order.symbol}</span>
+                                        </div>
+                                        <button 
+                                            onClick={() => cancelOrder(order.id)} 
+                                            className="text-gray-600 hover:text-red-400 transition p-1 bg-white/5 rounded-lg"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
                                     </div>
-                                ) : openOrders.map(order => (
-                                    <div key={order.id} className="p-3 bg-white/5 rounded-xl border border-white/5 flex flex-col gap-1.5">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
-                                                    order.type === 'buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-                                                }`}>{order.type.toUpperCase()}</span>
-                                                <span className="font-black text-xs">{order.symbol}</span>
-                                            </div>
-                                            <button onClick={() => cancelOrder(order.id)} className="text-gray-600 hover:text-red-400 transition p-0.5">
-                                                <X className="w-3 h-3" />
-                                            </button>
-                                        </div>
-                                        <div className="flex justify-between text-[10px] text-gray-500">
-                                            <span>Target: <span className="text-white font-bold">{Number(order.target_price).toLocaleString()}</span></span>
-                                            <span>Qty: <span className="text-white font-bold">{Number(order.amount)}</span></span>
-                                        </div>
-                                        <div className="text-[9px] text-gray-600">
-                                            Now: {Number(order.current_price).toLocaleString()}
-                                        </div>
+                                    <div className="flex justify-between text-[10px] font-bold tabular-nums">
+                                        <span className="text-gray-500">Target <span className="text-white ml-1">{Number(order.target_price).toLocaleString()}</span></span>
+                                        <span className="text-gray-500">Qty <span className="text-white ml-1">{Number(order.amount)}</span></span>
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                    <div className="text-[9px] text-gray-700 font-bold">
+                                        Current: {Number(assets?.find((a:any)=>a.symbol===order.symbol)?.current_price).toLocaleString()}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     {/* ── P&L POSITION WIDGET ───────────────────────────────── */}
@@ -765,8 +805,8 @@ export default function ProMarketTerminal() {
                                 ))}
                             </div>
                             <div className="py-2 border-y border-white/5 text-center my-1">
-                                <span className={`font-black tabular-nums ${isUp ? 'text-emerald-400' : 'text-red-400'}`}>
-                                    {currentPrice.toLocaleString()}
+                                <span className={`font-black tabular-nums ${displayIsUp ? 'text-emerald-400' : 'text-red-400'}`}>
+                                    {displayPrice.toLocaleString()}
                                 </span>
                                 <span className="text-[8px] text-gray-500 block">LAST TRADED</span>
                             </div>

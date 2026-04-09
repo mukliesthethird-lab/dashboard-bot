@@ -11,6 +11,12 @@ interface Shard {
   users: number;
 }
 
+interface UptimeHistory {
+  check_date: string;
+  uptime_percentage: number;
+  incident_count: number;
+}
+
 interface StatusData {
   status: string;
   version: string;
@@ -22,12 +28,12 @@ interface StatusData {
   lastUpdate: string;
   totalServers?: number;
   totalUsers?: number;
+  history?: UptimeHistory[];
 }
 
 export default function StatusPage() {
   const [data, setData] = useState<StatusData | null>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchStatus = async () => {
       try {
@@ -45,7 +51,13 @@ export default function StatusPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Calculate Average Availability
+  const avgAvailability = data?.history && data.history.length > 0
+    ? (data.history.reduce((acc, curr) => acc + Number(curr.uptime_percentage), 0) / data.history.length).toFixed(2)
+    : "100.00";
+
   return (
+    // ... (Background and Header remain the same)
     <div className="relative min-h-screen bg-[#030305] text-white pt-32 pb-24 px-6 overflow-x-hidden">
       {/* Background System */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -109,26 +121,48 @@ export default function StatusPage() {
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-black flex items-center gap-3">
               <span className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">📊</span>
-              Uptime History <span className="text-gray-500 text-sm font-bold ml-2">Last 90 Days</span>
+              Uptime History <span className="text-gray-500 text-sm font-bold ml-2">Last 60 Days</span>
             </h3>
-            <div className="text-emerald-400 font-black text-sm tracking-widest">99.98% AVAILABLE</div>
+            <div className="text-emerald-400 font-black text-sm tracking-widest">{avgAvailability}% AVAILABLE</div>
           </div>
-          <div className="flex gap-[3px] h-10">
-            {[...Array(60)].map((_, i) => (
-              <div 
-                key={i} 
-                className={`flex-1 rounded-sm transition-all duration-500 hover:scale-y-125 hover:brightness-125 ${
-                  i === 45 ? 'bg-amber-500/40' : i === 12 ? 'bg-red-500/40' : 'bg-emerald-500/40'
-                }`}
-                title={i === 45 ? "Minor issues detected" : i === 12 ? "Maintenance downtime" : "All systems healthy"}
-              />
-            ))}
+          <div className="flex gap-[4px] h-10 items-end">
+             {/* Fill with history or empty blocks if history is less than 60 days */}
+             {Array.from({ length: 60 }).map((_, i) => {
+               const historyIndex = i - (60 - (data?.history?.length || 0));
+               const log = historyIndex >= 0 ? data?.history?.[historyIndex] : null;
+               
+               let bgColor = "bg-white/5";
+               let statusText = "No data recorded";
+
+               if (log) {
+                 const percentage = Number(log.uptime_percentage);
+                 if (percentage >= 99.9) {
+                   bgColor = "bg-emerald-500/40";
+                   statusText = `All systems healthy (${log.check_date})`;
+                 } else if (percentage >= 95) {
+                   bgColor = "bg-amber-500/40";
+                   statusText = `Partial issues detected: ${percentage}% uptime (${log.check_date})`;
+                 } else {
+                   bgColor = "bg-red-500/40";
+                   statusText = `Major outage: ${percentage}% uptime (${log.check_date})`;
+                 }
+               }
+
+               return (
+                 <div 
+                   key={i} 
+                   className={`flex-1 rounded-[2px] h-full transition-all duration-500 hover:scale-y-125 hover:brightness-125 ${bgColor}`}
+                   title={statusText}
+                 />
+               );
+             })}
           </div>
           <div className="flex justify-between mt-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">
             <span>60 Days Ago</span>
             <span>Today</span>
           </div>
         </div>
+
 
         {/* Note */}
         <p className="text-center text-gray-500 text-sm italic animate-fade-up">
