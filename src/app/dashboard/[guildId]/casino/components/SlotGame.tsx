@@ -41,6 +41,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
     // Controls for animation
     const reelControls = [useAnimation(), useAnimation(), useAnimation()];
     const shakeControls = useAnimation();
+    const [reelOffsets, setReelOffsets] = useState<number[]>([0, 0, 0]);
     const [isJackpotHit, setIsJackpotHit] = useState(false);
     const [particles, setParticles] = useState<{ id: number; x: number; y: number; s: number; color: string }[]>([]);
 
@@ -76,7 +77,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || "Internal Error");
 
-            // Get current visible symbols (the ones at the end of the previous strip)
+            // Get current visible symbols
             const currentSymbols = reelsData.map(strip => strip.slice(-3));
 
             // Generate full strips starting with current symbols and ending with winning results
@@ -85,15 +86,22 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
             );
             setReelsData(newStrips);
 
-            // Reset position and start staggered animations
+            // Calculate staggered animations
             const spinPromises = reelControls.map((ctrl, i) => {
-                ctrl.set({ y: 0 }); // RESET POSITION BEFORE SPIN
+                // Determine height of one symbol (100 on sm, 120 on lg)
+                const symbolHeight = window.innerWidth >= 1024 ? 120 : 100;
+                
+                // We want to animate from 0 to -(SYMBOLS_PER_REEL - 3) * symbolHeight
+                // But since we want continuity, we just animate relative from current 0
                 return ctrl.start({
-                    y: -(SYMBOLS_PER_REEL - 3) * 100,
+                    y: [0, -(SYMBOLS_PER_REEL - 3) * symbolHeight],
                     transition: {
-                        duration: 3 + i * 0.8,
-                        ease: [0.45, 0.05, 0.55, 1], // Realistic slowing down
+                        duration: 2.5 + i * 0.6,
+                        ease: [0.45, 0.05, 0.55, 1],
                     }
+                }).then(() => {
+                    // After spin, we stay where we are, but the component will re-render
+                    // in wait state. No need to reset here.
                 });
             });
 
@@ -190,7 +198,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                         </div>
 
                         {/* REELS AREA - Fills available frame height */}
-                        <div className={`w-full flex-1 bg-[#050508] rounded-[2rem] p-4 flex gap-2 border-[4px] relative overflow-hidden group transition-colors duration-300
+                        <div className={`w-full h-[300px] lg:h-[360px] bg-[#050508] rounded-[2rem] p-4 flex gap-2 border-[4px] relative overflow-hidden group transition-colors duration-300 self-center
                             ${isJackpotHit ? 'border-amber-500/50 shadow-[0_0_50px_rgba(245,158,11,0.2)]' : 'border-black/40'}
                         `}>
                             {/* Glass overlay */}
@@ -199,7 +207,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
 
                             {/* Win Line Highlight */}
                             <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-[100px] lg:h-[120px] z-10 pointer-events-none">
-                                <div className="absolute inset-0 bg-amber-500/[0.03] border-y-2 border-amber-500/20 shadow-[0_0_50px_rgba(245,158,11,0.1)] backdrop-blur-[2px]" />
+                                <div className="absolute inset-0 bg-amber-500/[0.03] border-y-2 border-amber-500/20 shadow-[0_0_50px_rgba(245,158,11,0.1)]" />
                                 <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-8 bg-amber-500 rounded-r-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
                                 <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-8 bg-amber-500 rounded-l-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
                             </div>
@@ -210,6 +218,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                                         animate={reelControls[reelIndex]}
                                         initial={{ y: 0 }}
                                         className="flex flex-col items-center"
+                                        style={{ height: 'fit-content' }}
                                     >
                                         <div className="flex flex-col items-center">
                                             {reelsData[reelIndex].map((symbol, i) => (

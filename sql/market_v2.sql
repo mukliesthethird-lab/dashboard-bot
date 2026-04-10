@@ -81,3 +81,4 @@ INSERT INTO market_assets (symbol, name, current_price, previous_price, volatili
 ('MEW',   'Mew',     2500,     2500,     0.080, 1, 20.00, 2500,     2500,     0, 0, 'neutral');
 
 -- Done! Pastikan kamu menjalankan ini SEBELUM server Next.js di-restart.
+  
