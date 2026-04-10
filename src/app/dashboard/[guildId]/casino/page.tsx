@@ -49,45 +49,42 @@ export default function InteractiveCasinoPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#020205] text-white selection:bg-indigo-500/30 font-sans">
+        <div className="h-screen bg-[#020205] text-white selection:bg-indigo-500/30 font-sans overflow-hidden flex flex-col">
             {/* Background Glows */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+            <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[150px] rounded-full" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[150px] rounded-full" />
             </div>
 
-            <main className="relative z-10 max-w-[1600px] mx-auto pt-32 pb-16 px-4 md:px-8 min-h-screen flex flex-col">
-                {/* Header Section */}
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 gap-8">
+            <main className="relative z-10 w-full max-w-[1700px] mx-auto pt-24 pb-4 px-4 md:px-8 flex flex-col flex-1 min-h-0 overflow-hidden">
+                {/* Header Section - Compact */}
+                <div className="flex flex-col lg:flex-row justify-between items-center mb-6 gap-6">
                     <div>
-                        <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight leading-tight">
-                            Excellence in <br />
-                            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Gaming.</span>
+                        <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
+                            Gaming <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent italic">Excellence.</span>
                         </h1>
                     </div>
 
-                    <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-4">
-                        {/* Balance Card */}
-                        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 pr-12 relative overflow-hidden flex items-center gap-4 group hover:border-indigo-500/30 transition-all">
-                            <div className="p-3 bg-indigo-500/10 rounded-2xl group-hover:scale-110 transition-transform">
-                                <Coins className="w-6 h-6 text-indigo-400" />
-                            </div>
+                    <div className="flex flex-col sm:flex-row gap-4 items-center">
+                        {/* Balance Card - Compact */}
+                        <div className="bg-white/5 border border-white/10 rounded-2xl py-2 px-6 flex items-center gap-4 transition-all hover:bg-white/[0.08]">
+                            <Coins className="w-5 h-5 text-indigo-400" />
                             <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Available Balance</p>
-                                <div className="text-2xl font-black text-white">
-                                    {balance.toLocaleString()} <span className="text-xs text-gray-500 uppercase">Coins</span>
+                                <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Balance</p>
+                                <div className="text-lg font-black text-white tabular-nums">
+                                    {balance.toLocaleString()} <span className="text-[10px] text-gray-500 uppercase">Coins</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Navigation Tabs */}
-                        <div className="bg-white/5 border border-white/10 p-1.5 rounded-[2rem] flex gap-1">
+                        {/* Navigation Tabs - Slim */}
+                        <div className="bg-white/5 border border-white/10 p-1 rounded-[1.8rem] flex gap-1">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
-                                    className={`px-6 py-3 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2
-                                        ${activeTab === tab.id ? 'bg-white text-black shadow-xl shadow-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'}
+                                    className={`px-5 py-2.5 rounded-[1.4rem] font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2
+                                        ${activeTab === tab.id ? 'bg-white text-black shadow-lg shadow-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'}
                                     `}
                                 >
                                     {tab.icon}
@@ -98,15 +95,15 @@ export default function InteractiveCasinoPage() {
                     </div>
                 </div>
 
-                {/* Main Game Stage */}
-                <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-[3rem] shadow-2xl relative overflow-hidden backdrop-blur-3xl">
+                {/* Main Game Stage - Viewport Filled */}
+                <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-[2.5rem] shadow-2xl relative overflow-hidden backdrop-blur-3xl min-h-0">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab}
-                            initial={{ opacity: 0, y: 40 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -40 }}
-                            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.02 }}
+                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                             className="absolute inset-0 h-full w-full"
                         >
                             {activeTab === 'CRASH' && <CrashGame userBalance={balance} onBalanceChange={setBalance} />}
@@ -116,10 +113,10 @@ export default function InteractiveCasinoPage() {
                     </AnimatePresence>
                 </div>
 
-                {/* Footer Meta */}
-                <div className="mt-8 flex justify-between items-center text-[10px] font-black text-gray-500 uppercase tracking-widest">
-                    <div>
-                        © 2026 Don Pollo Enterprise
+                {/* Footer Meta - Small & Integrated */}
+                <div className="mt-3 flex justify-between items-center text-[8px] font-black text-white/10 uppercase tracking-[0.4em]">
+                    <div>© 2026 DON POLLO ENTERPRISE</div>
+                    <div className="flex gap-4">
                     </div>
                 </div>
             </main>

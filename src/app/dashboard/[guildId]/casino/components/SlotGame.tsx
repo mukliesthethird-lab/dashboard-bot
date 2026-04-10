@@ -55,7 +55,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
         return strip;
     };
 
-    const spin = async () => {
+    const handleSpin = async () => {
         if (isSpinning) return;
         if (userBalance < bet) {
             setError("Insufficient balance!");
@@ -80,7 +80,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
             const currentSymbols = reelsData.map(strip => strip.slice(-3));
 
             // Generate full strips starting with current symbols and ending with winning results
-            const newStrips = data.reels.map((symbol: string, i: number) => 
+            const newStrips = data.reels.map((symbol: string, i: number) =>
                 generateReelStrip(symbol, currentSymbols[i])
             );
             setReelsData(newStrips);
@@ -89,7 +89,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
             const spinPromises = reelControls.map((ctrl, i) => {
                 ctrl.set({ y: 0 }); // RESET POSITION BEFORE SPIN
                 return ctrl.start({
-                    y: -(SYMBOLS_PER_REEL - 3) * 120,
+                    y: -(SYMBOLS_PER_REEL - 3) * 100,
                     transition: {
                         duration: 3 + i * 0.8,
                         ease: [0.45, 0.05, 0.55, 1], // Realistic slowing down
@@ -107,7 +107,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
             if (data.resultText.includes("JACKPOT") || data.resultText.includes("MAJOR")) {
                 const isJackpot = data.resultText.includes("JACKPOT");
                 setIsJackpotHit(true);
-                
+
                 // 1. Shake Machine
                 shakeControls.start({
                     x: [0, -20, 20, -15, 15, -10, 10, -5, 5, 0],
@@ -142,23 +142,23 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
     };
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-[#020308] relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.1)_0%,transparent_50%)]" />
-            <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none" />
+        <div className="w-full h-full flex flex-col items-center justify-center p-3 lg:p-6 bg-[#020308] relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.08)_0%,transparent_50%)]" />
 
-            <div className="relative z-10 w-full max-w-5xl flex flex-col gap-10">
-                <div className="flex flex-col items-center gap-2">
-                    <div className="flex items-center gap-4">
-                        <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-500" />
-                        <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-500 to-amber-700 flex items-center gap-4 italic tracking-tighter">
-                            <Crown className="w-10 h-10 text-amber-500" />
-                            DON POLLO SLOTS
+            <div className="relative z-10 w-full max-w-5xl flex flex-col h-full max-h-[850px] gap-4 lg:gap-6">
+                {/* Header - Compact */}
+                <div className="flex flex-col items-center shrink-0">
+                    <div className="flex items-center gap-3">
+                        <div className="h-px w-8 bg-gradient-to-r from-transparent to-amber-500" />
+                        <h2 className="text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-500 to-amber-700 flex items-center gap-3 italic tracking-tighter uppercase">
+                            <Crown className="w-6 h-6 lg:w-8 lg:h-8 text-amber-500" />
+                            Don Pollo Slots
                         </h2>
-                        <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-500" />
+                        <div className="h-px w-8 bg-gradient-to-l from-transparent to-amber-500" />
                     </div>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-8 items-stretch justify-center relative">
+                <div className="flex-1 flex flex-col lg:flex-row gap-6 lg:gap-8 items-center justify-center min-h-0">
                     {/* Particles Container */}
                     <div className="absolute inset-0 z-50 pointer-events-none">
                         {particles.map((p) => (
@@ -175,69 +175,63 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                         ))}
                     </div>
 
-                    {/* PREMIUM CSS SLOT MACHINE FRAME */}
-                    <motion.div 
+                    {/* PREMIUM CSS SLOT MACHINE FRAME - Responsive */}
+                    <motion.div
                         animate={shakeControls}
-                        className={`flex-1 max-w-[600px] relative p-8 rounded-[3.5rem] bg-zinc-900 border-x-4 border-t-2 border-b-[12px] transition-colors duration-300
-                            ${isJackpotHit ? 'border-amber-500 shadow-[0_0_100px_rgba(245,158,11,0.4)]' : 'border-zinc-950 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]'}
-                            flex flex-col items-center
+                        className={`flex-1 max-w-[500px] h-full lg:h-[450px] xl:h-[500px] relative p-3 lg:p-6 rounded-[2.5rem] bg-zinc-900 border-x-4 border-t-2 border-b-[8px] transition-colors duration-300
+                            ${isJackpotHit ? 'border-amber-500 shadow-[0_0_80px_rgba(245,158,11,0.4)]' : 'border-zinc-950 shadow-[0_30px_60px_-10px_rgba(0,0,0,0.8)]'}
+                            flex flex-col items-center shrink-0
                         `}
                     >
-                        <div className="absolute top-6 flex gap-6">
-                            {[0,1,2,3,4,5,6].map(i => (
+                        <div className="flex gap-4 mb-4">
+                            {[0, 1, 2, 3, 4].map(i => (
                                 <div key={i} className={`w-1.5 h-1.5 rounded-full ${isSpinning || isJackpotHit ? 'animate-pulse bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]' : 'bg-zinc-800'}`} style={{ animationDelay: `${i * 0.15}s` }} />
                             ))}
                         </div>
 
-                        <div className={`w-full mt-6 bg-[#050508] rounded-[2.5rem] p-6 flex gap-3 border-[6px] relative overflow-hidden group transition-colors duration-300
+                        {/* REELS AREA - Fills available frame height */}
+                        <div className={`w-full flex-1 bg-[#050508] rounded-[2rem] p-4 flex gap-2 border-[4px] relative overflow-hidden group transition-colors duration-300
                             ${isJackpotHit ? 'border-amber-500/50 shadow-[0_0_50px_rgba(245,158,11,0.2)]' : 'border-black/40'}
                         `}>
-                            <AnimatePresence>
-                                {isJackpotHit && (
-                                    <motion.div 
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: [0, 0.8, 0] }}
-                                        transition={{ duration: 0.5 }}
-                                        className="absolute inset-0 bg-white z-50 pointer-events-none"
-                                    />
-                                )}
-                            </AnimatePresence>
-
+                            {/* Glass overlay */}
                             <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] to-transparent pointer-events-none z-30" />
-                            <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,1)] z-20 pointer-events-none rounded-[2rem]" />
+                            <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,1)] z-20 pointer-events-none rounded-[1.8rem]" />
 
-                            <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-[140px] z-10 pointer-events-none">
-                                <div className="absolute inset-0 bg-amber-500/[0.03] border-y-2 border-amber-500/20 shadow-[0_0_50px_rgba(245,158,11,0.1)]" />
-                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-3 h-10 bg-amber-500 rounded-r-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
-                                <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-3 h-10 bg-amber-500 rounded-l-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
+                            {/* Win Line Highlight */}
+                            <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-[100px] lg:h-[120px] z-10 pointer-events-none">
+                                <div className="absolute inset-0 bg-amber-500/[0.03] border-y-2 border-amber-500/20 shadow-[0_0_50px_rgba(245,158,11,0.1)] backdrop-blur-[2px]" />
+                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-8 bg-amber-500 rounded-r-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
+                                <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-8 bg-amber-500 rounded-l-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
                             </div>
 
                             {[0, 1, 2].map((reelIndex) => (
-                                <div key={reelIndex} className="flex-1 h-[360px] overflow-hidden relative">
+                                <div key={reelIndex} className="flex-1 h-full overflow-hidden relative">
                                     <motion.div
                                         animate={reelControls[reelIndex]}
                                         initial={{ y: 0 }}
                                         className="flex flex-col items-center"
                                     >
-                                        {reelsData[reelIndex].map((symbol, i) => (
-                                            <div
-                                                key={i}
-                                                className="h-[120px] w-full flex items-center justify-center text-7xl md:text-8xl relative"
-                                                style={{ filter: isSpinning ? 'blur(4px)' : 'none' }}
-                                            >
-                                                {!isSpinning && i === reelsData[reelIndex].length - 2 && lastResult && lastResult.wins > 0 && (
-                                                    <motion.div 
-                                                        initial={{ scale: 0.8, opacity: 0 }}
-                                                        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }}
-                                                        transition={{ repeat: Infinity, duration: 1.5 }}
-                                                        className="absolute inset-0 bg-white rounded-full blur-2xl"
-                                                    />
-                                                )}
-                                                <span className={`${SYMBOL_COLORS[symbol]} drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] relative z-10 ${!isSpinning && i === reelsData[reelIndex].length - 2 && lastResult && lastResult.wins > 0 ? 'scale-110' : ''} transition-transform`}>
-                                                    {symbol}
-                                                </span>
-                                            </div>
-                                        ))}
+                                        <div className="flex flex-col items-center">
+                                            {reelsData[reelIndex].map((symbol, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="h-[100px] lg:h-[120px] w-full flex items-center justify-center text-5xl lg:text-7xl relative shrink-0"
+                                                    style={{ filter: isSpinning ? 'blur(4px)' : 'none' }}
+                                                >
+                                                    {!isSpinning && i === reelsData[reelIndex].length - 2 && lastResult && lastResult.wins > 0 && (
+                                                        <motion.div
+                                                            initial={{ scale: 0.8, opacity: 0 }}
+                                                            animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }}
+                                                            transition={{ repeat: Infinity, duration: 1.5 }}
+                                                            className="absolute inset-0 bg-white rounded-full blur-2xl"
+                                                        />
+                                                    )}
+                                                    <span className={`${SYMBOL_COLORS[symbol]} drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] relative z-10 ${!isSpinning && i === reelsData[reelIndex].length - 2 && lastResult && lastResult.wins > 0 ? 'scale-110' : ''} transition-transform`}>
+                                                        {symbol}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </motion.div>
                                     {reelIndex < 2 && (
                                         <div className="absolute right-0 top-1/4 h-1/2 w-px bg-white/5 z-20" />
@@ -245,123 +239,88 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                                 </div>
                             ))}
                         </div>
-
-                        <div className="w-full mt-6 flex justify-between items-center px-4">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-black text-zinc-700 uppercase tracking-widest leading-none mb-1">Authentic Gear</span>
-                                <span className="text-[9px] font-bold text-zinc-500">Not a financial advisor</span>
-                            </div>
-                            <div className="flex gap-1.5 p-2 bg-black/40 rounded-full border border-white/5">
-                                <div className={`w-2 h-2 rounded-full ${isSpinning ? 'bg-amber-500 animate-ping' : 'bg-red-500'}`} />
-                                <div className={`w-2 h-2 rounded-full ${isSpinning ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-800'}`} />
-                            </div>
-                        </div>
                     </motion.div>
 
-                    <div className="w-full lg:w-[400px] flex flex-col gap-6">
-                        <div className="grid grid-cols-1 gap-3">
-                            <div className="bg-white/5 border border-white/10 p-5 rounded-3xl flex items-center justify-between group hover:bg-white/[0.08] transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="text-xl flex gap-1">💎💎💎</div>
-                                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Jackpot</span>
+                    {/* CONTROLS SECTION - Integrated Sidebar */}
+                    <div className="w-full lg:w-[350px] flex flex-col gap-4 h-full lg:h-[450px] xl:h-[500px]">
+                        {/* Payout Table - Compact */}
+                        <div className="bg-white/[0.03] border border-white/5 p-4 lg:p-6 rounded-[2rem] flex-1 min-h-0 overflow-y-auto no-scrollbar">
+                            <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-4">Win multipliers</p>
+                            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:gap-3">
+                                <div className="p-3 bg-black/40 rounded-xl border border-white/5 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-lg">💎💎💎</div>
+                                        <span className="text-[9px] font-black text-zinc-600 uppercase">Jackpot</span>
+                                    </div>
+                                    <span className="text-lg font-black text-amber-500">20X</span>
                                 </div>
-                                <span className="text-xl font-black text-amber-500 italic">20X</span>
-                            </div>
-                            <div className="bg-white/5 border border-white/10 p-5 rounded-3xl flex items-center justify-between group hover:bg-white/[0.08] transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="text-xl flex gap-1">⭐⭐⭐</div>
-                                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Major</span>
+                                <div className="p-3 bg-black/40 rounded-xl border border-white/5 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-lg">⭐⭐⭐</div>
+                                        <span className="text-[9px] font-black text-zinc-600 uppercase">Major</span>
+                                    </div>
+                                    <span className="text-lg font-black text-white">15X</span>
                                 </div>
-                                <span className="text-xl font-black text-white italic">15X</span>
                             </div>
                         </div>
 
-                        <div className="bg-[#0b0c14] border border-white/5 p-8 rounded-[2.5rem] flex flex-col flex-1">
-                            <div className="mb-auto">
-                                <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-6 block">Current Configuration</label>
-                                <div className="grid grid-cols-2 gap-3 mb-4">
-                                    {[100, 500, 1000, 5000].map((v) => (
-                                        <button
-                                            key={v}
-                                            onClick={() => !isSpinning && setBet(v)}
-                                            className={`py-4 rounded-2xl font-black text-sm transition-all border-2 ${bet === v
-                                                ? 'bg-white text-black border-white shadow-[0_0_30px_rgba(255,255,255,0.1)]'
-                                                : 'bg-white/5 text-zinc-500 border-transparent hover:border-white/10 hover:text-white'}`}
-                                        >
-                                            {v >= 1000 ? (v / 1000) + 'K' : v}
+                        {/* Betting Control - Hardware Look */}
+                        <div className="bg-[#0b0c14] border border-white/5 p-6 rounded-[2.5rem] flex flex-col gap-4 shadow-xl shrink-0">
+                            <div className="space-y-2">
+                                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest leading-none">Stake Amount</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                                        <Coins className="w-4 h-4 text-zinc-500 group-focus-within:text-amber-500 transition-colors" />
+                                    </div>
+                                    <input
+                                        type="number"
+                                        value={bet}
+                                        onChange={(e) => setBet(parseInt(e.target.value) || 0)}
+                                        disabled={isSpinning}
+                                        className="w-full bg-white/5 border-2 border-transparent focus:border-white/10 rounded-xl py-3 pl-10 pr-4 text-white font-black text-sm outline-none transition-all"
+                                    />
+                                </div>
+                                <div className="flex gap-1.5">
+                                    {[100, 500, 1000].map(v => (
+                                        <button key={v} onClick={() => !isSpinning && setBet(v)} className={`flex-1 py-1.5 rounded-lg text-[9px] font-black border transition-all ${bet === v ? 'bg-white text-black border-white' : 'bg-white/5 text-zinc-500 border-transparent hover:text-white'}`}>
+                                            {v}
                                         </button>
                                     ))}
                                 </div>
-
-                                <div className="relative mb-8 group">
-                                    <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                                        <Coins className="w-4 h-4 text-zinc-500 group-focus-within:text-amber-500 transition-colors" />
-                                    </div>
-                                    <input 
-                                        type="number"
-                                        value={bet}
-                                        onChange={(e) => {
-                                            const val = parseInt(e.target.value) || 0;
-                                            setBet(val);
-                                        }}
-                                        disabled={isSpinning}
-                                        placeholder="Custom Amount"
-                                        className="w-full bg-white/5 border-2 border-transparent focus:border-white/10 focus:bg-white/[0.08] rounded-2xl py-4 pl-12 pr-4 text-white font-black text-sm outline-none transition-all placeholder:text-zinc-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    />
-                                    <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none">
-                                        <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Koin</span>
-                                    </div>
-                                </div>
                             </div>
 
-                            <div className="space-y-6">
+                            <div className="pt-2">
                                 <AnimatePresence mode="wait">
-                                    {lastResult ? (
-                                        <motion.div
-                                            key="result"
-                                            initial={{ y: 20, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            className="text-center"
-                                        >
-                                            <div className={`text-4xl font-black italic tracking-tighter uppercase ${lastResult.wins > 0 ? 'text-emerald-400 drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]' : 'text-zinc-600'}`}>
+                                    {lastResult && (
+                                        <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-center mb-2">
+                                            <div className={`text-xl font-black italic tracking-tighter uppercase ${lastResult.wins > 0 ? 'text-emerald-400' : 'text-zinc-600'}`}>
                                                 {lastResult.text}
                                             </div>
-                                            {lastResult.wins > 0 && (
-                                                <div className="text-sm font-black text-amber-500/80 mt-1 uppercase tracking-[0.2em] animate-pulse">
-                                                    Payout: +{lastResult.wins.toLocaleString()} Coins
-                                                </div>
-                                            )}
                                         </motion.div>
-                                    ) : (
-                                        <div key="ready" className="text-center opacity-20">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.4em]">System Ready</span>
-                                        </div>
                                     )}
                                 </AnimatePresence>
 
                                 <button
-                                    onClick={spin}
-                                    disabled={isSpinning}
-                                    className={`w-full py-8 rounded-[2rem] font-black text-xl flex items-center justify-center gap-4 transition-all shadow-2xl
-                                        ${isSpinning
-                                            ? 'bg-zinc-800 text-zinc-600 grayscale cursor-not-allowed opacity-50'
-                                            : 'bg-white text-black hover:bg-emerald-500 hover:text-white hover:scale-[1.02] active:scale-95 shadow-white/10'}
+                                    onClick={handleSpin}
+                                    disabled={isSpinning || userBalance < bet}
+                                    className={`w-full py-5 rounded-[1.8rem] font-black text-lg flex items-center justify-center gap-3 transition-all relative overflow-hidden group
+                                        ${isSpinning ? 'bg-zinc-800 text-zinc-600 opacity-50' : 'bg-white text-black hover:bg-emerald-500 hover:text-white hover:scale-[1.02] active:scale-95 shadow-xl shadow-white/5'}
                                     `}
                                 >
-                                    {isSpinning ? <Loader2 className="w-8 h-8 animate-spin" /> : <Play className="w-6 h-6 fill-current" />}
-                                    {isSpinning ? 'REELING...' : 'SPIN SYSTEM'}
+                                    {isSpinning ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5 fill-current" />}
+                                    {isSpinning ? 'SPINNING...' : 'SPIN SYSTEM'}
                                 </button>
                             </div>
                         </div>
-
-                        {error && (
-                            <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl text-red-500 text-[10px] font-black flex items-center gap-3">
-                                <AlertCircle className="w-4 h-4" /> {error}
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
+
+            {error && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-red-500 text-[9px] font-black flex items-center gap-2">
+                    <AlertCircle className="w-3 h-3" /> {error}
+                </div>
+            )}
         </div>
     );
 }
