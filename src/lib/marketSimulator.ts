@@ -42,10 +42,10 @@ const SENSITIVITY: Record<string, number> = {
     DYTO:  3.0,
     JOKOW: 4.0,
     POLLO: 5.5,
-    OHIO:  6.5,
-    SIGMA: 8.0,
-    BONE:  12.0,
-    MEW:   18.0,
+    OHIO:  5.0,
+    SIGMA: 6.0,
+    BONE:  7.5,
+    MEW:   9.0,
 };
 
 const MAX_TICK_MOVE = {
@@ -57,10 +57,10 @@ const BEHAVIOR_PROFILES: Record<string, any> = {
     DYTO:  { retailFactor: [0.0001, 0.0003], whaleFactor: [0.008, 0.015], krocoDensity: [15, 30], whaleProb: 0.005, waveSticky: 2.5, jitter: 0.05 },
     JOKOW: { retailFactor: [0.0001, 0.0005], whaleFactor: [0.010, 0.020], krocoDensity: [12, 25], whaleProb: 0.006, waveSticky: 2.0, jitter: 0.08 },
     POLLO: { retailFactor: [0.0008, 0.0018], whaleFactor: [0.015, 0.035], krocoDensity: [10, 20], whaleProb: 0.010, waveSticky: 1.5, jitter: 0.15 },
-    OHIO:  { retailFactor: [0.0010, 0.0025], whaleFactor: [0.020, 0.045], krocoDensity: [8, 18],  whaleProb: 0.012, waveSticky: 1.2, jitter: 0.20 },
-    SIGMA: { retailFactor: [0.0015, 0.0040], whaleFactor: [0.025, 0.060], krocoDensity: [6, 15],  whaleProb: 0.015, waveSticky: 0.8, jitter: 0.30 },
-    BONE:  { retailFactor: [0.0030, 0.0080], whaleFactor: [0.040, 0.100], krocoDensity: [4, 12],  whaleProb: 0.020, waveSticky: 0.4, jitter: 0.50 },
-    MEW:   { retailFactor: [0.0050, 0.0150], whaleFactor: [0.060, 0.200], krocoDensity: [2, 8],   whaleProb: 0.030, waveSticky: 0.2, jitter: 0.80 },
+    OHIO:  { retailFactor: [0.0010, 0.0020], whaleFactor: [0.015, 0.035], krocoDensity: [8, 18],  whaleProb: 0.008, waveSticky: 1.2, jitter: 0.20 },
+    SIGMA: { retailFactor: [0.0012, 0.0025], whaleFactor: [0.020, 0.045], krocoDensity: [6, 15],  whaleProb: 0.010, waveSticky: 0.8, jitter: 0.30 },
+    BONE:  { retailFactor: [0.0015, 0.0035], whaleFactor: [0.025, 0.060], krocoDensity: [4, 12],  whaleProb: 0.012, waveSticky: 0.4, jitter: 0.50 },
+    MEW:   { retailFactor: [0.0020, 0.0050], whaleFactor: [0.030, 0.080], krocoDensity: [2, 8],   whaleProb: 0.015, waveSticky: 0.2, jitter: 0.80 },
 };
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
@@ -200,11 +200,26 @@ export async function runSimulation() {
                 else if (dytoPct < -0.01) correlationBias = -0.10; // Panic sell
             }
 
+            // ─── PRICE RESISTANCE ───
+            const priceRatio = cur / ceil;
+            let resistanceFactor = 1.0;
+            let resistanceSellBias = 0;
+            
+            // If price > 70% of max, reduce upward impact by up to 80% and bias sells
+            if (priceRatio > 0.7) {
+                const overshoot = (priceRatio - 0.7) / 0.3; // 0 -> 1.0 as it hits 100%
+                resistanceFactor = 1.0 - (overshoot * 0.8); // 1.0 -> 0.2
+            }
+            if (priceRatio > 0.85) {
+                resistanceSellBias = -0.4 * ((priceRatio - 0.85) / 0.15); // Up to -40% buy prob
+            }
+
             // ─── AGENT 1: KROCO BOTS (Small activity 1-100 lembar) ───────────
             const krocoTrades = randInt(profile.krocoDensity[0], profile.krocoDensity[1]);
             for (let i = 0; i < krocoTrades; i++) {
                 const vol = randInt(1, 100); 
-                const impact = getSlippageImpact(sym, vol, Math.random() < 0.55 + correlationBias, surge.active);
+                let impact = getSlippageImpact(sym, vol, Math.random() < 0.55 + correlationBias, surge.active);
+                if (impact > 0) impact *= resistanceFactor;
                 runningPrice = runningPrice * (1 + impact);
             }
 
@@ -216,7 +231,7 @@ export async function runSimulation() {
 
             const sentBias = sentiment === 'bullish' ? 0.10 : sentiment === 'bearish' ? -0.10 : 0;
             const waveBias = wave.dir * 0.45 * wave.intensity;
-            const buyProb  = Math.max(0.05, Math.min(0.95, 0.5 + sentBias + waveBias + userBias + correlationBias));
+            const buyProb  = Math.max(0.05, Math.min(0.95, 0.5 + sentBias + waveBias + userBias + correlationBias + resistanceSellBias));
             
             const retailTrades = randInt(2, 5); 
             for (let i = 0; i < retailTrades; i++) {
@@ -224,7 +239,8 @@ export async function runSimulation() {
                 const minV = depth * profile.retailFactor[0];
                 const maxV = depth * profile.retailFactor[1];
                 const vol = Math.max(minV, Math.min(maxV, Math.ceil(Math.abs(gauss(minV * 2, maxV / 2)))));
-                const impact = getSlippageImpact(sym, vol, isBuy, surge.active);
+                let impact = getSlippageImpact(sym, vol, isBuy, surge.active);
+                if (impact > 0) impact *= resistanceFactor;
                 runningPrice = runningPrice * (1 + impact);
             }
 
@@ -241,7 +257,8 @@ export async function runSimulation() {
                 const minW = depth * profile.whaleFactor[0];
                 const maxW = depth * profile.whaleFactor[1];
                 const vol = randInt(minW, maxW); 
-                const impact = getSlippageImpact(sym, vol, isPump, surge.active);
+                let impact = getSlippageImpact(sym, vol, isPump, surge.active);
+                if (impact > 0) impact *= resistanceFactor;
                 runningPrice = runningPrice * (1 + impact);
                 
                 pool.execute(
@@ -278,9 +295,12 @@ export async function runSimulation() {
             );
 
             for (const order of pendingOrders) {
-                const target = Number(order.target_price);
+                const minPrice = Number(order.min_price);
+                const maxPrice = Number(order.max_price);
                 const isBuy = order.type === 'buy';
-                const triggered = isBuy ? (runningPrice <= target) : (runningPrice >= target);
+                
+                // Trigger condition: Price is within the target range
+                const triggered = (runningPrice >= minPrice && runningPrice <= maxPrice);
 
                 if (triggered) {
                     const amount = Number(order.amount);

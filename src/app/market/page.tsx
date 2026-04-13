@@ -56,7 +56,8 @@ export default function ProMarketTerminal() {
 
     // Limit Order
     const [rightTab, setRightTab] = useState<'trade' | 'limit' | 'orders'>('trade');
-    const [limitPrice, setLimitPrice] = useState('');
+    const [limitMinPrice, setLimitMinPrice] = useState('');
+    const [limitMaxPrice, setLimitMaxPrice] = useState('');
     const [limitAmount, setLimitAmount] = useState('1');
     const [openOrders, setOpenOrders] = useState<any[]>([]);
     const [limitMsg, setLimitMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -277,8 +278,8 @@ export default function ProMarketTerminal() {
 
     const handleLimitOrder = async () => {
         if (!session || submittingLimit || !selectedAsset) return;
-        if (!limitPrice || !limitAmount || Number(limitPrice) <= 0 || Number(limitAmount) <= 0) {
-            setLimitMsg({ type: 'error', text: 'Isi harga target dan jumlah lembar' });
+        if (!limitMinPrice || !limitMaxPrice || !limitAmount || Number(limitMinPrice) <= 0 || Number(limitMaxPrice) < Number(limitMinPrice) || Number(limitAmount) <= 0) {
+            setLimitMsg({ type: 'error', text: 'Cek min/max harga (max harus >= min) dan jumlah lembar' });
             return;
         }
         setSubmittingLimit(true);
@@ -290,14 +291,16 @@ export default function ProMarketTerminal() {
                 body: JSON.stringify({
                     symbol: selectedAsset.symbol,
                     amount: Number(limitAmount),
-                    target_price: Number(limitPrice),
+                    min_price: Number(limitMinPrice),
+                    max_price: Number(limitMaxPrice),
                     type: tradeType,
                 }),
             });
             const data = await res.json();
             if (data.success) {
                 setLimitMsg({ type: 'success', text: data.message });
-                setLimitPrice('');
+                setLimitMinPrice('');
+                setLimitMaxPrice('');
                 fetchOrders();
             } else {
                 setLimitMsg({ type: 'error', text: data.error });
@@ -625,15 +628,27 @@ export default function ProMarketTerminal() {
                                     </div>
                                 ) : (
                                     <>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-gray-500 px-1 mb-1">TARGET PRICE</label>
-                                            <input
-                                                type="number" step="any"
-                                                placeholder={`Harga sekarang: ${displayPrice.toLocaleString()}`}
-                                                value={limitPrice}
-                                                onChange={e => setLimitPrice(e.target.value)}
-                                                className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition placeholder:text-gray-700 placeholder:font-normal placeholder:text-xs"
-                                            />
+                                        <div className="flex gap-2">
+                                            <div className="flex-1">
+                                                <label className="block text-[10px] font-bold text-gray-500 px-1 mb-1">MIN PRICE</label>
+                                                <input
+                                                    type="number" step="any"
+                                                    placeholder="Min"
+                                                    value={limitMinPrice}
+                                                    onChange={e => setLimitMinPrice(e.target.value)}
+                                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition placeholder:text-gray-700 placeholder:font-normal placeholder:text-xs"
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <label className="block text-[10px] font-bold text-gray-500 px-1 mb-1">MAX PRICE</label>
+                                                <input
+                                                    type="number" step="any"
+                                                    placeholder="Max"
+                                                    value={limitMaxPrice}
+                                                    onChange={e => setLimitMaxPrice(e.target.value)}
+                                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition placeholder:text-gray-700 placeholder:font-normal placeholder:text-xs"
+                                                />
+                                            </div>
                                         </div>
                                         <div>
                                             <div className="flex justify-between text-[10px] font-bold text-gray-500 px-1 mb-1">
@@ -648,10 +663,10 @@ export default function ProMarketTerminal() {
                                             />
                                         </div>
 
-                                        {limitPrice && limitAmount && Number(limitPrice) > 0 && (
+                                        {limitMinPrice && limitMaxPrice && limitAmount && Number(limitMaxPrice) > 0 && (
                                             <div className="p-2 bg-white/5 rounded-xl border border-white/5 flex justify-between text-[10px] font-bold text-gray-500">
-                                                <span>EST. VALUE</span>
-                                                <span className="text-white">{(Number(limitAmount) * Number(limitPrice)).toLocaleString()} Koin</span>
+                                                <span>EST. VALUE (Max)</span>
+                                                <span className="text-white">{(Number(limitAmount) * Number(limitMaxPrice)).toLocaleString()} Koin</span>
                                             </div>
                                         )}
 
@@ -716,7 +731,7 @@ export default function ProMarketTerminal() {
                                         </button>
                                     </div>
                                     <div className="flex justify-between text-[10px] font-bold tabular-nums">
-                                        <span className="text-gray-500">Target <span className="text-white ml-1">{Number(order.target_price).toLocaleString()}</span></span>
+                                        <span className="text-gray-500">Range <span className="text-white ml-1">{Number(order.min_price).toLocaleString()} - {Number(order.max_price).toLocaleString()}</span></span>
                                         <span className="text-gray-500">Qty <span className="text-white ml-1">{Number(order.amount)}</span></span>
                                     </div>
                                     <div className="text-[9px] text-gray-700 font-bold">

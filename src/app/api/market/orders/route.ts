@@ -39,13 +39,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
     }
 
-    const { symbol, amount, target_price, type } = body;
+    const { symbol, amount, min_price, max_price, type } = body;
 
-    if (!symbol || !amount || !target_price || !type) {
+    if (!symbol || !amount || min_price === undefined || max_price === undefined || !type) {
         return NextResponse.json({ error: 'Field tidak lengkap' }, { status: 400 });
     }
-    if (Number(amount) <= 0 || Number(target_price) <= 0) {
-        return NextResponse.json({ error: 'Nilai tidak valid (harus > 0)' }, { status: 400 });
+    if (Number(amount) <= 0 || Number(min_price) <= 0 || Number(max_price) < Number(min_price)) {
+        return NextResponse.json({ error: 'Nilai tidak valid (harus > 0 dan max >= min)' }, { status: 400 });
     }
     if (!['buy', 'sell'].includes(type)) {
         return NextResponse.json({ error: 'Tipe order tidak valid' }, { status: 400 });
@@ -78,8 +78,8 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: 'Lembar saham tidak cukup untuk limit sell' }, { status: 400 });
             }
         } else {
-            // Deduct balance for Limit Buy (Escrow)
-            const totalCost = Number(amount) * Number(target_price);
+            // Deduct balance for Limit Buy (Escrow uses max price to guarantee enough funds)
+            const totalCost = Number(amount) * Number(max_price);
             const [ur]: any = await conn.execute(
                 'SELECT balance FROM slot_users WHERE user_id = ?', [userId]
             );
@@ -96,8 +96,8 @@ export async function POST(request: Request) {
 
         // 3. Create Order
         await conn.execute(
-            'INSERT INTO limit_orders (user_id, asset_id, symbol, type, amount, target_price) VALUES (?,?,?,?,?,?)',
-            [userId, asset.id, sym, type, Number(amount), Number(target_price)]
+            'INSERT INTO limit_orders (user_id, asset_id, symbol, type, amount, min_price, max_price) VALUES (?,?,?,?,?,?,?)',
+            [userId, asset.id, sym, type, Number(amount), Number(min_price), Number(max_price)]
         );
 
         await conn.beginTransaction();
@@ -143,7 +143,7 @@ export async function DELETE(request: Request) {
 
         // 2. Refund balance if it was a BUY order
         if (order.type === 'buy') {
-            const refund = Number(order.amount) * Number(order.target_price);
+            const refund = Number(order.amount) * Number(order.max_price);
             await conn.execute(
                 'UPDATE slot_users SET balance = balance + ? WHERE user_id = ?',
                 [refund, userId]
