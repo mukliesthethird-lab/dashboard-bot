@@ -100,7 +100,6 @@ export async function POST(request: Request) {
             [userId, asset.id, sym, type, Number(amount), Number(min_price), Number(max_price)]
         );
 
-        await conn.beginTransaction();
         await conn.commit();
         return NextResponse.json({ success: true, message: 'Limit order berhasil dipasang!' });
 

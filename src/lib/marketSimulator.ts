@@ -319,13 +319,13 @@ export async function runSimulation() {
                         } else {
                             // For BUY: Balance was already escrowed, just add to portfolio
                             const [pr]: any = await pool.execute(
-                                'SELECT id FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
+                                'SELECT amount_owned FROM user_portfolio WHERE user_id = ? AND asset_id = ?',
                                 [order.user_id, asset.id]
                             );
                             if (pr.length > 0) {
                                 await pool.execute(
-                                    'UPDATE user_portfolio SET amount_owned = amount_owned + ?, total_invested = total_invested + ? WHERE id = ?',
-                                    [amount, totalCost, pr[0].id]
+                                    'UPDATE user_portfolio SET amount_owned = amount_owned + ?, total_invested = total_invested + ? WHERE user_id = ? AND asset_id = ?',
+                                    [amount, totalCost, order.user_id, asset.id]
                                 );
                             } else {
                                 await pool.execute(

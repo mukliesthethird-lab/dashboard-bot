@@ -90,7 +90,7 @@ export default function ProMarketTerminal() {
     const fetchOrders = async () => {
         if (!session) return;
         try {
-            const res = await fetch('/api/market/orders?type=open');
+            const res = await fetch(`/api/market/orders?type=open&v=${Date.now()}`);
             const data = await res.json();
             if (data.success) setOpenOrders(data.orders || []);
         } catch {}
@@ -255,6 +255,19 @@ export default function ProMarketTerminal() {
         if (!session || trading || !selectedAsset) return;
         setTrading(true);
         setTradeMsg(null);
+        
+        // Optimistic Balance Update
+        const cost = Number(tradeAmount) * displayPrice;
+        if (tradeType === 'buy' && userStats.balance < cost) {
+            setTradeMsg({ type: 'error', text: 'Saldo kurang' });
+            setTrading(false);
+            return;
+        }
+
+        const oldStats = { ...userStats };
+        if (tradeType === 'buy') setUserStats(prev => ({ ...prev, balance: prev.balance - cost }));
+        else setUserStats(prev => ({ ...prev, balance: prev.balance + cost }));
+
         try {
             const res = await fetch('/api/market/trade', {
                 method: 'POST',
@@ -267,9 +280,11 @@ export default function ProMarketTerminal() {
                 await fetchMarketData();
             } else {
                 setTradeMsg({ type: 'error', text: data.error });
+                setUserStats(oldStats); // Rollback
             }
         } catch {
             setTradeMsg({ type: 'error', text: 'Transaction failed' });
+            setUserStats(oldStats); // Rollback
         } finally {
             setTrading(false);
             setTimeout(() => setTradeMsg(null), 3500);
@@ -284,6 +299,20 @@ export default function ProMarketTerminal() {
         }
         setSubmittingLimit(true);
         setLimitMsg(null);
+
+        // Optimistic UI Update
+        const tempId = Math.random() * -1; // Negative ID to mark as pending
+        const newOrder = {
+            id: tempId,
+            symbol: selectedAsset.symbol,
+            amount: Number(limitAmount),
+            min_price: Number(limitMinPrice),
+            max_price: Number(limitMaxPrice),
+            type: tradeType,
+            status: 'pending'
+        };
+        setOpenOrders(prev => [newOrder, ...prev]);
+
         try {
             const res = await fetch('/api/market/orders', {
                 method: 'POST',
@@ -304,9 +333,11 @@ export default function ProMarketTerminal() {
                 fetchOrders();
             } else {
                 setLimitMsg({ type: 'error', text: data.error });
+                setOpenOrders(prev => prev.filter(o => o.id !== tempId)); // Rollback
             }
         } catch {
             setLimitMsg({ type: 'error', text: 'Gagal memasang order' });
+            setOpenOrders(prev => prev.filter(o => o.id !== tempId)); // Rollback
         } finally {
             setSubmittingLimit(false);
             setTimeout(() => setLimitMsg(null), 4000);
@@ -314,14 +345,24 @@ export default function ProMarketTerminal() {
     };
 
     const cancelOrder = async (id: number) => {
+        const oldOrders = [...openOrders];
+        setOpenOrders(prev => prev.filter(o => o.id !== id)); // Optimistic Delete
+        
         try {
-            await fetch('/api/market/orders', {
+            const res = await fetch('/api/market/orders', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id }),
             });
-            fetchOrders();
-        } catch {}
+            const data = await res.json();
+            if (!data.success) {
+                setOpenOrders(oldOrders); // Rollback if server fails
+            } else {
+                fetchOrders();
+            }
+        } catch {
+            setOpenOrders(oldOrders); // Rollback
+        }
     };
 
     // ── DERIVED STATE ────────────────────────────────────────────────────────
@@ -655,6 +696,7 @@ export default function ProMarketTerminal() {
                                                 <span>AMOUNT (Lembar)</span>
                                                 <span>Owned: {ownedAmount.toLocaleString()}</span>
                                             </div>
+
                                             <input
                                                 type="number" step="0.001" min="0.001"
                                                 value={limitAmount}
@@ -663,12 +705,18 @@ export default function ProMarketTerminal() {
                                             />
                                         </div>
 
-                                        {limitMinPrice && limitMaxPrice && limitAmount && Number(limitMaxPrice) > 0 && (
-                                            <div className="p-2 bg-white/5 rounded-xl border border-white/5 flex justify-between text-[10px] font-bold text-gray-500">
-                                                <span>EST. VALUE (Max)</span>
-                                                <span className="text-white">{(Number(limitAmount) * Number(limitMaxPrice)).toLocaleString()} Koin</span>
+                                        <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold">
+                                                <span>EST. VALUE (MAX)</span>
+                                                <span className="text-white">{(Number(limitAmount) * Number(limitMaxPrice || 0)).toLocaleString()} Koin</span>
                                             </div>
-                                        )}
+                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold">
+                                                <span>BALANCE</span>
+                                                <span className="text-emerald-400 flex items-center gap-1">
+                                                    <Wallet className="w-3 h-3" /> {userStats.balance.toLocaleString()}
+                                                </span>
+                                            </div>
+                                        </div>
 
                                         <button
                                             disabled={submittingLimit}
