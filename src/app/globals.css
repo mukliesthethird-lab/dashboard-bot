@@ -260,6 +260,11 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes shimmer-slide {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(50%); }
+}
+
 /* ===== ANIMATION CLASSES ===== */
 
 .animate-fade-in { animation: fade-in 0.5s ease-out; }
@@ -335,6 +340,34 @@ body {
   border: 1px solid var(--glass-border); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card:hover { border-color: rgba(139, 92, 246, 0.3); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.2); }
+
+.server-card-active {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(16, 185, 129, 0.05));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(16, 185, 129, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.server-card-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.4), transparent);
+  animation: shimmer-slide 4s infinite linear;
+  pointer-events: none;
+}
+
+.server-card-active:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(16, 185, 129, 0.1);
+}
 
 /* ===== BUTTON STYLES ===== */
 

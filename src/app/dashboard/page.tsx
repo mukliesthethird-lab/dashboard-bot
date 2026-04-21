@@ -112,12 +112,16 @@ export default async function Dashboard() {
                             // Active servers get special styling
                             if (isBotIn) {
                                 return (
-                                    <div
-                                        key={guild.id}
-                                        className="relative p-5 rounded-2xl server-card-active hover:scale-[1.01] transition-all duration-300"
-                                    >
-                                        <div className="absolute -top-2 -right-2 text-2xl animate-pulse">✅</div>
-                                        <div className="flex items-center gap-5">
+                                    <div key={guild.id} className="relative group">
+                                        {/* External Badge */}
+                                        <div className="absolute -top-3 -right-3 z-30 transition-all duration-300 group-hover:scale-125 group-hover:-translate-y-1 drop-shadow-xl">
+                                            <span className="text-3xl">✅</span>
+                                        </div>
+                                        
+                                        <div
+                                            className="relative p-5 rounded-2xl server-card-active hover:scale-[1.01] transition-all duration-300"
+                                        >
+                                            <div className="flex items-center gap-5">
                                             <div className="relative">
                                                 <img
                                                     src={iconUrl}
@@ -154,6 +158,7 @@ export default async function Dashboard() {
                                             </Link>
                                         </div>
                                     </div>
+                                </div>
                                 );
                             }
 

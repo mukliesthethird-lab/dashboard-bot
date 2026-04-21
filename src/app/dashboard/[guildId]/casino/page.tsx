@@ -3,16 +3,20 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Rocket, Trophy, Coins, Sparkles, ChevronRight, LayoutDashboard } from "lucide-react";
+import { Rocket, Trophy, Coins, Sparkles, ChevronRight, LayoutDashboard, Database, Spade } from "lucide-react";
 import SlotGame from "./components/SlotGame";
 import RouletteGame from "./components/RouletteGame";
 import CrashGame from "./components/CrashGame";
+import ChipExchangeModal from "./components/ChipExchangeModal";
+import CasinoLobby from "./components/CasinoLobby";
 
 export default function InteractiveCasinoPage() {
     const { data: session } = useSession();
-    const [activeTab, setActiveTab] = useState<"CRASH" | "ROULETTE" | "SLOTS">("CRASH");
+    const [activeTab, setActiveTab] = useState<"CRASH" | "ROULETTE" | "SLOTS" | "BLACKJACK">("CRASH");
     const [balance, setBalance] = useState<number>(0);
+    const [chips, setChips] = useState<number>(0);
     const [loading, setLoading] = useState(true);
+    const [isExchangeOpen, setIsExchangeOpen] = useState(false);
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -21,6 +25,7 @@ export default function InteractiveCasinoPage() {
                 if (res.ok) {
                     const data = await res.json();
                     setBalance(data.balance);
+                    setChips(data.chips || 0);
                 }
             } catch (err) {
                 console.error("Failed to fetch balance", err);
@@ -35,6 +40,7 @@ export default function InteractiveCasinoPage() {
         { id: "CRASH", name: "SpaceX Crash", icon: <Rocket className="w-4 h-4" /> },
         { id: "ROULETTE", name: "Premium Roulette", icon: <Trophy className="w-4 h-4" /> },
         { id: "SLOTS", name: "Golden Slots", icon: <Sparkles className="w-4 h-4" /> },
+        { id: "BLACKJACK", name: "Multiplayer Blackjack", icon: <Spade className="w-4 h-4" /> },
     ];
 
     if (loading) {
@@ -66,24 +72,37 @@ export default function InteractiveCasinoPage() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 items-center">
-                        {/* Balance Card - Compact */}
-                        <div className="bg-white/5 border border-white/10 rounded-2xl py-2 px-6 flex items-center gap-4 transition-all hover:bg-white/[0.08]">
-                            <Coins className="w-5 h-5 text-indigo-400" />
-                            <div>
-                                <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Balance</p>
-                                <div className="text-lg font-black text-white tabular-nums">
-                                    {balance.toLocaleString()} <span className="text-[10px] text-gray-500 uppercase">Coins</span>
+                        <div className="flex gap-2">
+                            {/* Coins Balance Card */}
+                            <div className="bg-white/5 border border-white/10 rounded-2xl py-2 px-4 flex items-center gap-3 transition-all hover:bg-white/[0.08]">
+                                <Coins className="w-4 h-4 text-emerald-400" />
+                                <div>
+                                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none">Coins</p>
+                                    <div className="text-sm font-black text-white tabular-nums leading-none mt-1">
+                                        {balance.toLocaleString()}
+                                    </div>
                                 </div>
                             </div>
+
+                            {/* Chips Balance Card (Clickable) */}
+                            <button onClick={() => setIsExchangeOpen(true)} className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl py-2 px-4 flex items-center gap-3 transition-all hover:bg-indigo-500/20 group">
+                                <Database className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+                                <div className="text-left">
+                                    <p className="text-[9px] font-black text-indigo-400/70 uppercase tracking-widest leading-none">Chips</p>
+                                    <div className="text-sm font-black text-white tabular-nums leading-none mt-1">
+                                        {chips.toLocaleString()}
+                                    </div>
+                                </div>
+                            </button>
                         </div>
 
                         {/* Navigation Tabs - Slim */}
-                        <div className="bg-white/5 border border-white/10 p-1 rounded-[1.8rem] flex gap-1">
+                        <div className="bg-white/5 border border-white/10 p-1 rounded-[1.8rem] flex gap-1 overflow-x-auto max-w-full hide-scrollbar">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
-                                    className={`px-5 py-2.5 rounded-[1.4rem] font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2
+                                    className={`whitespace-nowrap px-5 py-2.5 rounded-[1.4rem] font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2
                                         ${activeTab === tab.id ? 'bg-white text-black shadow-lg shadow-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'}
                                     `}
                                 >
@@ -109,6 +128,7 @@ export default function InteractiveCasinoPage() {
                             {activeTab === 'CRASH' && <CrashGame userBalance={balance} onBalanceChange={setBalance} />}
                             {activeTab === 'ROULETTE' && <RouletteGame userBalance={balance} onBalanceChange={setBalance} />}
                             {activeTab === 'SLOTS' && <SlotGame userBalance={balance} onBalanceChange={setBalance} />}
+                            {activeTab === 'BLACKJACK' && <CasinoLobby userChips={chips} onChipsChange={setChips} />}
                         </motion.div>
                     </AnimatePresence>
                 </div>
@@ -120,6 +140,17 @@ export default function InteractiveCasinoPage() {
                     </div>
                 </div>
             </main>
+
+            <ChipExchangeModal 
+                isOpen={isExchangeOpen} 
+                onClose={() => setIsExchangeOpen(false)} 
+                coinsBalance={balance} 
+                chipsBalance={chips} 
+                onSuccess={(newCoins, newChips) => {
+                    setBalance(newCoins);
+                    setChips(newChips);
+                }} 
+            />
         </div>
     );
 }
