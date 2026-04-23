@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import EmptyState from "./EmptyState";
 import CatLoader from "./CatLoader";
@@ -38,7 +38,7 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [total, setTotal] = useState(0);
     const [actionLoading, setActionLoading] = useState(false);
-    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Filter States
     const [filters, setFilters] = useState({
@@ -48,8 +48,6 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
         warns: true,
         open: true,
         closed: true,
-        showMass: true,
-        onlyMass: false,
         timeRange: "All time"
     });
 
@@ -96,11 +94,10 @@ export default function ModerationCases({ guildId }: ModerationCasesProps) {
 
     const handleSearch = (value: string) => {
         setSearchTerm(value);
-        if (searchTimeout) clearTimeout(searchTimeout);
-        const timeout = setTimeout(() => {
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = setTimeout(() => {
             fetchCases(value);
         }, 500);
-        setSearchTimeout(timeout);
     };
 
     const getIcon = (type: Case['type']) => {

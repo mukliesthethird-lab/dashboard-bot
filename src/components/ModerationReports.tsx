@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import CatLoader from "./CatLoader";
 import CustomDropdown from "./CustomDropdown";
@@ -39,7 +39,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
     const [total, setTotal] = useState(0);
     const [actionLoading, setActionLoading] = useState<number | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const [resolveModal, setResolveModal] = useState<{ isOpen: boolean; report: Report | null }>({ isOpen: false, report: null });
     const [dismissModal, setDismissModal] = useState<{ isOpen: boolean; report: Report | null }>({ isOpen: false, report: null });
@@ -67,7 +67,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
     const dismissTemplates = [
         { value: "evidence", label: "Insufficient Evidence" },
         { value: "no_violation", label: "No Rule Violation" },
-        { value: "already_resolved", label: "Already Resolved Elsewere" },
+        { value: "already_resolved", label: "Already Resolved Elsewhere" },
         { value: "custom", label: "Custom Message" },
     ];
 
@@ -100,11 +100,10 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
 
     const handleSearch = (value: string) => {
         setSearchTerm(value);
-        if (searchTimeout) clearTimeout(searchTimeout);
-        const timeout = setTimeout(() => {
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = setTimeout(() => {
             fetchReports(value);
         }, 500);
-        setSearchTimeout(timeout);
     };
 
     const handleResolve = (report: Report) => {

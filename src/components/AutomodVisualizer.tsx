@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import Toast from "./Toast";
+import { useState, useMemo, useEffect, useRef } from "react";
+import ToastContainer from "./Toast";
+import type { ToastProps } from "./Toast";
 import CatLoader from "./CatLoader";
 
 interface Props {
@@ -14,10 +15,13 @@ interface Channel {
 }
 
 export default function AutomodVisualizer({ guildId }: Props) {
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
+  const [toast, setToast] = useState<ToastProps | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [isDirty, setIsDirty] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const confirmResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Core Shield State
   const [antiLinks, setAntiLinks] = useState(false);
@@ -35,6 +39,9 @@ export default function AutomodVisualizer({ guildId }: Props) {
   const [emojiThreshold, setEmojiThreshold] = useState(10);
   const [penaltyAction, setPenaltyAction] = useState("warn");
   const [logChannelId, setLogChannelId] = useState("");
+
+  // Helper to mark settings as dirty
+  const markDirty = () => setIsDirty(true);
 
   // Regex Engine State
   const [blacklistedWords, setBlacklistedWords] = useState<string[]>([]);
@@ -81,64 +88,99 @@ export default function AutomodVisualizer({ guildId }: Props) {
       fetchData();
   }, [guildId]);
 
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+          if (isDirty) {
+              e.preventDefault();
+              e.returnValue = '';
+          }
+      };
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
   const handleAddWord = (e: React.FormEvent) => {
       e.preventDefault();
-      if (newWord.trim() && !blacklistedWords.includes(newWord.trim())) {
-          setBlacklistedWords([...blacklistedWords, newWord.trim()]);
+      const trimmed = newWord.trim();
+      if (trimmed && !blacklistedWords.includes(trimmed)) {
+          setBlacklistedWords([...blacklistedWords, trimmed]);
           setNewWord("");
+          markDirty();
       }
   };
 
-  const removeWord = (word: string) => {
-      setBlacklistedWords(blacklistedWords.filter(w => w !== word));
+  const removeWord = (index: number) => {
+      setBlacklistedWords(blacklistedWords.filter((_, i) => i !== index));
+      markDirty();
   };
 
-  // The Live Engine Checker (Simulator)
-  const matchedRule = useMemo(() => {
-      if (!testMessage.trim()) return null;
-      
+  // The Live Engine Checker (Simulator) — returns ALL matched rules
+  const matchedRules = useMemo(() => {
+      const rules: string[] = [];
+      if (!testMessage.trim()) return rules;
+
       const msg = testMessage.toLowerCase();
-      
-      // Auto blocked patterns
-      if (antiLinks && /https?:\/\/[^\s]+/.test(msg)) return "URL Detection (Anti-Links)";
-      if (antiInvites && /(discord\.gg|discordapp\.com\/invite)\/[^\s]+/.test(msg)) return "Discord Invite Detection";
-      
+
+      // Anti-Invites checked FIRST (more specific than anti-links)
+      if (antiInvites && /(discord\.gg|discordapp\.com\/invite)\/[^\s]+/i.test(testMessage)) {
+          rules.push("Discord Invite Detection");
+      }
+      // Anti-Links: only if not already caught as invite OR if anti-links is on
+      if (antiLinks && /https?:\/\/[^\s]+/.test(msg)) {
+          // Don't double-report if already caught as invite
+          if (!rules.includes("Discord Invite Detection")) {
+              rules.push("URL Detection (Anti-Links)");
+          }
+      }
+
       // Zalgo Detection
-      if (antiZalgo && /[\u0300-\u036F\u0483-\u0489\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED]/.test(testMessage)) return "Zalgo/Glitch Text";
+      if (antiZalgo && /[\u0300-\u036F\u0483-\u0489\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED]/.test(testMessage)) {
+          rules.push("Zalgo/Glitch Text");
+      }
 
       // Caps Detection
       if (antiCaps && testMessage.length > 10) {
           const caps = testMessage.replace(/[^A-Z]/g, "").length;
           const ratio = (caps / testMessage.length) * 100;
-          if (ratio > capsThreshold) return `Excessive Caps (${Math.round(ratio)}%)`;
+          if (ratio > capsThreshold) rules.push(`Excessive Caps (${Math.round(ratio)}%)`);
       }
 
       // Mention Detection
       if (antiMentions) {
           const mentions = (testMessage.match(/<@!?\d+>|<@&\d+>/g) || []).length;
-          if (mentions > mentionsThreshold) return `Mass Mention (${mentions} mentions)`;
+          if (mentions > mentionsThreshold) rules.push(`Mass Mention (${mentions} mentions)`);
       }
 
       // Emoji Detection
       if (antiEmoji) {
-        const emojis = (testMessage.match(/<a?:\w+:\d+>|[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/gu) || []).length;
-        if (emojis > emojiThreshold) return `Emoji Spam (${emojis} emojis)`;
+          const emojis = (testMessage.match(/<a?:\w+:\d+>|[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/gu) || []).length;
+          if (emojis > emojiThreshold) rules.push(`Emoji Spam (${emojis} emojis)`);
       }
 
-      for (let word of blacklistedWords) {
+      // Blacklisted Words — try as raw regex first, fallback to includes
+      for (const word of blacklistedWords) {
           try {
-              const regex = new RegExp(`\\b${word}\\b`, 'i');
-              if (regex.test(msg)) return word;
-              const rawRegex = new RegExp(word, 'i');
-              if (rawRegex.test(msg)) return word;
-          } catch (e) {
-              if (msg.includes(word.toLowerCase())) return word;
+              const regex = new RegExp(word, 'i');
+              if (regex.test(msg)) rules.push(`Blocked Word: "${word}"`);
+          } catch {
+              if (msg.includes(word.toLowerCase())) rules.push(`Blocked Word: "${word}"`);
           }
       }
-      return null;
+
+      return rules;
   }, [testMessage, blacklistedWords, antiLinks, antiInvites, antiZalgo, antiCaps, capsThreshold, antiMentions, mentionsThreshold, antiEmoji, emojiThreshold]);
 
   const handleReset = () => {
+      if (!confirmReset) {
+          // First click: arm the confirmation
+          setConfirmReset(true);
+          confirmResetTimer.current = setTimeout(() => setConfirmReset(false), 3000);
+          return;
+      }
+      // Second click: execute reset
+      if (confirmResetTimer.current) clearTimeout(confirmResetTimer.current);
+      setConfirmReset(false);
       setAntiLinks(false);
       setAntiInvites(false);
       setAntiSpam(false);
@@ -153,7 +195,8 @@ export default function AutomodVisualizer({ guildId }: Props) {
       setPenaltyAction("warn");
       setBlacklistedWords([]);
       setLogChannelId("");
-      setToast({ message: "Settings reset (not saved until deployed).", type: "info" });
+      setIsDirty(false);
+      setToast({ type: "info", message: "Settings reset (not saved until deployed).", duration: 4000 });
   };
 
   const handleSave = async () => {
@@ -181,12 +224,13 @@ export default function AutomodVisualizer({ guildId }: Props) {
             })
         });
         if (res.ok) {
-            setToast({ message: "Security configurations deployed across the server!", type: "success" });
+            setIsDirty(false);
+            setToast({ type: "success", message: "Security configurations deployed across the server!", duration: 4000 });
         } else {
-            setToast({ message: "Failed to save settings.", type: "error" });
+            setToast({ type: "error", message: "Failed to save settings.", duration: 4000 });
         }
-    } catch (e) {
-        setToast({ message: "Network error.", type: "error" });
+    } catch {
+        setToast({ type: "error", message: "Network error. Please try again.", duration: 4000 });
     } finally {
         setSaving(false);
     }
@@ -202,13 +246,22 @@ export default function AutomodVisualizer({ guildId }: Props) {
         <div>
            <h2 className="text-3xl font-black text-white tracking-tight">Security & AutoMod</h2>
            <p className="text-gray-400 mt-1">Configure intelligent defensive shields and regex-based word filters.</p>
+           {isDirty && (
+               <span className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold animate-pulse">
+                   ● Unsaved Changes
+               </span>
+           )}
         </div>
         <div className="flex gap-3 w-full md:w-auto">
           <button
             onClick={handleReset}
-            className="px-6 py-3 border border-white/10 hover:bg-white/5 text-gray-300 font-bold rounded-xl transition flex-1 md:flex-none"
+            className={`px-6 py-3 border font-bold rounded-xl transition flex-1 md:flex-none ${
+                confirmReset
+                    ? 'border-red-500/70 bg-red-500/20 text-red-400 animate-pulse'
+                    : 'border-white/10 hover:bg-white/5 text-gray-300'
+            }`}
           >
-            Reset
+            {confirmReset ? 'Click again to confirm' : 'Reset'}
           </button>
           <button
             onClick={handleSave}
@@ -237,9 +290,9 @@ export default function AutomodVisualizer({ guildId }: Props) {
                          <div className="font-bold text-white flex items-center gap-2">🔗 Anti-Links</div>
                          <div className="text-sm text-gray-500 mt-0.5">Deletes messages containing any 'http(s)://' URLs.</div>
                      </div>
-                     <button onClick={() => setAntiLinks(!antiLinks)} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiLinks ? 'bg-red-500' : 'bg-gray-700'}`}>
-                         <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiLinks ? 'translate-x-5' : 'translate-x-0'}`} />
-                     </button>
+                      <button onClick={() => { setAntiLinks(!antiLinks); markDirty(); }} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiLinks ? 'bg-red-500' : 'bg-gray-700'}`}>
+                          <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiLinks ? 'translate-x-5' : 'translate-x-0'}`} />
+                      </button>
                  </div>
 
                  {/* Anti Invites */}
@@ -248,9 +301,9 @@ export default function AutomodVisualizer({ guildId }: Props) {
                          <div className="font-bold text-white flex items-center gap-2">🎫 Anti-Discord Invites</div>
                          <div className="text-sm text-gray-500 mt-0.5">Deletes unauthorized discord.gg server invite codes.</div>
                      </div>
-                     <button onClick={() => setAntiInvites(!antiInvites)} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiInvites ? 'bg-red-500' : 'bg-gray-700'}`}>
-                         <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiInvites ? 'translate-x-5' : 'translate-x-0'}`} />
-                     </button>
+                      <button onClick={() => { setAntiInvites(!antiInvites); markDirty(); }} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiInvites ? 'bg-red-500' : 'bg-gray-700'}`}>
+                          <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiInvites ? 'translate-x-5' : 'translate-x-0'}`} />
+                      </button>
                  </div>
 
                  {/* Anti Zalgo */}
@@ -259,16 +312,19 @@ export default function AutomodVisualizer({ guildId }: Props) {
                          <div className="font-bold text-white flex items-center gap-2">🌀 Anti-Zalgo</div>
                          <div className="text-sm text-gray-500 mt-0.5">Deletes messages with glitchy/distorted characters.</div>
                      </div>
-                     <button onClick={() => setAntiZalgo(!antiZalgo)} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiZalgo ? 'bg-red-500' : 'bg-gray-700'}`}>
-                         <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiZalgo ? 'translate-x-5' : 'translate-x-0'}`} />
-                     </button>
+                      <button onClick={() => { setAntiZalgo(!antiZalgo); markDirty(); }} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiZalgo ? 'bg-red-500' : 'bg-gray-700'}`}>
+                          <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiZalgo ? 'translate-x-5' : 'translate-x-0'}`} />
+                      </button>
                  </div>
 
                  {/* Anti Spam */}
                  <div className="p-4 bg-[#111214] border border-white/5 rounded-xl space-y-4">
                      <div className="flex items-center justify-between">
-                        <div className="font-bold text-white flex items-center gap-2">🔥 Anti-Spam</div>
-                        <button onClick={() => setAntiSpam(!antiSpam)} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiSpam ? 'bg-red-500' : 'bg-gray-700'}`}>
+                         <div>
+                             <div className="font-bold text-white flex items-center gap-2">🔥 Anti-Spam</div>
+                             <div className="text-xs text-amber-500/70 mt-0.5">⚙ Server-side rate detection — not simulatable</div>
+                         </div>
+                        <button onClick={() => { setAntiSpam(!antiSpam); markDirty(); }} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiSpam ? 'bg-red-500' : 'bg-gray-700'}`}>
                             <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiSpam ? 'translate-x-5' : 'translate-x-0'}`} />
                         </button>
                      </div>
@@ -277,7 +333,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
                              <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Aggressiveness</span>
                              <span className="text-white font-mono bg-white/10 px-2 py-0.5 rounded text-xs">{spamThreshold}%</span>
                         </div>
-                        <input type="range" min="0" max="100" value={spamThreshold} onChange={(e) => setSpamThreshold(Number(e.target.value))} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
+                        <input type="range" min="0" max="100" value={spamThreshold} onChange={(e) => { setSpamThreshold(Number(e.target.value)); markDirty(); }} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
                      </div>
                  </div>
 
@@ -285,7 +341,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
                   <div className="p-4 bg-[#111214] border border-white/5 rounded-xl space-y-4">
                      <div className="flex items-center justify-between">
                         <div className="font-bold text-white flex items-center gap-2">🔠 Anti-Caps</div>
-                        <button onClick={() => setAntiCaps(!antiCaps)} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiCaps ? 'bg-red-500' : 'bg-gray-700'}`}>
+                        <button onClick={() => { setAntiCaps(!antiCaps); markDirty(); }} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiCaps ? 'bg-red-500' : 'bg-gray-700'}`}>
                             <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiCaps ? 'translate-x-5' : 'translate-x-0'}`} />
                         </button>
                      </div>
@@ -294,7 +350,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
                              <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Max Caps Percentage</span>
                              <span className="text-white font-mono bg-white/10 px-2 py-0.5 rounded text-xs">{capsThreshold}%</span>
                         </div>
-                        <input type="range" min="0" max="100" value={capsThreshold} onChange={(e) => setCapsThreshold(Number(e.target.value))} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
+                        <input type="range" min="0" max="100" value={capsThreshold} onChange={(e) => { setCapsThreshold(Number(e.target.value)); markDirty(); }} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
                      </div>
                  </div>
 
@@ -302,7 +358,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
                  <div className="p-4 bg-[#111214] border border-white/5 rounded-xl space-y-4">
                      <div className="flex items-center justify-between">
                         <div className="font-bold text-white flex items-center gap-2">📣 Anti-Mass Mention</div>
-                        <button onClick={() => setAntiMentions(!antiMentions)} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiMentions ? 'bg-red-500' : 'bg-gray-700'}`}>
+                        <button onClick={() => { setAntiMentions(!antiMentions); markDirty(); }} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiMentions ? 'bg-red-500' : 'bg-gray-700'}`}>
                             <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiMentions ? 'translate-x-5' : 'translate-x-0'}`} />
                         </button>
                      </div>
@@ -311,7 +367,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
                              <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Mention Limit</span>
                              <span className="text-white font-mono bg-white/10 px-2 py-0.5 rounded text-xs">{mentionsThreshold} Mentions</span>
                         </div>
-                        <input type="range" min="1" max="50" value={mentionsThreshold} onChange={(e) => setMentionsThreshold(Number(e.target.value))} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
+                        <input type="range" min="1" max="50" value={mentionsThreshold} onChange={(e) => { setMentionsThreshold(Number(e.target.value)); markDirty(); }} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
                      </div>
                  </div>
 
@@ -319,7 +375,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
                  <div className="p-4 bg-[#111214] border border-white/5 rounded-xl space-y-4">
                      <div className="flex items-center justify-between">
                         <div className="font-bold text-white flex items-center gap-2">😀 Anti-Emoji Spam</div>
-                        <button onClick={() => setAntiEmoji(!antiEmoji)} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiEmoji ? 'bg-red-500' : 'bg-gray-700'}`}>
+                        <button onClick={() => { setAntiEmoji(!antiEmoji); markDirty(); }} className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${antiEmoji ? 'bg-red-500' : 'bg-gray-700'}`}>
                             <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${antiEmoji ? 'translate-x-5' : 'translate-x-0'}`} />
                         </button>
                      </div>
@@ -328,7 +384,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
                              <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Emoji Limit</span>
                              <span className="text-white font-mono bg-white/10 px-2 py-0.5 rounded text-xs">{emojiThreshold} Emojis</span>
                         </div>
-                        <input type="range" min="1" max="50" value={emojiThreshold} onChange={(e) => setEmojiThreshold(Number(e.target.value))} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
+                        <input type="range" min="1" max="50" value={emojiThreshold} onChange={(e) => { setEmojiThreshold(Number(e.target.value)); markDirty(); }} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
                      </div>
                  </div>
               </div>
@@ -339,7 +395,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
                  
                  <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Default Penalty Action</label>
-                    <select value={penaltyAction} onChange={(e) => setPenaltyAction(e.target.value)} className="w-full bg-[#111214] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 font-bold transition-colors">
+                    <select value={penaltyAction} onChange={(e) => { setPenaltyAction(e.target.value); markDirty(); }} className="w-full bg-[#111214] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 font-bold transition-colors">
                         <option value="warn">Warn & Delete Message</option>
                         <option value="mute_5m">Mute for 5 Minutes</option>
                         <option value="mute_10m">Mute for 10 Minutes</option>
@@ -351,7 +407,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
 
                  <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Log Automod Actions To</label>
-                    <select value={logChannelId} onChange={(e) => setLogChannelId(e.target.value)} className="w-full bg-[#111214] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 font-bold transition-colors">
+                    <select value={logChannelId} onChange={(e) => { setLogChannelId(e.target.value); markDirty(); }} className="w-full bg-[#111214] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 font-bold transition-colors">
                         <option value="">🚫 Disable Logging</option>
                         {channels.map(c => <option key={c.id} value={c.id}># {c.name}</option>)}
                     </select>
@@ -378,10 +434,10 @@ export default function AutomodVisualizer({ guildId }: Props) {
 
                  <div className="flex flex-wrap gap-2 min-h-[140px] p-4 bg-[#111214] rounded-xl border border-white/5 content-start">
                      {blacklistedWords.length === 0 && <span className="text-gray-600 text-sm italic m-auto">No rules defined.</span>}
-                     {blacklistedWords.map((word) => (
-                         <div key={word} className="flex items-center gap-1.5 bg-[#18191c] border border-red-500/30 text-red-100 px-3 py-1.5 rounded-lg text-sm font-mono shadow-sm group hover:border-red-500/70 transition-colors">
+                     {blacklistedWords.map((word, idx) => (
+                         <div key={`${word}-${idx}`} className="flex items-center gap-1.5 bg-[#18191c] border border-red-500/30 text-red-100 px-3 py-1.5 rounded-lg text-sm font-mono shadow-sm group hover:border-red-500/70 transition-colors">
                              {word}
-                             <button onClick={() => removeWord(word)} className="ml-1 opacity-50 hover:opacity-100 text-red-500 cursor-pointer">✕</button>
+                             <button onClick={() => removeWord(idx)} className="ml-1 opacity-50 hover:opacity-100 text-red-500 cursor-pointer">✕</button>
                          </div>
                      ))}
                  </div>
@@ -390,14 +446,14 @@ export default function AutomodVisualizer({ guildId }: Props) {
               {/* LIVE SIMULATOR */}
               <div className={`glass-card rounded-2xl p-6 border-2 transition-all ${
                   testMessage === '' ? 'border-white/5 bg-[#0a0a0f]' : 
-                  matchedRule ? 'border-red-500 bg-red-500/10 shadow-[0_0_30px_rgba(239,68,68,0.15)]' : 
+                  matchedRules.length > 0 ? 'border-red-500 bg-red-500/10 shadow-[0_0_30px_rgba(239,68,68,0.15)]' : 
                   'border-emerald-500 bg-emerald-500/10 shadow-[0_0_30px_rgba(16,185,129,0.05)]'
               }`}>
                  <div className="flex justify-between items-center mb-4">
                      <h3 className="text-lg font-bold text-white uppercase tracking-wider">Live Simulator</h3>
                      {testMessage && (
-                        <div className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${matchedRule ? 'bg-red-500 text-white animate-pulse' : 'bg-emerald-500 text-black'}`}>
-                            {matchedRule ? 'Flagged' : 'Safe'}
+                        <div className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${matchedRules.length > 0 ? 'bg-red-500 text-white animate-pulse' : 'bg-emerald-500 text-black'}`}>
+                            {matchedRules.length > 0 ? `${matchedRules.length} Rule${matchedRules.length > 1 ? 's' : ''} Flagged` : 'Safe'}
                         </div>
                      )}
                  </div>
@@ -410,17 +466,21 @@ export default function AutomodVisualizer({ guildId }: Props) {
                      className="w-full bg-[#111214] border border-white/10 focus:border-white/30 rounded-xl px-4 py-3 text-white focus:outline-none transition resize-y font-mono"
                  ></textarea>
 
-                 {matchedRule && (
+                 {matchedRules.length > 0 && (
                      <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg flex items-start gap-3">
                          <span className="text-xl">🚨</span>
-                         <div>
-                             <div className="text-red-400 font-bold text-sm">Message Blocked!</div>
-                             <div className="text-red-300 text-xs mt-0.5">Rule triggered: <span className="font-mono bg-[#0a0a0f] px-1.5 py-0.5 rounded ml-1">{matchedRule}</span></div>
-                             <div className="text-xs text-gray-400 mt-2 italic">User would receive penalty: {penaltyAction.replace('_', ' ').toUpperCase()}</div>
+                         <div className="flex-1">
+                             <div className="text-red-400 font-bold text-sm">Message Blocked! ({matchedRules.length} violation{matchedRules.length > 1 ? 's' : ''})</div>
+                             <div className="flex flex-wrap gap-1.5 mt-2">
+                                 {matchedRules.map((rule, i) => (
+                                     <span key={i} className="font-mono bg-[#0a0a0f] text-red-300 px-1.5 py-0.5 rounded text-xs">{rule}</span>
+                                 ))}
+                             </div>
+                             <div className="text-xs text-gray-400 mt-2 italic">Penalty: {penaltyAction.replace(/_/g, ' ').toUpperCase()}</div>
                          </div>
                      </div>
                  )}
-                 {testMessage && !matchedRule && (
+                 {testMessage && matchedRules.length === 0 && (
                      <div className="mt-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center gap-3">
                          <span className="text-xl">✅</span>
                          <span className="text-emerald-400 font-bold text-sm">Valid! This message bypasses all security shields.</span>
@@ -430,7 +490,7 @@ export default function AutomodVisualizer({ guildId }: Props) {
           </div>
       </div>
        
-      <Toast toast={toast} onClose={() => setToast(null)} />
+      <ToastContainer toast={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

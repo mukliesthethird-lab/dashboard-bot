@@ -32,6 +32,11 @@ function fetchDiscordAPI(path: string, token: string): Promise<any[]> {
 
 export async function GET(request: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { searchParams } = new URL(request.url);
         const action = searchParams.get('action');
         const guildId = searchParams.get('guild_id');

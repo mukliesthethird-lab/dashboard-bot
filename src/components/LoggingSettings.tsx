@@ -303,7 +303,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
     const resetSettings = () => {
         if (originalSettings) {
             setSettings(originalSettings);
-            setActiveTab("settings");
+            // Do NOT reset activeTab — keep user on their current tab
         }
     };
 
@@ -422,10 +422,10 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                 🗑️ Remove channel for all types
                             </button>
                             <button
-                                onClick={() => setExpandedCategories(expandedCategories.length === LOG_CATEGORIES.length ? [] : LOG_CATEGORIES.map(c => c.id))}
+                                onClick={() => setExpandedCategories(expandedCategories.length === filteredCategories.length ? [] : filteredCategories.map(c => c.id))}
                                 className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-[3px] font-medium transition border border-transparent text-sm"
                             >
-                                {expandedCategories.length === LOG_CATEGORIES.length ? "🔼 Collapse All" : "🔽 Expand All"}
+                                {expandedCategories.length === filteredCategories.length && filteredCategories.length > 0 ? "🔼 Collapse All" : "🔽 Expand All"}
                             </button>
                         </div>
                     </div>

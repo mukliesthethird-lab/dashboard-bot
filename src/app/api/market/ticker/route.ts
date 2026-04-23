@@ -45,8 +45,7 @@ async function ensureTablesReady() {
                 symbol VARCHAR(10) NOT NULL,
                 type ENUM('buy','sell') NOT NULL,
                 amount DECIMAL(20,6) NOT NULL,
-                min_price DECIMAL(20,4) NOT NULL,
-                max_price DECIMAL(20,4) NOT NULL,
+                target_price DECIMAL(20,4) NOT NULL,
                 status ENUM('pending','filled','cancelled') DEFAULT 'pending',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 filled_at TIMESTAMP NULL,
@@ -104,11 +103,11 @@ export async function GET() {
         for (const a of assets) candlesData[a.symbol] = [];
         for (const c of allCandlesRaw) {
             candlesData[c.symbol]?.push({
-                open:  Number(c.open),
-                high:  Number(c.high),
-                low:   Number(c.low),
+                open: Number(c.open),
+                high: Number(c.high),
+                low: Number(c.low),
                 close: Number(c.close),
-                time:  Number(c.time),
+                time: Number(c.time),
             });
         }
 
@@ -154,7 +153,7 @@ export async function GET() {
 
                     // Wicks: high above max(o,c), low below min(o,c)
                     const body_high = Math.max(open, close);
-                    const body_low  = Math.min(open, close);
+                    const body_low = Math.min(open, close);
                     const wickRange = vol * 0.5;
                     const hi = body_high * (1 + Math.random() * wickRange);
                     const lo = Math.max(floor, body_low * (1 - Math.random() * wickRange));
@@ -177,7 +176,7 @@ export async function GET() {
                 );
                 candlesData[asset.symbol] = fresh.map((c: any) => ({
                     open: Number(c.open), high: Number(c.high),
-                    low:  Number(c.low),  close: Number(c.close), time: Number(c.time),
+                    low: Number(c.low), close: Number(c.close), time: Number(c.time),
                 }));
             })());
         }
@@ -208,19 +207,19 @@ export async function GET() {
             userData = {
                 balance: Number(user[0]?.balance) || 0,
                 portfolio: portfolio.map((p: any) => {
-                    const curVal  = Number(p.amount_owned) * Number(p.current_price);
+                    const curVal = Number(p.amount_owned) * Number(p.current_price);
                     const invested = Number(p.total_invested) || 0;
-                    const pnl     = curVal - invested;
+                    const pnl = curVal - invested;
                     return {
-                        symbol:             p.symbol,
-                        name:               p.name,
-                        asset_id:           p.asset_id,
-                        amount_owned:       Number(p.amount_owned),
-                        avg_buy_price:      Number(p.avg_buy_price),
-                        current_price:      Number(p.current_price),
-                        current_value:      curVal,
-                        total_invested:     invested,
-                        unrealized_pnl:     pnl,
+                        symbol: p.symbol,
+                        name: p.name,
+                        asset_id: p.asset_id,
+                        amount_owned: Number(p.amount_owned),
+                        avg_buy_price: Number(p.avg_buy_price),
+                        current_price: Number(p.current_price),
+                        current_value: curVal,
+                        total_invested: invested,
+                        unrealized_pnl: pnl,
                         unrealized_pnl_pct: invested > 0 ? (pnl / invested) * 100 : 0,
                     };
                 }),

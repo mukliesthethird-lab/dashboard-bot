@@ -140,7 +140,10 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
 
     useEffect(() => {
         fetch(`/api/welcome?guild_id=${guildId}`)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
             .then(data => {
                 if (data && !data.error) {
                     try {
@@ -321,7 +324,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
     const resetSettings = () => {
         if (originalSettings) {
             setSettings(originalSettings);
-            setActiveMessageType("join");
+            // Do NOT reset activeMessageType — keep user on their current tab
         }
     };
 
@@ -343,7 +346,6 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                 </div>
             </div>
 
-            {/* Notification Toast */}
             {/* Notification Toast */}
             <ToastContainer toast={toast} onClose={hideToast} />
 

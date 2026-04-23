@@ -6,6 +6,7 @@ import Link from "next/link";
 import CustomDropdown from "./CustomDropdown";
 import CatLoader from "./CatLoader";
 import { logActivity } from "@/lib/logger";
+import ToastContainer, { useToast } from "./Toast";
 
 interface ModerationSettingsProps {
     guildId: string;
@@ -64,6 +65,7 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
     const [showPunishModal, setShowPunishModal] = useState(false);
     const [newReasonKey, setNewReasonKey] = useState('');
     const [newReasonValue, setNewReasonValue] = useState('');
+    const { toast, success, error: showError, hideToast } = useToast();
 
     useEffect(() => {
         fetchSettings();
@@ -130,10 +132,15 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             });
             if (res.ok) {
                 setOriginalSettings(settings); // Update original to match current
+                success('Settings saved! ✅');
                 await logActivity(guildId, "Moderation settings updated", "General moderation config changed.");
+            } else {
+                const data = await res.json().catch(() => ({}));
+                showError(data.error || 'Failed to save settings');
             }
-        } catch (error) {
-            console.error('Failed to save settings:', error);
+        } catch (err) {
+            console.error('Failed to save settings:', err);
+            showError('Network error. Please try again.');
         } finally {
             setSaving(false);
         }
@@ -173,9 +180,9 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             title: "Appeals",
             desc: "Create custom forms for users to appeal their punishments.",
             isNew: true,
-            onClick: () => updateSettings({ appeals_enabled: !settings.appeals_enabled }),
             isToggle: true,
-            checked: settings.appeals_enabled
+            checked: settings.appeals_enabled,
+            onToggle: () => updateSettings({ appeals_enabled: !settings.appeals_enabled })
         },
         {
             icon: "📢",
@@ -229,7 +236,8 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
             icon: "🔒",
             title: "Channel locking",
             desc: "Lock channels to prevent users from sending messages or joining voice channels.",
-            badge: settings.locked_channels.length > 0 ? `${settings.locked_channels.length} locked` : undefined
+            badge: settings.locked_channels.length > 0 ? `${settings.locked_channels.length} locked` : undefined,
+            comingSoon: true
         },
         {
             icon: "👁️",
@@ -256,7 +264,8 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
 
     return (
         <div className="space-y-8 animate-fade-in pb-20 relative">
-            {/* Header Removed - Moved to Page Component */}
+            {/* Toast Notification */}
+            <ToastContainer toast={toast} onClose={hideToast} />
 
             {/* Top Cards: Cases & Reports */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -304,8 +313,8 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                     {menuItems.map((item, index) => (
                         <div
                             key={index}
-                            onClick={item.isToggle ? undefined : item.onClick}
-                            className={`glass-card rounded-[8px] p-5 hover:bg-[#35373c] transition-all flex items-center gap-5 group ${!item.isToggle && item.onClick ? 'cursor-pointer' : ''}`}
+                            onClick={item.isToggle || item.comingSoon ? undefined : item.onClick}
+                            className={`glass-card rounded-[8px] p-5 hover:bg-[#35373c] transition-all flex items-center gap-5 group ${!item.isToggle && !item.comingSoon && item.onClick ? 'cursor-pointer' : ''} ${item.comingSoon ? 'opacity-60' : ''}`}
                         >
                             {/* Icon */}
                             <div className="w-12 h-12 rounded-lg bg-white/5 text-gray-400 group-hover:text-white flex items-center justify-center text-2xl transition-colors">
@@ -321,6 +330,11 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                     {item.isNew && (
                                         <span className="px-2 py-0.5 bg-[#da373c] text-white text-[10px] font-black uppercase tracking-wider rounded-[3px]">
                                             New
+                                        </span>
+                                    )}
+                                    {item.comingSoon && (
+                                        <span className="px-2 py-0.5 bg-[#80848e]/30 text-[#87898c] text-[10px] font-black uppercase tracking-wider rounded-[3px]">
+                                            Coming Soon
                                         </span>
                                     )}
                                     {item.badge && (
@@ -339,7 +353,6 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (item.onToggle) item.onToggle();
-                                            else if (item.onClick) item.onClick();
                                         }}
                                         className={`relative inline-flex h-[24px] w-[40px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${item.checked ? "bg-[#23a559]" : "bg-[#80848e]"}`}
                                     >
@@ -347,6 +360,12 @@ export default function ModerationSettings({ guildId }: ModerationSettingsProps)
                                     </div>
                                 ) : item.action ? (
                                     <div>{item.action}</div>
+                                ) : item.comingSoon ? (
+                                    <div className="w-10 h-10 rounded-[3px] bg-white/5 text-gray-600 flex items-center justify-center">
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                    </div>
                                 ) : (
                                     <div className="w-10 h-10 rounded-[3px] bg-white/5 text-gray-400 group-hover:bg-[#5865F2] group-hover:text-white flex items-center justify-center transition-colors">
                                         <svg className="w-6 h-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
