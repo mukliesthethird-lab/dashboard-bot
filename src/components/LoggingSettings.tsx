@@ -107,6 +107,7 @@ const LOG_CATEGORIES: LogCategory[] = [
         types: [
             { id: "invite_create", name: "Invite Create" },
             { id: "invite_delete", name: "Invite Delete" },
+            { id: "invite_used", name: "Invite Used (Tracker)" },
         ]
     },
     {
@@ -117,6 +118,8 @@ const LOG_CATEGORIES: LogCategory[] = [
             { id: "message_edit", name: "Message Edit" },
             { id: "message_pin", name: "Message Pin" },
             { id: "message_unpin", name: "Message Unpin" },
+            { id: "ghost_ping", name: "Ghost Ping Detection" },
+            { id: "mass_mention", name: "Mass Mention Alert" },
             { id: "reaction_add", name: "Reaction Add" },
             { id: "reaction_remove", name: "Reaction Remove" },
             { id: "reaction_clear", name: "Reaction Clear" },
@@ -195,6 +198,7 @@ const LOG_CATEGORIES: LogCategory[] = [
             { id: "member_nickname_update", name: "Member Nickname Update" },
             { id: "member_roles_update", name: "Member Roles Update" },
             { id: "member_avatar_update", name: "Member Avatar Update" },
+            { id: "suspicious_join", name: "Suspicious Account Join" },
             { id: "user_update", name: "User Update" },
         ]
     },
@@ -207,7 +211,8 @@ const LOG_CATEGORIES: LogCategory[] = [
             { id: "voice_channel_move", name: "Voice Channel Move" },
             { id: "voice_mute", name: "Voice Mute" },
             { id: "voice_deafen", name: "Voice Deafen" },
-            { id: "voice_stream", name: "Voice Stream" },
+            { id: "voice_stream", name: "Voice Stream/Camera" },
+            { id: "voice_duration", name: "Voice Duration Tracking" },
         ]
     },
     {
@@ -440,7 +445,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                             return (
                                  <div key={cat.id} className="glass-card rounded-[8px] border border-white/10 relative overflow-visible">
                                     {/* Category Header */}
-                                    <div className="flex items-center justify-between p-4 bg-black/20/20 rounded-t-[8px] relative z-20 overflow-visible">
+                                    <div className="flex items-center justify-between p-4 bg-black/40 rounded-t-[8px] relative z-20 overflow-visible">
                                         <button
                                             onClick={() => setExpandedCategories(prev =>
                                                 isExpanded ? prev.filter(x => x !== cat.id) : [...prev, cat.id]
@@ -489,7 +494,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                                 const isOverridden = !!typeChannelId;
 
                                                 return (
-                                                    <div key={type.id} className="flex items-center justify-between px-4 py-3 border-b border-white/10/30 last:border-b-0 hover:bg-black/20/40 transition relative z-10 overflow-visible">
+                                                    <div key={type.id} className="flex items-center justify-between px-4 py-3 border-b border-white/10 last:border-b-0 hover:bg-white/5 transition relative z-10 overflow-visible">
                                                         <div className="flex items-center gap-3 pl-8">
                                                             <span className="w-1.5 h-1.5 bg-white/10 rounded-full"></span>
                                                             <span className="text-gray-200 font-medium text-sm">{type.name}</span>

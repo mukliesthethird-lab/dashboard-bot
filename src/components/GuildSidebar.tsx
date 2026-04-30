@@ -12,7 +12,6 @@ interface SidebarProps {
 
 const menuItems = [
     { name: "Overview", icon: "📊", href: "" },
-    { name: "Music", icon: "🎶", href: "/music" },
     { name: "Moderation", icon: "🛡️", href: "/moderation" },
     { name: "Automod+", icon: "⚖️", href: "/automod" },
     { name: "Commands", icon: "🧩", href: "/commands" },

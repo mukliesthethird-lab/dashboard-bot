@@ -81,9 +81,35 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
     const togglePicker = () => {
         if (!isOpen && triggerRef.current) {
             const rect = triggerRef.current.getBoundingClientRect();
+            let newTop = rect.bottom + 8; // Default to below trigger
+            let newLeft = rect.right - 420; // Align right
+
+            const pickerWidth = 420;
+            const pickerHeight = 450;
+
+            // Prevent going off left edge
+            if (newLeft < 10) {
+                newLeft = 10;
+            }
+            
+            // Prevent going off right edge
+            if (newLeft + pickerWidth > window.innerWidth - 10) {
+                newLeft = window.innerWidth - pickerWidth - 10;
+            }
+
+            // Prevent going off bottom edge
+            if (newTop + pickerHeight > window.innerHeight - 10) {
+                // Show above trigger instead
+                newTop = rect.top - pickerHeight - 8;
+                // If it now goes off top edge, stick to viewport
+                if (newTop < 10) {
+                    newTop = 10;
+                }
+            }
+
             setCoords({
-                top: rect.bottom + window.scrollY,
-                left: rect.right + window.scrollX - 420 // Align right
+                top: newTop,
+                left: newLeft
             });
         }
         setIsOpen(!isOpen);
@@ -138,11 +164,11 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
             {isOpen && mounted && createPortal(
                 <div 
                     ref={pickerRef}
-                    style={{ top: coords.top + 8, left: coords.left }}
-                    className="fixed z-[10000] w-[420px] h-[450px] glass-card rounded-lg shadow-2xl border border-white/10 overflow-hidden flex flex-col font-sans select-none animate-in fade-in zoom-in-95 duration-150"
+                    style={{ top: coords.top, left: coords.left }}
+                    className="fixed z-[10000] w-[420px] h-[450px] bg-[#2b2d31] rounded-lg shadow-2xl border border-white/10 overflow-hidden flex flex-col font-sans select-none animate-in fade-in zoom-in-95 duration-150"
                 >
                     {/* Header: Search */}
-                    <div className="p-4 glass-card border-b border-white/10">
+                    <div className="p-4 bg-[#2b2d31] border-b border-white/10">
                         <input
                             type="text"
                             value={search}
@@ -155,7 +181,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
 
                     <div className="flex flex-1 overflow-hidden">
                         {/* Sidebar */}
-                        <div className="w-12 glass-card flex flex-col items-center gap-1 py-2 overflow-y-auto no-scrollbar border-r border-white/10">
+                        <div className="w-12 bg-[#1e1f22] flex flex-col items-center gap-1 py-2 overflow-y-auto no-scrollbar border-r border-white/10">
                             {/* Custom Server Icon */}
                             {customEmojis.length > 0 && (
                                 <button
@@ -181,7 +207,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
 
                         {/* Emoji Grid */}
                         <div
-                            className="flex-1 glass-card overflow-y-auto custom-scrollbar px-2 relative"
+                            className="flex-1 bg-[#2b2d31] overflow-y-auto custom-scrollbar px-2 relative"
                             ref={scrollRef}
                             onScroll={() => {
                                 if (!scrollRef.current) return;
@@ -212,7 +238,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                             {/* Custom Emojis Section */}
                             {(search ? filteredCategories.custom.length > 0 : customEmojis.length > 0) && (
                                 <div id="emoji-cat-custom" className="mb-4 mt-2">
-                                    <h3 className="text-xs font-bold text-[#949BA4] uppercase mb-2 sticky top-0 glass-card py-2 z-20 border-b border-white/10">
+                                    <h3 className="text-xs font-bold text-[#949BA4] uppercase mb-2 sticky top-0 bg-[#2b2d31] py-2 z-20 border-b border-white/10">
                                         Server Emojis
                                     </h3>
                                     <div className="grid grid-cols-7 gap-1 pt-1">
@@ -234,7 +260,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                             {/* Standard Categories */}
                             {filteredCategories.categories.map(cat => (
                                 <div key={cat.id} id={`emoji-cat-${cat.id}`} className="mb-4">
-                                    <h3 className="text-xs font-bold text-[#949BA4] uppercase mb-2 sticky top-0 glass-card py-2 z-20 border-b border-white/10">
+                                    <h3 className="text-xs font-bold text-[#949BA4] uppercase mb-2 sticky top-0 bg-[#2b2d31] py-2 z-20 border-b border-white/10">
                                         {cat.label}
                                     </h3>
                                     <div className="grid grid-cols-7 gap-1 pt-1">
@@ -263,7 +289,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                     </div>
 
                     {/* Footer / Hover Preview */}
-                    <div className="h-12 glass-card border-t border-white/10 flex items-center px-4 gap-3">
+                    <div className="h-12 bg-[#2b2d31] border-t border-white/10 flex items-center px-4 gap-3">
                         {hoveredEmoji ? (
                             <>
                                 {hoveredEmoji.emoji.startsWith('http') ? (
