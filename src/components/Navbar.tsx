@@ -28,12 +28,12 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`fixed z-[110] transition-all duration-500 ${isGuildDashboard
+            <nav className={`fixed z-[110] transition-all duration-300 ${isGuildDashboard
                 ? (scrolled ? 'top-0 left-0 right-0 lg:top-4 lg:left-[304px] lg:right-6 flex justify-center' : 'top-0 left-0 right-0 lg:left-[288px] flex justify-center')
                 : (scrolled ? 'top-0 left-0 right-0 md:top-4 md:left-4 md:right-4 lg:left-8 lg:right-8 flex justify-center' : 'top-0 left-0 right-0 flex justify-center')
                 }`}>
-                <div className={`w-full ${isGuildDashboard ? 'max-w-none' : 'max-w-7xl'} h-20 px-4 md:px-6 flex items-center justify-between transition-all duration-500 ${scrolled
-                    ? 'bg-[#05050a]/70 backdrop-blur-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] border-b md:border border-white/10 md:rounded-full'
+                <div className={`w-full ${isGuildDashboard ? 'max-w-none' : 'max-w-6xl'} h-16 px-4 md:px-6 flex items-center justify-between transition-all duration-300 ${scrolled
+                    ? 'bg-[var(--bg-primary)]/90 backdrop-blur-xl shadow-md border-b md:border border-[var(--border)] md:rounded-2xl'
                     : 'bg-transparent border-transparent'
                     }`}>
                     {/* Logo */}
@@ -42,22 +42,21 @@ export default function Navbar() {
                             <img
                                 src="/donpollo-icon.jpg"
                                 alt="Don Pollo"
-                                className="w-10 h-10 rounded-full border-2 border-indigo-500/50 group-hover:border-indigo-500 transition-all group-hover:scale-110"
+                                className="w-8 h-8 rounded-[8px] group-hover:scale-105 transition-all"
                             />
-                            <div className="absolute inset-0 rounded-full bg-indigo-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
-                        <span className="text-xl md:text-2xl font-black bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
+                        <span className="text-lg font-bold text-white tracking-tight">
                             DON POLLO
                         </span>
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center gap-2">
+                    <div className="hidden md:flex items-center gap-1">
                         <Link
                             href="/leaderboard"
-                            className={`px-4 py-2 rounded-full font-bold transition-all ${pathname === '/leaderboard'
-                                ? 'bg-indigo-500/20 text-indigo-400'
-                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all ${pathname === '/leaderboard'
+                                ? 'bg-[var(--bg-hover)] text-white'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                                 }`}
                         >
                             Leaderboard
@@ -65,9 +64,9 @@ export default function Navbar() {
 
                         <Link
                             href="/commands"
-                            className={`px-4 py-2 rounded-full font-bold transition-all ${pathname === '/commands'
-                                ? 'bg-indigo-500/20 text-indigo-400'
-                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all ${pathname === '/commands'
+                                ? 'bg-[var(--bg-hover)] text-white'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                                 }`}
                         >
                             Commands
@@ -75,9 +74,9 @@ export default function Navbar() {
 
                         <Link
                             href="/status"
-                            className={`px-4 py-2 rounded-full font-bold transition-all ${pathname === '/status'
-                                ? 'bg-indigo-500/20 text-indigo-400'
-                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all ${pathname === '/status'
+                                ? 'bg-[var(--bg-hover)] text-white'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                                 }`}
                         >
                             Status
@@ -85,9 +84,9 @@ export default function Navbar() {
 
                         <Link
                             href="/market"
-                            className={`px-4 py-2 rounded-full font-bold transition-all flex items-center gap-1 ${pathname === '/market'
-                                ? 'bg-indigo-500/20 text-indigo-400'
-                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all flex items-center gap-1 ${pathname === '/market'
+                                ? 'bg-[var(--bg-hover)] text-white'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                                 }`}
                         >
                             Market
@@ -95,9 +94,9 @@ export default function Navbar() {
 
                         <Link
                             href={pathname?.includes('/dashboard/') ? `${pathname.split('/').slice(0, 3).join('/')}/casino` : '/casino'}
-                            className={`px-4 py-2 rounded-full font-bold transition-all flex items-center gap-1 ${pathname?.includes('/casino')
-                                ? 'bg-indigo-500/20 text-indigo-400'
-                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all flex items-center gap-1 ${pathname?.includes('/casino')
+                                ? 'bg-[var(--bg-hover)] text-white'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                                 }`}
                         >
                             Casino
@@ -105,35 +104,35 @@ export default function Navbar() {
 
                         <Link
                             href="/donate"
-                            className={`px-4 py-2 rounded-full font-bold transition-all ${pathname === '/donate'
-                                ? 'bg-amber-500/20 text-amber-400 font-black'
-                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all ${pathname === '/donate'
+                                ? 'text-amber-400 bg-amber-500/10 hover:bg-amber-500/20'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                                 }`}
                         >
                             Donate
                         </Link>
 
                         {session ? (
-                            <div className="flex items-center gap-3 ml-4 pl-4 border-l border-white/10">
+                            <div className="flex items-center gap-3 ml-2 pl-3 border-l border-[var(--border)]">
                                 {pathname !== '/dashboard' && (
                                     <Link
                                         href="/dashboard"
-                                        className="px-5 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold hover:shadow-lg hover:shadow-indigo-500/25 transition-all hover:scale-105"
+                                        className="px-4 py-1.5 rounded text-sm bg-[#5865F2] text-white font-semibold hover:bg-[#4752C4] transition-colors"
                                     >
                                         Dashboard
                                     </Link>
                                 )}
                                 <div className="flex items-center gap-3">
-                                    <button onClick={() => setShowProfileModal(true)} className="hover:scale-110 transition-transform active:scale-95">
+                                    <button onClick={() => setShowProfileModal(true)} className="hover:opacity-80 transition-opacity">
                                         <img
                                             src={session.user?.image || "https://cdn.discordapp.com/embed/avatars/0.png"}
                                             alt="User"
-                                            className={`w-9 h-9 rounded-full border-2 transition-all border-white/20 hover:border-indigo-500`}
+                                            className={`w-8 h-8 rounded-full border border-[var(--border)] transition-all`}
                                         />
                                     </button>
                                     <button
                                         onClick={() => setShowLogoutModal(true)}
-                                        className="text-gray-400 hover:text-red-400 font-semibold text-sm transition-colors"
+                                        className="text-[var(--text-secondary)] hover:text-[#da373c] font-semibold text-sm transition-colors"
                                     >
                                         Logout
                                     </button>
@@ -142,7 +141,7 @@ export default function Navbar() {
                         ) : (
                             <button
                                 onClick={() => setShowLoginModal(true)}
-                                className="ml-4 px-6 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold hover:shadow-lg hover:shadow-indigo-500/25 transition-all hover:scale-105"
+                                className="ml-2 px-4 py-1.5 rounded text-sm bg-[#5865F2] text-white font-semibold hover:bg-[#4752C4] transition-colors"
                             >
                                 Login
                             </button>
@@ -152,7 +151,7 @@ export default function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="md:hidden p-2 rounded-xl hover:bg-white/10 transition"
+                        className="md:hidden p-2 rounded-xl hover:bg-[var(--bg-hover)] transition"
                     >
                         {mobileMenuOpen ? (
                             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,14 +167,14 @@ export default function Navbar() {
 
                 {/* Mobile Menu Dropdown */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden bg-[#05050a]/95 backdrop-blur-xl border-t border-white/10 animate-slide-down">
+                    <div className="md:hidden bg-[#05050a]/95 backdrop-blur-xl border-t border-[var(--border)] animate-slide-down">
                         <div className="px-4 py-4 space-y-3">
                             <Link
                                 href="/leaderboard"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/leaderboard'
                                     ? 'bg-indigo-500/20 text-indigo-400'
-                                    : 'text-gray-300 hover:bg-white/5'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                     }`}
                             >
                                 🏆 Leaderboard
@@ -186,7 +185,7 @@ export default function Navbar() {
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/commands'
                                     ? 'bg-indigo-500/20 text-indigo-400'
-                                    : 'text-gray-300 hover:bg-white/5'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                     }`}
                             >
                                 📜 Commands Wiki
@@ -197,7 +196,7 @@ export default function Navbar() {
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/encyclopedia'
                                     ? 'bg-indigo-500/20 text-indigo-400'
-                                    : 'text-gray-300 hover:bg-white/5'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                     }`}
                             >
                                 🎣 Fishing Encyclopedia
@@ -208,7 +207,7 @@ export default function Navbar() {
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/status'
                                     ? 'bg-indigo-500/20 text-indigo-400'
-                                    : 'text-gray-300 hover:bg-white/5'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                     }`}
                             >
                                 ⚡ System Status
@@ -219,7 +218,7 @@ export default function Navbar() {
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/market'
                                     ? 'bg-indigo-500/20 text-indigo-400'
-                                    : 'text-gray-300 hover:bg-white/5'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                     }`}
                             >
                                 📈 Live Market
@@ -230,7 +229,7 @@ export default function Navbar() {
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-3 rounded-xl font-bold transition ${pathname?.includes('/casino')
                                     ? 'bg-indigo-500/20 text-indigo-400'
-                                    : 'text-gray-300 hover:bg-white/5'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                     }`}
                             >
                                 🎰 Casino Games
@@ -240,8 +239,8 @@ export default function Navbar() {
                                 href="/donate"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`block px-4 py-3 rounded-xl font-bold transition ${pathname === '/donate'
-                                    ? 'bg-amber-500/20 text-amber-400'
-                                    : 'text-gray-300 hover:bg-white/5'
+                                    ? 'bg-[var(--bg-secondary)]mber-500/20 text-amber-400'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                     }`}
                             >
                                 ☕ Donate to Creator
@@ -252,22 +251,22 @@ export default function Navbar() {
                                     <Link
                                         href="/dashboard"
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className="block px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-center"
+                                        className="block px-4 py-3 rounded-xl bg-[#5865F2] text-white font-bold text-center"
                                     >
                                         Dashboard
                                     </Link>
-                                    <div className="flex items-center justify-between px-4 py-3 glass rounded-xl">
+                                    <div className="flex items-center justify-between px-4 py-3 bg-[var(--bg-tertiary)] rounded-xl">
                                         <button onClick={() => { setMobileMenuOpen(false); setShowProfileModal(true); }} className="flex items-center gap-3 text-left">
                                             <img
                                                 src={session.user?.image || "https://cdn.discordapp.com/embed/avatars/0.png"}
                                                 alt="User"
-                                                className="w-10 h-10 rounded-full border-2 transition-all border-white/20"
+                                                className="w-8 h-8 rounded-full border border-[var(--border)] transition-all"
                                             />
                                             <span className="font-semibold text-white">{session.user?.name}</span>
                                         </button>
                                         <button
                                             onClick={() => { setMobileMenuOpen(false); setShowLogoutModal(true); }}
-                                            className="text-red-400 font-semibold text-sm"
+                                            className="text-[#da373c] font-semibold text-sm"
                                         >
                                             Logout
                                         </button>
@@ -276,7 +275,7 @@ export default function Navbar() {
                             ) : (
                                 <button
                                     onClick={() => { setMobileMenuOpen(false); setShowLoginModal(true); }}
-                                    className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold"
+                                    className="w-full px-4 py-3 rounded-xl bg-[#5865F2] text-white font-bold"
                                 >
                                     Login with Discord
                                 </button>
@@ -289,13 +288,13 @@ export default function Navbar() {
             {/* Login Modal */}
             {showLoginModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-[#0a0a0f] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
+                    <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
                         <div className="text-center">
                             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
                                 <span className="text-5xl">🐔</span>
                             </div>
                             <h2 className="text-2xl font-black text-white mb-2">Welcome to Don Pollo!</h2>
-                            <p className="text-gray-400 mb-6">Login with your Discord account to access the dashboard and manage your servers.</p>
+                            <p className="text-[var(--text-secondary)] mb-6">Login with your Discord account to access the dashboard and manage your servers.</p>
 
                             <button
                                 onClick={() => {
@@ -312,7 +311,7 @@ export default function Navbar() {
 
                             <button
                                 onClick={() => setShowLoginModal(false)}
-                                className="mt-4 text-gray-500 hover:text-gray-300 font-medium text-sm transition-colors"
+                                className="mt-4 text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] font-medium text-sm transition-colors"
                             >
                                 Cancel
                             </button>
@@ -324,7 +323,7 @@ export default function Navbar() {
             {/* Logout Confirmation Modal */}
             {showLogoutModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-[#0a0a0f] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
+                    <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
                         <div className="text-center">
                             <div className="w-20 h-20 mx-auto mb-4 bg-red-500/10 rounded-full flex items-center justify-center">
                                 <svg className="w-10 h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -332,12 +331,12 @@ export default function Navbar() {
                                 </svg>
                             </div>
                             <h2 className="text-2xl font-black text-white mb-2">Logout?</h2>
-                            <p className="text-gray-400 mb-6">Are you sure you want to logout from Don Pollo Dashboard?</p>
+                            <p className="text-[var(--text-secondary)] mb-6">Are you sure you want to logout from Don Pollo Dashboard?</p>
 
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setShowLogoutModal(false)}
-                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition border border-white/10"
+                                    className="flex-1 py-3 bg-[var(--bg-hover)] hover:bg-[var(--bg-hover)] text-white font-bold rounded-xl transition border border-[var(--border)]"
                                 >
                                     Cancel
                                 </button>

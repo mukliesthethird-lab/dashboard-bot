@@ -1,12 +1,12 @@
 "use client";
 
+import Loading from "@/components/Loading";
+
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import EmptyState from "./EmptyState";
 import { useToast, ToastContainer } from "./Toast";
 import ConfirmationModal from "./ConfirmationModal";
-import CatLoader from "./CatLoader";
-
 interface FormSubmissionsProps {
     guildId: string;
     formId: number;
@@ -282,7 +282,7 @@ export default function FormSubmissions({
             case 'submitted':
                 return <span className="px-2 py-0.5 rounded-md bg-[#5865F2]/10 text-[#5865F2] text-xs font-bold uppercase border border-[#5865F2]/20">Submitted</span>;
             default:
-                return <span className="px-2 py-0.5 rounded-md bg-gray-500/10 text-gray-400 text-xs font-bold uppercase border border-gray-500/20">{status}</span>;
+                return <span className="px-2 py-0.5 rounded-md bg-gray-500/10 text-[var(--text-secondary)] text-xs font-bold uppercase border border-gray-500/20">{status}</span>;
         }
     };
 
@@ -340,7 +340,7 @@ export default function FormSubmissions({
             let typeLabel = ext.toUpperCase() || 'FILE';
 
             if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
-                colorClass = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+                colorClass = 'text-amber-400 bg-[var(--bg-secondary)]mber-500/10 border-amber-500/20';
                 icon = (
                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
@@ -354,7 +354,7 @@ export default function FormSubmissions({
                 colorClass = 'text-blue-400 bg-blue-500/10 border-blue-500/20';
                 typeLabel = 'DOCUMENT';
             } else if (['json', 'js', 'py', 'ts', 'html', 'css', 'cpp', 'java'].includes(ext)) {
-                colorClass = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+                colorClass = 'text-emerald-400 bg-[var(--bg-elevated)]merald-500/10 border-emerald-500/20';
                 icon = (
                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -369,14 +369,14 @@ export default function FormSubmissions({
                 filename: 'Attachment', 
                 ext: '', 
                 icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
-                colorClass: 'text-gray-400 bg-gray-500/10 border-gray-500/20',
+                colorClass: 'text-[var(--text-secondary)] bg-gray-500/10 border-gray-500/20',
                 typeLabel: 'FILE'
             };
         }
     };
 
     const renderAnswer = (answer: string) => {
-        if (!answer) return <span className="italic text-gray-500">No response provided</span>;
+        if (!answer) return <span className="italic text-[var(--text-tertiary)]">No response provided</span>;
 
         // Check for multiple URLs (comma separated)
         const parts = answer.split(',').map(p => p.trim());
@@ -394,7 +394,7 @@ export default function FormSubmissions({
                                         <img 
                                             src={url} 
                                             alt={`Upload ${i+1}`} 
-                                            className="h-20 w-20 object-cover rounded-md border border-white/10 hover:border-amber-500/50 transition cursor-zoom-in shadow-lg"
+                                            className="h-20 w-20 object-cover rounded-md border border-[var(--border)] hover:border-amber-500/50 transition cursor-zoom-in shadow-lg"
                                             onError={(e) => {
                                                 (e.target as HTMLImageElement).src = 'https://cdn.discordapp.com/embed/avatars/0.png';
                                             }}
@@ -460,11 +460,11 @@ export default function FormSubmissions({
                             let icon = '@';
                             
                             if (isRole) {
-                                bgColor = 'bg-amber-500/10';
+                                bgColor = 'bg-[var(--bg-secondary)]mber-500/10';
                                 textColor = 'text-amber-200';
                             } else if (isChannel) {
-                                bgColor = 'bg-white/10/40';
-                                textColor = 'text-gray-200';
+                                bgColor = 'bg-[var(--bg-hover)]/40';
+                                textColor = 'text-[var(--text-primary)]';
                                 icon = '#';
                             }
                             
@@ -514,13 +514,13 @@ export default function FormSubmissions({
             <div className="flex items-center gap-4 mb-4">
                 <button
                     onClick={onBack}
-                    className="p-2.5 rounded-[4px] glass-card border border-white/10 text-gray-400 hover:bg-black/20 hover:text-white transition"
+                    className="p-2.5 rounded-[4px] glass-card border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-white transition"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </button>
-                <div className="flex items-center gap-2 text-gray-400 font-bold text-lg">
+                <div className="flex items-center gap-2 text-[var(--text-secondary)] font-bold text-lg">
                     <span className="hover:text-white transition cursor-pointer" onClick={onBack}>
                         📝 Forms
                     </span>
@@ -532,20 +532,20 @@ export default function FormSubmissions({
             </div>
 
             {/* Controls */}
-            <div className="glass-card rounded-[8px] p-6 border border-white/10 space-y-4 mb-4">
+            <div className="glass-card rounded-[8px] p-6 border border-[var(--border)] space-y-4 mb-4">
                 <div className="flex flex-col md:flex-row gap-4">
                     <input
                         type="text"
                         placeholder="Search by username or response..."
                         value={searchTerm}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="flex-1 px-5 py-3 bg-black/20 border-none rounded-[4px] font-medium text-white focus:outline-none focus:ring-0 transition text-sm"
+                        className="flex-1 px-5 py-3 bg-[var(--bg-tertiary)] border-none rounded-[4px] font-medium text-white focus:outline-none focus:ring-0 transition text-sm"
                     />
 
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-4 py-3 bg-black/20 border-none rounded-[4px] text-white font-medium focus:outline-none focus:ring-0 transition text-sm min-w-[200px]"
+                        className="px-4 py-3 bg-[var(--bg-tertiary)] border-none rounded-[4px] text-white font-medium focus:outline-none focus:ring-0 transition text-sm min-w-[200px]"
                     >
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
@@ -571,27 +571,27 @@ export default function FormSubmissions({
                         📥 Export CSV
                     </button>
 
-                    <div className="ml-auto text-gray-500 text-sm font-medium self-center">
+                    <div className="ml-auto text-[var(--text-tertiary)] text-sm font-medium self-center">
                         {loading ? 'Loading...' : `Found ${total} submissions.`}
                     </div>
                 </div>
 
                 {/* Bulk Actions Panel */}
                 {isMassEdit && (
-                    <div className="pt-4 border-t border-white/10 animate-slide-down">
+                    <div className="pt-4 border-t border-[var(--border)] animate-slide-down">
                         <div className="flex flex-wrap items-center gap-4">
-                            <div className="text-gray-300 font-bold whitespace-nowrap">
+                            <div className="text-[var(--text-secondary)] font-bold whitespace-nowrap">
                                 Selected {selectedIds.size} submissions
                             </div>
 
                             <button
                                 onClick={selectAll}
-                                className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 transition text-sm font-bold whitespace-nowrap border border-white/10"
+                                className="px-3 py-1.5 rounded-lg bg-[var(--bg-hover)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition text-sm font-bold whitespace-nowrap border border-[var(--border)]"
                             >
                                 {selectedIds.size === submissions.length ? 'Deselect all' : 'Select all'}
                             </button>
 
-                            <div className="h-6 w-px bg-white/10 hidden md:block"></div>
+                            <div className="h-6 w-px bg-[var(--bg-hover)] hidden md:block"></div>
 
                             {submissionType === 'application' && (
                                 <>
@@ -642,11 +642,11 @@ export default function FormSubmissions({
             {/* Submissions Embed Cards */}
             <div className="w-full mt-4">
                  {loading ? (
-                    <div className="glass-card rounded-[8px] border border-white/10 p-8">
-                        <CatLoader message="Loading submissions..." />
+                    <div className="glass-card rounded-[8px] border border-[var(--border)] p-8">
+                        <Loading message="Loading submissions..." />
                     </div>
                 ) : submissions.length === 0 ? (
-                    <div className="glass-card rounded-[8px] border border-white/10 p-8">
+                    <div className="glass-card rounded-[8px] border border-[var(--border)] p-8">
                         <EmptyState
                             icon="📋"
                             title="No Submissions Yet"
@@ -686,7 +686,7 @@ export default function FormSubmissions({
                                                         </svg>
                                                         APP
                                                     </span>
-                                                    <span className="text-gray-400 text-[12px] ml-1">{dateInfo.relative}</span>
+                                                    <span className="text-[var(--text-secondary)] text-[12px] ml-1">{dateInfo.relative}</span>
                                                 </div>
                                                 {getStatusBadge(item.status)}
                                             </div>
@@ -701,7 +701,7 @@ export default function FormSubmissions({
                                                 <div className="flex flex-col">
                                                     <div className="flex items-center gap-1.5">
                                                         <span className="font-bold text-white text-[15px] leading-tight hover:underline cursor-pointer">{item.username}</span>
-                                                        <span className="text-[10px] text-gray-400 font-mono mt-0.5">({item.user_id})</span>
+                                                        <span className="text-[10px] text-[var(--text-secondary)] font-mono mt-0.5">({item.user_id})</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -713,7 +713,7 @@ export default function FormSubmissions({
                                                         <h3 className="font-bold text-white text-[14px] leading-tight flex items-start gap-1">
                                                             <span>{question}</span>
                                                         </h3>
-                                                        <div className="text-gray-200 text-[14px] whitespace-pre-wrap break-words leading-relaxed pl-1 border-l-2 border-[#4E5058] rounded-sm py-0.5 bg-black/20/30 px-2 overflow-hidden">
+                                                        <div className="text-[var(--text-primary)] text-[14px] whitespace-pre-wrap break-words leading-relaxed pl-1 border-l-2 border-[#4E5058] rounded-sm py-0.5 bg-[var(--bg-tertiary)]/30 px-2 overflow-hidden">
                                                             {renderAnswer(answer)}
                                                         </div>
                                                     </div>
@@ -721,7 +721,7 @@ export default function FormSubmissions({
                                             </div>
 
                                             {/* Footer Info */}
-                                            <div className="mt-4 flex items-center justify-between text-[11px] font-medium text-gray-400">
+                                            <div className="mt-4 flex items-center justify-between text-[11px] font-medium text-[var(--text-secondary)]">
                                                 <div className="flex items-center gap-2">
                                                     <span>Submission #{item.form_submission_number || item.id}</span>
                                                     <span>•</span>
@@ -755,7 +755,7 @@ export default function FormSubmissions({
                                                 setSelectedSubmission(item);
                                                 setShowDetailModal(true);
                                             }}
-                                            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-[4px] transition-colors"
+                                            className="px-4 py-2 bg-[var(--bg-hover)] hover:bg-white/20 text-white text-sm font-medium rounded-[4px] transition-colors"
                                         >
                                             View Details
                                         </button>
@@ -805,25 +805,25 @@ export default function FormSubmissions({
             {/* Reply Modal */}
             {showReplyModal && replyingTo && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowReplyModal(false)}>
-                    <div className="bg-[#0a0a0f] border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-3 bg-[#5865F2]/10 rounded-full">
                                 <svg className="w-6 h-6 text-[#5865F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.39.84 4.59 2.25 6.31l-1.01 3.03a1 1 0 001.27 1.27l3.03-1.01C9.41 23.16 11.61 24 12 24c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.85 0-3.58-.64-4.95-1.72a1 1 0 00-.73-.27l-1.92.64.64-1.92a1 1 0 00-.27-.73C3.64 15.58 3 13.85 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9z"/></svg>
                             </div>
                             <div>
                                 <h2 className="text-xl font-bold text-white">Reply to {replyingTo.username}</h2>
-                                <p className="text-gray-400 text-sm">This message will be sent to the user's DM via the bot.</p>
+                                <p className="text-[var(--text-secondary)] text-sm">This message will be sent to the user's DM via the bot.</p>
                             </div>
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Your Message</label>
+                            <label className="block text-[var(--text-secondary)] text-xs font-bold uppercase mb-2">Your Message</label>
                             <textarea
                                 value={replyMessage}
                                 onChange={(e) => setReplyMessage(e.target.value)}
                                 placeholder={`Hi ${replyingTo.username}, thank you for your submission...`}
                                 rows={5}
-                                className="w-full px-4 py-3 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
+                                className="w-full px-4 py-3 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
                                 autoFocus
                             />
                         </div>
@@ -866,10 +866,10 @@ export default function FormSubmissions({
             {/* Detail Modal */}
             {showDetailModal && selectedSubmission && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setShowDetailModal(false)}>
-                    <div className="bg-[#0a0a0f] shadow-2xl rounded-[4px] border-y border-r border-white/10 border-l-4 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up" style={{ borderLeftColor: getEmbedColor(selectedSubmission.status).replace('border-[', '').replace(']', '') }} onClick={e => e.stopPropagation()}>
+                    <div className="bg-[var(--bg-primary)] shadow-2xl rounded-[4px] border-y border-r border-[var(--border)] border-l-4 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up" style={{ borderLeftColor: getEmbedColor(selectedSubmission.status).replace('border-[', '').replace(']', '') }} onClick={e => e.stopPropagation()}>
                         
                         {/* Modal Header */}
-                        <div className="p-6 pb-4 border-b border-white/10/50 flex items-start justify-between">
+                        <div className="p-6 pb-4 border-b border-[var(--border)]/50 flex items-start justify-between">
                             <div>
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="font-bold text-white text-sm">Forms</span>
@@ -880,7 +880,7 @@ export default function FormSubmissions({
                                     {getStatusBadge(selectedSubmission.status)}
                                 </h2>
                             </div>
-                            <button onClick={() => setShowDetailModal(false)} className="text-gray-400 hover:text-white transition p-1">
+                            <button onClick={() => setShowDetailModal(false)} className="text-[var(--text-secondary)] hover:text-white transition p-1">
                                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
@@ -891,7 +891,7 @@ export default function FormSubmissions({
                                 <img src={selectedSubmission.user_avatar || getAvatarUrl(selectedSubmission.user_id)} alt="Avatar" className="w-10 h-10 rounded-full" />
                                 <div>
                                     <div className="text-white font-bold text-lg leading-tight hover:underline cursor-pointer">{selectedSubmission.username}</div>
-                                    <div className="text-gray-400 font-mono text-xs">{selectedSubmission.user_id}</div>
+                                    <div className="text-[var(--text-secondary)] font-mono text-xs">{selectedSubmission.user_id}</div>
                                 </div>
                             </div>
                             
@@ -899,7 +899,7 @@ export default function FormSubmissions({
                                 {Object.entries(selectedSubmission.responses).map(([question, answer]) => (
                                     <div key={question} className="flex flex-col gap-1.5">
                                         <h3 className="font-bold text-white text-[15px]">{question}</h3>
-                                        <div className="text-gray-200 text-[15px] whitespace-pre-wrap break-words leading-relaxed pl-2 border-l-2 border-[#4E5058] rounded-sm py-1 bg-black/20/30 px-3 overflow-hidden">
+                                        <div className="text-[var(--text-primary)] text-[15px] whitespace-pre-wrap break-words leading-relaxed pl-2 border-l-2 border-[#4E5058] rounded-sm py-1 bg-[var(--bg-tertiary)]/30 px-3 overflow-hidden">
                                             {renderAnswer(answer)}
                                         </div>
                                     </div>
@@ -908,9 +908,9 @@ export default function FormSubmissions({
                         </div>
 
                         {/* Modal Footer / Actions */}
-                        <div className="p-4 glass-card border-t border-white/10/50 flex items-center justify-between mt-auto">
-                            <div className="text-[11px] font-medium text-gray-400">
-                                <span className="font-bold text-gray-300">{formatDate(selectedSubmission.submitted_at).full}</span>
+                        <div className="p-4 glass-card border-t border-[var(--border)]/50 flex items-center justify-between mt-auto">
+                            <div className="text-[11px] font-medium text-[var(--text-secondary)]">
+                                <span className="font-bold text-[var(--text-secondary)]">{formatDate(selectedSubmission.submitted_at).full}</span>
                             </div>
 
                             <div className="flex gap-2">
@@ -952,16 +952,16 @@ export default function FormSubmissions({
             {/* Deny Reason Modal */}
             {showDenyModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowDenyModal(false)}>
-                    <div className="bg-[#030305]/80 backdrop-blur-3xl border border-white/10 rounded-3xl p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[var(--bg-secondary)]/80 backdrop-blur-3xl border border-[var(--border)] rounded-xl p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
                         <h2 className="text-2xl font-black text-white mb-2">❌ Deny Submission</h2>
-                        <p className="text-gray-400 mb-6">Provide a reason for denying this submission (optional).</p>
+                        <p className="text-[var(--text-secondary)] mb-6">Provide a reason for denying this submission (optional).</p>
 
                         <textarea
                             value={denyReason}
                             onChange={(e) => setDenyReason(e.target.value)}
                             placeholder="Reason for denial..."
                             rows={3}
-                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-red-500/50 text-white mb-6 resize-none"
+                            className="w-full px-4 py-3 bg-[var(--bg-hover)] border border-[var(--border)] rounded-xl focus:outline-none focus:border-red-500/50 text-white mb-6 resize-none"
                         />
 
                         <div className="flex gap-3">
@@ -971,7 +971,7 @@ export default function FormSubmissions({
                                     setDenyReason("");
                                     setPendingDenyId(null);
                                 }}
-                                className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-gray-400 font-bold rounded-xl transition"
+                                className="flex-1 py-3 bg-[var(--bg-hover)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] font-bold rounded-xl transition"
                             >
                                 Cancel
                             </button>
@@ -995,25 +995,25 @@ export default function FormSubmissions({
             {/* Reply Modal */}
             {showReplyModal && replyingTo && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowReplyModal(false)}>
-                    <div className="bg-[#0a0a0f] border border-white/10 rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-[8px] p-6 w-full max-w-lg shadow-2xl animate-slide-up" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-3 bg-[#5865F2]/10 rounded-full">
                                 <svg className="w-6 h-6 text-[#5865F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.39.84 4.59 2.25 6.31l-1.01 3.03a1 1 0 001.27 1.27l3.03-1.01C9.41 23.16 11.61 24 12 24c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.85 0-3.58-.64-4.95-1.72a1 1 0 00-.73-.27l-1.92.64.64-1.92a1 1 0 00-.27-.73C3.64 15.58 3 13.85 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9z"/></svg>
                             </div>
                             <div>
                                 <h2 className="text-xl font-bold text-white">Reply to {replyingTo.username}</h2>
-                                <p className="text-gray-400 text-sm">This message will be sent to the user's DM via the bot.</p>
+                                <p className="text-[var(--text-secondary)] text-sm">This message will be sent to the user's DM via the bot.</p>
                             </div>
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Your Message</label>
+                            <label className="block text-[var(--text-secondary)] text-xs font-bold uppercase mb-2">Your Message</label>
                             <textarea
                                 value={replyMessage}
                                 onChange={(e) => setReplyMessage(e.target.value)}
                                 placeholder={`Hi ${replyingTo.username}, thank you for your submission...`}
                                 rows={5}
-                                className="w-full px-4 py-3 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
+                                className="w-full px-4 py-3 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[4px] text-white transition-all outline-none resize-none"
                                 autoFocus
                             />
                         </div>

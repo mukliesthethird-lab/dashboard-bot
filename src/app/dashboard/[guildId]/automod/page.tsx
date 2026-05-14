@@ -58,7 +58,7 @@ export default async function AutomodPage({
         <div className="min-h-screen">
             <GuildSidebar guildId={guildId} guildName={guild.name} guildIcon={guild.icon} />
 
-            <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8 overflow-x-hidden">
+            <main className="lg:ml-[272px] pt-32 lg:pt-20 p-4 md:p-6 overflow-x-hidden">
                 <div className="max-w-6xl mx-auto w-full">
                     <AutomodVisualizer guildId={guildId} />
                 </div>

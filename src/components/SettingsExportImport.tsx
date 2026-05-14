@@ -97,7 +97,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                 <button
                     onClick={handleExport}
                     disabled={exporting}
-                    className="px-5 py-2.5 rounded-xl glass hover:bg-white/10 border border-white/10 text-white font-bold text-sm transition-all hover:scale-105 flex items-center gap-2 disabled:opacity-50"
+                    className="px-5 py-2.5 rounded-xl glass hover:bg-[var(--bg-hover)] border border-[var(--border)] text-white font-bold text-sm transition-all hover:scale-105 flex items-center gap-2 disabled:opacity-50"
                 >
                     {exporting ? (
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -120,13 +120,13 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
             {/* Import Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in" onClick={() => setShowModal(false)}>
-                    <div className="bg-[#0a0a0f] border border-white/10 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
                         <div className="text-center mb-8">
                             <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
                                 <span className="text-4xl">📥</span>
                             </div>
                             <h2 className="text-3xl font-black text-white">Import Settings</h2>
-                            <p className="text-gray-400 mt-2 font-medium">Upload a previously exported settings file</p>
+                            <p className="text-[var(--text-secondary)] mt-2 font-medium">Upload a previously exported settings file</p>
                         </div>
 
                         <div className="space-y-6">
@@ -138,28 +138,28 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                                         type="file"
                                         accept=".json"
                                         onChange={handleFileUpload}
-                                        className="w-full px-4 py-4 rounded-2xl bg-white/5 border border-white/10 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-indigo-500/20 file:text-indigo-300 file:font-bold file:cursor-pointer hover:bg-white/10 transition-all"
+                                        className="w-full px-4 py-4 rounded-xl bg-[var(--bg-hover)] border border-[var(--border)] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium text-[var(--text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-indigo-500/20 file:text-indigo-300 file:font-bold file:cursor-pointer hover:bg-[var(--bg-hover)] transition-all"
                                     />
                                 </div>
                             </div>
 
                             {/* Preview */}
                             {importData && (
-                                <div className="bg-black/20 rounded-[3px] p-3 border border-white/10 max-h-32 overflow-auto custom-scrollbar">
-                                    <pre className="text-[11px] font-mono text-gray-500 whitespace-pre-wrap break-all">
+                                <div className="bg-[var(--bg-tertiary)] rounded-[3px] p-3 border border-[var(--border)] max-h-32 overflow-auto custom-scrollbar">
+                                    <pre className="text-[11px] font-mono text-[var(--text-tertiary)] whitespace-pre-wrap break-all">
                                         {importData.slice(0, 500)}{importData.length > 500 ? "..." : ""}
                                     </pre>
                                 </div>
                             )}
 
                             {/* Overwrite option */}
-                            <label className="flex items-center justify-between p-3 bg-white/3 rounded-[12px] border border-white/5 cursor-pointer hover:bg-white/5 transition-all">
+                            <label className="flex items-center justify-between p-3 bg-white/3 rounded-[12px] border border-[var(--border)] cursor-pointer hover:bg-[var(--bg-hover)] transition-all">
                                 <div>
                                     <span className="text-white font-bold text-sm">Overwrite existing settings</span>
-                                    <p className="text-gray-500 text-[11px]">Replace current settings instead of merging</p>
+                                    <p className="text-[var(--text-tertiary)] text-[11px]">Replace current settings instead of merging</p>
                                 </div>
                                 <div
-                                    className={`w-10 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${overwrite ? 'bg-emerald-500' : 'bg-gray-700'}`}
+                                    className={`w-10 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${overwrite ? 'bg-[var(--bg-elevated)]merald-500' : 'bg-gray-700'}`}
                                     onClick={() => setOverwrite(!overwrite)}
                                 >
                                     <div className={`absolute top-1 left-1 bg-white w-3 h-3 rounded-full transition-transform duration-200 ease-in-out ${overwrite ? 'translate-x-5' : 'translate-x-0'}`}></div>
@@ -171,7 +171,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                                 <span className="text-xl">⚠️</span>
                                 <div className="text-xs">
                                     <p className="font-bold text-rose-500 uppercase tracking-wider mb-1 text-[10px]">Security Warning</p>
-                                    <p className="text-gray-400 leading-relaxed">Importing settings will modify your server configuration. Only upload files from sources you trust.</p>
+                                    <p className="text-[var(--text-secondary)] leading-relaxed">Importing settings will modify your server configuration. Only upload files from sources you trust.</p>
                                 </div>
                             </div>
 
@@ -182,7 +182,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                         <div className="flex gap-3 mt-8">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="flex-1 py-2.5 bg-transparent hover:underline text-gray-400 hover:text-white font-bold rounded-[8px] transition text-sm"
+                                className="flex-1 py-2.5 bg-transparent hover:underline text-[var(--text-secondary)] hover:text-white font-bold rounded-[8px] transition text-sm"
                             >
                                 Cancel
                             </button>

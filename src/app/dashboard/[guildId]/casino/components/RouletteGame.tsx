@@ -121,19 +121,19 @@ export default function RouletteGame({ userBalance, onBalanceChange }: RouletteG
     return (
         <div className="w-full h-full flex flex-col bg-[#05050a] p-4 lg:p-6 overflow-hidden">
             {/* Top Bar: History - Compact */}
-            <div className="flex justify-between items-center mb-4 bg-white/5 p-3 lg:p-4 rounded-2xl border border-white/10 backdrop-blur-md shrink-0">
+            <div className="flex justify-between items-center mb-4 bg-[var(--bg-hover)] p-3 lg:p-4 rounded-xl border border-[var(--border)] backdrop-blur-md shrink-0">
                 <div className="flex items-center gap-6">
                     <div>
-                        <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Stakes</p>
+                        <p className="text-[9px] font-black text-[var(--text-tertiary)] uppercase tracking-widest leading-none mb-1">Stakes</p>
                         <div className="text-xl lg:text-2xl font-black text-amber-500 tracking-tighter tabular-nums">
                              {totalBet.toLocaleString()} <span className="text-[10px] text-amber-500/50">C</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex gap-1.5 bg-black/20 p-1.5 rounded-xl border border-white/5 overflow-x-auto no-scrollbar">
+                <div className="flex gap-1.5 bg-[var(--bg-tertiary)] p-1.5 rounded-xl border border-[var(--border)] overflow-x-auto no-scrollbar">
                     {history.map((num: number, i: number) => (
-                        <div key={i} className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs border-b-2 shrink-0 ${num === 0 ? 'bg-emerald-500 border-emerald-700' : RED_NUMBERS.includes(num) ? 'bg-red-500 border-red-700' : 'bg-zinc-800 border-zinc-950'}`}>
+                        <div key={i} className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs border-b-2 shrink-0 ${num === 0 ? 'bg-[var(--bg-elevated)]merald-500 border-emerald-700' : RED_NUMBERS.includes(num) ? 'bg-red-500 border-red-700' : 'bg-zinc-800 border-zinc-950'}`}>
                             {num}
                         </div>
                     ))}
@@ -144,7 +144,7 @@ export default function RouletteGame({ userBalance, onBalanceChange }: RouletteG
             <div className="flex-1 flex flex-col lg:flex-row gap-6 lg:gap-8 items-center justify-center min-h-0">
                 {/* Wheel Section - Hard-capped to prevent QHD over-scaling */}
                 <div className="relative h-[280px] sm:h-[340px] lg:h-full max-h-[450px] aspect-square flex items-center justify-center shrink-0">
-                    <div className="absolute inset-4 bg-emerald-500/5 blur-[80px] rounded-full" />
+                    <div className="absolute inset-4 bg-[var(--bg-elevated)]merald-500/5 blur-[80px] rounded-full" />
                     
                     <motion.div 
                         animate={{ rotate: wheelRotation }}
@@ -159,7 +159,7 @@ export default function RouletteGame({ userBalance, onBalanceChange }: RouletteG
                             }).join(', ')})`
                         }}
                     >
-                        <div className="w-16 h-16 lg:w-20 lg:h-20 bg-[#1a100a] rounded-full border-4 lg:border-8 border-white/5 flex items-center justify-center z-20 shadow-2xl">
+                        <div className="w-16 h-16 lg:w-20 lg:h-20 bg-[#1a100a] rounded-full border-4 lg:border-8 border-[var(--border)] flex items-center justify-center z-20 shadow-2xl">
                             <img src="/donpollo-icon.jpg" className="w-8 h-8 lg:w-12 lg:h-12 rounded-full opacity-60" alt="dp" />
                         </div>
 
@@ -196,7 +196,7 @@ export default function RouletteGame({ userBalance, onBalanceChange }: RouletteG
 
                         <button 
                             onClick={() => placeBet('number', '0')}
-                            className="w-14 lg:w-16 h-44 lg:h-52 flex items-center justify-center bg-emerald-500/10 hover:bg-emerald-500/30 border-2 border-emerald-500/50 rounded-xl text-2xl font-black text-emerald-400 transition-all z-20"
+                            className="w-14 lg:w-16 h-44 lg:h-52 flex items-center justify-center bg-[var(--bg-elevated)]merald-500/10 hover:bg-[var(--bg-elevated)]merald-500/30 border-2 border-emerald-500/50 rounded-xl text-2xl font-black text-emerald-400 transition-all z-20"
                         >
                             0
                         </button>
@@ -211,13 +211,13 @@ export default function RouletteGame({ userBalance, onBalanceChange }: RouletteG
                                     <button 
                                         key={num}
                                         onClick={() => placeBet('number', num.toString())}
-                                        className={`relative h-14 lg:h-16 flex items-center justify-center rounded-xl font-black transition-all border border-white/5 active:scale-95
+                                        className={`relative h-14 lg:h-16 flex items-center justify-center rounded-xl font-black transition-all border border-[var(--border)] active:scale-95
                                             ${isRed ? 'bg-red-500 hover:bg-red-400 border-red-800' : 'bg-zinc-900 hover:bg-zinc-800 border-black'}
                                         `}
                                     >
                                         <span className={`text-lg text-white drop-shadow-md`}>{num}</span>
                                         {betAmount && (
-                                            <div className="absolute inset-1 rounded-lg bg-amber-500 text-black text-[10px] font-black flex items-center justify-center shadow-lg border border-amber-600 animate-scale-in">
+                                            <div className="absolute inset-1 rounded-lg bg-[var(--bg-secondary)]mber-500 text-black text-[10px] font-black flex items-center justify-center shadow-lg border border-amber-600 animate-scale-in">
                                                 {betAmount >= 1000 ? (betAmount/1000).toFixed(1) + 'k' : betAmount}
                                             </div>
                                         )}
@@ -228,25 +228,25 @@ export default function RouletteGame({ userBalance, onBalanceChange }: RouletteG
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 lg:gap-3 shrink-0">
-                        <button onClick={() => placeBet('color', 'red')} className="py-3 lg:py-4 bg-red-600 border-2 border-red-800 shadow-lg rounded-2xl font-black text-white hover:brightness-110 active:scale-95 transition-all uppercase tracking-[0.2em] text-xs lg:text-sm">
+                        <button onClick={() => placeBet('color', 'red')} className="py-3 lg:py-4 bg-red-600 border-2 border-red-800 shadow-lg rounded-xl font-black text-white hover:brightness-110 active:scale-95 transition-all uppercase tracking-[0.2em] text-xs lg:text-sm">
                             RED <span className="opacity-40 text-[10px] ml-1">2X</span>
                         </button>
-                        <button onClick={() => placeBet('color', 'black')} className="py-3 lg:py-4 bg-zinc-900 border-2 border-black shadow-lg rounded-2xl font-black text-white hover:brightness-110 active:scale-95 transition-all uppercase tracking-[0.2em] text-xs lg:text-sm">
+                        <button onClick={() => placeBet('color', 'black')} className="py-3 lg:py-4 bg-zinc-900 border-2 border-black shadow-lg rounded-xl font-black text-white hover:brightness-110 active:scale-95 transition-all uppercase tracking-[0.2em] text-xs lg:text-sm">
                             BLACK <span className="opacity-40 text-[10px] ml-1">2X</span>
                         </button>
-                        <button onClick={() => placeBet('color', 'green')} className="py-3 lg:py-4 bg-[#0c1a12] border-2 border-emerald-900 shadow-lg rounded-2xl font-black text-emerald-400 hover:brightness-110 active:scale-95 transition-all uppercase tracking-[0.2em] text-xs lg:text-sm">
+                        <button onClick={() => placeBet('color', 'green')} className="py-3 lg:py-4 bg-[#0c1a12] border-2 border-emerald-900 shadow-lg rounded-xl font-black text-emerald-400 hover:brightness-110 active:scale-95 transition-all uppercase tracking-[0.2em] text-xs lg:text-sm">
                             GREEN <span className="opacity-40 text-[10px] ml-1">14X</span>
                         </button>
                     </div>
 
-                    <div className="flex flex-col md:flex-row gap-3 lg:gap-4 items-center bg-black/40 p-4 lg:p-5 rounded-[2rem] border border-white/5 shrink-0">
+                    <div className="flex flex-col md:flex-row gap-3 lg:gap-4 items-center bg-black/40 p-4 lg:p-5 rounded-[2rem] border border-[var(--border)] shrink-0">
                         <div className="flex gap-3">
                             {[10, 50, 100, 500, 1000].map(val => (
                                 <button 
                                     key={val}
                                     onClick={() => setSelectedChipValue(val)}
                                     className={`w-10 h-10 lg:w-11 lg:h-11 rounded-full font-black text-[10px] transition-all border-[3px] flex items-center justify-center shadow-xl
-                                        ${selectedChipValue === val ? 'scale-110 border-amber-500 bg-amber-500 text-black' : 'border-white/5 bg-zinc-900 text-zinc-500'}
+                                        ${selectedChipValue === val ? 'scale-110 border-amber-500 bg-[var(--bg-secondary)]mber-500 text-black' : 'border-[var(--border)] bg-zinc-900 text-zinc-500'}
                                     `}
                                 >
                                     {val >= 1000 ? (val/1000) + 'K' : val}
@@ -254,17 +254,17 @@ export default function RouletteGame({ userBalance, onBalanceChange }: RouletteG
                             ))}
                         </div>
 
-                        <div className="h-8 w-px bg-white/5 hidden md:block" />
+                        <div className="h-8 w-px bg-[var(--bg-hover)] hidden md:block" />
 
                         <div className="flex gap-3 flex-1 w-full">
-                            <button onClick={clearBets} className="flex-1 py-3 bg-white/5 hover:bg-white/10 transition-all text-zinc-500 hover:text-white font-black rounded-2xl border border-white/5 text-[9px] uppercase tracking-widest">
+                            <button onClick={clearBets} className="flex-1 py-3 bg-[var(--bg-hover)] hover:bg-[var(--bg-hover)] transition-all text-zinc-500 hover:text-white font-black rounded-xl border border-[var(--border)] text-[9px] uppercase tracking-widest">
                                 RESET
                             </button>
                             <button 
                                 onClick={spin}
                                 disabled={isSpinning || currentBets.length === 0}
-                                className={`flex-[2] py-3 rounded-2xl font-black text-base transition-all flex items-center justify-center gap-3 shadow-lg disabled:opacity-50
-                                    ${isSpinning ? 'bg-zinc-800 text-zinc-600' : 'bg-white text-black hover:bg-emerald-500 hover:text-white'}
+                                className={`flex-[2] py-3 rounded-xl font-black text-base transition-all flex items-center justify-center gap-3 shadow-lg disabled:opacity-50
+                                    ${isSpinning ? 'bg-zinc-800 text-zinc-600' : 'bg-white text-black hover:bg-[var(--bg-elevated)]merald-500 hover:text-white'}
                                 `}
                             >
                                 {isSpinning ? "SPINNING..." : "SPIN SYSTEM"}
@@ -282,8 +282,8 @@ export default function RouletteGame({ userBalance, onBalanceChange }: RouletteG
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
                     >
-                        <div className="bg-black/95 backdrop-blur-2xl border border-white/10 p-10 rounded-[2.5rem] shadow-2xl text-center">
-                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Winning Slot</p>
+                        <div className="bg-black/95 backdrop-blur-2xl border border-[var(--border)] p-10 rounded-[2.5rem] shadow-2xl text-center">
+                            <p className="text-[10px] font-black text-[var(--text-tertiary)] uppercase tracking-widest mb-2">Winning Slot</p>
                             <div className={`text-8xl font-black mb-4 ${lastWinningNumber === 0 ? 'text-emerald-500' : RED_NUMBERS.includes(lastWinningNumber) ? 'text-red-500' : 'text-white'}`}>
                                 {lastWinningNumber}
                             </div>

@@ -18,7 +18,7 @@ const TICK_INTERVAL = 1000; // Poll every 1s to match hyper-active simulator
 const SENTIMENT_CFG: Record<string, { label: string; color: string; bg: string }> = {
     bullish: { label: 'BULL', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
     bearish: { label: 'BEAR', color: 'text-red-400',     bg: 'bg-red-500/10 border-red-500/20' },
-    neutral: { label: 'NEU',  color: 'text-gray-500',    bg: 'bg-white/5 border-white/5' },
+    neutral: { label: 'NEU',  color: 'text-[var(--text-tertiary)]',    bg: 'bg-white/5 border-[var(--border)]' },
 };
 
 interface PortfolioPosition {
@@ -336,7 +336,7 @@ export default function ProMarketTerminal() {
                 setOpenOrders(prev => prev.filter(o => o.id !== tempId)); // Rollback
             }
         } catch {
-            setLimitMsg({ type: 'error', text: 'Gagal memasang order' });
+            setLimitMsg({ type: 'error', text: 'Failed to place order' });
             setOpenOrders(prev => prev.filter(o => o.id !== tempId)); // Rollback
         } finally {
             setSubmittingLimit(false);
@@ -383,7 +383,7 @@ export default function ProMarketTerminal() {
     // ── RENDER ───────────────────────────────────────────────────────────────
 
     return (
-        <div className="min-h-screen bg-[#020204] text-white flex flex-col font-mono tracking-tight">
+        <div className="min-h-screen bg-[var(--bg-primary)] text-white flex flex-col font-mono tracking-tight">
 
 
 
@@ -391,14 +391,14 @@ export default function ProMarketTerminal() {
 
                 {/* ── LEFT: MARKET LIST ─────────────────────────────────────── */}
                 <div className="w-[280px] hidden xl:flex flex-col gap-4">
-                    <div className="bg-[#0b0c10] border border-white/5 rounded-2xl flex-1 overflow-hidden flex flex-col">
-                        <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                    <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl flex-1 overflow-hidden flex flex-col">
+                        <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
                             <span className="flex items-center gap-2 font-bold text-xs">
                                 <BarChart2 className="w-4 h-4 text-indigo-500" /> Markets
                             </span>
                             <div className="flex items-center gap-1.5">
                                 <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                                <span className="text-[10px] text-gray-500">Live</span>
+                                <span className="text-[10px] text-[var(--text-tertiary)]">Live</span>
                             </div>
                         </div>
 
@@ -436,7 +436,7 @@ export default function ProMarketTerminal() {
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[10px] text-gray-500">{asset.name}</span>
+                                            <span className="text-[10px] text-[var(--text-tertiary)]">{asset.name}</span>
                                             <div className="text-right">
                                                 <div className={`font-bold text-sm tabular-nums ${aUp ? 'text-emerald-400' : 'text-red-400'}`}>
                                                     {aCur.toLocaleString()}
@@ -457,7 +457,7 @@ export default function ProMarketTerminal() {
                 <div className="flex-1 flex flex-col gap-3 min-w-0">
 
                     {/* Chart header bar */}
-                    <div className="bg-[#0b0c10] border border-white/5 rounded-2xl p-4 flex items-center justify-between shrink-0">
+                    <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between shrink-0">
                         <div className="flex items-center gap-5">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xl border shrink-0 bg-white/5 border-white/10">
@@ -465,21 +465,21 @@ export default function ProMarketTerminal() {
                                 </div>
                                 <div>
                                     <div className="text-xl font-black">{selectedAsset?.symbol}/COIN</div>
-                                    <div className="text-[10px] text-gray-500 uppercase tracking-widest">{selectedAsset?.name}</div>
+                                    <div className="text-[10px] text-[var(--text-tertiary)] uppercase tracking-wider">{selectedAsset?.name}</div>
                                 </div>
                             </div>
 
                             <div className="h-8 w-px bg-white/10 hidden md:block" />
 
                             <div className="hidden sm:block">
-                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Live Price</p>
+                                <p className="text-[10px] text-[var(--text-tertiary)] uppercase font-bold tracking-wider">Live Price</p>
                                 <p className={`text-xl font-black tabular-nums ${displayIsUp ? 'text-emerald-400' : 'text-red-400'}`}>
                                     {displayPrice.toLocaleString()}
                                 </p>
                             </div>
 
                             <div className="hidden md:block">
-                                <p className="text-[10px] text-gray-500 uppercase font-bold">Change</p>
+                                <p className="text-[10px] text-[var(--text-tertiary)] uppercase font-bold">Change</p>
                                 <p className={`text-sm font-bold flex items-center gap-1 ${displayIsUp ? 'text-emerald-400' : 'text-red-400'}`}>
                                     {displayIsUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                                     {displayIsUp ? '+' : ''}{displayDiff.toLocaleString()} ({displayIsUp ? '+' : ''}{displayPct}%)
@@ -514,7 +514,7 @@ export default function ProMarketTerminal() {
                             >
                                 <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 animate-pulse" />
                                 <div>
-                                    <p className="text-red-400 text-xs font-black uppercase tracking-widest">
+                                    <p className="text-red-400 text-xs font-black uppercase tracking-wider">
                                         💥 CRASH MODE ACTIVE — {selectedAsset?.symbol}
                                     </p>
                                     <p className="text-red-500/60 text-[10px] mt-0.5">
@@ -526,7 +526,7 @@ export default function ProMarketTerminal() {
                     </AnimatePresence>
 
                     {/* Chart header with reset button */}
-                    <div className="bg-[#0b0c10] border border-white/5 rounded-2xl flex-1 relative overflow-hidden flex flex-col">
+                    <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl flex-1 relative overflow-hidden flex flex-col">
                         <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
                             <button
                                 onClick={handleResetChart}
@@ -534,7 +534,7 @@ export default function ProMarketTerminal() {
                                 title="Reset chart data"
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border ${
                                     resetting
-                                        ? 'opacity-50 cursor-not-allowed bg-white/5 border-white/10 text-gray-500'
+                                        ? 'opacity-50 cursor-not-allowed bg-white/5 border-white/10 text-[var(--text-tertiary)]'
                                         : 'bg-orange-500/10 border-orange-500/25 text-orange-400 hover:bg-orange-500/20'
                                 }`}
                             >
@@ -556,10 +556,10 @@ export default function ProMarketTerminal() {
                 <div className="w-[300px] hidden lg:flex flex-col gap-3">
 
                     {/* Trade Panel */}
-                    <div className="bg-[#0b0c10] border border-white/5 rounded-2xl p-4 flex flex-col gap-3">
+                    <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 flex flex-col gap-3">
 
                         {/* Tab Navigation */}
-                        <div className="flex gap-1 p-1 bg-black/40 rounded-xl border border-white/5">
+                        <div className="flex gap-1 p-1 bg-[var(--bg-primary)] rounded-xl border border-[var(--border)]">
                             {(['trade', 'limit'] as const).map(tab => (
                                 <button
                                     key={tab}
@@ -567,7 +567,7 @@ export default function ProMarketTerminal() {
                                     className={`flex-1 py-1.5 rounded-lg text-[10px] font-black transition-all ${
                                         rightTab === tab
                                             ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                                            : 'text-gray-500 hover:text-white'
+                                            : 'text-[var(--text-tertiary)] hover:text-white'
                                     }`}
                                 >
                                     {tab === 'trade' ? 'MARKET' : 'LIMIT'}
@@ -577,17 +577,17 @@ export default function ProMarketTerminal() {
 
                         {/* BUY / SELL toggle — shared for trade + limit tabs */}
                         {rightTab !== 'orders' && (
-                            <div className="flex gap-2 p-1 bg-black/40 rounded-xl border border-white/5">
+                            <div className="flex gap-2 p-1 bg-[var(--bg-primary)] rounded-xl border border-[var(--border)]">
                                 <button
                                     onClick={() => setTradeType('buy')}
                                     className={`flex-1 py-2 rounded-lg text-xs font-black transition-all ${
-                                        tradeType === 'buy' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-gray-500 hover:text-white'
+                                        tradeType === 'buy' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-[var(--text-tertiary)] hover:text-white'
                                     }`}
                                 >BUY</button>
                                 <button
                                     onClick={() => setTradeType('sell')}
                                     className={`flex-1 py-2 rounded-lg text-xs font-black transition-all ${
-                                        tradeType === 'sell' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-gray-500 hover:text-white'
+                                        tradeType === 'sell' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-[var(--text-tertiary)] hover:text-white'
                                     }`}
                                 >SELL</button>
                             </div>
@@ -608,7 +608,7 @@ export default function ProMarketTerminal() {
                                 ) : (
                                     <>
                                         <div>
-                                            <div className="flex justify-between text-[10px] font-bold text-gray-500 px-1 mb-1">
+                                            <div className="flex justify-between text-[10px] font-bold text-[var(--text-tertiary)] px-1 mb-1">
                                                 <span>AMOUNT (Lembar)</span>
                                                 <span>Owned: {ownedAmount.toLocaleString()}</span>
                                             </div>
@@ -616,16 +616,16 @@ export default function ProMarketTerminal() {
                                                 type="number" step="0.001" min="0.001"
                                                 value={tradeAmount}
                                                 onChange={e => setTradeAmount(e.target.value)}
-                                                className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition"
+                                                className="w-full bg-[var(--bg-primary)] border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition"
                                             />
                                         </div>
 
-                                        <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold">
+                                        <div className="p-3 bg-white/5 rounded-xl border border-[var(--border)] space-y-2">
+                                            <div className="flex justify-between text-[10px] text-[var(--text-tertiary)] font-bold">
                                                 <span>EST. VALUE</span>
                                                 <span className="text-white">{(Number(tradeAmount) * displayPrice).toLocaleString()} Koin</span>
                                             </div>
-                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold">
+                                            <div className="flex justify-between text-[10px] text-[var(--text-tertiary)] font-bold">
                                                 <span>BALANCE</span>
                                                 <span className="text-emerald-400 flex items-center gap-1">
                                                     <Wallet className="w-3 h-3" /> {userStats.balance.toLocaleString()}
@@ -671,28 +671,28 @@ export default function ProMarketTerminal() {
                                     <>
                                         <div className="flex gap-2">
                                             <div className="flex-1">
-                                                <label className="block text-[10px] font-bold text-gray-500 px-1 mb-1">MIN PRICE</label>
+                                                <label className="block text-[10px] font-bold text-[var(--text-tertiary)] px-1 mb-1">MIN PRICE</label>
                                                 <input
                                                     type="number" step="any"
                                                     placeholder="Min"
                                                     value={limitMinPrice}
                                                     onChange={e => setLimitMinPrice(e.target.value)}
-                                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition placeholder:text-gray-700 placeholder:font-normal placeholder:text-xs"
+                                                    className="w-full bg-[var(--bg-primary)] border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition placeholder:text-gray-700 placeholder:font-normal placeholder:text-xs"
                                                 />
                                             </div>
                                             <div className="flex-1">
-                                                <label className="block text-[10px] font-bold text-gray-500 px-1 mb-1">MAX PRICE</label>
+                                                <label className="block text-[10px] font-bold text-[var(--text-tertiary)] px-1 mb-1">MAX PRICE</label>
                                                 <input
                                                     type="number" step="any"
                                                     placeholder="Max"
                                                     value={limitMaxPrice}
                                                     onChange={e => setLimitMaxPrice(e.target.value)}
-                                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition placeholder:text-gray-700 placeholder:font-normal placeholder:text-xs"
+                                                    className="w-full bg-[var(--bg-primary)] border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition placeholder:text-gray-700 placeholder:font-normal placeholder:text-xs"
                                                 />
                                             </div>
                                         </div>
                                         <div>
-                                            <div className="flex justify-between text-[10px] font-bold text-gray-500 px-1 mb-1">
+                                            <div className="flex justify-between text-[10px] font-bold text-[var(--text-tertiary)] px-1 mb-1">
                                                 <span>AMOUNT (Lembar)</span>
                                                 <span>Owned: {ownedAmount.toLocaleString()}</span>
                                             </div>
@@ -701,16 +701,16 @@ export default function ProMarketTerminal() {
                                                 type="number" step="0.001" min="0.001"
                                                 value={limitAmount}
                                                 onChange={e => setLimitAmount(e.target.value)}
-                                                className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition"
+                                                className="w-full bg-[var(--bg-primary)] border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-indigo-500/50 outline-none transition"
                                             />
                                         </div>
 
-                                        <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold">
+                                        <div className="p-3 bg-white/5 rounded-xl border border-[var(--border)] space-y-2">
+                                            <div className="flex justify-between text-[10px] text-[var(--text-tertiary)] font-bold">
                                                 <span>EST. VALUE (MAX)</span>
                                                 <span className="text-white">{(Number(limitAmount) * Number(limitMaxPrice || 0)).toLocaleString()} Koin</span>
                                             </div>
-                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold">
+                                            <div className="flex justify-between text-[10px] text-[var(--text-tertiary)] font-bold">
                                                 <span>BALANCE</span>
                                                 <span className="text-emerald-400 flex items-center gap-1">
                                                     <Wallet className="w-3 h-3" /> {userStats.balance.toLocaleString()}
@@ -728,7 +728,7 @@ export default function ProMarketTerminal() {
                                         >
                                             {submittingLimit ? 'PLACING...' : `PLACE LIMIT ${tradeType.toUpperCase()}`}
                                         </button>
-                                        <p className="text-[9px] text-gray-600 text-center">
+                                        <p className="text-[9px] text-[var(--text-tertiary)] text-center">
                                             Order akan otomatis terisi saat harga tercapai
                                         </p>
 
@@ -750,20 +750,20 @@ export default function ProMarketTerminal() {
                     </div>
                     
                     {/* ── OPEN ORDERS (Always Visible) ── */}
-                    <div className="bg-[#0b0c10] border border-white/5 rounded-2xl flex flex-col overflow-hidden max-h-[200px]">
-                        <div className="p-3 border-b border-white/5 bg-white/5 flex items-center justify-between">
-                            <span className="text-[10px] font-black text-white flex items-center gap-2 uppercase tracking-widest">
+                    <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl flex flex-col overflow-hidden max-h-[200px]">
+                        <div className="p-3 border-b border-[var(--border)] bg-white/5 flex items-center justify-between">
+                            <span className="text-[10px] font-black text-white flex items-center gap-2 uppercase tracking-wider">
                                 <Clock className="w-3 h-3 text-indigo-400" /> Open Orders
                             </span>
-                            <span className="text-[10px] text-gray-500 font-bold">{openOrders.length}</span>
+                            <span className="text-[10px] text-[var(--text-tertiary)] font-bold">{openOrders.length}</span>
                         </div>
                         <div className="flex-1 overflow-y-auto p-2 space-y-1.5 scrollbar-hide">
                             {openOrders.length === 0 ? (
-                                <div className="text-center py-6 text-gray-700 text-[10px] font-bold uppercase tracking-widest bg-black/20 rounded-xl border border-dashed border-white/5">
+                                <div className="text-center py-6 text-gray-700 text-[10px] font-bold uppercase tracking-wider bg-black/20 rounded-xl border border-dashed border-[var(--border)]">
                                     No Active Orders
                                 </div>
                             ) : openOrders.map(order => (
-                                <div key={order.id} className="p-2.5 bg-white/5 rounded-xl border border-white/5 flex flex-col gap-1 transition-all hover:border-indigo-500/30 group">
+                                <div key={order.id} className="p-2.5 bg-white/5 rounded-xl border border-[var(--border)] flex flex-col gap-1 transition-all hover:border-indigo-500/30 group">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <span className={`text-[8px] font-black px-1 py-0.5 rounded shadow-sm ${
@@ -773,14 +773,14 @@ export default function ProMarketTerminal() {
                                         </div>
                                         <button 
                                             onClick={() => cancelOrder(order.id)} 
-                                            className="text-gray-600 hover:text-red-400 transition p-1 bg-white/5 rounded-lg"
+                                            className="text-[var(--text-tertiary)] hover:text-red-400 transition p-1 bg-white/5 rounded-lg"
                                         >
                                             <X className="w-3 h-3" />
                                         </button>
                                     </div>
                                     <div className="flex justify-between text-[10px] font-bold tabular-nums">
-                                        <span className="text-gray-500">Range <span className="text-white ml-1">{Number(order.min_price).toLocaleString()} - {Number(order.max_price).toLocaleString()}</span></span>
-                                        <span className="text-gray-500">Qty <span className="text-white ml-1">{Number(order.amount)}</span></span>
+                                        <span className="text-[var(--text-tertiary)]">Range <span className="text-white ml-1">{Number(order.min_price).toLocaleString()} - {Number(order.max_price).toLocaleString()}</span></span>
+                                        <span className="text-[var(--text-tertiary)]">Qty <span className="text-white ml-1">{Number(order.amount)}</span></span>
                                     </div>
                                     <div className="text-[9px] text-gray-700 font-bold">
                                         Current: {Number(assets?.find((a:any)=>a.symbol===order.symbol)?.current_price).toLocaleString()}
@@ -797,21 +797,21 @@ export default function ProMarketTerminal() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 10 }}
-                                className="bg-[#0b0c10] border border-white/5 rounded-2xl p-4 space-y-3"
+                                className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 space-y-3"
                             >
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                <p className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">
                                     Position — {selectedAsset?.symbol}
                                 </p>
 
                                 <div className="grid grid-cols-2 gap-2">
                                     <div>
-                                        <p className="text-[10px] text-gray-600 mb-0.5">Avg Buy Price</p>
+                                        <p className="text-[10px] text-[var(--text-tertiary)] mb-0.5">Avg Buy Price</p>
                                         <p className="text-xs font-bold text-white tabular-nums">
                                             {selectedPosition.avg_buy_price.toLocaleString()}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-600 mb-0.5">Holdings</p>
+                                        <p className="text-[10px] text-[var(--text-tertiary)] mb-0.5">Holdings</p>
                                         <p className="text-xs font-bold text-white tabular-nums">
                                             {selectedPosition.amount_owned.toLocaleString()} lbr
                                         </p>
@@ -824,7 +824,7 @@ export default function ProMarketTerminal() {
                                         : 'bg-red-500/10 border-red-500/20'
                                 }`}>
                                     <div className="flex items-center justify-between mb-1">
-                                        <p className="text-[10px] font-bold text-gray-500">UNREALIZED P&L</p>
+                                        <p className="text-[10px] font-bold text-[var(--text-tertiary)]">UNREALIZED P&L</p>
                                         <div className={`flex items-center gap-1 text-sm font-black ${
                                             selectedPosition.unrealized_pnl >= 0 ? 'text-emerald-400' : 'text-red-400'
                                         }`}>
@@ -840,7 +840,7 @@ export default function ProMarketTerminal() {
                                         {selectedPosition.unrealized_pnl >= 0 ? '+' : ''}
                                         {Math.round(selectedPosition.unrealized_pnl).toLocaleString()}
                                     </p>
-                                    <p className="text-[9px] text-gray-600 mt-1">
+                                    <p className="text-[9px] text-[var(--text-tertiary)] mt-1">
                                         Invested: {Math.round(selectedPosition.total_invested).toLocaleString()} Koin
                                     </p>
                                 </div>
@@ -849,12 +849,12 @@ export default function ProMarketTerminal() {
                     </AnimatePresence>
 
                     {/* ── ORDER BOOK ────────────────────────────────────────── */}
-                    <div className="bg-[#0b0c10] border border-white/5 rounded-2xl flex-1 flex flex-col overflow-hidden">
-                        <div className="p-3 border-b border-white/5 text-[10px] font-bold text-gray-500 uppercase flex justify-between">
+                    <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl flex-1 flex flex-col overflow-hidden">
+                        <div className="p-3 border-b border-[var(--border)] text-[10px] font-bold text-[var(--text-tertiary)] uppercase flex justify-between">
                             <span>Order Book</span>
                             <span>{selectedAsset?.symbol}/COIN</span>
                         </div>
-                        <div className="p-3 border-b border-white/5 flex justify-between text-[9px] text-gray-600">
+                        <div className="p-3 border-b border-[var(--border)] flex justify-between text-[9px] text-[var(--text-tertiary)]">
                             <span>PRICE</span><span>SIZE</span>
                         </div>
                         <div className="flex-1 p-2 flex flex-col justify-between text-[10px] overflow-hidden">
@@ -863,22 +863,22 @@ export default function ProMarketTerminal() {
                                     <div key={`ask-${i}`} className="flex justify-between items-center h-4 relative px-1">
                                         <div className="absolute inset-y-0 right-0 bg-red-500/5" style={{ width: `${(ask.size / 200) * 100}%` }} />
                                         <span className="text-red-400 z-10 tabular-nums">{ask.price.toLocaleString()}</span>
-                                        <span className="text-gray-500 z-10">{ask.size}</span>
+                                        <span className="text-[var(--text-tertiary)] z-10">{ask.size}</span>
                                     </div>
                                 ))}
                             </div>
-                            <div className="py-2 border-y border-white/5 text-center my-1">
+                            <div className="py-2 border-y border-[var(--border)] text-center my-1">
                                 <span className={`font-black tabular-nums ${displayIsUp ? 'text-emerald-400' : 'text-red-400'}`}>
                                     {displayPrice.toLocaleString()}
                                 </span>
-                                <span className="text-[8px] text-gray-500 block">LAST TRADED</span>
+                                <span className="text-[8px] text-[var(--text-tertiary)] block">LAST TRADED</span>
                             </div>
                             <div className="flex flex-col gap-0.5 flex-1">
                                 {orderBook.bids.map((bid, i) => (
                                     <div key={`bid-${i}`} className="flex justify-between items-center h-4 relative px-1">
                                         <div className="absolute inset-y-0 right-0 bg-emerald-500/5" style={{ width: `${(bid.size / 200) * 100}%` }} />
                                         <span className="text-emerald-400 z-10 tabular-nums">{bid.price.toLocaleString()}</span>
-                                        <span className="text-gray-500 z-10">{bid.size}</span>
+                                        <span className="text-[var(--text-tertiary)] z-10">{bid.size}</span>
                                     </div>
                                 ))}
                             </div>

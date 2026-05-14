@@ -133,7 +133,7 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
     return (
         <div className="w-full h-full flex flex-col lg:flex-row bg-[#020308] overflow-hidden selection:bg-blue-500/30">
             {/* Cinematic Mission Control Area */}
-            <div className="flex-1 relative flex flex-col overflow-hidden border-r border-white/5 min-h-0">
+            <div className="flex-1 relative flex flex-col overflow-hidden border-r border-[var(--border)] min-h-0">
 
                 {/* Parallax Starfield */}
                 <div className="absolute inset-0 z-0 bg-[#020308]">
@@ -148,14 +148,14 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
 
                 {/* HUD Header - Compact */}
                 <div className="relative z-20 p-4 lg:p-6 flex justify-between items-start pointer-events-none shrink-0">
-                    <div className="bg-black/40 backdrop-blur-md border border-white/10 p-3 rounded-xl">
+                    <div className="bg-black/40 backdrop-blur-md border border-[var(--border)] p-3 rounded-xl">
                         <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest block mb-1">Status</span>
-                        <span className={`text-[10px] font-bold uppercase tracking-[0.2em] ${gameState === 'PLAYING' ? 'text-white animate-pulse' : 'text-gray-500'}`}>
+                        <span className={`text-[10px] font-bold uppercase tracking-[0.2em] ${gameState === 'PLAYING' ? 'text-white animate-pulse' : 'text-[var(--text-tertiary)]'}`}>
                             {gameState === 'IDLE' ? 'Ready' : gameState === 'PLAYING' ? 'Ascent' : gameState === 'CRASHED' ? 'FAILURE' : 'SECURED'}
                         </span>
                     </div>
 
-                    <div className="bg-black/40 backdrop-blur-md border border-white/10 p-3 rounded-xl text-right">
+                    <div className="bg-black/40 backdrop-blur-md border border-[var(--border)] p-3 rounded-xl text-right">
                         <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest block mb-1">ALTITUDE</span>
                         <span className="text-base font-black text-white tabular-nums">{altitude.toLocaleString()} <span className="text-[10px] text-blue-400">KM</span></span>
                     </div>
@@ -185,7 +185,7 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
 
                 {/* Telemetry Footer - Compact Layout */}
                 <div className="relative z-20 p-4 lg:p-6 grid grid-cols-2 lg:grid-cols-4 gap-3 bg-gradient-to-t from-black/80 to-transparent shrink-0">
-                    <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-3 rounded-xl relative overflow-hidden">
+                    <div className="bg-[var(--bg-hover)] border border-[var(--border)] backdrop-blur-xl p-3 rounded-xl relative overflow-hidden">
                         <div className="flex items-center gap-2 mb-1 text-blue-400">
                             <Activity className="w-3 h-3" />
                             <span className="text-[8px] font-black uppercase tracking-widest opacity-60">Velocity</span>
@@ -194,7 +194,7 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
                         <motion.div animate={{ height: gameState === 'PLAYING' ? "40%" : "0%" }} className="absolute left-0 bottom-0 w-0.5 bg-blue-500" />
                     </div>
 
-                    <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-3 rounded-xl relative overflow-hidden">
+                    <div className="bg-[var(--bg-hover)] border border-[var(--border)] backdrop-blur-xl p-3 rounded-xl relative overflow-hidden">
                         <div className="flex items-center gap-2 mb-1 text-purple-400">
                             <Gauge className="w-3 h-3" />
                             <span className="text-[8px] font-black uppercase tracking-widest opacity-60">G-Force</span>
@@ -203,16 +203,16 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
                         <motion.div animate={{ height: gameState === 'PLAYING' ? "60%" : "0%" }} className="absolute left-0 bottom-0 w-0.5 bg-purple-500" />
                     </div>
 
-                    <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-3 rounded-xl relative overflow-hidden">
+                    <div className="bg-[var(--bg-hover)] border border-[var(--border)] backdrop-blur-xl p-3 rounded-xl relative overflow-hidden">
                         <div className="flex items-center gap-2 mb-1 text-emerald-400">
                             <Navigation className="w-3 h-3" />
                             <span className="text-[8px] font-black uppercase tracking-widest opacity-60">Target</span>
                         </div>
                         <div className="text-lg font-black text-white tabular-nums tracking-tighter">{targetMultiplier.toFixed(2)}x</div>
-                        <motion.div animate={{ height: (currentMultiplier / targetMultiplier) * 100 + "%" }} className="absolute left-0 bottom-0 w-0.5 bg-emerald-500" />
+                        <motion.div animate={{ height: (currentMultiplier / targetMultiplier) * 100 + "%" }} className="absolute left-0 bottom-0 w-0.5 bg-[var(--bg-elevated)]merald-500" />
                     </div>
 
-                    <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-3 rounded-xl relative overflow-hidden">
+                    <div className="bg-[var(--bg-hover)] border border-[var(--border)] backdrop-blur-xl p-3 rounded-xl relative overflow-hidden">
                         <div className="flex items-center gap-2 mb-1 text-amber-500">
                             <Cpu className="w-3 h-3" />
                             <span className="text-[8px] font-black uppercase tracking-widest opacity-60">Phase</span>
@@ -234,8 +234,8 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
             </div>
 
             {/* Sidebar Controls - Viewport Constrained */}
-            <div className="w-full lg:w-[380px] bg-[#05060b] border-l border-white/5 p-6 lg:p-8 flex flex-col relative z-20 overflow-y-auto no-scrollbar shrink-0">
-                <div className="mb-8 border-b border-white/5 pb-6">
+            <div className="w-full lg:w-[380px] bg-[#05060b] border-l border-[var(--border)] p-6 lg:p-8 flex flex-col relative z-20 overflow-y-auto no-scrollbar shrink-0">
+                <div className="mb-8 border-b border-[var(--border)] pb-6">
                     <h2 className="text-xl font-black text-white flex items-center gap-3 tracking-tighter uppercase">
                         <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                             <Rocket className="w-5 h-5 text-white" />
@@ -247,7 +247,7 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
                 <div className="space-y-8 flex-1">
                     <div className="space-y-3">
                         <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Wager Capital</label>
-                        <div className="relative bg-white/5 border border-white/10 rounded-xl p-5 flex items-center gap-4 focus-within:border-blue-500/50 transition-all">
+                        <div className="relative bg-[var(--bg-hover)] border border-[var(--border)] rounded-xl p-5 flex items-center gap-4 focus-within:border-blue-500/50 transition-all">
                             <Coins className="w-5 h-5 text-blue-400" />
                             <input
                                 type="number"
@@ -260,22 +260,22 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
                     </div>
 
                     <div className="space-y-4">
-                        <div className="flex justify-between items-center bg-white/[0.03] border border-white/5 p-3 rounded-xl">
+                        <div className="flex justify-between items-center bg-white/[0.03] border border-[var(--border)] p-3 rounded-xl">
                             <div className="flex flex-col">
                                 <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Auto-Exit System</label>
                                 <span className="text-[8px] font-medium text-zinc-600 uppercase">Automatic landing protocol</span>
                             </div>
                             <button 
                                 onClick={() => setIsAutoExit(!isAutoExit)} 
-                                className={`relative w-12 h-6 rounded-full transition-all duration-300 p-1 flex items-center ${isAutoExit ? 'bg-emerald-500/20 border border-emerald-500/30' : 'bg-zinc-800 border border-white/10'}`}
+                                className={`relative w-12 h-6 rounded-full transition-all duration-300 p-1 flex items-center ${isAutoExit ? 'bg-[var(--bg-elevated)]merald-500/20 border border-emerald-500/30' : 'bg-zinc-800 border border-[var(--border)]'}`}
                             >
                                 <motion.div 
                                     animate={{ x: isAutoExit ? 24 : 0 }}
-                                    className={`w-4 h-4 rounded-full shadow-lg ${isAutoExit ? 'bg-emerald-400' : 'bg-zinc-500'}`}
+                                    className={`w-4 h-4 rounded-full shadow-lg ${isAutoExit ? 'bg-[var(--bg-elevated)]merald-400' : 'bg-zinc-500'}`}
                                 />
                             </button>
                         </div>
-                        <div className="relative bg-white/5 border border-white/10 rounded-xl p-5 flex items-center gap-4 focus-within:border-emerald-500/50 transition-all">
+                        <div className="relative bg-[var(--bg-hover)] border border-[var(--border)] rounded-xl p-5 flex items-center gap-4 focus-within:border-emerald-500/50 transition-all">
                             <ShieldCheck className="w-5 h-5 text-emerald-400" />
                             <input
                                 type="number"
@@ -288,7 +288,7 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
                         </div>
                     </div>
 
-                    <div className="p-5 rounded-xl border bg-white/[0.02] border-white/5">
+                    <div className="p-5 rounded-xl border bg-white/[0.02] border-[var(--border)]">
                         <div className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-3">Projected ROI</div>
                         <div className="flex justify-between items-baseline">
                             <span className="text-2xl font-black text-white">
@@ -309,7 +309,7 @@ export default function CrashGame({ userBalance, onBalanceChange }: CrashGamePro
                         <button
                             onClick={handleManualCashOut}
                             className={`w-full py-6 rounded-[1.8rem] font-black text-xl flex items-center justify-center gap-3 transition-all relative overflow-hidden
-                                ${isAutoExit ? 'bg-zinc-800 text-zinc-600' : 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-xl shadow-emerald-500/10'}
+                                ${isAutoExit ? 'bg-zinc-800 text-zinc-600' : 'bg-[var(--bg-elevated)]merald-500 text-black hover:bg-[var(--bg-elevated)]merald-400 shadow-xl shadow-emerald-500/10'}
                             `}
                         >
                             <Zap className="w-5 h-5" />

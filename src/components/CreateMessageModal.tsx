@@ -71,13 +71,13 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
     });
 
     const categoryColors: Record<string, string> = {
-        'User': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
-        'Server': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
-        'Role': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
-        'Channel': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
-        'Date': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
-        'Counter': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
-        'Notification': 'bg-black/20/50 text-white border-white/10 hover:bg-white/10/30',
+        'User': 'bg-[var(--bg-tertiary)] text-white border-[var(--border)] hover:bg-[var(--bg-hover)]',
+        'Server': 'bg-[var(--bg-tertiary)] text-white border-[var(--border)] hover:bg-[var(--bg-hover)]',
+        'Role': 'bg-[var(--bg-tertiary)] text-white border-[var(--border)] hover:bg-[var(--bg-hover)]',
+        'Channel': 'bg-[var(--bg-tertiary)] text-white border-[var(--border)] hover:bg-[var(--bg-hover)]',
+        'Date': 'bg-[var(--bg-tertiary)] text-white border-[var(--border)] hover:bg-[var(--bg-hover)]',
+        'Counter': 'bg-[var(--bg-tertiary)] text-white border-[var(--border)] hover:bg-[var(--bg-hover)]',
+        'Notification': 'bg-[var(--bg-tertiary)] text-white border-[var(--border)] hover:bg-[var(--bg-hover)]',
     };
 
     const categoryIcons: Record<string, string> = {
@@ -109,9 +109,9 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                 <div className="flex items-start gap-3">
                     <span className="text-2xl">💡</span>
                     <div>
-                        <p className="font-bold text-[#5865f2] text-sm">Cara Menggunakan Variables</p>
-                        <p className="text-gray-400 text-xs mt-1">
-                            Klik variable untuk menyalin, lalu paste di Message Content, Embed Title, Description, atau Footer.
+                        <p className="font-bold text-[#5865f2] text-sm">How to use Variables</p>
+                        <p className="text-[var(--text-secondary)] text-xs mt-1">
+                            Click a variable to copy, then paste in Message Content, Embed Title, Description, or Footer.
                         </p>
                     </div>
                 </div>
@@ -119,13 +119,13 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
 
             {/* Search Bar */}
             <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]">🔍</span>
                 <input
                     type="text"
-                    placeholder="Cari variable..."
+                    placeholder="Search variables..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] text-sm outline-none transition text-gray-200 placeholder:text-gray-500"
+                    className="w-full pl-10 pr-4 py-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] text-sm outline-none transition text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                 />
             </div>
 
@@ -135,10 +135,10 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                     onClick={() => setSelectedCategory(null)}
                     className={`px-3 py-1.5 rounded-[3px] text-xs font-bold transition border ${!selectedCategory
                         ? 'bg-[#5865f2] text-white border-[#5865f2] shadow-sm'
-                        : 'bg-black/20 text-gray-400 border-transparent hover:border-[#4e5058]/30'
+                        : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border-transparent hover:border-[#4e5058]/30'
                         }`}
                 >
-                    Semua ({allVariables.length})
+                    All ({allVariables.length})
                 </button>
                 {categories.map(cat => (
                     <button
@@ -146,7 +146,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                         onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
                         className={`px-3 py-1.5 rounded-[3px] text-xs font-bold transition border flex items-center gap-1.5 ${selectedCategory === cat
                             ? 'bg-[#5865f2] text-white border-[#5865f2] shadow-sm'
-                            : 'bg-black/20 text-gray-400 border-transparent hover:border-[#4e5058]/30'
+                            : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border-transparent hover:border-[#4e5058]/30'
                             }`}
                     >
                         <span>{categoryIcons[cat] || '✨'}</span>
@@ -158,9 +158,9 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
 
             {/* Variables Grid */}
             {filteredVariables.length === 0 ? (
-                <div className="text-center py-8 text-stone-400">
+                <div className="text-center py-8 text-[var(--text-secondary)]">
                     <span className="text-3xl block mb-2">🔍</span>
-                    <p className="text-sm">Tidak ada variable yang cocok dengan pencarian.</p>
+                    <p className="text-sm">No variables match the search.</p>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -169,12 +169,12 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                         if (catVars.length === 0) return null;
 
                         return (
-                            <div key={cat} className="glass-card rounded-[8px] border border-white/10 overflow-hidden">
+                            <div key={cat} className="glass-card rounded-[8px] border border-[var(--border)] overflow-hidden">
                                 {/* Category Header */}
-                                <div className="px-4 py-2 border-b border-white/10 bg-black/20/50 flex items-center gap-2">
+                                <div className="px-4 py-2 border-b border-[var(--border)] bg-[var(--bg-tertiary)] flex items-center gap-2">
                                     <span>{categoryIcons[cat] || '✨'}</span>
-                                    <span className="font-bold text-xs uppercase tracking-wider text-gray-400">{cat} Variables</span>
-                                    <span className="text-[10px] text-gray-500 ml-auto">{catVars.length} items</span>
+                                    <span className="font-bold text-xs uppercase tracking-wider text-[var(--text-secondary)]">{cat} Variables</span>
+                                    <span className="text-[10px] text-[var(--text-tertiary)] ml-auto">{catVars.length} items</span>
                                 </div>
 
                                 {/* Variables List */}
@@ -183,25 +183,25 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                                         <button
                                             key={i}
                                             onClick={() => handleCopy(v.variable)}
-                                            className="w-full text-left px-4 py-3 hover:bg-black/20 transition group flex items-center gap-4"
+                                            className="w-full text-left px-4 py-3 hover:bg-[var(--bg-tertiary)] transition group flex items-center gap-4"
                                         >
                                             {/* Variable Code */}
                                             <div className="flex-1">
-                                                <code className="text-[13px] font-bold text-white bg-black/20 px-2 py-0.5 rounded-[3px] border border-white/10 group-hover:border-[#5865f2] transition-colors">
+                                                <code className="text-[13px] font-bold text-white bg-[var(--bg-tertiary)] px-2 py-0.5 rounded-[3px] border border-[var(--border)] group-hover:border-[#5865f2] transition-colors">
                                                     {v.variable}
                                                 </code>
-                                                <p className="text-xs text-gray-400 mt-1">{v.description}</p>
+                                                <p className="text-xs text-[var(--text-secondary)] mt-1">{v.description}</p>
                                             </div>
 
                                             {/* Preview */}
-                                            <div className="text-xs text-gray-500 bg-black/20 px-2.5 py-1 rounded font-medium">
+                                            <div className="text-xs text-[var(--text-tertiary)] bg-[var(--bg-tertiary)] px-2.5 py-1 rounded font-medium">
                                                 → {v.preview}
                                             </div>
 
                                             {/* Copy Indicator */}
                                             <div className={`text-xs font-bold transition-all ${copiedVar === v.variable
                                                 ? 'text-green-400 opacity-100'
-                                                : 'text-gray-500 opacity-0 group-hover:opacity-100'
+                                                : 'text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100'
                                                 }`}>
                                                 {copiedVar === v.variable ? '✓ Copied!' : '📋 Copy'}
                                             </div>
@@ -220,9 +220,9 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
 // --- Helper Components ---
 
 const AccordionItem = ({ title, children, isOpen, onToggle, extraActions }: { title: React.ReactNode, children: React.ReactNode, isOpen: boolean, onToggle: () => void, extraActions?: React.ReactNode }) => (
-    <div className="border border-white/10 rounded-[8px] glass-card overflow-hidden shadow-sm transition-all duration-200">
+    <div className="border border-[var(--border)] rounded-[8px] glass-card overflow-hidden shadow-sm transition-all duration-200">
         <div
-            className="flex items-center justify-between p-4 bg-black/20/50 cursor-pointer hover:bg-white/10/20 transition select-none"
+            className="flex items-center justify-between p-4 bg-[var(--bg-tertiary)] cursor-pointer hover:bg-[var(--bg-hover)] transition select-none"
             onClick={onToggle}
         >
             <div className="flex items-center gap-3 font-bold text-white">
@@ -234,7 +234,7 @@ const AccordionItem = ({ title, children, isOpen, onToggle, extraActions }: { ti
             </div>
         </div>
         {isOpen && (
-            <div className="p-4 border-t border-white/10 animate-slide-down">
+            <div className="p-4 border-t border-[var(--border)] animate-slide-down">
                 {children}
             </div>
         )}
@@ -269,10 +269,10 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
     const [activeTab, setActiveTab] = useState<'body' | 'author' | 'fields' | 'footer' | 'images'>('body');
 
     return (
-        <div className="glass-card rounded-[8px] border border-white/10 overflow-hidden shadow-sm">
+        <div className="glass-card rounded-[8px] border border-[var(--border)] overflow-hidden shadow-sm">
             {/* Embed Header */}
-            <div className="flex items-center justify-between p-3 bg-black/20/50 border-b border-white/10">
-                <div className="font-bold text-xs uppercase tracking-wider text-gray-400 flex items-center gap-2">
+            <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] border-b border-[var(--border)]">
+                <div className="font-bold text-xs uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: embed.color || '#5865f2' }}></span>
                     Embed #{index + 1}
                 </div>
@@ -282,12 +282,12 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
             </div>
 
             {/* Tabs */}
-            <div className="flex bg-black/20 border-b border-white/10 overflow-x-auto no-scrollbar">
+            <div className="flex bg-[var(--bg-tertiary)] border-b border-[var(--border)] overflow-x-auto no-scrollbar">
                 {(['body', 'author', 'fields', 'footer', 'images'] as const).map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider transition border-b-2 flex-shrink-0 ${activeTab === tab ? 'text-white border-[#5865f2] bg-[#5865f2]/10' : 'text-gray-400 border-transparent hover:text-gray-200 hover:bg-black/20'}`}
+                        className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider transition border-b-2 flex-shrink-0 ${activeTab === tab ? 'text-white border-[#5865f2] bg-[#5865f2]/10' : 'text-[var(--text-secondary)] border-transparent hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'}`}
                     >
                         {tab}
                     </button>
@@ -299,35 +299,35 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'body' && (
                     <>
                         <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Title</label>
+                            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Title</label>
                             <input
                                 value={embed.title}
                                 onChange={e => onChange({ title: e.target.value })}
-                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none transition text-gray-200 placeholder:text-gray-500"
+                                className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none transition text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                 placeholder="Embed Title"
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Description</label>
+                            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Description</label>
                             <textarea
                                 value={embed.description}
                                 onChange={e => onChange({ description: e.target.value })}
-                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none h-24 resize-y transition text-gray-200 placeholder:text-gray-500"
+                                className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none h-24 resize-y transition text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                 placeholder="Embed Description"
                             />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Title URL</label>
+                                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Title URL</label>
                                 <input
                                     value={embed.url || ''}
                                     onChange={e => onChange({ url: e.target.value })}
-                                    className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none transition text-gray-200 placeholder:text-gray-500"
+                                    className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none transition text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                     placeholder="https://..."
                                 />
                             </div>
                             <div>
-                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Color</label>
+                                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Color</label>
                                 <div className="flex gap-2 mt-1">
                                     <input
                                         type="color"
@@ -338,7 +338,7 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                                     <input
                                         value={embed.color || '#5865f2'}
                                         onChange={e => onChange({ color: e.target.value })}
-                                        className="flex-1 min-w-0 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] uppercase text-sm text-gray-200"
+                                        className="flex-1 min-w-0 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] uppercase text-sm text-[var(--text-primary)]"
                                     />
                                 </div>
                             </div>
@@ -349,29 +349,29 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'author' && (
                     <>
                         <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Author Name</label>
+                            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Author Name</label>
                             <input
                                 value={embed.author_name}
                                 onChange={e => onChange({ author_name: e.target.value })}
-                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
+                                className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                 placeholder="Author Name"
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Author URL</label>
+                            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Author URL</label>
                             <input
                                 value={embed.author_url || ''}
                                 onChange={e => onChange({ author_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
+                                className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                 placeholder="https://..."
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Author Icon URL</label>
+                            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Author Icon URL</label>
                             <input
                                 value={embed.author_icon_url}
                                 onChange={e => onChange({ author_icon_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
+                                className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                 placeholder="https://..."
                             />
                         </div>
@@ -381,8 +381,8 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'fields' && (
                     <div className="space-y-3">
                         {embed.fields.map((field, idx) => (
-                            <div key={idx} className="flex gap-2 items-start bg-black/20/50 p-3 rounded-[8px] border border-white/10 shadow-sm">
-                                <span className="text-[10px] font-bold text-gray-500 mt-2">#{idx + 1}</span>
+                            <div key={idx} className="flex gap-2 items-start bg-[var(--bg-tertiary)] p-3 rounded-[8px] border border-[var(--border)] shadow-sm">
+                                <span className="text-[10px] font-bold text-[var(--text-tertiary)] mt-2">#{idx + 1}</span>
                                 <div className="flex-1 space-y-2">
                                     <input
                                         value={field.name}
@@ -391,7 +391,7 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                                             newFields[idx].name = e.target.value;
                                             onChange({ fields: newFields });
                                         }}
-                                        className="w-full p-1.5 text-sm bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none font-bold text-white"
+                                        className="w-full p-1.5 text-sm bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none font-bold text-white"
                                         placeholder="Field Name"
                                     />
                                     <textarea
@@ -401,10 +401,10 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                                             newFields[idx].value = e.target.value;
                                             onChange({ fields: newFields });
                                         }}
-                                        className="w-full p-1.5 text-sm bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none resize-none h-16 text-gray-200"
+                                        className="w-full p-1.5 text-sm bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none resize-none h-16 text-[var(--text-primary)]"
                                         placeholder="Field Value"
                                     />
-                                    <label className="flex items-center gap-2 text-[10px] text-gray-400 font-bold cursor-pointer select-none uppercase tracking-wider">
+                                    <label className="flex items-center gap-2 text-[10px] text-[var(--text-secondary)] font-bold cursor-pointer select-none uppercase tracking-wider">
                                         <input
                                             type="checkbox"
                                             checked={field.inline}
@@ -413,14 +413,14 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                                                 newFields[idx].inline = e.target.checked;
                                                 onChange({ fields: newFields });
                                             }}
-                                            className="rounded-[3px] bg-black/20 border-transparent text-[#5865f2] focus:ring-[#5865f2] focus:ring-offset-0"
+                                            className="rounded-[3px] bg-[var(--bg-tertiary)] border-transparent text-[#5865f2] focus:ring-[#5865f2] focus:ring-offset-0"
                                         />
                                         Inline Field
                                     </label>
                                 </div>
                                 <button
                                     onClick={() => onChange({ fields: embed.fields.filter((_, i) => i !== idx) })}
-                                    className="text-gray-500 hover:text-[#da373c] px-2 transition-colors"
+                                    className="text-[var(--text-tertiary)] hover:text-[#da373c] px-2 transition-colors"
                                     title="Remove Field"
                                 >
                                     ×
@@ -429,7 +429,7 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                         ))}
                         <button
                             onClick={() => onChange({ fields: [...embed.fields, { name: '', value: '', inline: false }] })}
-                            className="w-full py-2 border-2 border-dashed border-white/10 text-gray-400 font-bold rounded-[8px] hover:border-[#5865f2]/50 hover:text-white transition-all bg-black/20/30"
+                            className="w-full py-2 border-2 border-dashed border-[var(--border)] text-[var(--text-secondary)] font-bold rounded-[8px] hover:border-[#5865f2]/50 hover:text-white transition-all bg-[var(--bg-tertiary)]/30"
                         >
                             + Add Field
                         </button>
@@ -439,20 +439,20 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'footer' && (
                     <>
                         <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Footer Text</label>
+                            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Footer Text</label>
                             <input
                                 value={embed.footer_text}
                                 onChange={e => onChange({ footer_text: e.target.value })}
-                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
+                                className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                 placeholder="Footer Text"
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Footer Icon URL</label>
+                            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Footer Icon URL</label>
                             <input
                                 value={embed.footer_icon_url}
                                 onChange={e => onChange({ footer_icon_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
+                                className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                 placeholder="https://..."
                             />
                         </div>
@@ -462,20 +462,20 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                 {activeTab === 'images' && (
                     <>
                         <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Image URL (Large)</label>
+                            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Image URL (Large)</label>
                             <input
                                 value={embed.image_url}
                                 onChange={e => onChange({ image_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
+                                className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                 placeholder="https://..."
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Thumbnail URL (Small)</label>
+                            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Thumbnail URL (Small)</label>
                             <input
                                 value={embed.thumbnail_url}
                                 onChange={e => onChange({ thumbnail_url: e.target.value })}
-                                className="w-full mt-1 p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder:text-gray-500"
+                                className="w-full mt-1 p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                                 placeholder="https://..."
                             />
                         </div>
@@ -504,14 +504,14 @@ const ActionEditor = ({
     index: number
 }) => {
     return (
-        <div className="bg-black/20/50 p-4 rounded-[8px] border border-white/10 relative group">
+        <div className="bg-[var(--bg-tertiary)] p-4 rounded-[8px] border border-[var(--border)] relative group">
             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={onDelete} className="text-gray-500 hover:text-[#da373c] font-bold p-1">×</button>
+                <button onClick={onDelete} className="text-[var(--text-tertiary)] hover:text-[#da373c] font-bold p-1">×</button>
             </div>
 
             <div className="space-y-3">
                 <div>
-                    <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Action #{index + 1}</label>
+                    <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">Action #{index + 1}</label>
                     <CustomDropdown
                         value={action.type || ''}
                         onChange={(value) => onChange({ type: value })}
@@ -531,13 +531,13 @@ const ActionEditor = ({
                 {/* Role Selector for Role Actions */}
                 {['add_role', 'remove_role', 'toggle_role', 'set_role'].includes(action.type || '') && (
                     <div className="animate-fade-in">
-                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Target Roles</label>
-                        <div className="flex flex-wrap gap-1.5 p-2 bg-black/20 rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
+                        <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">Target Roles</label>
+                        <div className="flex flex-wrap gap-1.5 p-2 bg-[var(--bg-tertiary)] rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
                             {/* Display both legacy role_id and new roles array */}
                             {Array.from(new Set([...(action.roles || []), ...(action.role_id ? [action.role_id] : [])])).map((rid) => {
                                 const role = roles.find(r => r.id === rid);
                                 return (
-                                    <div key={rid} className="flex items-center gap-1.5 glass-card px-2 py-1 rounded-[3px] border border-white/10 text-xs">
+                                    <div key={rid} className="flex items-center gap-1.5 glass-card px-2 py-1 rounded-[3px] border border-[var(--border)] text-xs">
                                         <span style={{ color: role?.color ? `#${role.color.toString(16).padStart(6, '0')}` : 'inherit' }}>
                                             {role?.name || rid}
                                         </span>
@@ -546,7 +546,7 @@ const ActionEditor = ({
                                                 const newRoles = (action.roles || (action.role_id ? [action.role_id] : [])).filter(id => id !== rid);
                                                 onChange({ roles: newRoles, role_id: undefined }); // Migrate to roles array
                                             }}
-                                            className="text-gray-500 hover:text-[#da373c] font-bold"
+                                            className="text-[var(--text-tertiary)] hover:text-[#da373c] font-bold"
                                         >
                                             ✕
                                         </button>
@@ -554,7 +554,7 @@ const ActionEditor = ({
                                 );
                             })}
                             <select
-                                className="bg-transparent text-gray-400 text-xs outline-none cursor-pointer hover:text-white min-w-[80px]"
+                                className="bg-transparent text-[var(--text-secondary)] text-xs outline-none cursor-pointer hover:text-white min-w-[80px]"
                                 onChange={(e) => {
                                     if (e.target.value) {
                                         const currentRoles = action.roles || (action.role_id ? [action.role_id] : []);
@@ -577,11 +577,11 @@ const ActionEditor = ({
                 {/* Message Content for Message Actions */}
                 {['send_message', 'send_message_channel', 'dm_user'].includes(action.type || '') && (
                     <div className="animate-fade-in">
-                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Message Content</label>
+                        <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">Message Content</label>
                         <textarea
                             value={action.message_content || ''}
                             onChange={(e) => onChange({ message_content: e.target.value })}
-                            className="w-full p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-sm text-gray-200 h-20 resize-y"
+                            className="w-full p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-sm text-[var(--text-primary)] h-20 resize-y"
                             placeholder="Type your message here..."
                         />
                     </div>
@@ -590,7 +590,7 @@ const ActionEditor = ({
                 {/* Channel Selector for Channel Actions */}
                 {['send_message_channel', 'move_voice'].includes(action.type || '') && (
                     <div className="animate-fade-in">
-                        <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">Target Channel</label>
+                        <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1 uppercase">Target Channel</label>
                         <CustomDropdown
                             value={action.target_channel_id || ''}
                             onChange={(value) => onChange({ target_channel_id: value })}
@@ -602,22 +602,22 @@ const ActionEditor = ({
 
                 {/* Custom Success/Failure Messages */}
                 {action.type && action.type !== '' && (
-                    <div className="space-y-3 pt-4 border-t border-white/10">
+                    <div className="space-y-3 pt-4 border-t border-[var(--border)]">
                         <div>
-                            <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Success Message (Optional)</label>
+                            <label className="block text-[10px] font-bold text-[var(--text-tertiary)] mb-1 uppercase tracking-wider">Success Message (Optional)</label>
                             <input
                                 value={action.success_message || ''}
                                 onChange={(e) => onChange({ success_message: e.target.value })}
-                                className="w-full p-2 bg-black/20 border border-transparent focus:border-[#248046] rounded-[3px] outline-none text-sm placeholder-[#4e5058] text-gray-200"
+                                className="w-full p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#248046] rounded-[3px] outline-none text-sm placeholder-[#4e5058] text-[var(--text-primary)]"
                                 placeholder="e.g. Role added successfully!"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Failure Message (Optional)</label>
+                            <label className="block text-[10px] font-bold text-[var(--text-tertiary)] mb-1 uppercase tracking-wider">Failure Message (Optional)</label>
                             <input
                                 value={action.failure_message || ''}
                                 onChange={(e) => onChange({ failure_message: e.target.value })}
-                                className="w-full p-2 bg-black/20 border border-transparent focus:border-[#da373c] rounded-[3px] outline-none text-sm placeholder-[#4e5058] text-gray-200"
+                                className="w-full p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#da373c] rounded-[3px] outline-none text-sm placeholder-[#4e5058] text-[var(--text-primary)]"
                                 placeholder="e.g. Failed to add role."
                             />
                         </div>
@@ -680,7 +680,7 @@ const ActionManager = ({
                     />
                 ))}
                 {actions.length === 0 && (
-                    <div className="text-center p-4 border-2 border-dashed border-white/10 rounded-xl text-gray-500 text-sm">
+                    <div className="text-center p-4 border-2 border-dashed border-[var(--border)] rounded-xl text-[var(--text-tertiary)] text-sm">
                         No actions configured. Click "Add Action" to start.
                     </div>
                 )}
@@ -703,16 +703,16 @@ const ReactionEditor = ({
     index: number
 }) => {
     return (
-        <div className="bg-black/20/50 p-4 rounded-[8px] border border-white/10 relative group">
+        <div className="bg-[var(--bg-tertiary)] p-4 rounded-[8px] border border-[var(--border)] relative group">
             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={onDelete} className="text-gray-500 hover:text-[#da373c] font-bold p-1">×</button>
+                <button onClick={onDelete} className="text-[var(--text-tertiary)] hover:text-[#da373c] font-bold p-1">×</button>
             </div>
 
             <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Emoji Picker */}
                     <div>
-                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Emoji</label>
+                        <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">Emoji</label>
                         <EmojiPicker
                             value={reaction.emoji || ''}
                             onChange={(val) => onChange({ emoji: val })}
@@ -722,19 +722,19 @@ const ReactionEditor = ({
 
                     {/* Roles Selector (Multiple) */}
                     <div>
-                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Roles to Add</label>
+                        <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">Roles to Add</label>
                         <div className="space-y-2">
-                            <div className="flex flex-wrap gap-1.5 p-2 bg-black/20 rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
+                            <div className="flex flex-wrap gap-1.5 p-2 bg-[var(--bg-tertiary)] rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
                                 {(reaction.role_ids || []).map((rid: string) => {
                                     const role = roles.find(r => r.id === rid);
                                     return (
-                                        <div key={rid} className="flex items-center gap-1.5 glass-card px-2 py-1 rounded-[3px] border border-white/10 text-xs">
+                                        <div key={rid} className="flex items-center gap-1.5 glass-card px-2 py-1 rounded-[3px] border border-[var(--border)] text-xs">
                                             <span style={{ color: role?.color ? `#${role.color.toString(16).padStart(6, '0')}` : 'inherit' }}>
                                                 {role?.name || rid}
                                             </span>
                                             <button
                                                 onClick={() => onChange({ role_ids: (reaction.role_ids || []).filter((id: string) => id !== rid) })}
-                                                className="text-gray-500 hover:text-[#da373c] font-bold"
+                                                className="text-[var(--text-tertiary)] hover:text-[#da373c] font-bold"
                                             >
                                                 ✕
                                             </button>
@@ -742,7 +742,7 @@ const ReactionEditor = ({
                                     );
                                 })}
                                 <select
-                                    className="bg-transparent text-gray-400 text-xs outline-none cursor-pointer hover:text-white min-w-[80px]"
+                                    className="bg-transparent text-[var(--text-secondary)] text-xs outline-none cursor-pointer hover:text-white min-w-[80px]"
                                     onChange={(e) => {
                                         if (e.target.value && !(reaction.role_ids || []).includes(e.target.value)) {
                                             onChange({ role_ids: [...(reaction.role_ids || []), e.target.value] });
@@ -762,14 +762,14 @@ const ReactionEditor = ({
 
                 {/* Success Message */}
                 <div>
-                    <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Success Message (Sent via DM)</label>
+                    <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">Success Message (Sent via DM)</label>
                     <input
                         value={reaction.success_message || ''}
                         onChange={(e) => onChange({ success_message: e.target.value })}
-                        className="w-full p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-sm text-gray-200 placeholder:text-gray-500"
+                        className="w-full p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                         placeholder="e.g. You've been assigned the {role} role!"
                     />
-                    <p className="text-[10px] text-gray-500 mt-1 italic">Use {'{user}'} for mention, {'{server}'} for server name.</p>
+                    <p className="text-[10px] text-[var(--text-tertiary)] mt-1 italic">Use {'{user}'} for mention, {'{server}'} for server name.</p>
                 </div>
             </div>
         </div>
@@ -824,7 +824,7 @@ const ReactionsManager = ({
                     />
                 ))}
                 {(reactions || []).length === 0 && (
-                    <div className="text-center p-4 border-2 border-dashed border-white/10 rounded-xl text-gray-500 text-sm">
+                    <div className="text-center p-4 border-2 border-dashed border-[var(--border)] rounded-xl text-[var(--text-tertiary)] text-sm">
                         No reaction roles configured.
                     </div>
                 )}
@@ -1267,7 +1267,7 @@ export default function CreateMessageModal({
         // Check for variables
         if (src.includes('{user.avatar}')) {
             return (
-                <div className={`${className} bg-amber-200 flex items-center justify-center text-stone-500 overflow-hidden`}>
+                <div className={`${className} bg-[var(--bg-secondary)]mber-200 flex items-center justify-center text-stone-500 overflow-hidden`}>
                     <span className="text-2xl">🐔</span>
                 </div>
             );
@@ -1283,7 +1283,7 @@ export default function CreateMessageModal({
         // If it's a variable but not one we know specifically, show generic
         if (src.includes('{')) {
             return (
-                <div className={`${className} bg-stone-200 flex items-center justify-center text-stone-400 overflow-hidden`}>
+                <div className={`${className} bg-stone-200 flex items-center justify-center text-[var(--text-secondary)] overflow-hidden`}>
                     <span className="font-bold text-[10px]">{src}</span>
                 </div>
             );
@@ -1294,10 +1294,10 @@ export default function CreateMessageModal({
 
     const renderPreview = () => {
         return (
-            <div className="bg-[#0a0a0f] rounded-md shadow-sm font-sans text-white text-[15px] leading-[1.375rem] overflow-hidden">
+            <div className="bg-[var(--bg-primary)] rounded-md shadow-sm font-sans text-white text-[15px] leading-[1.375rem] overflow-hidden">
                 <div className="p-4">
                     <div className="flex items-center gap-3 mb-1">
-                        <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center font-bold text-lg select-none">🐔</div>
+                        <div className="w-10 h-10 rounded-full bg-[var(--bg-secondary)]mber-500 flex items-center justify-center font-bold text-lg select-none">🐔</div>
                         <div className="flex items-baseline gap-2">
                             <span className="font-medium hover:underline cursor-pointer">Don Pollo</span>
                             <span className="bg-[#5865F2] text-[10px] px-1.5 rounded-[3px] py-[0.5px] font-medium leading-[1.2]">APP</span>
@@ -1306,7 +1306,7 @@ export default function CreateMessageModal({
                     </div>
                     <div className="pl-[3.25rem]">
                         {editingMsg.message_content && (
-                            <div className="whitespace-pre-wrap text-gray-200 mb-2">{preview(editingMsg.message_content)}</div>
+                            <div className="whitespace-pre-wrap text-[var(--text-primary)] mb-2">{preview(editingMsg.message_content)}</div>
                         )}
 
                         <div className="space-y-2">
@@ -1352,7 +1352,7 @@ export default function CreateMessageModal({
                                                 )
                                             )}
 
-                                            {e.description && <div className="text-sm text-gray-200 whitespace-pre-wrap break-words">{preview(e.description)}</div>}
+                                            {e.description && <div className="text-sm text-[var(--text-primary)] whitespace-pre-wrap break-words">{preview(e.description)}</div>}
 
                                             {/* Fields - Proper 3 column grid for inline fields */}
                                             {e.fields && e.fields.length > 0 && (
@@ -1366,7 +1366,7 @@ export default function CreateMessageModal({
                                                             style={{ minWidth: 0 }}
                                                         >
                                                             <div className="font-semibold text-xs text-white mb-0.5 break-words">{field.name}</div>
-                                                            <div className="text-sm text-gray-200 whitespace-pre-wrap break-words">{field.value}</div>
+                                                            <div className="text-sm text-[var(--text-primary)] whitespace-pre-wrap break-words">{field.value}</div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -1410,7 +1410,7 @@ export default function CreateMessageModal({
                                                         comp.style === 3 ? 'bg-[#2D7D46] text-white' :
                                                             comp.style === 4 ? 'bg-[#ED4245] text-white' :
                                                                 comp.type === 2 ? 'bg-[#5865F2] text-white' :
-                                                                    'glass-card text-gray-200 border border-white/10 w-full justify-between'} 
+                                                                    'glass-card text-[var(--text-primary)] border border-[var(--border)] w-full justify-between'} 
                                             `}>
                                                 <div className="flex items-center gap-2">
                                                     {comp.emoji && renderEmoji(comp.emoji)}
@@ -1441,14 +1441,14 @@ export default function CreateMessageModal({
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-fade-in">
-            <div className="bg-[#0a0a0f] w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-white/10 animate-scale-in">
+            <div className="bg-[var(--bg-primary)] w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-[var(--border)] animate-scale-in">
 
                 {/* Top Bar */}
-                <div className="bg-[#212226] border-b border-white/10 px-3 md:px-6 py-3 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center shadow-sm z-10 shrink-0">
+                <div className="bg-[#212226] border-b border-[var(--border)] px-3 md:px-6 py-3 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center shadow-sm z-10 shrink-0">
                     {/* Row 1: Close, Title, Undo/Redo */}
                     <div className="flex items-center justify-between md:justify-start gap-2 md:gap-4">
                         <div className="flex items-center gap-2 md:gap-4">
-                            <button onClick={onClose} className="text-xl md:text-2xl text-gray-500 hover:text-gray-300">✕</button>
+                            <button onClick={onClose} className="text-xl md:text-2xl text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]">✕</button>
                             <h2 className="text-base md:text-xl font-black text-white truncate">
                                 {isEditing ? 'Edit' : 'Create'}
                             </h2>
@@ -1459,33 +1459,33 @@ export default function CreateMessageModal({
                             <button
                                 onClick={undo}
                                 disabled={historyIndex < 0}
-                                className="p-2 rounded-lg hover:bg-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                className="p-2 rounded-lg hover:bg-[var(--bg-hover)] transition disabled:opacity-30 disabled:cursor-not-allowed"
                                 title="Undo (Ctrl+Z)"
                             >
-                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                                 </svg>
                             </button>
                             <button
                                 onClick={redo}
                                 disabled={historyIndex >= history.length - 1}
-                                className="p-2 rounded-lg hover:bg-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                className="p-2 rounded-lg hover:bg-[var(--bg-hover)] transition disabled:opacity-30 disabled:cursor-not-allowed"
                                 title="Redo (Ctrl+Y)"
                             >
-                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
                                 </svg>
                             </button>
                             {historyIndex >= 0 && (
-                                <span className="text-xs text-gray-500 ml-1">{historyIndex + 1}/{history.length}</span>
+                                <span className="text-xs text-[var(--text-tertiary)] ml-1">{historyIndex + 1}/{history.length}</span>
                             )}
                         </div>
 
                         {/* Import/Export Buttons */}
-                        <div className="flex items-center gap-1 border-l border-white/10 pl-4">
+                        <div className="flex items-center gap-1 border-l border-[var(--border)] pl-4">
                             <button
                                 onClick={() => setShowImportModal(true)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold text-gray-400 hover:bg-white/10 rounded-lg transition"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] rounded-lg transition"
                                 title="Import JSON"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1495,7 +1495,7 @@ export default function CreateMessageModal({
                             </button>
                             <button
                                 onClick={exportToJson}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold text-gray-400 hover:bg-white/10 rounded-lg transition"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] rounded-lg transition"
                                 title="Export JSON"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1535,16 +1535,16 @@ export default function CreateMessageModal({
                 </div>
 
                 {/* Mobile Tab Toggle */}
-                <div className="md:hidden flex border-b border-white/10 shrink-0">
+                <div className="md:hidden flex border-b border-[var(--border)] shrink-0">
                     <button
                         onClick={() => setMobileView('editor')}
-                        className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'editor' ? 'text-white border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-gray-400'}`}
+                        className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'editor' ? 'text-white border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-[var(--text-secondary)]'}`}
                     >
                         ✏️ Editor
                     </button>
                     <button
                         onClick={() => setMobileView('preview')}
-                        className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'preview' ? 'text-white border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-gray-400'}`}
+                        className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'preview' ? 'text-white border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-[var(--text-secondary)]'}`}
                     >
                         👁️ Preview
                     </button>
@@ -1563,20 +1563,20 @@ export default function CreateMessageModal({
                         >
                             <div className="space-y-3">
                                 <textarea
-                                    className="w-full h-32 p-3 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none resize-none text-sm text-gray-200 placeholder-[#4e5058]"
+                                    className="w-full h-32 p-3 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none resize-none text-sm text-[var(--text-primary)] placeholder-[#4e5058]"
                                     placeholder="Message content (above embeds).../
-                                    Contoh: Hey {user}, selamat datang di **{server}**!"
+                                    Example: Hey {user}, welcome to **{server}**!"
                                     value={editingMsg.message_content}
                                     onChange={e => setEditingMsg({ ...editingMsg, message_content: e.target.value })}
                                 />
                                 {/* Quick Insert Chips */}
                                 <div className="flex flex-wrap gap-1.5">
-                                    <span className="text-xs text-gray-500 mr-1">Quick insert:</span>
+                                    <span className="text-xs text-[var(--text-tertiary)] mr-1">Quick insert:</span>
                                     {['{user}', '{server}', '{channel}', '{date}'].map(v => (
                                         <button
                                             key={v}
                                             onClick={() => setEditingMsg({ ...editingMsg, message_content: editingMsg.message_content + v })}
-                                            className="px-2 py-1 bg-black/20 text-gray-400 text-xs font-mono rounded-[3px] border border-transparent hover:border-[#5865f2] transition"
+                                            className="px-2 py-1 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] text-xs font-mono rounded-[3px] border border-transparent hover:border-[#5865f2] transition"
                                         >
                                             {v}
                                         </button>
@@ -1599,7 +1599,7 @@ export default function CreateMessageModal({
                                             if (!openSections.includes('embeds')) toggleSection('embeds');
                                         }
                                     }}
-                                    className="text-xs bg-amber-500/10 text-amber-400 px-2 py-1 rounded font-bold hover:bg-amber-500/20 transition"
+                                    className="text-xs bg-[var(--bg-secondary)]mber-500/10 text-amber-400 px-2 py-1 rounded font-bold hover:bg-[var(--bg-secondary)]mber-500/20 transition"
                                 >
                                     + Add
                                 </button>
@@ -1622,7 +1622,7 @@ export default function CreateMessageModal({
                                         }}
                                     />
                                 ))}
-                                {editingMsg.embeds.length === 0 && <div className="text-center text-gray-500 italic py-4">No embeds added.</div>}
+                                {editingMsg.embeds.length === 0 && <div className="text-center text-[var(--text-tertiary)] italic py-4">No embeds added.</div>}
                             </div>
                         </AccordionItem>
 
@@ -1642,10 +1642,10 @@ export default function CreateMessageModal({
                         >
                             <div className="space-y-4">
                                 {(editingMsg.component_rows || []).map((row, ri) => (
-                                    <div key={ri} className="p-4 bg-black/20 rounded-xl border border-white/10 relative">
+                                    <div key={ri} className="p-4 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border)] relative">
                                         <div className="absolute top-2 right-2 flex gap-2">
-                                            <span className="text-xs font-bold text-gray-500 uppercase">Row {ri + 1}</span>
-                                            <button onClick={() => { const rows = [...editingMsg.component_rows!]; rows.splice(ri, 1); setEditingMsg({ ...editingMsg, component_rows: rows }) }} className="text-gray-500 hover:text-red-400 font-bold">×</button>
+                                            <span className="text-xs font-bold text-[var(--text-tertiary)] uppercase">Row {ri + 1}</span>
+                                            <button onClick={() => { const rows = [...editingMsg.component_rows!]; rows.splice(ri, 1); setEditingMsg({ ...editingMsg, component_rows: rows }) }} className="text-[var(--text-tertiary)] hover:text-red-400 font-bold">×</button>
                                         </div>
 
                                         <div className="flex flex-wrap gap-2 items-center mt-4">
@@ -1653,7 +1653,7 @@ export default function CreateMessageModal({
                                                 <button
                                                     key={ci}
                                                     onClick={() => { setActiveComponent({ row: ri, col: ci }); setCompSettings(comp); }}
-                                                    className={`px-3 py-2 rounded-[3px] text-sm font-bold border transition flex items-center gap-2 glass-card hover:border-[#5865f2] text-white ${comp.style === 5 ? 'border-[#5865f2]/50 bg-[#5865f2]/10' : 'border-white/10'
+                                                    className={`px-3 py-2 rounded-[3px] text-sm font-bold border transition flex items-center gap-2 glass-card hover:border-[#5865f2] text-white ${comp.style === 5 ? 'border-[#5865f2]/50 bg-[#5865f2]/10' : 'border-[var(--border)]'
                                                         } ${comp.type === 3 ? 'w-full justify-between' : ''}`}
                                                 >
                                                     <div className="flex items-center gap-2">
@@ -1664,7 +1664,7 @@ export default function CreateMessageModal({
                                                             <span className="text-[#5865f2] text-xs">🔗</span>
                                                         )}
                                                     </div>
-                                                    {comp.type === 3 && <span className="text-xs text-gray-500">▼</span>}
+                                                    {comp.type === 3 && <span className="text-xs text-[var(--text-tertiary)]">▼</span>}
                                                 </button>
                                             ))}
 
@@ -1673,7 +1673,7 @@ export default function CreateMessageModal({
                                                 {(row.length === 0 || (row.length < 5 && !row.some(c => c.type === 3))) && (
                                                     <button
                                                         onClick={() => addComponentData(ri, 'button')}
-                                                        className="px-3 py-1.5 rounded-[3px] border-2 border-dashed border-white/10 text-gray-500 hover:border-[#5865f2] hover:text-gray-400 text-xs font-bold transition bg-black/20/30"
+                                                        className="px-3 py-1.5 rounded-[3px] border-2 border-dashed border-[var(--border)] text-[var(--text-tertiary)] hover:border-[#5865f2] hover:text-[var(--text-secondary)] text-xs font-bold transition bg-[var(--bg-tertiary)]/30"
                                                     >
                                                         + Button
                                                     </button>
@@ -1681,7 +1681,7 @@ export default function CreateMessageModal({
                                                 {(row.length === 0) && (
                                                     <button
                                                         onClick={() => addComponentData(ri, 'select_menu')}
-                                                        className="px-3 py-1.5 rounded-[3px] border-2 border-dashed border-white/10 text-gray-500 hover:border-[#5865f2] hover:text-gray-400 text-xs font-bold transition bg-black/20/30"
+                                                        className="px-3 py-1.5 rounded-[3px] border-2 border-dashed border-[var(--border)] text-[var(--text-tertiary)] hover:border-[#5865f2] hover:text-[var(--text-secondary)] text-xs font-bold transition bg-[var(--bg-tertiary)]/30"
                                                     >
                                                         + Select Menu
                                                     </button>
@@ -1690,7 +1690,7 @@ export default function CreateMessageModal({
                                         </div>
                                     </div>
                                 ))}
-                                {(editingMsg.component_rows || []).length === 0 && <div className="text-center text-gray-500 italic py-2">No components. Add a row to start.</div>}
+                                {(editingMsg.component_rows || []).length === 0 && <div className="text-center text-[var(--text-tertiary)] italic py-2">No components. Add a row to start.</div>}
                             </div>
                         </AccordionItem>
 
@@ -1706,7 +1706,7 @@ export default function CreateMessageModal({
                                         setEditingMsg({ ...editingMsg, reactions: [...(editingMsg.reactions || []), { emoji: '', role_ids: [], success_message: '' }] });
                                         if (!openSections.includes('reactions')) toggleSection('reactions');
                                     }}
-                                    className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded font-bold hover:bg-emerald-500/20 transition"
+                                    className="text-xs bg-[var(--bg-elevated)]merald-500/10 text-emerald-400 px-2 py-1 rounded font-bold hover:bg-[var(--bg-elevated)]merald-500/20 transition"
                                 >
                                     + Add
                                 </button>
@@ -1725,7 +1725,7 @@ export default function CreateMessageModal({
                                 <div className="flex items-center gap-2">
                                     <span>📝</span>
                                     <span>Variables Guide</span>
-                                    <span className="text-xs font-normal text-gray-500">({PLACEHOLDER_VARIABLES.length + extraVariables.length} variables)</span>
+                                    <span className="text-xs font-normal text-[var(--text-tertiary)]">({PLACEHOLDER_VARIABLES.length + extraVariables.length} variables)</span>
                                 </div>
                             }
                             isOpen={openSections.includes('variables')}
@@ -1748,7 +1748,7 @@ export default function CreateMessageModal({
                 {/* Component Edit Modal Overlay */}
                 {activeComponent && compSettings && (
                     <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-2 md:p-4">
-                        <div className="bg-[#0a0a0f] rounded-[8px] shadow-2xl w-full max-w-[600px] border border-white/10 animate-scale-in max-h-[95vh] md:max-h-[85vh] flex flex-col overflow-hidden">
+                        <div className="bg-[var(--bg-primary)] rounded-[8px] shadow-2xl w-full max-w-[600px] border border-[var(--border)] animate-scale-in max-h-[95vh] md:max-h-[85vh] flex flex-col overflow-hidden">
                             {/* Modal Header */}
                             <div className="flex items-center justify-between p-4 md:p-6 pb-0 flex-shrink-0">
                                 <h3 className="font-bold text-lg text-white">
@@ -1756,7 +1756,7 @@ export default function CreateMessageModal({
                                 </h3>
                                 <button
                                     onClick={() => { setActiveComponent(null); setCompSettings(null); }}
-                                    className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition"
+                                    className="w-8 h-8 flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] rounded-lg transition"
                                 >
                                     ✕
                                 </button>
@@ -1766,13 +1766,13 @@ export default function CreateMessageModal({
                                 <div className="space-y-4">
                                     {/* Label / Placeholder */}
                                     <div>
-                                        <label className="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                                        <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">
                                             {compSettings.type === 2 ? 'Label' : 'Placeholder'}
                                         </label>
                                         <input
                                             value={compSettings.label || compSettings.placeholder || ''}
                                             onChange={(e) => compSettings && saveCompSettings(compSettings.type === 2 ? { label: e.target.value } : { placeholder: e.target.value })}
-                                            className="w-full p-2 bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-gray-200 placeholder-[#4e5058]"
+                                            className="w-full p-2 bg-[var(--bg-tertiary)] border border-transparent focus:border-[#5865F2] rounded-[3px] outline-none text-[var(--text-primary)] placeholder-[#4e5058]"
                                         />
                                     </div>
 
@@ -1782,11 +1782,11 @@ export default function CreateMessageModal({
                                     {compSettings.type === 2 && (
                                         <>
                                             <div>
-                                                <label className="block text-xs font-bold text-gray-400 mb-1">Emoji</label>
+                                                <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Emoji</label>
                                                 <EmojiPicker value={compSettings.emoji || ''} onChange={(val) => saveCompSettings({ emoji: val })} className="w-full" guildId={guildId} />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-wider">Style</label>
+                                                <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">Style</label>
                                                 <div className="grid grid-cols-5 gap-2">
                                                     {[
                                                         { style: 1, label: 'Primary', color: '#5865F2' },
@@ -1800,7 +1800,7 @@ export default function CreateMessageModal({
                                                             onClick={() => saveCompSettings({ style: s.style, url: s.style === 5 ? (compSettings.url || '') : undefined })}
                                                             className={`flex flex-col items-center gap-1 p-2 rounded-[3px] border transition ${compSettings?.style === s.style
                                                                 ? 'border-[#5865f2] bg-[#5865f2]/10'
-                                                                : 'border-white/10 hover:border-[#4e5058]/30'
+                                                                : 'border-[var(--border)] hover:border-[#4e5058]/30'
                                                                 }`}
                                                         >
                                                             <div
@@ -1809,7 +1809,7 @@ export default function CreateMessageModal({
                                                             >
                                                                 {s.icon || ''}
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-gray-400">{s.label}</span>
+                                                            <span className="text-[10px] font-bold text-[var(--text-secondary)]">{s.label}</span>
                                                         </button>
                                                     ))}
                                                 </div>
@@ -1827,14 +1827,14 @@ export default function CreateMessageModal({
                                                         value={compSettings.url || ''}
                                                         onChange={(e) => saveCompSettings({ url: e.target.value })}
                                                         placeholder="https://example.com"
-                                                        className="w-full p-3 bg-black/20 border border-blue-500/30 rounded-lg outline-none focus:border-blue-400 text-white"
+                                                        className="w-full p-3 bg-[var(--bg-tertiary)] border border-blue-500/30 rounded-lg outline-none focus:border-blue-400 text-white"
                                                     />
                                                 </div>
                                             )}
 
                                             {/* Button Action Config - Hide for Link buttons */}
                                             {compSettings.style !== 5 && (
-                                                <div className="pt-2 border-t border-white/10">
+                                                <div className="pt-2 border-t border-[var(--border)]">
                                                     <ActionManager
                                                         actions={compSettings.actions || []}
                                                         onChange={(arr) => saveCompSettings({ actions: arr })}
@@ -1850,7 +1850,7 @@ export default function CreateMessageModal({
                                     {compSettings.type === 3 && (
                                         <div className="space-y-3">
                                             {/* Allow Multiple Selections Toggle */}
-                                            <div className="flex items-center gap-3 p-3 bg-black/20 border border-white/10 rounded-lg">
+                                            <div className="flex items-center gap-3 p-3 bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg">
                                                 <input
                                                     type="checkbox"
                                                     id="allow-multiple-modal"
@@ -1866,7 +1866,7 @@ export default function CreateMessageModal({
                                                 <label htmlFor="allow-multiple-modal" className="text-white font-bold cursor-pointer select-none">
                                                     Allow Multiple Selections
                                                 </label>
-                                                <span className="text-gray-500 text-xs ml-auto">
+                                                <span className="text-[var(--text-tertiary)] text-xs ml-auto">
                                                     {(compSettings.max_values || 1) > 1
                                                         ? `Up to ${compSettings.max_values} options`
                                                         : "Single selection only"}
@@ -1877,22 +1877,22 @@ export default function CreateMessageModal({
                                             {(compSettings.max_values || 1) > 1 && (
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div>
-                                                        <label className="block text-xs font-bold text-gray-400 mb-1">Min Selections</label>
+                                                        <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Min Selections</label>
                                                         <input
                                                             type="number"
                                                             value={compSettings.min_values || 0}
                                                             onChange={(e) => saveCompSettings({ min_values: parseInt(e.target.value) || 0 })}
-                                                            className="w-full p-2 bg-black/20 border border-white/10 rounded-lg outline-none focus:border-amber-500/50 text-white"
+                                                            className="w-full p-2 bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg outline-none focus:border-amber-500/50 text-white"
                                                             min="0" max="25"
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs font-bold text-gray-400 mb-1">Max Selections</label>
+                                                        <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Max Selections</label>
                                                         <input
                                                             type="number"
                                                             value={compSettings.max_values || 1}
                                                             onChange={(e) => saveCompSettings({ max_values: parseInt(e.target.value) || 1 })}
-                                                            className="w-full p-2 bg-black/20 border border-white/10 rounded-lg outline-none focus:border-amber-500/50 text-white"
+                                                            className="w-full p-2 bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg outline-none focus:border-amber-500/50 text-white"
                                                             min="1" max="25"
                                                         />
                                                     </div>
@@ -1900,13 +1900,13 @@ export default function CreateMessageModal({
                                             )}
 
                                             <div className="flex justify-between items-center">
-                                                <label className="text-xs font-bold text-gray-400">Menu Options</label>
+                                                <label className="text-xs font-bold text-[var(--text-secondary)]">Menu Options</label>
                                                 <button
                                                     onClick={() => {
                                                         const newOptions = [...(compSettings?.options || []), { label: 'New Option', value: `option_${Date.now()}`, description: '' }];
                                                         saveCompSettings({ options: newOptions });
                                                     }}
-                                                    className="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded font-bold hover:bg-amber-500/30 border border-amber-500/30 transition"
+                                                    className="text-xs bg-[var(--bg-secondary)]mber-500/20 text-amber-400 px-2 py-1 rounded font-bold hover:bg-[var(--bg-secondary)]mber-500/30 border border-amber-500/30 transition"
                                                     disabled={(compSettings.options || []).length >= 25}
                                                 >
                                                     + Add Option
@@ -1914,16 +1914,16 @@ export default function CreateMessageModal({
                                             </div>
                                             <div className="max-h-60 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                                                 {(compSettings.options || []).map((opt, idx) => (
-                                                    <div key={idx} className="p-3 bg-black/20 border border-white/10 rounded-lg space-y-2">
+                                                    <div key={idx} className="p-3 bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg space-y-2">
                                                         <div className="flex justify-between items-start">
-                                                            <div className="text-xs font-bold text-gray-400 uppercase">Option {idx + 1}</div>
+                                                            <div className="text-xs font-bold text-[var(--text-secondary)] uppercase">Option {idx + 1}</div>
                                                             <button
                                                                 onClick={() => {
                                                                     if (!compSettings) return;
                                                                     const newOptions = compSettings.options!.filter((_, i) => i !== idx);
                                                                     saveCompSettings({ options: newOptions });
                                                                 }}
-                                                                className="text-gray-500 hover:text-red-400"
+                                                                className="text-[var(--text-tertiary)] hover:text-red-400"
                                                             >
                                                                 ×
                                                             </button>
@@ -1939,7 +1939,7 @@ export default function CreateMessageModal({
                                                                     newOptions[idx].label = e.target.value;
                                                                     saveCompSettings({ options: newOptions });
                                                                 }}
-                                                                className="w-full p-2 bg-black/20 border border-white/10 rounded-lg focus:border-amber-500/50 outline-none text-sm font-bold text-white"
+                                                                className="w-full p-2 bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg focus:border-amber-500/50 outline-none text-sm font-bold text-white"
                                                                 placeholder="Label"
                                                             />
                                                             <input
@@ -1950,7 +1950,7 @@ export default function CreateMessageModal({
                                                                     newOptions[idx].value = e.target.value;
                                                                     saveCompSettings({ options: newOptions });
                                                                 }}
-                                                                className="w-full p-2 bg-black/20 border border-white/10 rounded-lg focus:border-amber-500/50 outline-none text-sm font-mono text-gray-400"
+                                                                className="w-full p-2 bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg focus:border-amber-500/50 outline-none text-sm font-mono text-[var(--text-secondary)]"
                                                                 placeholder="Value (unique ID)"
                                                             />
                                                         </div>
@@ -1978,13 +1978,13 @@ export default function CreateMessageModal({
                                                                     newOptions[idx].description = e.target.value;
                                                                     saveCompSettings({ options: newOptions });
                                                                 }}
-                                                                className="flex-1 p-2 bg-black/20 border border-white/10 rounded-lg focus:border-amber-500/50 outline-none text-sm text-white"
+                                                                className="flex-1 p-2 bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg focus:border-amber-500/50 outline-none text-sm text-white"
                                                                 placeholder="Description (optional)"
                                                             />
                                                         </div>
 
                                                         {/* Option Action Config */}
-                                                        <div className="mt-2 pt-2 border-t border-white/10">
+                                                        <div className="mt-2 pt-2 border-t border-[var(--border)]">
                                                             <ActionManager
                                                                 actions={opt.actions || []}
                                                                 onChange={(newActions) => {
@@ -2000,7 +2000,7 @@ export default function CreateMessageModal({
                                                     </div>
                                                 ))}
                                                 {(compSettings.options || []).length === 0 && (
-                                                    <div className="text-center text-xs text-stone-400 italic">No options added.</div>
+                                                    <div className="text-center text-xs text-[var(--text-secondary)] italic">No options added.</div>
                                                 )}
                                             </div>
                                         </div>
@@ -2009,7 +2009,7 @@ export default function CreateMessageModal({
                                 {/* Footer with buttons */}
                                 <div className="mt-4 flex justify-between">
                                     <button onClick={() => { if (activeComponent) removeComponent(activeComponent.row, activeComponent.col); setActiveComponent(null); }} className="px-4 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg font-bold transition">🗑️ Delete</button>
-                                    <button onClick={() => { setActiveComponent(null); setCompSettings(null); }} className="px-4 py-2 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg font-bold transition">✓ Done</button>
+                                    <button onClick={() => { setActiveComponent(null); setCompSettings(null); }} className="px-4 py-2 bg-[var(--bg-elevated)]merald-500/20 text-emerald-400 hover:bg-[var(--bg-elevated)]merald-500/30 border border-emerald-500/30 rounded-lg font-bold transition">✓ Done</button>
                                 </div>
                             </div>
                         </div>
@@ -2019,16 +2019,16 @@ export default function CreateMessageModal({
                 {/* Import JSON Modal */}
                 {showImportModal && (
                     <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4">
-                        <div className="bg-[#0a0a0f] rounded-[8px] shadow-2xl w-full max-w-[550px] border border-white/10 animate-scale-in overflow-hidden max-h-[95vh] flex flex-col">
+                        <div className="bg-[var(--bg-primary)] rounded-[8px] shadow-2xl w-full max-w-[550px] border border-[var(--border)] animate-scale-in overflow-hidden max-h-[95vh] flex flex-col">
                             {/* Header */}
-                            <div className="bg-black/20 p-3 md:p-4 flex items-center justify-between shrink-0 border-b border-white/10">
+                            <div className="bg-[var(--bg-tertiary)] p-3 md:p-4 flex items-center justify-between shrink-0 border-b border-[var(--border)]">
                                 <div className="flex items-center gap-2 md:gap-3">
                                     <span className="text-xl md:text-2xl">📥</span>
                                     <h3 className="font-bold text-white text-base md:text-lg">Import JSON</h3>
                                 </div>
                                 <button
                                     onClick={() => { setShowImportModal(false); setImportJson(''); setImportError(null); }}
-                                    className="text-gray-400 hover:text-white text-xl transition"
+                                    className="text-[var(--text-secondary)] hover:text-white text-xl transition"
                                 >
                                     ✕
                                 </button>
@@ -2038,29 +2038,29 @@ export default function CreateMessageModal({
                             <div className="p-6 space-y-4">
                                 {/* File Upload */}
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-300 mb-2">Upload File</label>
+                                    <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Upload File</label>
                                     <input
                                         type="file"
                                         accept=".json"
                                         onChange={handleFileImport}
-                                        className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-amber-500/20 file:text-amber-400 hover:file:bg-amber-500/30 file:cursor-pointer"
+                                        className="w-full text-sm text-[var(--text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-[var(--bg-secondary)]mber-500/20 file:text-amber-400 hover:file:bg-[var(--bg-secondary)]mber-500/30 file:cursor-pointer"
                                     />
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="flex-1 border-t border-white/10"></div>
-                                    <span className="text-xs text-gray-500 font-bold">OR</span>
-                                    <div className="flex-1 border-t border-white/10"></div>
+                                    <div className="flex-1 border-t border-[var(--border)]"></div>
+                                    <span className="text-xs text-[var(--text-tertiary)] font-bold">OR</span>
+                                    <div className="flex-1 border-t border-[var(--border)]"></div>
                                 </div>
 
                                 {/* Paste JSON */}
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-300 mb-2">Paste JSON</label>
+                                    <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Paste JSON</label>
                                     <textarea
                                         value={importJson}
                                         onChange={(e) => { setImportJson(e.target.value); setImportError(null); }}
                                         placeholder='{"message_content": "Hello!", "embeds": [], ...}'
-                                        className="w-full h-48 p-3 bg-black/20 border border-white/10 rounded-xl text-sm font-mono resize-none outline-none focus:border-amber-500/50 text-white placeholder-gray-600"
+                                        className="w-full h-48 p-3 bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-xl text-sm font-mono resize-none outline-none focus:border-amber-500/50 text-white placeholder-gray-600"
                                     />
                                 </div>
 
@@ -2073,7 +2073,7 @@ export default function CreateMessageModal({
                                 )}
 
                                 {/* Tip */}
-                                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
+                                <div className="bg-[var(--bg-secondary)]mber-500/10 border border-amber-500/30 rounded-xl p-3">
                                     <p className="text-xs text-amber-400">
                                         💡 <strong>Tip:</strong> Export a message first to see the correct JSON format, then modify and import it back.
                                     </p>
@@ -2081,17 +2081,17 @@ export default function CreateMessageModal({
                             </div>
 
                             {/* Footer */}
-                            <div className="border-t border-white/10 p-4 flex justify-end gap-3 bg-black/20">
+                            <div className="border-t border-[var(--border)] p-4 flex justify-end gap-3 bg-[var(--bg-tertiary)]">
                                 <button
                                     onClick={() => { setShowImportModal(false); setImportJson(''); setImportError(null); }}
-                                    className="px-4 py-2 text-gray-400 font-bold hover:bg-white/10 rounded-lg transition"
+                                    className="px-4 py-2 text-[var(--text-secondary)] font-bold hover:bg-[var(--bg-hover)] rounded-lg transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={importFromJson}
                                     disabled={!importJson.trim()}
-                                    className="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-6 py-2 bg-[var(--bg-secondary)]mber-500 hover:bg-[var(--bg-secondary)]mber-600 text-black font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Import
                                 </button>

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
     return (
-        <main className="min-h-screen bg-[#030305] text-white pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-sans selection:bg-indigo-500/30">
+        <main className="min-h-screen bg-[var(--bg-secondary)] text-white pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-sans selection:bg-indigo-500/30">
             {/* Background Effects */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[400px] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] bg-fuchsia-600/10 blur-[120px] rounded-full pointer-events-none" />

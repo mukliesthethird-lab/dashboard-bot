@@ -67,8 +67,8 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
     }
 
     const statusConfig: Record<string, { label: string; className: string; dotClass: string }> = {
-        WAITING: { label: "Betting",  className: "bg-amber-500/15 text-amber-400 border-amber-500/30",  dotClass: "bg-amber-400" },
-        PLAYING: { label: "In Game",  className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30", dotClass: "bg-emerald-400 animate-pulse" },
+        WAITING: { label: "Betting",  className: "bg-[var(--bg-secondary)]mber-500/15 text-amber-400 border-amber-500/30",  dotClass: "bg-[var(--bg-secondary)]mber-400" },
+        PLAYING: { label: "In Game",  className: "bg-[var(--bg-elevated)]merald-500/15 text-emerald-400 border-emerald-500/30", dotClass: "bg-[var(--bg-elevated)]merald-400 animate-pulse" },
         FINISHED:{ label: "Finishing",className: "bg-indigo-500/15 text-indigo-400 border-indigo-500/30", dotClass: "bg-indigo-400 animate-pulse" },
     };
 
@@ -77,7 +77,7 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
             
             {/* Background glow */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-emerald-900/20 blur-[100px] rounded-full"/>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-[var(--bg-elevated)]merald-900/20 blur-[100px] rounded-full"/>
             </div>
 
             <div className="relative z-10 flex flex-col h-full p-5 sm:p-8 overflow-y-auto">
@@ -86,24 +86,24 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <div>
                         <div className="flex items-center gap-3 mb-1">
-                            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                            <div className="p-2 rounded-xl bg-[var(--bg-elevated)]merald-500/10 border border-emerald-500/20">
                                 <Spade className="w-5 h-5 text-emerald-400"/>
                             </div>
                             <h2 className="text-2xl font-black text-white tracking-tight">Blackjack Tables</h2>
                         </div>
-                        <p className="text-gray-500 text-sm ml-12">Join an active table or host your own game</p>
+                        <p className="text-[var(--text-tertiary)] text-sm ml-12">Join an active table or host your own game</p>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={fetchRooms}
-                            className="p-3 rounded-xl bg-white/5 border border-white/8 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                            className="p-3 rounded-xl bg-[var(--bg-hover)] border border-white/8 text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition-all"
                             title="Refresh rooms"
                         >
                             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}/>
                         </button>
                         <button
                             onClick={() => setIsCreateOpen(true)}
-                            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(16,185,129,0.25)]"
+                            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[var(--bg-elevated)]merald-600 hover:bg-[var(--bg-elevated)]merald-500 text-white font-black text-xs uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(16,185,129,0.25)]"
                         >
                             <Plus className="w-4 h-4"/> Host Table
                         </button>
@@ -112,7 +112,7 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
 
                 {/* Auto-refresh indicator */}
                 <div className="flex items-center gap-2 mb-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"/>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--bg-elevated)]merald-400 animate-pulse"/>
                     <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Auto-refreshing every 5s</span>
                 </div>
 
@@ -130,14 +130,14 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
                         animate={{ opacity: 1, y: 0 }}
                         className="flex-1 flex flex-col items-center justify-center text-center py-20"
                     >
-                        <div className="w-20 h-20 rounded-3xl bg-white/3 border border-white/8 flex items-center justify-center mb-5">
+                        <div className="w-20 h-20 rounded-xl bg-white/3 border border-white/8 flex items-center justify-center mb-5">
                             <Spade className="w-10 h-10 text-gray-600"/>
                         </div>
                         <h3 className="text-xl font-black text-white uppercase tracking-widest mb-2">No Active Tables</h3>
-                        <p className="text-sm text-gray-500 mb-6 max-w-xs">Be the first to host a Blackjack table and invite your friends!</p>
+                        <p className="text-sm text-[var(--text-tertiary)] mb-6 max-w-xs">Be the first to host a Blackjack table and invite your friends!</p>
                         <button
                             onClick={() => setIsCreateOpen(true)}
-                            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-widest transition-all"
+                            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--bg-elevated)]merald-600 hover:bg-[var(--bg-elevated)]merald-500 text-white font-black text-xs uppercase tracking-widest transition-all"
                         >
                             <Plus className="w-4 h-4"/> Create First Table
                         </button>
@@ -157,8 +157,8 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, scale: 0.95 }}
                                         transition={{ delay: i * 0.04 }}
-                                        className={`relative bg-white/3 border rounded-2xl p-5 flex flex-col justify-between overflow-hidden transition-all duration-300 group
-                                            ${isFull ? 'border-white/5 opacity-60' : 'border-white/8 hover:border-white/15 hover:bg-white/5'}`}
+                                        className={`relative bg-white/3 border rounded-xl p-5 flex flex-col justify-between overflow-hidden transition-all duration-300 group
+                                            ${isFull ? 'border-[var(--border)] opacity-60' : 'border-white/8 hover:border-white/15 hover:bg-[var(--bg-hover)]'}`}
                                     >
                                         {/* Card glow on hover */}
                                         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
@@ -182,11 +182,11 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
                                                 <h4 className="text-base font-black text-white truncate">
                                                     {room.host_name}'s Table
                                                 </h4>
-                                                <p className="text-[10px] text-gray-500 font-medium mt-0.5">Hosted by {room.host_name}</p>
+                                                <p className="text-[10px] text-[var(--text-tertiary)] font-medium mt-0.5">Hosted by {room.host_name}</p>
                                             </div>
                                             {/* Min bet */}
                                             <div className="text-right flex-shrink-0 ml-2">
-                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Min Bet</p>
+                                                <p className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest mb-0.5">Min Bet</p>
                                                 <div className="flex items-center gap-1 justify-end">
                                                     <Coins className="w-3 h-3 text-amber-400"/>
                                                     <span className="font-black text-white text-sm tabular-nums">{room.minimum_bet.toLocaleString()}</span>
@@ -197,7 +197,7 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
                                         {/* Occupancy bar */}
                                         <div className="mb-4">
                                             <div className="flex justify-between items-center mb-1.5">
-                                                <div className="flex items-center gap-1.5 text-gray-500">
+                                                <div className="flex items-center gap-1.5 text-[var(--text-tertiary)]">
                                                     <Users className="w-3 h-3"/>
                                                     <span className="text-[10px] font-bold">{room.current_players} / {room.max_players} players</span>
                                                 </div>
@@ -207,9 +207,9 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                            <div className="h-1.5 bg-[var(--bg-hover)] rounded-full overflow-hidden">
                                                 <div
-                                                    className={`h-full rounded-full transition-all duration-500 ${occupancyPct >= 1 ? 'bg-red-500' : occupancyPct >= 0.6 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                                                    className={`h-full rounded-full transition-all duration-500 ${occupancyPct >= 1 ? 'bg-red-500' : occupancyPct >= 0.6 ? 'bg-[var(--bg-secondary)]mber-500' : 'bg-[var(--bg-elevated)]merald-500'}`}
                                                     style={{ width: `${Math.min(100, occupancyPct * 100)}%` }}
                                                 />
                                             </div>
@@ -218,7 +218,7 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
                                         {/* Seat dots */}
                                         <div className="flex gap-1 mb-4">
                                             {Array.from({ length: room.max_players }).map((_, i) => (
-                                                <div key={i} className={`flex-1 h-1.5 rounded-full ${i < room.current_players ? 'bg-emerald-500' : 'bg-white/8'}`}/>
+                                                <div key={i} className={`flex-1 h-1.5 rounded-full ${i < room.current_players ? 'bg-[var(--bg-elevated)]merald-500' : 'bg-white/8'}`}/>
                                             ))}
                                         </div>
 
@@ -228,10 +228,10 @@ export default function CasinoLobby({ userChips, onChipsChange }: Props) {
                                             disabled={room.minimum_bet > userChips}
                                             className={`w-full py-3 rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all
                                                 ${room.minimum_bet > userChips
-                                                    ? 'bg-white/3 border border-white/5 text-gray-600 cursor-not-allowed'
+                                                    ? 'bg-white/3 border border-[var(--border)] text-gray-600 cursor-not-allowed'
                                                     : isFull
-                                                    ? 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/8 hover:text-white'
-                                                    : 'bg-emerald-600/80 hover:bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.35)]'
+                                                    ? 'bg-[var(--bg-hover)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-white/8 hover:text-white'
+                                                    : 'bg-[var(--bg-elevated)]merald-600/80 hover:bg-[var(--bg-elevated)]merald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.35)]'
                                                 }`}
                                         >
                                             {room.minimum_bet > userChips ? (

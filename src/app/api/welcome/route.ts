@@ -124,7 +124,7 @@ export async function GET(request: Request) {
                     author_icon_url: '',
                     title: 'Welcome!',
                     title_url: '',
-                    description: 'Hey {user}, Selamat datang di **{server}**!',
+                    description: 'Hey {user}, Welcome to **{server}**!',
                     color: '#00ff04',
                     thumbnail_url: '{user.avatar}',
                     image_url: '',

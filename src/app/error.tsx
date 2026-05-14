@@ -11,67 +11,56 @@ export default function Error({
     reset: () => void;
 }) {
     useEffect(() => {
-        // Log error to console (could also send to error reporting service)
         console.error("Application error:", error);
     }, [error]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-red-50 to-orange-50">
+        <div className="min-h-screen flex items-center justify-center px-6 bg-[var(--bg-primary)]">
             <div className="text-center max-w-lg">
-                {/* Error Icon */}
-                <div className="mb-8">
-                    <div className="inline-flex items-center justify-center w-24 h-24 bg-red-100 rounded-full mb-4 animate-pulse">
-                        <span className="text-5xl">😵</span>
+                <div className="mb-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-[var(--error-muted)] rounded-xl mb-4">
+                        <span className="text-4xl">😵</span>
                     </div>
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-black text-stone-800 mb-4">
-                    Oops! Something Went Wrong
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                    Something Went Wrong
                 </h1>
-
-                <p className="text-stone-500 text-lg mb-6 leading-relaxed">
+                <p className="text-[var(--text-secondary)] text-sm mb-6 leading-relaxed">
                     Don Pollo ran into an unexpected error. Don't worry, our chickens are on the case!
                 </p>
 
-                {/* Error Details (collapsible) */}
-                <details className="mb-8 text-left bg-white rounded-xl p-4 border border-red-200 shadow-sm">
-                    <summary className="font-bold text-stone-700 cursor-pointer hover:text-stone-900">
+                <details className="mb-6 text-left bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border)]">
+                    <summary className="font-semibold text-sm text-white cursor-pointer hover:text-[var(--accent)]">
                         🔍 Error Details
                     </summary>
                     <div className="mt-3 space-y-2">
-                        <pre className="p-3 bg-red-50 rounded-lg text-xs text-red-700 overflow-auto max-h-32 font-mono">
+                        <pre className="p-3 bg-[var(--bg-primary)] rounded-lg text-xs text-[var(--error)] overflow-auto max-h-32 font-mono border border-[var(--border)]">
                             {error.message || "Unknown error"}
                         </pre>
                         {error.digest && (
-                            <p className="text-xs text-stone-400">
-                                Digest: {error.digest}
-                            </p>
+                            <p className="text-xs text-[var(--text-tertiary)]">Digest: {error.digest}</p>
                         )}
                     </div>
                 </details>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <button
                         onClick={() => reset()}
-                        className="w-full sm:w-auto px-8 py-4 rounded-full bg-amber-400 hover:bg-amber-500 text-stone-900 font-bold transition shadow-lg flex items-center justify-center gap-2 transform hover:scale-105"
+                        className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition flex items-center justify-center gap-2"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
-                        <span>Try Again</span>
+                        Try Again
                     </button>
-                    <Link
-                        href="/"
-                        className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-stone-700 font-bold border-2 border-stone-200 hover:border-amber-400 transition shadow-md flex items-center justify-center gap-2"
-                    >
-                        <span>🏠</span>
-                        <span>Go Home</span>
+                    <Link href="/" className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[var(--bg-secondary)] text-white font-semibold text-sm border border-[var(--border)] hover:border-[var(--border-hover)] transition flex items-center justify-center gap-2">
+                        🏠 Go Home
                     </Link>
                 </div>
 
-                {/* Help text */}
-                <p className="mt-12 text-stone-400 text-sm">
-                    If this keeps happening, try refreshing the page or contact our support.
+                <p className="mt-10 text-[var(--text-muted)] text-xs">
+                    If this keeps happening, try refreshing or contact support.
                 </p>
             </div>
         </div>

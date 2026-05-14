@@ -53,13 +53,9 @@ export default async function FishingPage({
         <div className="min-h-screen">
             <GuildSidebar guildId={guildId} guildName={guild.name} guildIcon={guild.icon} />
 
-            <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
+            <main className="lg:ml-[272px] pt-32 lg:pt-20 p-4 md:p-6">
                 <div className="max-w-5xl mx-auto">
-                    <DashboardHeader
-                        title="Fishing Management"
-                        subtitle="Manage fishing rods, catches, and leaderboards"
-                        icon="🎣"
-                    />
+
 
                     <FishingActions guildId={guildId} />
                 </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import Loading from "@/components/Loading";
+
 import { useState, useEffect } from "react";
 import EmojiPicker from "./EmojiPicker";
 import { ToastContainer, useToast } from "./Toast";
@@ -7,7 +9,6 @@ import { ToastContainer, useToast } from "./Toast";
 import { ReactionRoleMessage, Channel, Role, GlobalRolesSettings } from "../types";
 import CreateMessageModal from "./CreateMessageModal";
 import ConfirmationModal from "./ConfirmationModal";
-import CatLoader from "./CatLoader";
 import DashboardHeader from "./DashboardHeader";
 import PremiumCard from "./PremiumCard";
 import { logActivity } from "@/lib/logger";
@@ -182,27 +183,23 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
     };
 
 
-    if (loading) return <CatLoader message="Loading reaction roles..." />;
+    if (loading) return <Loading message="Loading reaction roles..." />;
 
     return (
         <div className="p-8 max-w-6xl mx-auto space-y-8 animate-fade-in-up pb-20">
             {/* Header */}
-            <DashboardHeader
-                title="Roles Configuration"
-                subtitle="Manage automatic role assignment and reaction roles."
-                icon="🎭"
-            />
+
 
             {/* Global Settings */}
             <div className="grid md:grid-cols-2 gap-6">
                 {/* Join Roles Card */}
-                <div className="glass-card rounded-[8px] p-6 relative border border-white/10 overflow-hidden">
+                <div className="glass-card rounded-[8px] p-6 relative border border-[var(--border)] overflow-hidden">
                     <div className="flex items-center gap-3 mb-1">
                         <span className="text-xl">👋</span>
-                        <h3 className="font-bold text-gray-200 text-lg">Join Roles</h3>
+                        <h3 className="font-bold text-[var(--text-primary)] text-lg">Join Roles</h3>
                     </div>
-                    <p className="text-gray-400 text-sm mb-4">Automatically assign roles to new members</p>
-                    
+                    <p className="text-[var(--text-secondary)] text-sm mb-4">Automatically assign roles to new members</p>
+
                     <div className="flex justify-end absolute top-6 right-6">
                         <Toggle
                             enabled={globalSettings.join_roles_enabled}
@@ -219,7 +216,7 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                                     const role = roles.find(r => r.id === roleId);
                                     if (!role) return null;
                                     return (
-                                        <div key={roleId} className="px-2 py-1 bg-black/20 rounded-[3px] text-xs font-bold flex items-center gap-2 border border-white/10 text-gray-200">
+                                        <div key={roleId} className="px-2 py-1 bg-[var(--bg-tertiary)] rounded-[3px] text-xs font-bold flex items-center gap-2 border border-[var(--border)] text-[var(--text-primary)]">
                                             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#' + role.color.toString(16).padStart(6, '0') }}></span>
                                             {role.name}
                                             <button onClick={() => updateGlobalSettings({ join_roles: globalSettings.join_roles.filter(id => id !== roleId) })} className="ml-1 hover:text-[#da373c] transition-colors">×</button>
@@ -234,11 +231,11 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                                     }
                                     e.target.value = '';
                                 }}
-                                className="w-full p-2 bg-black/20 border border-transparent rounded-[3px] focus:ring-1 focus:ring-[#5865F2] outline-none text-gray-200 text-sm transition"
+                                className="w-full p-2 bg-[var(--bg-tertiary)] border border-transparent rounded-[3px] focus:ring-1 focus:ring-[#5865F2] outline-none text-[var(--text-primary)] text-sm transition"
                             >
-                                <option value="" className="bg-white/5">+ Add Role</option>
+                                <option value="" className="bg-[var(--bg-hover)]">+ Add Role</option>
                                 {roles.filter(r => !globalSettings.join_roles.includes(r.id)).map(r => (
-                                    <option key={r.id} value={r.id} className="bg-white/5">{r.name}</option>
+                                    <option key={r.id} value={r.id} className="bg-[var(--bg-hover)]">{r.name}</option>
                                 ))}
                             </select>
                         </div>
@@ -246,13 +243,13 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                 </div>
 
                 {/* Reaction Roles Card */}
-                <div className="glass-card rounded-[8px] p-6 relative border border-white/10 overflow-hidden">
+                <div className="glass-card rounded-[8px] p-6 relative border border-[var(--border)] overflow-hidden">
                     <div className="flex items-center gap-3 mb-1">
                         <span className="text-xl">✨</span>
-                        <h3 className="font-bold text-gray-200 text-lg">Reaction Roles</h3>
+                        <h3 className="font-bold text-[var(--text-primary)] text-lg">Reaction Roles</h3>
                     </div>
-                    <p className="text-gray-400 text-sm mb-4">Self-assignable roles via messages</p>
-                    
+                    <p className="text-[var(--text-secondary)] text-sm mb-4">Self-assignable roles via messages</p>
+
                     <div className="flex justify-end absolute top-6 right-6">
                         <Toggle
                             enabled={globalSettings.reaction_roles_enabled}
@@ -266,10 +263,10 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
                                     <p className="text-[#87898c] text-sm py-4 text-center">No reaction role messages created yet</p>
                                 )}
                                 {settings.messages.map((msg, idx) => (
-                                    <div key={idx} className="flex justify-between items-center p-3 bg-black/20 rounded-[8px] border border-white/10 group hover:border-[#5865F2] transition-all duration-300">
-                                        <span className="font-bold text-gray-200 text-sm truncate max-w-[200px]">{msg.embeds[0]?.title || 'Untitled Message'}</span>
+                                    <div key={idx} className="flex justify-between items-center p-3 bg-[var(--bg-tertiary)] rounded-[8px] border border-[var(--border)] group hover:border-[#5865F2] transition-all duration-300">
+                                        <span className="font-bold text-[var(--text-primary)] text-sm truncate max-w-[200px]">{msg.embeds[0]?.title || 'Untitled Message'}</span>
                                         <div className="flex gap-2">
-                                            <button onClick={() => { setEditingMsg(msg); setEditingIndex(idx); setShowEditor(true); }} className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-[3px] text-xs font-bold text-white transition-colors">Edit</button>
+                                            <button onClick={() => { setEditingMsg(msg); setEditingIndex(idx); setShowEditor(true); }} className="px-3 py-1 bg-[var(--bg-hover)] hover:bg-white/20 rounded-[3px] text-xs font-bold text-white transition-colors">Edit</button>
                                             <button onClick={() => handleDeleteClick(msg)} className="px-1.5 text-[#da373c] hover:bg-[#da373c]/10 rounded-[3px] text-sm transition-colors">🗑️</button>
                                         </div>
                                     </div>
@@ -311,12 +308,12 @@ export default function RolesSettings({ guildId }: RolesSettingsProps) {
 
             {/* Standard Global Save Bar */}
             {JSON.stringify(globalSettings) !== JSON.stringify(originalGlobalSettings) && originalGlobalSettings && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[130] bg-[#030305]/95 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-xl shadow-2xl animate-fade-up flex items-center justify-between gap-6 min-w-[360px]">
-                    <span className="text-gray-200 font-bold text-xs uppercase tracking-tight line-clamp-1">Careful — you have unsaved changes!</span>
+                <div className="fixed bottom-2 left-1/2 -translate-x-1/2 z-[130] bg-[var(--bg-secondary)]/95 backdrop-blur-3xl border border-[var(--border)] px-4 py-3 rounded-xl shadow-2xl animate-fade-up flex items-center justify-between gap-6 min-w-[360px]">
+                    <span className="text-[var(--text-primary)] font-bold text-xs uppercase tracking-tight line-clamp-1">Careful — you have unsaved changes!</span>
                     <div className="flex items-center gap-3 shrink-0">
                         <button
                             onClick={resetGlobalSettings}
-                            className="text-gray-400 hover:text-white text-xs font-black uppercase tracking-widest transition-colors"
+                            className="text-[var(--text-secondary)] hover:text-white text-xs font-black uppercase tracking-widest transition-colors"
                         >
                             Reset
                         </button>

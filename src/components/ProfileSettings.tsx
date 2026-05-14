@@ -1,7 +1,8 @@
 "use client";
 
+import Loading from "@/components/Loading";
+
 import { useState, useEffect } from "react";
-import CatLoader from "./CatLoader";
 import { useSession } from "next-auth/react";
 import { ToastContainer, useToast } from "./Toast";
 import CustomDropdown from "./CustomDropdown";
@@ -156,12 +157,12 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
         
         return (
             <div className="flex flex-col gap-1.5 relative">
-                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest px-1">{label}</span>
+                <span className="text-[9px] font-black text-[var(--text-tertiary)] uppercase tracking-widest px-1">{label}</span>
                 
                 {/* Compact Swatch Card */}
-                <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-2.5 rounded-lg hover:border-indigo-500/30 transition-all group cursor-pointer active:scale-95 shadow-sm" onClick={() => setActivePicker(isPickerOpen ? null : label)}>
+                <div className="flex items-center gap-3 bg-[var(--bg-hover)] border border-[var(--border)] p-2.5 rounded-lg hover:border-indigo-500/30 transition-all group cursor-pointer active:scale-95 shadow-sm" onClick={() => setActivePicker(isPickerOpen ? null : label)}>
                     {/* Tiny Swatch */}
-                    <div className="relative shrink-0 w-10 h-10 border border-white/10 rounded-md overflow-hidden shadow-inner group-hover:border-indigo-500/50">
+                    <div className="relative shrink-0 w-10 h-10 border border-[var(--border)] rounded-md overflow-hidden shadow-inner group-hover:border-indigo-500/50">
                         <div className="w-full h-full" style={{ backgroundColor: value }} />
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity">
                             <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,7 +177,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                             <span className="text-[11px] font-black text-gray-100 tracking-tight uppercase">{value.toUpperCase()}</span>
                         </div>
                         <div className="flex items-center justify-between mt-0.5">
-                            <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest truncate">Click to customize</span>
+                            <span className="text-[7px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest truncate">Click to customize</span>
                         </div>
                     </div>
                 </div>
@@ -190,7 +191,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-[#05050a]/90 backdrop-blur-md" onClick={onClose} />
 
-            <div className="bg-[#0b0a10] border border-white/10 shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative animate-scale-in flex flex-col z-10 custom-scrollbar pb-12 glass-heavy">
+            <div className="bg-[#0b0a10] border border-[var(--border)] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative animate-scale-in flex flex-col z-10 custom-scrollbar pb-12 glass-heavy">
                 {/* Mesh Gradient Background Layer */}
                 <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-30">
                     <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-500/20 blur-[120px] animate-pulse-glow" />
@@ -198,15 +199,15 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                 </div>
 
                 {/* Header */}
-                <div className="sticky top-0 z-20 bg-[#0b0a10]/40 backdrop-blur-3xl border-b border-white/5 px-8 py-6 flex items-center justify-between">
+                <div className="sticky top-0 z-20 bg-[#0b0a10]/40 backdrop-blur-3xl border-b border-[var(--border)] px-8 py-6 flex items-center justify-between">
                     <div className="flex flex-col">
                         <h2 className="text-2xl font-black text-white leading-none tracking-tight gradient-text-animated">Profile Settings</h2>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
+                        <p className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
                             Customize your public identity
                         </p>
                     </div>
-                    <button onClick={onClose} className="p-2 bg-white/5 hover:bg-white/10 hover:scale-110 active:scale-95 text-white transition-all duration-300 group border border-white/5">
+                    <button onClick={onClose} className="p-2 bg-[var(--bg-hover)] hover:bg-[var(--bg-hover)] hover:scale-110 active:scale-95 text-white transition-all duration-300 group border border-[var(--border)]">
                         <svg className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -215,7 +216,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
 
                 {loading ? (
                     <div className="p-12 min-h-[500px] flex items-center justify-center">
-                        <CatLoader message="Loading your profile..." />
+                        <Loading message="Loading your profile..." />
                     </div>
                 ) : (
                     <div className="p-5 md:p-6 flex flex-col gap-6">
@@ -239,15 +240,15 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                     </div>
                                     
                                     {/* Subdued Balance Slab */}
-                                    <div className="relative group p-4 bg-white/[0.03] border border-white/5 shadow-xl overflow-hidden transition-all duration-500 hover:border-amber-500/30 hover:bg-white/[0.05] animate-fade-up animate-delay-300">
-                                        <div className="absolute inset-y-0 left-0 w-1 bg-amber-500/40 group-hover:w-1.5 transition-all duration-500 my-3" />
+                                    <div className="relative group p-4 bg-white/[0.03] border border-[var(--border)] shadow-xl overflow-hidden transition-all duration-500 hover:border-amber-500/30 hover:bg-white/[0.05] animate-fade-up animate-delay-300">
+                                        <div className="absolute inset-y-0 left-0 w-1 bg-[var(--bg-secondary)]mber-500/40 group-hover:w-1.5 transition-all duration-500 my-3" />
                                         <div className="relative flex items-center justify-between px-2">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-amber-500/10 flex items-center justify-center text-xl shadow-inner border border-amber-500/20 group-hover:scale-110 transition-transform duration-500">
+                                                <div className="w-10 h-10 bg-[var(--bg-secondary)]mber-500/10 flex items-center justify-center text-xl shadow-inner border border-amber-500/20 group-hover:scale-110 transition-transform duration-500">
                                                     💰
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-gray-500 text-[8px] font-black uppercase tracking-[0.2em] leading-none mb-1">Current Balance</span>
+                                                    <span className="text-[var(--text-tertiary)] text-[8px] font-black uppercase tracking-[0.2em] leading-none mb-1">Current Balance</span>
                                                     <span className="text-lg font-black text-white tracking-tight break-all leading-none group-hover:text-amber-100 transition-colors">
                                                         {(userStats?.balance || 0).toLocaleString()}
                                                     </span>
@@ -264,8 +265,8 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                 <div className="flex items-center justify-between px-2">
                                     <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">Live Card Preview</h3>
                                 </div>
-                                <div className="w-full bg-[#05050a] border border-white/5 p-5 flex items-center justify-center shadow-inner h-full min-h-[300px]">
-                                    <div className="w-full aspect-[1.8] rounded-[2.2cqw] overflow-hidden shadow-2xl border border-white/10 relative" style={{ containerType: 'inline-size' }}>
+                                <div className="w-full bg-[#05050a] border border-[var(--border)] p-5 flex items-center justify-center shadow-inner h-full min-h-[300px]">
+                                    <div className="w-full aspect-[1.8] rounded-[2.2cqw] overflow-hidden shadow-2xl border border-[var(--border)] relative" style={{ containerType: 'inline-size' }}>
                                         {/* Background */}
                                         {selectedBackgroundId === 0 ? (
                                             <div className="absolute inset-0 bg-[#2b2d31]" />
@@ -310,7 +311,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                                     { label: "Tangkapan", val: Number(userStats?.total_catches || 0).toLocaleString(), icon: <div className="w-[4.4cqw] h-[4.4cqw] rounded-full flex items-center justify-center font-bold text-[#1abc9c] text-[2.5cqw] leading-none bg-[#1abc9c]/10">🐟</div> },
                                                     { label: "Rank", val: userRank, icon: <div className="w-[4.4cqw] h-[4.4cqw] rounded-full flex items-center justify-center font-bold text-[#3498db] text-[2.5cqw] leading-none bg-[#3498db]/10">💠</div> }
                                                 ].map((stat, i) => (
-                                                    <div key={i} className="flex-1 bg-[#232428]/80 backdrop-blur-sm rounded-[1cqw] flex items-center py-[2.5cqw] px-[2cqw] gap-[2cqw] border border-white/5">
+                                                    <div key={i} className="flex-1 bg-[#232428]/80 backdrop-blur-sm rounded-[1cqw] flex items-center py-[2.5cqw] px-[2cqw] gap-[2cqw] border border-[var(--border)]">
                                                         {stat.icon}
                                                         <div className="flex flex-col min-w-0 justify-center">
                                                             <span className="text-[2.4cqw] font-normal leading-tight opacity-70 text-white">{stat.label}</span>
@@ -332,7 +333,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                 <div className="flex items-center justify-between px-2">
                                     <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">Select Font</h4>
                                 </div>
-                                <div className="bg-white/5 border border-white/5 p-4 flex flex-col justify-between h-[115px]">
+                                <div className="bg-[var(--bg-hover)] border border-[var(--border)] p-4 flex flex-col justify-between h-[115px]">
                                     <CustomDropdown 
                                         options={FONTS}
                                         value={selectedFont}
@@ -341,8 +342,8 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                         className="w-full"
                                     />
                                     <div className="flex items-center justify-between px-1 h-8">
-                                        <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Preview Style</span>
-                                        <span className="text-[10px] text-gray-200 truncate max-w-[200px]" style={{ fontFamily: selectedFont }}>The quick brown fox jumps over the lazy dog.</span>
+                                        <span className="text-[8px] font-black text-[var(--text-tertiary)] uppercase tracking-widest">Preview Style</span>
+                                        <span className="text-[10px] text-[var(--text-primary)] truncate max-w-[200px]" style={{ fontFamily: selectedFont }}>The quick brown fox jumps over the lazy dog.</span>
                                     </div>
                                 </div>
                             </div>
@@ -352,7 +353,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                 <div className="flex items-center justify-between px-2">
                                     <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">Text & XP Bar Colors</h4>
                                 </div>
-                                <div className="bg-white/5 border border-white/5 p-4 flex items-center justify-center h-[115px]">
+                                <div className="bg-[var(--bg-hover)] border border-[var(--border)] p-4 flex items-center justify-center h-[115px]">
                                     <div className="grid grid-cols-2 gap-4 w-full">
                                         <ColorPicker 
                                             label="Text Color" 
@@ -373,16 +374,16 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                         <div className="relative z-10 flex flex-col gap-5">
                             <div className="flex items-center justify-between px-2">
                                 <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">Unlocked Backgrounds</h4>
-                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">{backgrounds.length + 1} Assets</span>
+                                <span className="text-[9px] font-black text-[var(--text-tertiary)] uppercase tracking-wider">{backgrounds.length + 1} Assets</span>
                             </div>
                             
                             <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 max-h-[220px] overflow-y-auto pr-2 pt-2 custom-scrollbar">
                                 <div
                                     onClick={() => setSelectedBackgroundId(0)}
-                                    className={`group relative aspect-[16/9] border-2 transition-all duration-500 cursor-pointer overflow-hidden ${selectedBackgroundId === 0 ? 'border-primary shadow-glow bg-primary/10' : 'border-white/5 bg-white/5 hover:border-white/20 hover:bg-white/10'}`}
+                                    className={`group relative aspect-[16/9] border-2 transition-all duration-500 cursor-pointer overflow-hidden ${selectedBackgroundId === 0 ? 'border-primary shadow-glow bg-primary/10' : 'border-[var(--border)] bg-[var(--bg-hover)] hover:border-white/20 hover:bg-[var(--bg-hover)]'}`}
                                 >
                                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-                                        <span className="text-gray-500 font-black text-[9px] uppercase tracking-tighter group-hover:text-gray-300 transition-colors">Default BG</span>
+                                        <span className="text-[var(--text-tertiary)] font-black text-[9px] uppercase tracking-tighter group-hover:text-[var(--text-secondary)] transition-colors">Default BG</span>
                                         <div className="w-4 h-0.5 bg-gray-500/20 rounded-full" />
                                     </div>
                                     {selectedBackgroundId === 0 && (
@@ -390,14 +391,14 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                             ✓
                                         </div>
                                     )}
-                                    <div className="absolute inset-0 border border-white/5 rounded-[inherit] pointer-events-none" />
+                                    <div className="absolute inset-0 border border-[var(--border)] rounded-[inherit] pointer-events-none" />
                                 </div>
 
                                 {backgrounds.map(bg => (
                                     <div
                                         key={bg.id}
                                         onClick={() => setSelectedBackgroundId(bg.id)}
-                                        className={`group relative aspect-[16/9] border-2 transition-all duration-500 cursor-pointer overflow-hidden ${selectedBackgroundId === bg.id ? 'border-primary shadow-glow' : 'border-white/5 hover:border-white/30'}`}
+                                        className={`group relative aspect-[16/9] border-2 transition-all duration-500 cursor-pointer overflow-hidden ${selectedBackgroundId === bg.id ? 'border-primary shadow-glow' : 'border-[var(--border)] hover:border-white/30'}`}
                                     >
                                         <img 
                                             src={bg.url || bg.path} 
@@ -405,7 +406,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                             alt={bg.name} 
                                         />
                                         
-                                        <div className={`absolute inset-x-0 bottom-0 p-2 bg-black/60 backdrop-blur-md border-t border-white/10 transition-all duration-500 translate-y-full group-hover:translate-y-0 ${selectedBackgroundId === bg.id ? 'translate-y-0 bg-primary/40' : ''}`}>
+                                        <div className={`absolute inset-x-0 bottom-0 p-2 bg-black/60 backdrop-blur-md border-t border-[var(--border)] transition-all duration-500 translate-y-full group-hover:translate-y-0 ${selectedBackgroundId === bg.id ? 'translate-y-0 bg-primary/40' : ''}`}>
                                             <p className="text-[8px] font-black text-white truncate text-center uppercase tracking-tight">{bg.name}</p>
                                         </div>
 
@@ -414,7 +415,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                                 ✓
                                             </div>
                                         )}
-                                        <div className="absolute inset-0 border border-white/5 rounded-[inherit] pointer-events-none" />
+                                        <div className="absolute inset-0 border border-[var(--border)] rounded-[inherit] pointer-events-none" />
                                     </div>
                                 ))}
                             </div>
@@ -424,10 +425,10 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
 
                 {/* Standard Global Save Bar */}
                 {hasChanges && (
-                    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[140] glass-heavy border border-white/10 px-6 py-4 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-fade-up flex items-center justify-between gap-8 min-w-[500px]">
+                    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[140] glass-heavy border border-[var(--border)] px-6 py-4 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-fade-up flex items-center justify-between gap-8 min-w-[500px]">
                         <div className="flex flex-col">
                             <span className="text-white font-black text-xs uppercase tracking-tight">Unsaved Changes</span>
-                            <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest leading-tight">Apply your new public identity</p>
+                            <p className="text-[var(--text-secondary)] text-[9px] font-bold uppercase tracking-widest leading-tight">Apply your new public identity</p>
                         </div>
                         <div className="flex items-center gap-4 shrink-0">
                             <button
@@ -437,7 +438,7 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                     setSelectedTextColor(originalState.text_color || "#FFFFFF");
                                     setSelectedXpBarColor(originalState.xp_bar_color || "#4ADE80");
                                 }}
-                                className="px-4 py-2 text-gray-400 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all bg-white/5 hover:bg-white/10 border border-white/5"
+                                className="px-4 py-2 text-[var(--text-secondary)] hover:text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all bg-[var(--bg-hover)] hover:bg-[var(--bg-hover)] border border-[var(--border)]"
                             >
                                 Reset
                             </button>
@@ -499,13 +500,13 @@ function StatCard({ icon, label, sub, color, border, glow, delay }: { icon: stri
         >
             <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
             
-            <div className={`relative w-10 h-10 bg-gradient-to-br ${color} flex items-center justify-center text-lg shadow-inner mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 border border-white/5`}>
+            <div className={`relative w-10 h-10 bg-gradient-to-br ${color} flex items-center justify-center text-lg shadow-inner mb-3 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 border border-[var(--border)]`}>
                 {icon}
             </div>
             
             <div className="relative flex flex-col items-center">
                 <span className="text-white font-black text-xs leading-none truncate group-hover:text-indigo-300 transition-colors tracking-tight">{label}</span>
-                <span className="text-gray-500 text-[8px] font-black uppercase tracking-widest mt-1.5 opacity-60 group-hover:opacity-100 transition-opacity">{sub}</span>
+                <span className="text-[var(--text-tertiary)] text-[8px] font-black uppercase tracking-widest mt-1.5 opacity-60 group-hover:opacity-100 transition-opacity">{sub}</span>
             </div>
         </div>
     );

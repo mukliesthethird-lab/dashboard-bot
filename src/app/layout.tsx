@@ -51,20 +51,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`bg-[#0a0a0f] text-white antialiased`}>
+      <body className="bg-[var(--bg-primary)] text-[var(--text-primary)] antialiased">
         <AuthProvider>
           <Navbar />
           <div className="relative">
-            {/* Clean dark background - no distracting patterns */}
-            <div className="fixed inset-0 z-[-1] bg-[#0a0a0f]">
-              {/* Subtle gradient mesh for depth */}
-              <div className="absolute inset-0 gradient-mesh opacity-30" />
-            </div>
-
-            {/* Main Content */}
-            <div className="relative z-10">
-              {children}
-            </div>
+            {children}
           </div>
         </AuthProvider>
       </body>

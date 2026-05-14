@@ -48,8 +48,8 @@ export default function AnalyticsCharts({ guildId }: AnalyticsChartsProps) {
 
     if (loading) {
         return (
-            <div className="w-full h-[400px] bg-[#0a0a0f] border border-white/5 rounded-[8px] animate-pulse flex items-center justify-center">
-                <div className="text-gray-500 font-bold uppercase tracking-widest">Loading Analytics...</div>
+            <div className="w-full h-[400px] bg-[var(--bg-primary)] border border-[var(--border)] rounded-[8px] animate-pulse flex items-center justify-center">
+                <div className="text-[var(--text-tertiary)] font-bold uppercase tracking-widest">Loading Analytics...</div>
             </div>
         );
     }
@@ -57,8 +57,8 @@ export default function AnalyticsCharts({ guildId }: AnalyticsChartsProps) {
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             return (
-                <div className="bg-[#0f0f16] border border-white/10 p-4 rounded-xl shadow-2xl backdrop-blur-md">
-                    <p className="text-gray-400 text-xs font-black uppercase mb-1">{label}</p>
+                <div className="bg-[#0f0f16] border border-[var(--border)] p-4 rounded-xl shadow-2xl backdrop-blur-md">
+                    <p className="text-[var(--text-secondary)] text-xs font-black uppercase mb-1">{label}</p>
                     <p className="text-white font-bold">
                         {activeTab === 'members' ? '👥 Members: ' : activeTab === 'messages' ? '💬 Messages: ' : '✨ XP: '}
                         <span className={activeTab === 'members' ? 'text-blue-400' : activeTab === 'messages' ? 'text-emerald-400' : 'text-purple-400'}>
@@ -82,24 +82,24 @@ export default function AnalyticsCharts({ guildId }: AnalyticsChartsProps) {
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex bg-black/40 p-1 rounded-xl border border-white/5 w-fit">
+                <div className="flex bg-black/40 p-1 rounded-xl border border-[var(--border)] w-fit">
                     {(['members', 'messages', 'xp'] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab ? 'bg-white/10 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+                            className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab ? 'bg-[var(--bg-hover)] text-white shadow-lg' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'}`}
                         >
                             {tab}
                         </button>
                     ))}
                 </div>
-                <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-lg border border-white/5 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="text-[10px] font-black text-[var(--text-tertiary)] uppercase tracking-widest bg-[var(--bg-hover)] px-4 py-2 rounded-lg border border-[var(--border)] flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[var(--bg-elevated)]merald-500 animate-pulse" />
                     Live Analytics Feed
                 </div>
             </div>
 
-            <div className="bg-[#0a0a0f] border border-white/5 rounded-[8px] p-6 shadow-inner relative overflow-hidden group">
+            <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-[8px] p-6 shadow-inner relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                 
                 <div className="h-[300px] w-full">
@@ -144,7 +144,7 @@ export default function AnalyticsCharts({ guildId }: AnalyticsChartsProps) {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[#0a0a0f] border border-white/5 p-4 rounded-[8px] flex items-center justify-between group">
+                <div className="bg-[var(--bg-primary)] border border-[var(--border)] p-4 rounded-[8px] flex items-center justify-between group">
                     <div>
                         <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Weekly Growth</p>
                         <p className="text-xl font-black text-white">
@@ -153,7 +153,7 @@ export default function AnalyticsCharts({ guildId }: AnalyticsChartsProps) {
                     </div>
                     <div className="text-2xl opacity-20 group-hover:opacity-100 transition-opacity">📈</div>
                 </div>
-                <div className="bg-[#0a0a0f] border border-white/5 p-4 rounded-[8px] flex items-center justify-between group">
+                <div className="bg-[var(--bg-primary)] border border-[var(--border)] p-4 rounded-[8px] flex items-center justify-between group">
                     <div>
                         <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">Peak Activity</p>
                         <p className="text-xl font-black text-white">
@@ -162,7 +162,7 @@ export default function AnalyticsCharts({ guildId }: AnalyticsChartsProps) {
                     </div>
                     <div className="text-2xl opacity-20 group-hover:opacity-100 transition-opacity">🔥</div>
                 </div>
-                <div className="bg-[#0a0a0f] border border-white/5 p-4 rounded-[8px] flex items-center justify-between group">
+                <div className="bg-[var(--bg-primary)] border border-[var(--border)] p-4 rounded-[8px] flex items-center justify-between group">
                     <div>
                         <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-1">Avg per Day</p>
                         <p className="text-xl font-black text-white">

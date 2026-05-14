@@ -59,117 +59,82 @@ export default async function GuildDashboard({
     const token = getDiscordToken();
     const guild = token ? await fetchGuild(guildId, token) : { id: guildId, name: "Server", icon: null };
 
-    const iconUrl = guild.icon
-        ? `https://cdn.discordapp.com/icons/${guildId}/${guild.icon}.png`
-        : "https://cdn.discordapp.com/embed/avatars/0.png";
-
     return (
         <div className="min-h-screen">
             <GuildSidebar guildId={guildId} guildName={guild.name} guildIcon={guild.icon} />
 
-            <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
-                <div className="max-w-5xl mx-auto">
+            <main className="lg:ml-[272px] pt-32 lg:pt-20 p-4 md:p-6">
+                <div className="max-w-4xl mx-auto">
                     {/* Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                        <div className="flex-1">
-                            <DashboardHeader
-                                title={guild.name}
-                                subtitle="Server Overview & Statistics"
-                                gradientFrom="indigo-400"
-                                gradientTo="purple-500"
-                            />
-                        </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                        <DashboardHeader
+                            title={guild.name}
+                            subtitle="Server Overview & Statistics"
+                            gradientFrom="indigo-400"
+                            gradientTo="purple-500"
+                        />
                         <SettingsExportImport guildId={guildId} />
                     </div>
 
                     {/* Quick Stats */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <PremiumCard
-                            title="Members"
-                            description="Total community size"
-                            icon={<span className="text-2xl">👥</span>}
-                            gradientFrom="blue-500"
-                            gradientTo="cyan-500"
-                        >
-                            <div className="text-3xl font-black text-white mt-2">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                        <PremiumCard title="Members" description="Total community size" icon={<span className="text-xl">👥</span>}>
+                            <div className="text-2xl font-bold text-white mt-1">
                                 {guild.approximate_member_count?.toLocaleString() || "—"}
                             </div>
                         </PremiumCard>
 
-                        <PremiumCard
-                            title="Bot Status"
-                            description="System heartbeat"
-                            icon={<span className="text-2xl">✅</span>}
-                            gradientFrom="emerald-500"
-                            gradientTo="teal-500"
-                            badge="Active"
-                        >
-                            <div className="text-3xl font-black text-emerald-400 mt-2">
-                                Online
-                            </div>
+                        <PremiumCard title="Bot Status" description="System heartbeat" icon={<span className="text-xl">✅</span>} badge="Active">
+                            <div className="text-2xl font-bold text-emerald-400 mt-1">Online</div>
                         </PremiumCard>
 
-                        <PremiumCard
-                            title="Server ID"
-                            description="Unique identifier"
-                            icon={<span className="text-2xl">🆔</span>}
-                            gradientFrom="purple-500"
-                            gradientTo="indigo-500"
-                        >
-                            <div className="text-lg font-black text-white/70 mt-4 break-all opacity-80">
-                                {guildId}
-                            </div>
+                        <PremiumCard title="Server ID" description="Unique identifier" icon={<span className="text-xl">🆔</span>}>
+                            <div className="text-sm font-medium text-[var(--text-tertiary)] mt-2 break-all">{guildId}</div>
                         </PremiumCard>
                     </div>
 
-                    {/* Analytics Section - THE NEW CENTERPIECE */}
-                    <div className="mb-8">
-                        <PremiumCard
-                            title="Server Analytics"
-                            description="Real-time visualizations of community growth and activity"
-                            icon={<span className="text-2xl text-blue-400">📊</span>}
-                        >
+                    {/* Analytics */}
+                    <div className="mb-6">
+                        <PremiumCard title="Server Analytics" description="Real-time visualizations of community growth" icon={<span className="text-xl text-blue-400">📊</span>}>
                             <AnalyticsCharts guildId={guildId} />
                         </PremiumCard>
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="mb-8 p-[1px] bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-[8px]">
-                        <div className="bg-[#0a0a0f] rounded-[8px] p-6 border border-white/5">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="p-3 bg-white/5 rounded-xl text-yellow-500">
-                                    <span className="text-2xl">⚡</span>
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-white uppercase tracking-tighter">Fast Navigation</h3>
-                                    <p className="text-sm text-gray-400 font-medium">Quick access to server configuration modules</p>
-                                </div>
+                    <div className="mb-6 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-5">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2 bg-[var(--bg-hover)] rounded-lg text-amber-500">
+                                <span className="text-xl">⚡</span>
                             </div>
-                            
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                                {[
-                                    { href: 'welcome', icon: '👋', label: 'Welcome', color: 'emerald' },
-                                    { href: 'roles', icon: '🎭', label: 'Roles', color: 'purple' },
-                                    { href: 'moderation', icon: '🛡️', label: 'Moderation', color: 'red' },
-                                    { href: 'logging', icon: '📋', label: 'Logging', color: 'cyan' },
-                                    { href: 'economy', icon: '💰', label: 'Economy', color: 'indigo' },
-                                    { href: 'fishing', icon: '🎣', label: 'Fishing', color: 'blue' },
-                                ].map((item) => (
-                                    <a 
-                                        key={item.href} 
-                                        href={`/dashboard/${guildId}/${item.href}`} 
-                                        className="group flex flex-col items-center justify-center p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all duration-300"
-                                    >
-                                        <div className="text-2xl mb-2 group-hover:scale-110 group-hover:-rotate-3 transition duration-300">{item.icon}</div>
-                                        <div className="font-bold text-gray-400 text-xs uppercase tracking-widest group-hover:text-white transition-colors">{item.label}</div>
-                                    </a>
-                                ))}
+                            <div>
+                                <h3 className="text-base font-semibold text-white">Fast Navigation</h3>
+                                <p className="text-xs text-[var(--text-secondary)]">Quick access to server configuration modules</p>
                             </div>
+                        </div>
+
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                            {[
+                                { href: 'welcome', icon: '👋', label: 'Welcome' },
+                                { href: 'roles', icon: '🎭', label: 'Roles' },
+                                { href: 'moderation', icon: '🛡️', label: 'Moderation' },
+                                { href: 'logging', icon: '📋', label: 'Logging' },
+                                { href: 'economy', icon: '💰', label: 'Economy' },
+                                { href: 'fishing', icon: '🎣', label: 'Fishing' },
+                            ].map((item) => (
+                                <a
+                                    key={item.href}
+                                    href={`/dashboard/${guildId}/${item.href}`}
+                                    className="group flex flex-col items-center justify-center p-3 rounded-lg bg-[var(--bg-hover)] border border-[var(--border)] hover:border-[var(--border-hover)] hover:bg-white/8 transition-all"
+                                >
+                                    <div className="text-xl mb-1.5 group-hover:scale-110 transition">{item.icon}</div>
+                                    <div className="text-[var(--text-secondary)] text-[10px] font-semibold uppercase tracking-wider group-hover:text-white transition-colors">{item.label}</div>
+                                </a>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Recent Activity - Now using real component */}
-                    <div className="mb-8">
+                    {/* Activity Log */}
+                    <div className="mb-6">
                         <ActivityLog guildId={guildId} />
                     </div>
                 </div>

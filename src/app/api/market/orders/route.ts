@@ -101,7 +101,7 @@ export async function POST(request: Request) {
         );
 
         await conn.commit();
-        return NextResponse.json({ success: true, message: 'Limit order berhasil dipasang!' });
+        return NextResponse.json({ success: true, message: 'Limit order successfully placed!' });
 
     } catch (e: any) {
         try { await conn.rollback(); } catch {}

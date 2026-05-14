@@ -1,7 +1,8 @@
 "use client";
 
+import Loading from "@/components/Loading";
+
 import { useState, useEffect } from "react";
-import CatLoader from "./CatLoader";
 import CustomDropdown from "./CustomDropdown";
 import ToastContainer, { useToast } from "./Toast";
 import DashboardHeader from "./DashboardHeader";
@@ -367,30 +368,26 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
     );
 
     if (loading) {
-        return <CatLoader message="Loading logging settings..." />;
+        return <Loading message="Loading logging settings..." />;
     }
 
     return (
         <>
 
             {/* Header */}
-            <DashboardHeader
-                title="Logging"
-                subtitle="Log all actions happening in this server. Click on a category to see all its log types."
-                icon="📝"
-            />
+
 
             {/* Tabs */}
             <div className="flex gap-2 mb-6">
                 <button
                     onClick={() => setActiveTab("types")}
-                    className={`px-4 py-1.5 rounded-xl font-black text-xs uppercase tracking-tight transition ${activeTab === "types" ? "bg-[#5865F2] text-white shadow-lg" : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"}`}
+                    className={`px-4 py-1.5 rounded-xl font-black text-xs uppercase tracking-tight transition ${activeTab === "types" ? "bg-[#5865F2] text-white shadow-lg" : "bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-white"}`}
                 >
                     📁 Types
                 </button>
                 <button
                     onClick={() => setActiveTab("settings")}
-                    className={`px-4 py-1.5 rounded-xl font-black text-xs uppercase tracking-tight transition ${activeTab === "settings" ? "bg-[#5865F2] text-white shadow-lg" : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"}`}
+                    className={`px-4 py-1.5 rounded-xl font-black text-xs uppercase tracking-tight transition ${activeTab === "settings" ? "bg-[#5865F2] text-white shadow-lg" : "bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-white"}`}
                 >
                     ⚙️ Settings
                 </button>
@@ -399,13 +396,13 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
             {activeTab === "types" && (
                 <div className="space-y-4">
                     {/* Search and Actions */}
-                    <div className="glass-card rounded-[8px] p-5 relative z-10 border border-white/10">
+                    <div className="glass-card rounded-[8px] p-5 relative z-10 border border-[var(--border)]">
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="🔍 Search for types..."
-                            className="w-full px-4 py-2 bg-black/20 border border-transparent rounded-[3px] text-sm font-medium text-gray-200 outline-none focus:ring-1 focus:ring-[#5865F2] mb-4"
+                            className="w-full px-4 py-2 bg-[var(--bg-tertiary)] border border-transparent rounded-[3px] text-sm font-medium text-[var(--text-primary)] outline-none focus:ring-1 focus:ring-[#5865F2] mb-4"
                         />
                         <div className="flex flex-wrap gap-3">
                             <div className="flex-1 min-w-[200px]">
@@ -428,7 +425,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                             </button>
                             <button
                                 onClick={() => setExpandedCategories(expandedCategories.length === filteredCategories.length ? [] : filteredCategories.map(c => c.id))}
-                                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-[3px] font-medium transition border border-transparent text-sm"
+                                className="px-6 py-3 bg-[var(--bg-hover)] hover:bg-white/20 text-white rounded-[3px] font-medium transition border border-transparent text-sm"
                             >
                                 {expandedCategories.length === filteredCategories.length && filteredCategories.length > 0 ? "🔼 Collapse All" : "🔽 Expand All"}
                             </button>
@@ -443,7 +440,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                             const isExpanded = expandedCategories.includes(cat.id);
 
                             return (
-                                 <div key={cat.id} className="glass-card rounded-[8px] border border-white/10 relative overflow-visible">
+                                <div key={cat.id} className="glass-card rounded-[8px] border border-[var(--border)] relative overflow-visible">
                                     {/* Category Header */}
                                     <div className="flex items-center justify-between p-4 bg-black/40 rounded-t-[8px] relative z-20 overflow-visible">
                                         <button
@@ -453,8 +450,8 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                             className="flex items-center gap-3 text-left flex-1"
                                         >
                                             <span className="text-xl">{cat.icon}</span>
-                                            <span className="font-bold text-gray-200 text-base">{cat.name}</span>
-                                            <span className="text-gray-400 text-xs">({cat.types.length} types)</span>
+                                            <span className="font-bold text-[var(--text-primary)] text-base">{cat.name}</span>
+                                            <span className="text-[var(--text-secondary)] text-xs">({cat.types.length} types)</span>
                                             <span className="text-[#87898c] transition-transform duration-200" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
                                         </button>
 
@@ -462,7 +459,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                             {categoryChannel && (
                                                 <button
                                                     onClick={() => setCategoryChannel(cat.id, null)}
-                                                    className="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition"
+                                                    className="w-6 h-6 flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-400 hover:bg-red-500/10 rounded transition"
                                                 >×</button>
                                             )}
                                             {categoryChannel ? (
@@ -486,7 +483,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
 
                                     {/* Expanded Types */}
                                     {isExpanded && (
-                                        <div className="border-t border-white/10 overflow-visible">
+                                        <div className="border-t border-[var(--border)] overflow-visible">
                                             {cat.types.map(type => {
                                                 const typeChannelId = settings.type_channels[type.id];
                                                 const effectiveChannelId = typeChannelId || categoryChannelId;
@@ -494,17 +491,17 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                                                 const isOverridden = !!typeChannelId;
 
                                                 return (
-                                                    <div key={type.id} className="flex items-center justify-between px-4 py-3 border-b border-white/10 last:border-b-0 hover:bg-white/5 transition relative z-10 overflow-visible">
+                                                    <div key={type.id} className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--bg-hover)] transition relative z-10 overflow-visible">
                                                         <div className="flex items-center gap-3 pl-8">
-                                                            <span className="w-1.5 h-1.5 bg-white/10 rounded-full"></span>
-                                                            <span className="text-gray-200 font-medium text-sm">{type.name}</span>
+                                                            <span className="w-1.5 h-1.5 bg-[var(--bg-hover)] rounded-full"></span>
+                                                            <span className="text-[var(--text-primary)] font-medium text-sm">{type.name}</span>
                                                         </div>
 
                                                         <div className="flex items-center gap-2">
                                                             {effectiveChannel && (
                                                                 <button
                                                                     onClick={() => setTypeChannel(type.id, null)}
-                                                                    className={`w-6 h-6 flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition ${!isOverridden && 'invisible'}`}
+                                                                    className={`w-6 h-6 flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-400 hover:bg-red-500/10 rounded transition ${!isOverridden && 'invisible'}`}
                                                                 >×</button>
                                                             )}
                                                             {effectiveChannel ? (
@@ -546,10 +543,10 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                         { key: "log_deleted_polls", title: "Log deleted polls with Message Delete", desc: "Poll deletions are logged by two types: Poll Delete and Message Delete", default: true },
                         { key: "log_sticky_messages", title: "Log deleted sticky messages", desc: "Templates can be sticky messages. Disable to skip logging them", default: true },
                     ].map(setting => (
-                        <div key={setting.key} className="glass-card rounded-[8px] p-5 flex items-center justify-between border border-white/10">
+                        <div key={setting.key} className="glass-card rounded-[8px] p-5 flex items-center justify-between border border-[var(--border)]">
                             <div>
-                                <div className="font-bold text-gray-200">{setting.title}</div>
-                                <div className="text-gray-400 text-sm">{setting.desc}</div>
+                                <div className="font-bold text-[var(--text-primary)]">{setting.title}</div>
+                                <div className="text-[var(--text-secondary)] text-sm">{setting.desc}</div>
                             </div>
                             <button
                                 onClick={() => setSettings(prev => ({ ...prev, [setting.key]: !prev[setting.key as keyof LoggingSettings] }))}
@@ -561,9 +558,9 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                     ))}
 
                     {/* Ignore Channels */}
-                    <div className="glass-card rounded-[8px] p-5 relative z-30 overflow-visible border border-white/10">
-                        <div className="font-bold text-gray-200 mb-1">Ignore channels</div>
-                        <div className="text-gray-400 text-sm mb-3">All actions involving these channels are ignored from Logging</div>
+                    <div className="glass-card rounded-[8px] p-5 relative z-30 overflow-visible border border-[var(--border)]">
+                        <div className="font-bold text-[var(--text-primary)] mb-1">Ignore channels</div>
+                        <div className="text-[var(--text-secondary)] text-sm mb-3">All actions involving these channels are ignored from Logging</div>
                         <div className="flex flex-wrap gap-2 mb-3">
                             {settings.ignored_channels.length === 0 && (
                                 <span className="text-[#87898c] text-sm">+ No channels added</span>
@@ -571,7 +568,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                             {settings.ignored_channels.map(id => {
                                 const ch = channels.find(c => c.id === id);
                                 return ch ? (
-                                    <span key={id} className="px-2 py-1 bg-[#5865F2]/20 text-gray-200 rounded-[3px] text-xs font-medium flex items-center gap-2 border border-[#5865F2]/30">
+                                    <span key={id} className="px-2 py-1 bg-[#5865F2]/20 text-[var(--text-primary)] rounded-[3px] text-xs font-medium flex items-center gap-2 border border-[#5865F2]/30">
                                         #{ch.name}
                                         <button onClick={() => toggleIgnored("channels", id)} className="hover:text-[#da373c] font-bold">×</button>
                                     </span>
@@ -591,9 +588,9 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                     </div>
 
                     {/* Ignore Roles */}
-                    <div className="glass-card rounded-[8px] p-5 relative z-20 overflow-visible border border-white/10">
-                        <div className="font-bold text-gray-200 mb-1">Ignore roles</div>
-                        <div className="text-gray-400 text-sm mb-3">All actions from users with these roles are ignored from Logging</div>
+                    <div className="glass-card rounded-[8px] p-5 relative z-20 overflow-visible border border-[var(--border)]">
+                        <div className="font-bold text-[var(--text-primary)] mb-1">Ignore roles</div>
+                        <div className="text-[var(--text-secondary)] text-sm mb-3">All actions from users with these roles are ignored from Logging</div>
                         <div className="flex flex-wrap gap-2 mb-3">
                             {settings.ignored_roles.length === 0 && (
                                 <span className="text-[#87898c] text-sm">+ No roles added</span>
@@ -601,7 +598,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                             {settings.ignored_roles.map(id => {
                                 const role = roles.find(r => r.id === id);
                                 return role ? (
-                                    <span key={id} className="px-2 py-1 bg-[#5865F2]/20 text-gray-200 rounded-[3px] text-xs font-medium flex items-center gap-2 border border-[#5865F2]/30">
+                                    <span key={id} className="px-2 py-1 bg-[#5865F2]/20 text-[var(--text-primary)] rounded-[3px] text-xs font-medium flex items-center gap-2 border border-[#5865F2]/30">
                                         {role.name}
                                         <button onClick={() => toggleIgnored("roles", id)} className="hover:text-[#da373c] font-bold">×</button>
                                     </span>
@@ -621,9 +618,9 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                     </div>
 
                     {/* Ignore Users */}
-                    <div className="glass-card rounded-[8px] p-5 relative z-10 overflow-visible border border-white/10">
-                        <div className="font-bold text-gray-200 mb-1">Ignore users</div>
-                        <div className="text-gray-400 text-sm mb-3">All actions from these users are ignored from Logging</div>
+                    <div className="glass-card rounded-[8px] p-5 relative z-10 overflow-visible border border-[var(--border)]">
+                        <div className="font-bold text-[var(--text-primary)] mb-1">Ignore users</div>
+                        <div className="text-[var(--text-secondary)] text-sm mb-3">All actions from these users are ignored from Logging</div>
                         <div className="flex flex-wrap gap-2 mb-3">
                             {settings.ignored_users.length === 0 && (
                                 <span className="text-[#87898c] text-sm">+ No users added</span>
@@ -631,7 +628,7 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
                             {settings.ignored_users.map(id => {
                                 const user = members.find(m => m.id === id);
                                 return user ? (
-                                    <span key={id} className="px-2 py-1 bg-[#5865F2]/20 text-gray-200 rounded-[3px] text-xs font-medium flex items-center gap-2 border border-[#5865F2]/30">
+                                    <span key={id} className="px-2 py-1 bg-[#5865F2]/20 text-[var(--text-primary)] rounded-[3px] text-xs font-medium flex items-center gap-2 border border-[#5865F2]/30">
                                         {user.display_name}
                                         <button onClick={() => toggleIgnored("users", id)} className="hover:text-[#da373c] font-bold">×</button>
                                     </span>
@@ -654,12 +651,12 @@ export default function LoggingSettings({ guildId }: LoggingSettingsProps) {
 
             {/* Standard Global Save Bar */}
             {JSON.stringify(settings) !== JSON.stringify(originalSettings) && originalSettings && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[130] bg-[#030305]/95 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-xl shadow-2xl animate-fade-up flex items-center justify-between gap-6 min-w-[360px]">
-                    <span className="text-gray-200 font-bold text-xs uppercase tracking-tight line-clamp-1">Careful — you have unsaved changes!</span>
+                <div className="fixed bottom-2 left-1/2 -translate-x-1/2 z-[130] bg-[var(--bg-secondary)]/95 backdrop-blur-3xl border border-[var(--border)] px-4 py-3 rounded-xl shadow-2xl animate-fade-up flex items-center justify-between gap-6 min-w-[360px]">
+                    <span className="text-[var(--text-primary)] font-bold text-xs uppercase tracking-tight line-clamp-1">Careful — you have unsaved changes!</span>
                     <div className="flex items-center gap-3 shrink-0">
                         <button
                             onClick={resetSettings}
-                            className="text-gray-400 hover:text-white text-xs font-black uppercase tracking-widest transition-colors"
+                            className="text-[var(--text-secondary)] hover:text-white text-xs font-black uppercase tracking-widest transition-colors"
                         >
                             Reset
                         </button>

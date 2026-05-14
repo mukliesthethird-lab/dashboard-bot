@@ -193,7 +193,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                     >
                         <div className="flex gap-4 mb-4">
                             {[0, 1, 2, 3, 4].map(i => (
-                                <div key={i} className={`w-1.5 h-1.5 rounded-full ${isSpinning || isJackpotHit ? 'animate-pulse bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]' : 'bg-zinc-800'}`} style={{ animationDelay: `${i * 0.15}s` }} />
+                                <div key={i} className={`w-1.5 h-1.5 rounded-full ${isSpinning || isJackpotHit ? 'animate-pulse bg-[var(--bg-secondary)]mber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]' : 'bg-zinc-800'}`} style={{ animationDelay: `${i * 0.15}s` }} />
                             ))}
                         </div>
 
@@ -207,9 +207,9 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
 
                             {/* Win Line Highlight */}
                             <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-[100px] lg:h-[120px] z-10 pointer-events-none">
-                                <div className="absolute inset-0 bg-amber-500/[0.03] border-y-2 border-amber-500/20 shadow-[0_0_50px_rgba(245,158,11,0.1)]" />
-                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-8 bg-amber-500 rounded-r-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
-                                <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-8 bg-amber-500 rounded-l-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
+                                <div className="absolute inset-0 bg-[var(--bg-secondary)]mber-500/[0.03] border-y-2 border-amber-500/20 shadow-[0_0_50px_rgba(245,158,11,0.1)]" />
+                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-8 bg-[var(--bg-secondary)]mber-500 rounded-r-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
+                                <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-8 bg-[var(--bg-secondary)]mber-500 rounded-l-full shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
                             </div>
 
                             {[0, 1, 2].map((reelIndex) => (
@@ -243,7 +243,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                                         </div>
                                     </motion.div>
                                     {reelIndex < 2 && (
-                                        <div className="absolute right-0 top-1/4 h-1/2 w-px bg-white/5 z-20" />
+                                        <div className="absolute right-0 top-1/4 h-1/2 w-px bg-[var(--bg-hover)] z-20" />
                                     )}
                                 </div>
                             ))}
@@ -253,17 +253,17 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                     {/* CONTROLS SECTION - Integrated Sidebar */}
                     <div className="w-full lg:w-[350px] flex flex-col gap-4 h-full lg:h-[450px] xl:h-[500px]">
                         {/* Payout Table - Compact */}
-                        <div className="bg-white/[0.03] border border-white/5 p-4 lg:p-6 rounded-[2rem] flex-1 min-h-0 overflow-y-auto no-scrollbar">
+                        <div className="bg-white/[0.03] border border-[var(--border)] p-4 lg:p-6 rounded-[2rem] flex-1 min-h-0 overflow-y-auto no-scrollbar">
                             <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-4">Win multipliers</p>
                             <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:gap-3">
-                                <div className="p-3 bg-black/40 rounded-xl border border-white/5 flex items-center justify-between">
+                                <div className="p-3 bg-black/40 rounded-xl border border-[var(--border)] flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="text-lg">💎💎💎</div>
                                         <span className="text-[9px] font-black text-zinc-600 uppercase">Jackpot</span>
                                     </div>
                                     <span className="text-lg font-black text-amber-500">20X</span>
                                 </div>
-                                <div className="p-3 bg-black/40 rounded-xl border border-white/5 flex items-center justify-between">
+                                <div className="p-3 bg-black/40 rounded-xl border border-[var(--border)] flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="text-lg">⭐⭐⭐</div>
                                         <span className="text-[9px] font-black text-zinc-600 uppercase">Major</span>
@@ -274,7 +274,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                         </div>
 
                         {/* Betting Control - Hardware Look */}
-                        <div className="bg-[#0b0c14] border border-white/5 p-6 rounded-[2.5rem] flex flex-col gap-4 shadow-xl shrink-0">
+                        <div className="bg-[#0b0c14] border border-[var(--border)] p-6 rounded-[2.5rem] flex flex-col gap-4 shadow-xl shrink-0">
                             <div className="space-y-2">
                                 <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest leading-none">Stake Amount</label>
                                 <div className="relative group">
@@ -286,12 +286,12 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                                         value={bet}
                                         onChange={(e) => setBet(parseInt(e.target.value) || 0)}
                                         disabled={isSpinning}
-                                        className="w-full bg-white/5 border-2 border-transparent focus:border-white/10 rounded-xl py-3 pl-10 pr-4 text-white font-black text-sm outline-none transition-all"
+                                        className="w-full bg-[var(--bg-hover)] border-2 border-transparent focus:border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-white font-black text-sm outline-none transition-all"
                                     />
                                 </div>
                                 <div className="flex gap-1.5">
                                     {[100, 500, 1000].map(v => (
-                                        <button key={v} onClick={() => !isSpinning && setBet(v)} className={`flex-1 py-1.5 rounded-lg text-[9px] font-black border transition-all ${bet === v ? 'bg-white text-black border-white' : 'bg-white/5 text-zinc-500 border-transparent hover:text-white'}`}>
+                                        <button key={v} onClick={() => !isSpinning && setBet(v)} className={`flex-1 py-1.5 rounded-lg text-[9px] font-black border transition-all ${bet === v ? 'bg-white text-black border-white' : 'bg-[var(--bg-hover)] text-zinc-500 border-transparent hover:text-white'}`}>
                                             {v}
                                         </button>
                                     ))}
@@ -313,7 +313,7 @@ export default function SlotGame({ userBalance, onBalanceChange }: SlotGameProps
                                     onClick={handleSpin}
                                     disabled={isSpinning || userBalance < bet}
                                     className={`w-full py-5 rounded-[1.8rem] font-black text-lg flex items-center justify-center gap-3 transition-all relative overflow-hidden group
-                                        ${isSpinning ? 'bg-zinc-800 text-zinc-600 opacity-50' : 'bg-white text-black hover:bg-emerald-500 hover:text-white hover:scale-[1.02] active:scale-95 shadow-xl shadow-white/5'}
+                                        ${isSpinning ? 'bg-zinc-800 text-zinc-600 opacity-50' : 'bg-white text-black hover:bg-[var(--bg-elevated)]merald-500 hover:text-white hover:scale-[1.02] active:scale-95 shadow-xl shadow-white/5'}
                                     `}
                                 >
                                     {isSpinning ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5 fill-current" />}

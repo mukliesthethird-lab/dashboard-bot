@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
         console.log(`Inserting: ${name} | Rp ${amount} | Tier: ${tier}`);
 
-        // Simpan ke Database
+        // Save to Database
         const [result] = await pool.execute(
             "INSERT INTO donors (name, amount, message, tier) VALUES (?, ?, ?, ?)",
             [name, amount, message, tier]

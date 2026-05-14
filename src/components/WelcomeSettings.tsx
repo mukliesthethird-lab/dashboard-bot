@@ -1,10 +1,11 @@
 "use client";
 
+import Loading from "@/components/Loading";
+
 import { useState, useEffect } from "react";
 import CreateMessageModal from "./CreateMessageModal";
 import ConfirmationModal from "./ConfirmationModal";
 import ToastContainer, { useToast } from "./Toast";
-import CatLoader from "./CatLoader";
 import CustomDropdown from "./CustomDropdown";
 import { ReactionRoleMessage, EmbedData, Component, BotAction, Role, Channel } from "../types";
 import { logActivity } from "@/lib/logger";
@@ -70,7 +71,7 @@ interface WelcomeSettingsProps {
 }
 
 const MESSAGE_TYPES = [
-    { type: "join" as MessageType, icon: "➡️", title: "Join Messages", desc: "When a user joins the server", color: "emerald", defaultTitle: "Welcome!", defaultDesc: "Hey {user}, Selamat datang di **{server}**!", defaultColor: "#FFD700" },
+    { type: "join" as MessageType, icon: "➡️", title: "Join Messages", desc: "When a user joins the server", color: "emerald", defaultTitle: "Welcome!", defaultDesc: "Hey {user}, Welcome to **{server}**!", defaultColor: "#FFD700" },
     { type: "leave" as MessageType, icon: "⬅️", title: "Leave Messages", desc: "When a user leaves the server", color: "red", defaultTitle: "Goodbye!", defaultDesc: "Goodbye **{user.name}**! We will miss you. 👋", defaultColor: "#FF6B6B" },
     { type: "boost" as MessageType, icon: "💎", title: "Boost Messages", desc: "When a user boosts the server", color: "pink", defaultTitle: "Server Boosted!", defaultDesc: "{user} just boosted **{server}**! 🚀", defaultColor: "#FF73FA" },
     { type: "role" as MessageType, icon: "🎭", title: "Role Assignment Messages", desc: "When a user gets or loses a role", color: "indigo", defaultTitle: "Role Updated!", defaultDesc: "{user} now has the **{role}** role!", defaultColor: "#818CF8" },
@@ -329,250 +330,208 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
     };
 
     if (loading) {
-        return <CatLoader message="Loading welcome settings..." />;
+        return <Loading message="Loading welcome settings..." />;
     }
 
+    const editingTracker = editingTrackerId ? settings.role.trackers?.find(t => t.id === editingTrackerId) : null;
+
     return (
-        <div className="space-y-8 animate-fade-in pb-64">
+        <div className="space-y-4 animate-fade-in pb-64 max-w-5xl mx-auto">
             {/* Header Section */}
-            <div className="glass-card rounded-[8px] p-8 relative flex flex-col md:flex-row justify-between items-center gap-6 border border-white/10">
-                <div className="relative z-10 w-full">
-                    <h1 className="text-2xl font-bold text-gray-200 mb-2 flex items-center gap-3">
-                        <span className="text-[#5865F2]">👋</span> Welcome & Greetings
-                    </h1>
-                    <p className="text-gray-400 text-sm max-w-2xl">
-                        Customize automatic messages for new members, boosts, and more.
-                    </p>
+            <div className="flex items-center justify-between glass-card p-6 rounded-xl border border-[var(--border)] bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-tertiary)] shadow-xl">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-[#5865F2]/10 flex items-center justify-center text-3xl shadow-inner border border-[#5865F2]/20">
+                        👋
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-black text-white tracking-tight">Welcome & Greetings</h1>
+                        <p className="text-[var(--text-tertiary)] text-[11px] font-medium uppercase tracking-widest">Server Automation</p>
+                    </div>
                 </div>
             </div>
 
             {/* Notification Toast */}
             <ToastContainer toast={toast} onClose={hideToast} />
 
-            {/* Message Type List (Vertical Stack) */}
-            <div className="flex flex-col gap-4">
+            {/* Compact Vertical List */}
+            <div className="space-y-3">
                 {MESSAGE_TYPES.map((type) => {
-                    const isActive = activeMessageType === type.type;
                     const config = settings[type.type];
+                    const isActive = activeMessageType === type.type;
+                    const colorClass = type.color === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' : type.color === 'red' ? 'bg-red-500/10 text-red-400' : type.color === 'pink' ? 'bg-pink-500/10 text-pink-400' : 'bg-[#5865F2]/10 text-[#5865F2]';
 
                     return (
-                        <div
-                            key={type.type}
-                            onClick={() => setActiveMessageType(type.type as MessageType)}
-                            className={`relative glass-card rounded-[8px] p-6 border transition-all cursor-pointer flex flex-col md:flex-row gap-6 items-start md:items-center ${isActive ? 'border-[#5865F2] ring-1 ring-[#5865F2]/50' : 'border-white/10 hover:border-[#4e5058]'
-                                }`}
-                        >
-                            <div className="flex items-center gap-4 flex-1">
-                                <div className={`w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center text-2xl ${type.color === 'emerald' ? 'bg-[#248046]/20 text-[#248046]' : type.color === 'red' ? 'bg-[#da373c]/20 text-[#da373c]' : type.color === 'pink' ? 'bg-[#eb459e]/20 text-[#eb459e]' : 'bg-[#5865F2]/20 text-[#5865F2]'}`}>
-                                    {type.icon}
+                        <div key={type.type} className={`${type.type === 'role' && isActive ? 'space-y-0' : 'space-y-1'}`}>
+                            {/* Main Type Row */}
+                            <div
+                                onClick={() => setActiveMessageType(type.type as MessageType)}
+                                className={`glass-card p-3 border transition-all cursor-pointer flex items-center gap-5 ${isActive
+                                        ? `border-[#5865F2] bg-white/2 shadow-lg shadow-[#5865F2]/5 ${type.type === 'role' ? 'rounded-t-xl rounded-b-none border-b-0' : 'rounded-xl'}`
+                                        : 'border-[var(--border)] rounded-xl'
+                                    }`}
+                            >
+                                {/* Left: Info */}
+                                <div className="flex items-center gap-4 w-64 shrink-0">
+                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl shrink-0 ${colorClass}`}>
+                                        {type.icon}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h3 className="text-[13px] font-bold text-white truncate">{type.title}</h3>
+                                        <p className="text-[10px] text-[var(--text-tertiary)] truncate">{type.desc}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-base font-bold text-gray-200">{type.title}</h3>
-                                    <p className="text-gray-400 text-sm">{type.desc}</p>
-                                </div>
-                            </div>
 
-                            {/* Controls - Hidden for 'role' as it's handled per-tracker */}
-                            {type.type !== "role" && (
-                                <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto" onClick={e => e.stopPropagation()}>
-                                    <select
-                                        value={config.channel_id || ""}
-                                        onChange={(e) => {
-                                            setSettings(prev => ({
-                                                ...prev,
-                                                [type.type]: { ...prev[type.type as MessageType], channel_id: e.target.value }
-                                            }));
-                                        }}
-                                        className="px-3 py-2 bg-black/20 border border-transparent rounded-[3px] text-sm font-medium text-gray-200 outline-none focus:ring-1 focus:ring-[#5865F2] min-w-[200px]"
-                                    >
-                                        <option value="">🚫 No Channel</option>
-                                        {channels.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
-                                    </select>
+                                {/* Center: Quick Controls (Hidden for 'role') */}
+                                {type.type !== "role" && (
+                                    <div className="flex-1 flex items-center gap-6 px-6 border-l border-[var(--border)]" onClick={e => e.stopPropagation()}>
+                                        <div className="flex-1 max-w-[200px]">
+                                            <select
+                                                value={config.channel_id || ""}
+                                                onChange={(e) => {
+                                                    setSettings(prev => ({
+                                                        ...prev,
+                                                        [type.type]: { ...prev[type.type as MessageType], channel_id: e.target.value }
+                                                    }));
+                                                }}
+                                                className="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[11px] font-bold text-white outline-none focus:border-[#5865F2]"
+                                            >
+                                                <option value="">🚫 Disable Channel</option>
+                                                {channels.map(c => <option key={c.id} value={c.id}># {c.name}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex items-center gap-2 pr-4 border-r border-white/5">
+                                                <div className={`w-2 h-2 rounded-full ${config.enabled ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-white/10'}`} />
+                                                <span className="text-[10px] font-black text-[var(--text-tertiary)] uppercase tracking-widest min-w-[24px]">{config.enabled ? 'On' : 'Off'}</span>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    setSettings(prev => ({
+                                                        ...prev,
+                                                        [type.type]: { ...prev[type.type as MessageType], enabled: !config.enabled }
+                                                    }));
+                                                }}
+                                                className={`relative w-10 h-6 rounded-full transition-colors flex items-center ${config.enabled ? 'bg-[#23a55a]' : 'bg-white/10'}`}
+                                            >
+                                                <div className={`absolute left-[2px] w-4 h-4 bg-white rounded-full transition-transform ${config.enabled ? 'translate-x-4' : 'translate-x-0'}`} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
 
-                                    <div className="flex items-center gap-3">
+                                {/* Role type spacing */}
+                                {type.type === "role" && <div className="flex-1 px-6 border-l border-[var(--border)] flex items-center gap-2">
+                                    <span className="text-[10px] font-black text-[var(--text-tertiary)] uppercase tracking-widest">
+                                        {config.trackers?.length || 0} Trackers Configured
+                                    </span>
+                                </div>}
+
+                                {/* Right: Action Button */}
+                                <div className="ml-auto flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                                    {type.type !== "role" ? (
                                         <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
+                                            onClick={() => {
                                                 setActiveMessageType(type.type as MessageType);
                                                 setEditingSubtype("add");
                                                 setShowEditor(true);
                                             }}
-                                            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-[3px] font-medium transition flex items-center gap-2 text-sm"
+                                            className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-lg border border-white/5 transition-all"
                                         >
-                                            ✏️ Edit
+                                            Edit
                                         </button>
-                                        <label className="relative cursor-pointer ml-1 flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                className="sr-only peer"
-                                                checked={config.enabled}
-                                                onChange={(e) => {
-                                                    setSettings(prev => ({
-                                                        ...prev,
-                                                        [type.type]: { ...prev[type.type as MessageType], enabled: e.target.checked }
-                                                    }));
-                                                }}
-                                            />
-                                            <div className="w-10 h-6 bg-[#80848e] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#248046]"></div>
-                                        </label>
-                                    </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setActiveMessageType("role")}
+                                            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${isActive ? 'bg-[#5865F2] text-white' : 'bg-white/5 text-[var(--text-tertiary)]'}`}
+                                        >
+                                            <svg className={`w-4 h-4 transition-transform duration-300 ${isActive ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
-                            )}
+                            </div>
 
-                            {/* Role Settings Expander for 'Role' type */}
+                            {/* Detail Panel (Role Trackers) */}
                             {type.type === "role" && isActive && (
-                                <div className="absolute top-full left-0 right-0 mt-[-8px] pt-8 pb-6 px-6 bg-black/20 rounded-b-[8px] border-x border-b border-[#5865F2] z-10 animate-slide-down flex flex-col gap-8" onClick={e => e.stopPropagation()}>
-                                    
-                                    <div className="flex justify-between items-center">
-                                        <label className="text-[12px] font-bold text-gray-400 uppercase tracking-wide">🎭 Role Trackers ({config.trackers?.length || 0})</label>
-                                        <button 
+                                <div className="animate-slide-down px-4 pb-4 pt-4 bg-white/[0.01] rounded-b-xl rounded-t-none border-x border-b border-[#5865F2] space-y-4 shadow-xl shadow-[#5865F2]/5">
+                                    <div className="flex items-center justify-between py-1 border-b border-white/5 pb-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-[#5865F2] shadow-[0_0_5px_rgba(88,101,242,0.5)]" />
+                                            <span className="text-[10px] font-black text-white uppercase tracking-widest">Active Role Trackers</span>
+                                        </div>
+                                        <button
                                             onClick={addTracker}
-                                            className="px-3 py-1 bg-[#5865F2] hover:bg-[#4752c4] text-white rounded-[3px] text-xs font-bold transition"
+                                            className="text-[10px] font-black text-[#5865F2] hover:text-[#727cff] uppercase tracking-widest transition-colors flex items-center gap-1.5"
                                         >
-                                            + Add Tracker
+                                            <span className="text-sm">+</span> Add New Tracker
                                         </button>
                                     </div>
 
-                                    <div className="space-y-6">
-                                        {(config.trackers || []).map((tracker, idx) => (
-                                            <div key={tracker.id} className="glass-card p-5 rounded-[6px] border border-white/10 space-y-5 relative">
-                                                <button 
-                                                    onClick={() => deleteTracker(tracker.id)}
-                                                    className="absolute top-4 right-4 text-gray-500 hover:text-[#da373c] transition"
-                                                >
-                                                    ✕
-                                                </button>
-
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                    <div>
-                                                        <label className="block text-[10px] font-black text-[#72767d] uppercase tracking-widest mb-2">Tracker Name</label>
-                                                        <input 
-                                                            type="text" 
+                                    <div className="space-y-3">
+                                        {(config.trackers || []).map((tracker) => (
+                                            <div key={tracker.id} className="bg-black/20 border border-white/5 p-4 rounded-xl flex flex-col md:flex-row md:items-center gap-6 group hover:border-white/10 transition-colors">
+                                                {/* Tracker Info */}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-3">
+                                                        <input
+                                                            type="text"
                                                             value={tracker.name}
                                                             onChange={(e) => updateTracker(tracker.id, { name: e.target.value })}
-                                                            className="w-full px-3 py-2 bg-black/20 border border-transparent rounded-[3px] text-sm text-gray-200 focus:ring-1 focus:ring-[#5865F2] outline-none"
-                                                            placeholder="e.g. Staff Role Updates"
+                                                            className="bg-transparent border-none p-0 text-[14px] font-bold text-white focus:ring-0 placeholder-white/20 w-full"
                                                         />
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="block text-[10px] font-black text-[#72767d] uppercase tracking-widest mb-2">Announcement Channel</label>
-                                                        <CustomDropdown
-                                                            value={tracker.channel_id || ""}
-                                                            onChange={(val) => updateTracker(tracker.id, { channel_id: val })}
-                                                            options={channels.map(c => ({ value: c.id, label: `# ${c.name}`, icon: "💬" }))}
-                                                            placeholder="Select channel..."
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-[10px] font-black text-[#72767d] uppercase tracking-widest mb-2">Announcement Type</label>
-                                                    <div className="flex gap-1.5 overflow-x-auto pb-1">
-                                                            {[
-                                                                { val: 'both', label: 'Add & Remove' },
-                                                                { val: 'add', label: 'Add Only' },
-                                                                { val: 'remove', label: 'Remove Only' }
-                                                            ].map(opt => (
-                                                                <button
-                                                                    key={opt.val}
-                                                                    onClick={() => updateTracker(tracker.id, { announce_type: opt.val as any })}
-                                                                    className={`flex-1 py-1.5 rounded-[3px] text-[11px] font-bold border transition ${tracker.announce_type === opt.val
-                                                                        ? 'border-[#5865F2] bg-[#5865F2]/20 text-gray-200'
-                                                                        : 'border-transparent bg-black/20 text-gray-400 hover:bg-white/5'
-                                                                        }`}
-                                                                >
-                                                                    {opt.label}
-                                                                </button>
-                                                            ))}
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-[10px] font-black text-[#72767d] uppercase tracking-widest mb-2">Roles to Track</label>
-                                                    <div className="flex flex-wrap gap-1.5 p-2 bg-black/20 rounded-[3px] min-h-[40px] border border-transparent focus-within:border-[#5865f2]">
-                                                        {tracker.tracked_roles.map(roleId => {
-                                                            const role = roles.find(r => r.id === roleId);
-                                                            return (
-                                                                <div key={roleId} className="flex items-center gap-1.5 glass-card px-2 py-1 rounded-[3px] border border-white/10 text-xs">
-                                                                    <span style={{ color: role?.color ? `#${role.color.toString(16).padStart(6, '0')}` : 'inherit' }}>
-                                                                        {role?.name || roleId}
-                                                                    </span>
-                                                                    <button
-                                                                        onClick={() => updateTracker(tracker.id, { tracked_roles: tracker.tracked_roles.filter(id => id !== roleId) })}
-                                                                        className="text-gray-500 hover:text-[#da373c] font-bold"
-                                                                    >
-                                                                        ✕
-                                                                    </button>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                        <CustomDropdown
-                                                            value=""
-                                                            onChange={(val) => {
-                                                                if (val && !tracker.tracked_roles.includes(val)) {
-                                                                    updateTracker(tracker.id, { tracked_roles: [...tracker.tracked_roles, val] });
-                                                                }
-                                                            }}
-                                                            options={roles
-                                                                .filter(r => !tracker.tracked_roles.includes(r.id))
-                                                                .map(r => ({ value: r.id, label: r.name }))}
-                                                            placeholder="+ Select role..."
-                                                            className="min-w-[150px]"
-                                                            size="sm"
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                                                    <div className="flex items-center gap-2">
-                                                        <button
-                                                            onClick={() => {
-                                                                setEditingTrackerId(tracker.id);
-                                                                setEditingSubtype("add");
-                                                                setShowEditor(true);
-                                                            }}
-                                                            className={`px-3 py-1.5 rounded-[3px] text-xs font-bold transition flex items-center gap-1.5 ${tracker.announce_type === 'remove' ? 'bg-white/10 opacity-50 cursor-not-allowed' : 'bg-[#248046] hover:bg-[#1a6334] text-white'}`}
-                                                            disabled={tracker.announce_type === 'remove'}
-                                                        >
-                                                            ✏️ {tracker.announce_type === 'both' ? 'Edit Add Msg' : 'Edit Msg'}
-                                                        </button>
-                                                        {tracker.announce_type === 'both' && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    setEditingTrackerId(tracker.id);
-                                                                    setEditingSubtype("remove");
-                                                                    setShowEditor(true);
-                                                                }}
-                                                                className="px-3 py-1.5 bg-[#da373c] hover:bg-[#a12828] text-white rounded-[3px] text-xs font-bold transition flex items-center gap-1.5"
-                                                            >
-                                                                ✏️ Edit Remove Msg
-                                                            </button>
-                                                        )}
-                                                    </div>
-
-                                                    <label className="relative cursor-pointer flex items-center gap-3">
-                                                        <span className="text-[10px] font-black text-[#72767d] uppercase tracking-widest">ENABLED</span>
-                                                        <div className="relative">
-                                                            <input
-                                                                type="checkbox"
-                                                                className="sr-only peer"
-                                                                checked={tracker.enabled}
-                                                                onChange={(e) => updateTracker(tracker.id, { enabled: e.target.checked })}
-                                                            />
-                                                            <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#248046]"></div>
+                                                        <div className="flex gap-1 shrink-0">
+                                                            {tracker.tracked_roles.slice(0, 3).map(rid => {
+                                                                const r = roles.find(x => x.id === rid);
+                                                                return <div key={rid} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: r?.color ? `#${r.color.toString(16).padStart(6, '0')}` : '#72767d' }} />;
+                                                            })}
                                                         </div>
-                                                    </label>
+                                                    </div>
+                                                </div>
+
+                                                {/* Tracker Settings */}
+                                                <div className="flex items-center gap-5 shrink-0">
+                                                    <div className="w-48">
+                                                        <select
+                                                            value={tracker.channel_id || ""}
+                                                            onChange={(e) => updateTracker(tracker.id, { channel_id: e.target.value })}
+                                                            className="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[11px] font-bold text-white outline-none focus:border-[#5865F2]"
+                                                        >
+                                                            <option value="">No Channel</option>
+                                                            {channels.map(c => <option key={c.id} value={c.id}># {c.name}</option>)}
+                                                        </select>
+                                                    </div>
+
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => { setActiveMessageType("role"); setEditingTrackerId(tracker.id); setEditingSubtype("add"); setShowEditor(true); }}
+                                                            className="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase rounded-lg border border-emerald-500/10 transition-all active:scale-95"
+                                                        >
+                                                            On Assigned
+                                                        </button>
+                                                        {tracker.announce_type === 'both' && <button
+                                                            onClick={() => { setActiveMessageType("role"); setEditingTrackerId(tracker.id); setEditingSubtype("remove"); setShowEditor(true); }}
+                                                            className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[10px] font-black uppercase rounded-lg border border-red-500/10 transition-all active:scale-95"
+                                                        >
+                                                            On Removed
+                                                        </button>}
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => updateTracker(tracker.id, { enabled: !tracker.enabled })}
+                                                        className={`relative w-9 h-5 rounded-full transition-colors flex items-center shrink-0 ${tracker.enabled ? 'bg-[#23a55a]' : 'bg-white/10'}`}
+                                                    >
+                                                        <div className={`absolute left-[2px] w-3.5 h-3.5 bg-white rounded-full transition-transform ${tracker.enabled ? 'translate-x-4' : 'translate-x-0'}`} />
+                                                    </button>
+
+                                                    <button onClick={() => deleteTracker(tracker.id)} className="w-8 h-8 flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all">✕</button>
                                                 </div>
                                             </div>
                                         ))}
 
                                         {(!config.trackers || config.trackers.length === 0) && (
-                                            <div className="text-center py-10 border-2 border-dashed border-white/10 rounded-[8px]">
-                                                <p className="text-gray-400 text-sm">No role trackers configured.</p>
-                                                <button onClick={addTracker} className="mt-3 text-[#5865F2] hover:underline text-xs font-bold font-black">
-                                                    Click here to add your first tracker
-                                                </button>
+                                            <div className="py-8 text-center border border-dashed border-white/5 rounded-lg">
+                                                <p className="text-[11px] text-[var(--text-tertiary)]">No role trackers. <button onClick={addTracker} className="text-[#5865F2] font-bold">Add one now.</button></p>
                                             </div>
                                         )}
                                     </div>
@@ -583,9 +542,7 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                 })}
             </div>
 
-
-
-            {/* Create Message Modal (The New Editor) */}
+            {/* Editor Modal */}
             {showEditor && (
                 <CreateMessageModal
                     isOpen={showEditor}
@@ -595,32 +552,26 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                     }}
                     initialMessage={{
                         message_id: null,
-                        channel_id: (editingTrackerId ? settings.role.trackers?.find(t => t.id === editingTrackerId)?.channel_id : currentConfig.channel_id) || "",
+                        channel_id: (editingTracker ? editingTracker.channel_id : currentConfig.channel_id) || "",
                         message_content: (() => {
-                            if (editingTrackerId) {
-                                const tracker = settings.role.trackers?.find(t => t.id === editingTrackerId);
-                                if (!tracker) return "";
-                                return editingSubtype === "remove" ? tracker.remove_message?.message_content || "" : tracker.message_content;
+                            if (editingTracker) {
+                                return editingSubtype === "remove" ? editingTracker.remove_message?.message_content || "" : editingTracker.message_content;
                             }
                             return (activeMessageType === 'role' && editingSubtype === 'remove' && currentConfig.remove_message)
                                 ? currentConfig.remove_message.message_content
                                 : currentConfig.message_content;
                         })(),
                         embeds: (() => {
-                            if (editingTrackerId) {
-                                const tracker = settings.role.trackers?.find(t => t.id === editingTrackerId);
-                                if (!tracker) return [];
-                                return editingSubtype === "remove" ? tracker.remove_message?.embeds || [] : tracker.embeds;
+                            if (editingTracker) {
+                                return editingSubtype === "remove" ? editingTracker.remove_message?.embeds || [] : editingTracker.embeds;
                             }
                             return (activeMessageType === 'role' && editingSubtype === 'remove' && currentConfig.remove_message)
                                 ? currentConfig.remove_message.embeds
                                 : currentConfig.embeds;
                         })(),
                         component_rows: (() => {
-                            if (editingTrackerId) {
-                                const tracker = settings.role.trackers?.find(t => t.id === editingTrackerId);
-                                if (!tracker) return [];
-                                return editingSubtype === "remove" ? tracker.remove_message?.component_rows || [] : tracker.component_rows;
+                            if (editingTracker) {
+                                return editingSubtype === "remove" ? editingTracker.remove_message?.component_rows || [] : editingTracker.component_rows;
                             }
                             return (activeMessageType === 'role' && editingSubtype === 'remove' && currentConfig.remove_message)
                                 ? currentConfig.remove_message.component_rows || []
@@ -639,32 +590,34 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                 />
             )}
 
-            {/* Confirmation Modal (The New Confirm) */}
+            {/* Confirmation Modal */}
             <ConfirmationModal
                 isOpen={showConfirm}
                 onClose={() => setShowConfirm(false)}
                 onConfirm={handleSave}
                 title="Save Settings?"
-                message="This will apply all changes to the welcome messages. Are you sure?"
-                confirmText={saving ? "Saving..." : "Yes, Save All"}
+                message="Apply all welcome message changes?"
+                confirmText={saving ? "Saving..." : "Yes, Save"}
                 cancelText="Cancel"
             />
 
             {/* Standard Global Save Bar */}
             {JSON.stringify(settings) !== JSON.stringify(originalSettings) && originalSettings && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[130] bg-[#030305]/95 backdrop-blur-3xl border border-white/10 px-4 py-3 rounded-xl shadow-2xl animate-fade-up flex items-center justify-between gap-6 min-w-[360px]">
-                    <span className="text-gray-200 font-bold text-xs uppercase tracking-tight line-clamp-1">Careful — you have unsaved changes!</span>
-                    <div className="flex items-center gap-3 shrink-0">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[130] bg-[var(--bg-secondary)]/95 backdrop-blur-3xl border border-[var(--border)] px-4 py-3 rounded-xl shadow-2xl animate-fade-up flex items-center justify-between gap-12 min-w-[500px]">
+                    <div className="flex flex-col gap-0.5">
+                        <span className="text-[var(--text-primary)] font-bold text-[13px] uppercase tracking-tight">Careful — you have unsaved changes!</span>
+                    </div>
+                    <div className="flex items-center gap-4 shrink-0">
                         <button
                             onClick={resetSettings}
-                            className="text-gray-400 hover:text-white text-xs font-black uppercase tracking-widest transition-colors"
+                            className="text-[var(--text-secondary)] hover:text-white text-[11px] font-black uppercase tracking-widest transition-colors"
                         >
                             Reset
                         </button>
                         <button
                             onClick={() => setShowConfirm(true)}
                             disabled={saving}
-                            className="px-5 py-1.5 bg-[#248046] hover:bg-[#1a6334] text-white font-black rounded-lg transition-all flex items-center gap-2 group text-xs uppercase tracking-tighter disabled:opacity-50"
+                            className="px-6 py-2 bg-[#248046] hover:bg-[#1a6334] text-white font-black rounded-lg transition-all flex items-center gap-2 group text-[11px] uppercase tracking-widest shadow-lg shadow-emerald-500/10 active:scale-95 disabled:opacity-50"
                         >
                             {saving ? (
                                 <>
@@ -678,7 +631,6 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

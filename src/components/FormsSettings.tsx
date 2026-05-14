@@ -1,5 +1,7 @@
 "use client";
 
+import Loading from "@/components/Loading";
+
 import { useState, useEffect } from "react";
 import { Form, Channel, Role } from "@/types";
 import ToastContainer, { useToast } from "./Toast";
@@ -7,7 +9,6 @@ import ConfirmationModal from "./ConfirmationModal";
 import FormEditor from "./FormEditor";
 import FormSubmissions from "./FormSubmissions";
 import FormPanelEditor from "./FormPanelEditor";
-import CatLoader from "./CatLoader";
 import EmptyState from "./EmptyState";
 import { logActivity } from "@/lib/logger";
 
@@ -108,7 +109,7 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
             if (response.ok) {
                 success(result.message || "Form saved successfully!");
                 await logActivity(guildId, "Form updated", `Form "${form.name}" was ${form.id ? "updated" : "created"}.`);
-                
+
                 // Refresh forms list
                 const formsRes = await fetch(`/api/forms?guild_id=${guildId}`);
                 if (formsRes.ok) {
@@ -158,7 +159,7 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
     const handleToggleEnabled = async (form: Form) => {
         const newStatus = !form.is_enabled;
         const updatedForm = { ...form, is_enabled: newStatus };
-        
+
         // Optimistic UI update
         setForms(forms.map(f => f.id === form.id ? updatedForm : f));
 
@@ -212,7 +213,7 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
     };
 
     if (loading) {
-        return <CatLoader message="Loading forms..." />;
+        return <Loading message="Loading forms..." />;
     }
 
     return (
@@ -222,8 +223,7 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
             {/* Header Actions */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 <div>
-                    <p className="text-gray-400">
-                        Create forms with buttons and modals for applications, feedback, reports, and more.
+                    <p className="text-[var(--text-secondary)]">
                     </p>
                 </div>
                 <button
@@ -254,13 +254,13 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
                             className="group glass-card rounded-[8px] overflow-hidden transition-all duration-200 hover:shadow-lg"
                         >
                             {/* Card Header */}
-                            <div className="p-4 border-b border-white/10">
+                            <div className="p-4 border-b border-[var(--border)]">
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-bold text-white text-base truncate transition-colors">
                                             {form.name}
                                         </h3>
-                                        <p className="text-gray-200 text-xs truncate mt-1">
+                                        <p className="text-[var(--text-primary)] text-xs truncate mt-1">
                                             {form.title}
                                         </p>
                                     </div>
@@ -273,29 +273,29 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
                                         {form.submission_type === "application" ? "📝 Application" :
                                             form.submission_type === "ticket" ? "🎫 Ticket" : "📤 Default"}
                                     </span>
-                                    <span className="text-[11px] font-medium text-gray-400 bg-black/20 px-2 py-0.5 rounded-[4px]">
+                                    <span className="text-[11px] font-medium text-[var(--text-secondary)] bg-[var(--bg-tertiary)] px-2 py-0.5 rounded-[4px]">
                                         {form.pages.length} PAGE{form.pages.length !== 1 ? "S" : ""}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Stats */}
-                            <div className="px-4 py-3 bg-black/20/50">
+                            <div className="px-4 py-3 bg-[var(--bg-tertiary)]">
                                 <div className="flex items-center justify-between text-xs mb-2">
-                                    <span className="text-gray-400 font-medium">Submissions</span>
+                                    <span className="text-[var(--text-secondary)] font-medium">Submissions</span>
                                     <span className="font-bold text-white">{form.submission_count || 0}</span>
                                 </div>
                                 <div className="flex items-center justify-between text-xs">
-                                    <span className="text-gray-400 font-medium">Last Response</span>
-                                    <span className="text-gray-200">{formatDate(form.last_submission)}</span>
+                                    <span className="text-[var(--text-secondary)] font-medium">Last Response</span>
+                                    <span className="text-[var(--text-primary)]">{formatDate(form.last_submission)}</span>
                                 </div>
                             </div>
 
                             {/* Actions */}
-                            <div className="p-3 border-t border-white/10 flex items-center gap-2">
+                            <div className="p-3 border-t border-[var(--border)] flex items-center gap-2">
                                 <button
                                     onClick={() => handleEditForm(form)}
-                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-[3px] transition-colors"
+                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 bg-[var(--bg-hover)] hover:bg-white/20 text-white text-sm font-medium rounded-[3px] transition-colors"
                                     title="Edit Form"
                                 >
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -312,7 +312,7 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
                                 </button>
                                 <button
                                     onClick={() => setSendingPanel(form)}
-                                    className="px-3 flex items-center justify-center py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-[3px] transition-colors"
+                                    className="px-3 flex items-center justify-center py-1.5 bg-[var(--bg-hover)] hover:bg-white/20 text-white rounded-[3px] transition-colors"
                                     title="Send Panel to Channel"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
@@ -324,9 +324,9 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </button>
-                                
-                                <div className="w-px h-6 bg-white/10 mx-0.5"></div>
-                                
+
+                                <div className="w-px h-6 bg-[var(--bg-hover)] mx-0.5"></div>
+
                                 <button
                                     onClick={() => handleToggleEnabled(form)}
                                     className={`relative inline-flex h-[24px] w-[40px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${form.is_enabled ? "bg-[#23a559]" : "bg-[#80848e]"}`}
@@ -361,7 +361,7 @@ export default function FormsSettings({ guildId }: FormsSettingsProps) {
             {/* Submissions Viewer */}
             {viewingSubmissions && (
                 <div className="fixed inset-0 bg-[#05050a]/60 backdrop-blur-md z-[60] flex items-center justify-center p-4 sm:p-8 pt-24 sm:pt-24 animate-fade-in">
-                    <div className="w-full max-w-7xl max-h-full bg-[#0a0a0f] border border-white/10 rounded-[8px] shadow-2xl flex flex-col overflow-hidden animate-slide-up">
+                    <div className="w-full max-w-7xl max-h-full bg-[var(--bg-primary)] border border-[var(--border)] rounded-[8px] shadow-2xl flex flex-col overflow-hidden animate-slide-up">
                         <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
                             <FormSubmissions
                                 guildId={guildId}

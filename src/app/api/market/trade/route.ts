@@ -192,7 +192,7 @@ export async function POST(req: Request) {
         await conn.commit();
         return NextResponse.json({
             success: true,
-            message: `Berhasil ${type === 'buy' ? 'membeli' : 'menjual'} ${tradeAmount} ${sym}`,
+            message: `Successfully ${type === 'buy' ? 'bought' : 'sold'} ${tradeAmount} ${sym}`,
             newPrice: finalPrice,
             impact: `${(cappedImpact * 100).toFixed(3)}%`,
             whaleAlert: isWhale,

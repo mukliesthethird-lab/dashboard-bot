@@ -1,8 +1,9 @@
 "use client";
 
+import Loading from "@/components/Loading";
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import CatLoader from "./CatLoader";
 import CustomDropdown from "./CustomDropdown";
 
 interface ModerationReportsProps {
@@ -214,7 +215,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
             case "pending": return <span className="bg-[#f0b232]/10 text-[#f0b232] px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#f0b232]/20">Pending</span>;
             case "reviewed": return <span className="bg-[#5865F2]/10 text-[#5865F2] px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#5865F2]/20">Reviewed</span>;
             case "resolved": return <span className="bg-[#248046]/10 text-[#248046] px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#248046]/20">Resolved</span>;
-            case "dismissed": return <span className="bg-white/10 text-gray-400 px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#4e5058]/50">Dismissed</span>;
+            case "dismissed": return <span className="bg-[var(--bg-hover)] text-[var(--text-secondary)] px-2 py-1 rounded-[3px] text-[10px] font-bold uppercase border border-[#4e5058]/50">Dismissed</span>;
         }
     };
 
@@ -229,7 +230,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                     <div className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
                         <button
                             onClick={() => setSelectedImage(null)}
-                            className="absolute -top-12 right-0 text-gray-400 hover:text-gray-200 transition"
+                            className="absolute -top-12 right-0 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
                         >
                             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -249,8 +250,8 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
             {/* Resolve Modal */}
             {resolveModal.isOpen && resolveModal.report && (
                 <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-                    <div className="bg-[#1e1f22] w-full max-w-md rounded-[8px] border border-white/10 shadow-2xl overflow-hidden animate-slide-up">
-                        <div className="p-6 border-b border-white/5">
+                    <div className="bg-[#1e1f22] w-full max-w-md rounded-[8px] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up">
+                        <div className="p-6 border-b border-[var(--border)]">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                 <span>✅ Resolve Case</span>
                                 <span className="text-xs text-[#87898c] font-mono leading-none mt-1">#{String(resolveModal.report.case_number).padStart(4, '0')}</span>
@@ -267,7 +268,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                                             onClick={() => setModAction(opt.value)}
                                             className={`flex flex-col items-center justify-center gap-2 p-3 rounded-[3px] border transition-all ${modAction === opt.value
                                                 ? 'bg-[#5865F2]/20 border-[#5865F2] text-white'
-                                                : 'bg-black/20 border-white/5 text-[#87898c] hover:border-white/20'
+                                                : 'bg-[var(--bg-tertiary)] border-[var(--border)] text-[#87898c] hover:border-white/20'
                                                 }`}
                                         >
                                             <span className="text-xl">{opt.icon}</span>
@@ -294,23 +295,23 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                                                 placeholder="e.g. 1y 2m"
                                                 value={customDuration}
                                                 onChange={(e) => setCustomDuration(e.target.value)}
-                                                className="flex-1 px-3 py-2 bg-black/20 text-gray-200 placeholder-[#87898c] rounded-[3px] border border-white/5 focus:outline-none focus:border-[#5865F2] text-sm"
+                                                className="flex-1 px-3 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] placeholder-[#87898c] rounded-[3px] border border-[var(--border)] focus:outline-none focus:border-[#5865F2] text-sm"
                                             />
                                         )}
                                     </div>
                                 </div>
                             )}
 
-                            <div className="p-3 bg-black/30 rounded-[3px] border border-white/5">
+                            <div className="p-3 bg-black/30 rounded-[3px] border border-[var(--border)]">
                                 <p className="text-[10px] text-[#87898c] italic">
                                     Reporter <b>{resolveModal.report.reporter.username}</b> will receive a DM notification about this resolution.
                                 </p>
                             </div>
                         </div>
-                        <div className="p-4 bg-black/20 flex justify-end gap-3">
+                        <div className="p-4 bg-[var(--bg-tertiary)] flex justify-end gap-3">
                             <button
                                 onClick={() => setResolveModal({ isOpen: false, report: null })}
-                                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-gray-200 transition"
+                                className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
                             >
                                 Cancel
                             </button>
@@ -328,8 +329,8 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
             {/* Dismiss Modal */}
             {dismissModal.isOpen && dismissModal.report && (
                 <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-                    <div className="bg-[#1e1f22] w-full max-w-md rounded-[8px] border border-white/10 shadow-2xl overflow-hidden animate-slide-up">
-                        <div className="p-6 border-b border-white/5">
+                    <div className="bg-[#1e1f22] w-full max-w-md rounded-[8px] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up">
+                        <div className="p-6 border-b border-[var(--border)]">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                 <span>✖ Dismiss Report</span>
                             </h3>
@@ -353,27 +354,27 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                                         placeholder="Enter explanation for the reporter..."
                                         value={customDismissMessage}
                                         onChange={(e) => setCustomDismissMessage(e.target.value)}
-                                        className="w-full px-3 py-2 bg-black/20 text-gray-200 placeholder-[#87898c] rounded-[3px] border border-white/5 focus:outline-none focus:border-[#5865F2] text-sm resize-none"
+                                        className="w-full px-3 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] placeholder-[#87898c] rounded-[3px] border border-[var(--border)] focus:outline-none focus:border-[#5865F2] text-sm resize-none"
                                     />
                                 </div>
                             )}
 
-                            <div className="p-3 bg-black/30 rounded-[3px] border border-white/5">
+                            <div className="p-3 bg-black/30 rounded-[3px] border border-[var(--border)]">
                                 <p className="text-[10px] text-[#87898c] italic">
                                     Pesan ini akan dikirimkan langsung ke DM <b>{dismissModal.report.reporter.username}</b>.
                                 </p>
                             </div>
                         </div>
-                        <div className="p-4 bg-black/20 flex justify-end gap-3">
+                        <div className="p-4 bg-[var(--bg-tertiary)] flex justify-end gap-3">
                             <button
                                 onClick={() => setDismissModal({ isOpen: false, report: null })}
-                                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-gray-200 transition"
+                                className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={confirmDismiss}
-                                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded-[3px] transition"
+                                className="px-6 py-2 bg-[var(--bg-hover)] hover:bg-white/20 text-white text-sm font-bold rounded-[3px] transition"
                             >
                                 Dismiss Report
                             </button>
@@ -385,18 +386,18 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
             <div className="flex items-center gap-4 mb-4">
                 <Link
                     href={`/dashboard/${guildId}/moderation`}
-                    className="p-2.5 rounded-[3px] glass-card text-gray-400 hover:bg-white/5 hover:text-gray-200 transition"
+                    className="p-2.5 rounded-[3px] glass-card text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </Link>
                 <div className="flex items-center gap-2 text-[#87898c] font-bold text-lg">
-                    <Link href={`/dashboard/${guildId}/moderation`} className="hover:text-gray-200 transition">
+                    <Link href={`/dashboard/${guildId}/moderation`} className="hover:text-[var(--text-primary)] transition">
                         🛡️ Moderation
                     </Link>
                     <span>›</span>
-                    <span className="text-gray-200">Reports</span>
+                    <span className="text-[var(--text-primary)]">Reports</span>
                 </div>
             </div>
 
@@ -408,16 +409,16 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                         placeholder="Search ID, User, or Reason..."
                         value={searchTerm}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="flex-1 px-4 py-3 bg-black/20 text-gray-200 placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2] transition"
+                        className="flex-1 px-4 py-3 bg-[var(--bg-tertiary)] text-[var(--text-primary)] placeholder-[#87898c] rounded-[3px] focus:outline-none focus:ring-1 focus:ring-[#5865F2] transition"
                     />
-                    <div className="flex gap-2 bg-black/20 p-1 rounded-[3px]">
+                    <div className="flex gap-2 bg-[var(--bg-tertiary)] p-1 rounded-[3px]">
                         {['all', 'pending', 'resolved', 'dismissed'].map((status) => (
                             <button
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
                                 className={`px-4 py-2 rounded-[3px] font-medium text-sm transition capitalize ${statusFilter === status
                                     ? 'bg-[#5865F2] text-white'
-                                    : 'text-[#87898c] hover:text-gray-200 hover:glass-card'
+                                    : 'text-[#87898c] hover:text-[var(--text-primary)] hover:glass-card'
                                     }`}
                             >
                                 {status}
@@ -434,17 +435,17 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
             <div className="glass-card rounded-[8px] overflow-hidden">
                 <div className="overflow-x-auto">
                     {loading ? (
-                        <CatLoader message="Loading reports..." />
+                        <Loading message="Loading reports..." />
                     ) : reports.length === 0 ? (
                         <div className="text-center py-20">
                             <div className="text-6xl mb-4 grayscale opacity-50">🏳️</div>
                             <h3 className="text-xl font-bold text-gray-100 mb-2">No reports found</h3>
-                            <p className="text-gray-400">Everything seems quiet for now.</p>
+                            <p className="text-[var(--text-secondary)]">Everything seems quiet for now.</p>
                         </div>
                     ) : (
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-black/20 border-b border-[#111214] text-[#87898c] text-[11px] uppercase tracking-wider font-bold">
+                                <tr className="bg-[var(--bg-tertiary)] border-b border-[#111214] text-[#87898c] text-[11px] uppercase tracking-wider font-bold">
                                     <th className="px-6 py-4 w-24 border-b border-[#111214]">Case ID</th>
                                     <th className="px-6 py-4 w-64 border-b border-[#111214]">Involved Users</th>
                                     <th className="px-6 py-4 border-b border-[#111214]">Reason</th>
@@ -455,10 +456,10 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                             </thead>
                             <tbody className="divide-y divide-[#1e1f22]">
                                 {reports.map((item) => (
-                                    <tr key={item.id} className="hover:bg-white/5 transition group">
+                                    <tr key={item.id} className="transition group">
                                         {/* Case ID */}
                                         <td className="px-6 py-4 align-top">
-                                            <div className="font-bold text-gray-200 font-mono text-sm">#{String(item.case_number).padStart(4, '0')}</div>
+                                            <div className="font-bold text-[var(--text-primary)] font-mono text-sm">#{String(item.case_number).padStart(4, '0')}</div>
                                             <div className="text-[10px] text-[#87898c] font-mono mt-1">{item.created_at.split(',')[0]}</div>
                                         </td>
 
@@ -468,30 +469,30 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                                                 {/* Reporter */}
                                                 <div className="flex items-center gap-3">
                                                     <div className="relative">
-                                                        <div className="w-6 h-6 rounded-full bg-black/20 bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${getAvatarUrl(item.reporter.id, item.reporter.avatar || '0')})` }}></div>
+                                                        <div className="w-6 h-6 rounded-full bg-[var(--bg-tertiary)] bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${getAvatarUrl(item.reporter.id, item.reporter.avatar || '0')})` }}></div>
                                                         <div className="absolute -bottom-1 -right-1 glass-card rounded-full p-[2px]">
                                                             <div className="w-2 h-2 rounded-full bg-blue-400"></div>
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <div className="text-xs font-medium text-gray-200">{item.reporter.username}</div>
+                                                        <div className="text-xs font-medium text-[var(--text-primary)]">{item.reporter.username}</div>
                                                         <div className="text-[10px] text-[#87898c]">Reporter</div>
                                                     </div>
                                                 </div>
 
                                                 {/* Arrow */}
-                                                <div className="pl-2.5 border-l border-white/10 h-2 -my-1 ml-1"></div>
+                                                <div className="pl-2.5 border-l border-[var(--border)] h-2 -my-1 ml-1"></div>
 
                                                 {/* Reported */}
                                                 <div className="flex items-center gap-3">
                                                     <div className="relative">
-                                                        <div className="w-6 h-6 rounded-full bg-black/20 bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${getAvatarUrl(item.reportedUser.id, item.reportedUser.avatar || '0')})` }}></div>
+                                                        <div className="w-6 h-6 rounded-full bg-[var(--bg-tertiary)] bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${getAvatarUrl(item.reportedUser.id, item.reportedUser.avatar || '0')})` }}></div>
                                                         <div className="absolute -bottom-1 -right-1 glass-card rounded-full p-[2px]">
                                                             <div className="w-2 h-2 rounded-full bg-red-400"></div>
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <div className="text-xs font-medium text-gray-200">{item.reportedUser.username}</div>
+                                                        <div className="text-xs font-medium text-[var(--text-primary)]">{item.reportedUser.username}</div>
                                                         <div className="text-[10px] text-[#87898c]">Reported</div>
                                                     </div>
                                                 </div>
@@ -500,7 +501,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
 
                                         {/* Reason */}
                                         <td className="px-6 py-4 align-top">
-                                            <div className="p-3 rounded-[3px] bg-black/20 text-sm text-gray-200 leading-relaxed max-w-md">
+                                            <div className="p-3 rounded-[3px] bg-black/20 border border-white/5 shadow-inner text-sm text-[var(--text-primary)] leading-relaxed max-w-md">
                                                 {item.reason}
                                             </div>
                                         </td>
@@ -510,12 +511,12 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                                             {item.bukti_gambar ? (
                                                 <button
                                                     onClick={() => setSelectedImage(item.bukti_gambar)}
-                                                    className="w-10 h-10 rounded-[3px] bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all group/btn mx-auto"
+                                                    className="w-10 h-10 rounded-[3px] bg-white/[0.05] text-white flex items-center justify-center transition-all group/btn mx-auto"
                                                 >
                                                     <span className="text-base group-hover/btn:scale-110 transition-transform">🖼️</span>
                                                 </button>
                                             ) : (
-                                                <div className="w-10 h-10 rounded-[3px] bg-white/5 flex items-center justify-center mx-auto opacity-50">
+                                                <div className="w-10 h-10 rounded-[3px] bg-white/[0.05] flex items-center justify-center mx-auto opacity-50">
                                                     <span className="text-[#87898c] text-lg">✕</span>
                                                 </div>
                                             )}
@@ -543,7 +544,7 @@ export default function ModerationReports({ guildId }: ModerationReportsProps) {
                                                     <button
                                                         onClick={() => handleDismiss(item)}
                                                         disabled={actionLoading === item.id}
-                                                        className="w-24 py-1.5 bg-white/10 hover:bg-white/20 text-white text-[11px] font-medium rounded-[3px] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        className="w-24 py-1.5 bg-[var(--bg-hover)] hover:bg-white/20 text-white text-[11px] font-medium rounded-[3px] transition disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
                                                         ✖ Dismiss
                                                     </button>

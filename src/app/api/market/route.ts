@@ -115,7 +115,7 @@ export async function POST(request: Request) {
                 await pool.query('INSERT INTO user_portfolio (user_id, asset_id, amount_owned) VALUES (?, ?, ?)', [userId, asset.id, amount]);
             }
 
-            return NextResponse.json({ success: true, message: `Berhasil membeli ${amount} ${symbol}` });
+            return NextResponse.json({ success: true, message: `Successfully bought ${amount} ${symbol}` });
         }
 
         if (action === 'sell') {
@@ -134,7 +134,7 @@ export async function POST(request: Request) {
             // Add balance
             await pool.query('UPDATE slot_users SET balance = balance + ? WHERE user_id = ?', [totalValue, userId]);
 
-            return NextResponse.json({ success: true, message: `Berhasil menjual ${amount} ${symbol} seharga ${totalValue}` });
+            return NextResponse.json({ success: true, message: `Successfully sold ${amount} ${symbol} for ${totalValue}` });
         }
 
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });

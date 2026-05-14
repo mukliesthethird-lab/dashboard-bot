@@ -84,9 +84,9 @@ export default function FormEditor({
         const newComponent: FormComponent = {
             id: generateId(),
             type,
-            label: type === "text_input" ? "New Question" : 
-                   type === "text_display" ? "Announcement/Instructions" :
-                   type === "checkbox" ? "Accept Terms" : "Select Option",
+            label: type === "text_input" ? "New Question" :
+                type === "text_display" ? "Announcement/Instructions" :
+                    type === "checkbox" ? "Accept Terms" : "Select Option",
             description: "",
             placeholder: "",
             required: false,
@@ -177,44 +177,42 @@ export default function FormEditor({
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative w-full max-w-5xl max-h-[90vh] bg-[#0a0a0f] rounded-[8px] shadow-2xl overflow-hidden flex flex-col animate-scale-in border border-white/10">
+            <div className="relative w-full max-w-5xl max-h-[90vh] bg-[var(--bg-primary)] rounded-[8px] shadow-2xl overflow-hidden flex flex-col animate-scale-in border border-[var(--border)]">
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-white/10 bg-[#0a0a0f]">
+                <div className="flex items-center justify-between p-5 border-b border-[var(--border)] bg-[var(--bg-primary)]">
                     <div className="flex items-center gap-3">
-                        <span className="text-2xl">📝</span>
                         <div>
                             <h2 className="text-lg font-bold text-white">
                                 {form.id ? "Edit Form" : "Create Form"}
                             </h2>
-                            <p className="text-sm text-gray-400">{form.name}</p>
+                            <p className="text-sm text-[var(--text-secondary)]">{form.name}</p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
                         className="p-1.5 hover:bg-[#3f4147] rounded-[4px] transition-colors"
                     >
-                        <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-5 h-5 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-white/10">
+                <div className="flex border-b border-[var(--border)]">
                     {[
-                        { id: "form", label: "Form Editor", icon: "📋" },
-                        { id: "settings", label: "Submission Settings", icon: "⚙️" },
+                        { id: "form", label: "Form Editor" },
+                        { id: "settings", label: "Submission Settings" },
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`flex flex-col items-center justify-center relative px-6 py-4 font-semibold transition-all ${activeTab === tab.id
                                 ? "text-white"
-                                : "text-gray-400 hover:text-white"
+                                : "text-[var(--text-secondary)] hover:text-white"
                                 }`}
                         >
                             <span className="flex items-center">
-                                <span className="mr-2 text-lg">{tab.icon}</span>
                                 {tab.label}
                             </span>
                             {activeTab === tab.id && (
@@ -225,13 +223,13 @@ export default function FormEditor({
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-6 pb-28 custom-scrollbar">
                     {activeTab === "form" && (
                         <div className="space-y-6">
                             {/* Form Basic Info */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
                                         Form Name <span className="text-red-400">*</span>
                                     </label>
                                     <input
@@ -240,12 +238,12 @@ export default function FormEditor({
                                         onChange={(e) => updateForm({ name: e.target.value })}
                                         placeholder="e.g., Staff Application"
                                         maxLength={45}
-                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-[var(--bg-tertiary)] border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">{form.name.length}/45</p>
+                                    <p className="text-xs text-[var(--text-tertiary)] mt-1">{form.name.length}/45</p>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
                                         Modal Title <span className="text-red-400">*</span>
                                     </label>
                                     <input
@@ -254,9 +252,9 @@ export default function FormEditor({
                                         onChange={(e) => updateForm({ title: e.target.value })}
                                         placeholder="e.g., Staff Application Form"
                                         maxLength={45}
-                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-[var(--bg-tertiary)] border-none rounded-[3px] text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">{form.title.length}/45 - Shown at the top of the Discord modal</p>
+                                    <p className="text-xs text-[var(--text-tertiary)] mt-1">{form.title.length}/45 - Shown at the top of the Discord modal</p>
                                 </div>
                             </div>
 
@@ -267,7 +265,7 @@ export default function FormEditor({
                                         key={page.id}
                                         className={`flex items-center gap-2 px-3 py-1.5 rounded-[4px] cursor-pointer transition-all ${activePageIndex === idx
                                             ? "bg-[#5865F2] text-white"
-                                            : "bg-white/10 hover:bg-white/20 text-white"
+                                            : "bg-[var(--bg-hover)] hover:bg-white/20 text-white"
                                             }`}
                                         onClick={() => setActivePageIndex(idx)}
                                     >
@@ -279,7 +277,7 @@ export default function FormEditor({
                                                     e.stopPropagation();
                                                     deletePage(idx);
                                                 }}
-                                                className="ml-1 p-0.5 hover:bg-black/20 rounded text-red-300 hover:text-red-400"
+                                                className="ml-1 p-0.5 hover:bg-[var(--bg-tertiary)] rounded text-red-300 hover:text-red-400"
                                             >
                                                 ✕
                                             </button>
@@ -288,7 +286,7 @@ export default function FormEditor({
                                 ))}
                                 <button
                                     onClick={addPage}
-                                    className="flex items-center gap-1 px-3 py-1.5 bg-transparent text-gray-300 hover:text-white hover:bg-white/5 rounded-[4px] transition-all text-sm font-medium"
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-transparent text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] rounded-[4px] transition-all text-sm font-medium"
                                 >
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -302,7 +300,7 @@ export default function FormEditor({
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                                         Components
-                                        <span className="text-xs font-normal text-gray-500">
+                                        <span className="text-xs font-normal text-[var(--text-tertiary)]">
                                             {currentPage.components.length}/5
                                         </span>
                                     </h3>
@@ -310,22 +308,22 @@ export default function FormEditor({
 
                                 {/* Component List */}
                                 {currentPage.components.length === 0 ? (
-                                    <div className="p-8 border-2 border-dashed border-white/10 rounded-md text-center">
-                                        <p className="text-gray-400 mb-4">No components yet. Add your first question!</p>
+                                    <div className="p-8 border-2 border-dashed border-[var(--border)] rounded-md text-center">
+                                        <p className="text-[var(--text-secondary)] mb-4">No components yet. Add your first question!</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
                                         {currentPage.components.map((comp, idx) => (
                                             <div
                                                 key={comp.id}
-                                                className={`rounded-[4px] overflow-hidden transition-all bg-black/20 ${expandedComponent === comp.id
+                                                className={`rounded-[4px] overflow-hidden transition-all bg-[var(--bg-tertiary)] ${expandedComponent === comp.id
                                                     ? "ring-2 ring-[#5865F2]"
                                                     : ""
                                                     }`}
                                             >
                                                 {/* Component Header */}
                                                 <div
-                                                    className="flex items-center gap-3 p-3 cursor-pointer hover:bg-white/5"
+                                                    className="flex items-center gap-3 p-3 cursor-pointer hover:bg-[var(--bg-hover)]"
                                                     onClick={() => setExpandedComponent(
                                                         expandedComponent === comp.id ? null : comp.id
                                                     )}
@@ -334,46 +332,46 @@ export default function FormEditor({
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); moveComponent(idx, "up"); }}
                                                             disabled={idx === 0}
-                                                            className="p-0.5 text-gray-500 hover:text-white disabled:opacity-30"
+                                                            className="p-0.5 text-[var(--text-tertiary)] hover:text-white disabled:opacity-30"
                                                         >
                                                             ▲
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); moveComponent(idx, "down"); }}
                                                             disabled={idx === currentPage.components.length - 1}
-                                                            className="p-0.5 text-gray-500 hover:text-white disabled:opacity-30"
+                                                            className="p-0.5 text-[var(--text-tertiary)] hover:text-white disabled:opacity-30"
                                                         >
                                                             ▼
                                                         </button>
                                                     </div>
                                                     <span className="text-xl">
-                                                        {comp.type === "text_input" ? "📝" : 
-                                                         comp.type === "select_menu" ? "📋" :
-                                                         comp.type === "file_upload" ? "📂" : 
-                                                         comp.type === "date_picker" ? "📅" :
-                                                         comp.type === "user_select" ? "👤" :
-                                                         comp.type === "role_select" ? "🛡️" :
-                                                         comp.type === "channel_select" ? "📺" :
-                                                         comp.type === "mentionable_select" ? "🤝" :
-                                                         comp.type === "text_display" ? "ℹ️" :
-                                                         comp.type === "radio_group" ? "🔘" :
-                                                         comp.type === "checkbox_group" ? "✅" : "🔲"
+                                                        {comp.type === "text_input" ? "📝" :
+                                                            comp.type === "select_menu" ? "📋" :
+                                                                comp.type === "file_upload" ? "📂" :
+                                                                    comp.type === "date_picker" ? "📅" :
+                                                                        comp.type === "user_select" ? "👤" :
+                                                                            comp.type === "role_select" ? "🛡️" :
+                                                                                comp.type === "channel_select" ? "📺" :
+                                                                                    comp.type === "mentionable_select" ? "🤝" :
+                                                                                        comp.type === "text_display" ? "ℹ️" :
+                                                                                            comp.type === "radio_group" ? "🔘" :
+                                                                                                comp.type === "checkbox_group" ? "✅" : "🔲"
                                                         }
                                                     </span>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="font-semibold text-white truncate">{comp.label}</p>
-                                                        <p className="text-xs text-gray-500">
-                                                            {comp.type === "text_input" ? "Text Input" : 
-                                                             comp.type === "select_menu" ? "Select Menu" :
-                                                             comp.type === "file_upload" ? "File Upload" : 
-                                                             comp.type === "date_picker" ? "Date Picker" :
-                                                             comp.type === "user_select" ? "User Select" :
-                                                             comp.type === "role_select" ? "Role Select" :
-                                                             comp.type === "channel_select" ? "Channel Select" :
-                                                             comp.type === "mentionable_select" ? "Mentionable Select" :
-                                                             comp.type === "text_display" ? "Text Display" :
-                                                             comp.type === "radio_group" ? "Radio Group" :
-                                                             comp.type === "checkbox_group" ? "Checkbox Group" : "Checkbox"
+                                                        <p className="text-xs text-[var(--text-tertiary)]">
+                                                            {comp.type === "text_input" ? "Text Input" :
+                                                                comp.type === "select_menu" ? "Select Menu" :
+                                                                    comp.type === "file_upload" ? "File Upload" :
+                                                                        comp.type === "date_picker" ? "Date Picker" :
+                                                                            comp.type === "user_select" ? "User Select" :
+                                                                                comp.type === "role_select" ? "Role Select" :
+                                                                                    comp.type === "channel_select" ? "Channel Select" :
+                                                                                        comp.type === "mentionable_select" ? "Mentionable Select" :
+                                                                                            comp.type === "text_display" ? "Text Display" :
+                                                                                                comp.type === "radio_group" ? "Radio Group" :
+                                                                                                    comp.type === "checkbox_group" ? "Checkbox Group" : "Checkbox"
                                                             }
                                                             {comp.required && <span className="text-red-400 ml-2">Required</span>}
                                                         </p>
@@ -385,7 +383,7 @@ export default function FormEditor({
                                                         🗑️
                                                     </button>
                                                     <svg
-                                                        className={`w-5 h-5 text-gray-400 transition-transform ${expandedComponent === comp.id ? "rotate-180" : ""
+                                                        className={`w-5 h-5 text-[var(--text-secondary)] transition-transform ${expandedComponent === comp.id ? "rotate-180" : ""
                                                             }`}
                                                         fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                                     >
@@ -395,10 +393,10 @@ export default function FormEditor({
 
                                                 {/* Expanded Content */}
                                                 {expandedComponent === comp.id && (
-                                                    <div className="p-4 border-t border-white/10 space-y-4">
+                                                    <div className="p-4 border-t border-[var(--border)] space-y-4">
                                                         {/* Label */}
                                                         <div>
-                                                            <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                                            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">
                                                                 Label <span className="text-red-400">*</span>
                                                             </label>
                                                             <input
@@ -406,13 +404,13 @@ export default function FormEditor({
                                                                 value={comp.label}
                                                                 onChange={(e) => updateComponent(comp.id, { label: e.target.value })}
                                                                 maxLength={45}
-                                                                className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white focus:border-amber-500 transition-all"
+                                                                className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-white focus:border-amber-500 transition-all"
                                                             />
                                                         </div>
 
                                                         {/* Description */}
                                                         <div>
-                                                            <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                                            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">
                                                                 Description
                                                             </label>
                                                             <input
@@ -421,7 +419,7 @@ export default function FormEditor({
                                                                 onChange={(e) => updateComponent(comp.id, { description: e.target.value })}
                                                                 maxLength={100}
                                                                 placeholder="Optional helper text"
-                                                                className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 transition-all"
+                                                                className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-white placeholder-gray-500 focus:border-amber-500 transition-all"
                                                             />
                                                         </div>
 
@@ -429,7 +427,7 @@ export default function FormEditor({
                                                         {comp.type === "text_input" && (
                                                             <>
                                                                 <div className="grid grid-cols-2 gap-4">
-                                                                    <label className="flex items-center gap-3 p-3 bg-[#0a0a0f] rounded-lg cursor-pointer">
+                                                                    <label className="flex items-center gap-3 p-3 bg-[var(--bg-primary)] rounded-lg cursor-pointer">
                                                                         <input
                                                                             type="radio"
                                                                             name={`style_${comp.id}`}
@@ -439,10 +437,10 @@ export default function FormEditor({
                                                                         />
                                                                         <div>
                                                                             <p className="font-semibold text-white text-sm">Short</p>
-                                                                            <p className="text-xs text-gray-500">Single line</p>
+                                                                            <p className="text-xs text-[var(--text-tertiary)]">Single line</p>
                                                                         </div>
                                                                     </label>
-                                                                    <label className="flex items-center gap-3 p-3 bg-[#0a0a0f] rounded-lg cursor-pointer">
+                                                                    <label className="flex items-center gap-3 p-3 bg-[var(--bg-primary)] rounded-lg cursor-pointer">
                                                                         <input
                                                                             type="radio"
                                                                             name={`style_${comp.id}`}
@@ -452,45 +450,45 @@ export default function FormEditor({
                                                                         />
                                                                         <div>
                                                                             <p className="font-semibold text-white text-sm">Paragraph</p>
-                                                                            <p className="text-xs text-gray-500">Multi-line</p>
+                                                                            <p className="text-xs text-[var(--text-tertiary)]">Multi-line</p>
                                                                         </div>
                                                                     </label>
                                                                 </div>
 
                                                                 <div className="grid grid-cols-2 gap-4">
                                                                     <div>
-                                                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Min Length</label>
+                                                                        <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">Min Length</label>
                                                                         <input
                                                                             type="number"
                                                                             value={comp.min_length || 0}
                                                                             onChange={(e) => updateComponent(comp.id, { min_length: parseInt(e.target.value) || 0 })}
                                                                             min={0}
                                                                             max={4000}
-                                                                            className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white focus:border-amber-500 transition-all"
+                                                                            className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-white focus:border-amber-500 transition-all"
                                                                         />
                                                                     </div>
                                                                     <div>
-                                                                        <label className="block text-sm font-semibold text-gray-300 mb-2">Max Length</label>
+                                                                        <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">Max Length</label>
                                                                         <input
                                                                             type="number"
                                                                             value={comp.max_length || 4000}
                                                                             onChange={(e) => updateComponent(comp.id, { max_length: parseInt(e.target.value) || 4000 })}
                                                                             min={1}
                                                                             max={4000}
-                                                                            className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white focus:border-amber-500 transition-all"
+                                                                            className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-white focus:border-amber-500 transition-all"
                                                                         />
                                                                     </div>
                                                                 </div>
 
                                                                 <div>
-                                                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Placeholder</label>
+                                                                    <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">Placeholder</label>
                                                                     <input
                                                                         type="text"
                                                                         value={comp.placeholder || ""}
                                                                         onChange={(e) => updateComponent(comp.id, { placeholder: e.target.value })}
                                                                         maxLength={100}
                                                                         placeholder="e.g., Enter your answer here..."
-                                                                        className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 transition-all"
+                                                                        className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-white placeholder-gray-500 focus:border-amber-500 transition-all"
                                                                     />
                                                                 </div>
                                                             </>
@@ -500,13 +498,13 @@ export default function FormEditor({
                                                         {['select_menu', 'radio_group', 'checkbox_group'].includes(comp.type) && (
                                                             <div className="space-y-3">
                                                                 <div className="flex items-center justify-between">
-                                                                    <label className="block text-sm font-semibold text-gray-300">Options</label>
+                                                                    <label className="block text-sm font-semibold text-[var(--text-secondary)]">Options</label>
                                                                     <div className="flex gap-2">
                                                                         {comp.type === 'select_menu' && (
                                                                             <div className="flex items-center gap-2 mr-2">
-                                                                                <label className="text-xs text-gray-500">Multi:</label>
-                                                                                <input 
-                                                                                    type="checkbox" 
+                                                                                <label className="text-xs text-[var(--text-tertiary)]">Multi:</label>
+                                                                                <input
+                                                                                    type="checkbox"
                                                                                     checked={(comp.max_values || 1) > 1}
                                                                                     onChange={(e) => updateComponent(comp.id, { max_values: e.target.checked ? 10 : 1 })}
                                                                                     className="w-3 h-3 accent-blue-500"
@@ -525,7 +523,7 @@ export default function FormEditor({
                                                                                 value: e.target.value.toLowerCase().replace(/\s+/g, "_")
                                                                             })}
                                                                             placeholder="Option label"
-                                                                            className="flex-1 px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white focus:border-amber-500 transition-all"
+                                                                            className="flex-1 px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-white focus:border-amber-500 transition-all"
                                                                         />
                                                                         <button
                                                                             onClick={() => deleteSelectOption(comp.id, optIdx)}
@@ -539,10 +537,10 @@ export default function FormEditor({
                                                                 <button
                                                                     onClick={() => addSelectOption(comp.id)}
                                                                     disabled={(comp.options?.length || 0) >= 10}
-                                                                    className="w-full py-2 border border-dashed border-white/20 rounded-lg text-gray-400 hover:text-amber-400 hover:border-amber-500/50 transition-all font-semibold disabled:opacity-30 disabled:cursor-not-allowed"
+                                                                    className="w-full py-2 border border-dashed border-white/20 rounded-lg text-[var(--text-secondary)] hover:text-amber-400 hover:border-amber-500/50 transition-all font-semibold disabled:opacity-30 disabled:cursor-not-allowed"
                                                                 >
-                                                                    {(comp.options?.length || 0) >= 10 
-                                                                        ? "Max 10 options reached" 
+                                                                    {(comp.options?.length || 0) >= 10
+                                                                        ? "Max 10 options reached"
                                                                         : `+ Add ${comp.type === 'radio_group' ? 'Radio' : comp.type === 'checkbox_group' ? 'Checkbox' : 'Option'}`
                                                                     }
                                                                 </button>
@@ -553,23 +551,23 @@ export default function FormEditor({
                                                         {['user_select', 'role_select', 'channel_select', 'mentionable_select'].includes(comp.type) && (
                                                             <div className="grid grid-cols-2 gap-4">
                                                                 <div>
-                                                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Min Selections</label>
+                                                                    <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">Min Selections</label>
                                                                     <input
                                                                         type="number"
                                                                         value={comp.min_values || 1}
                                                                         onChange={(e) => updateComponent(comp.id, { min_values: Math.min(parseInt(e.target.value) || 1, comp.options?.length || 10) })}
                                                                         min={1} max={comp.options?.length || 10}
-                                                                        className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white text-sm"
+                                                                        className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-white text-sm"
                                                                     />
                                                                 </div>
-                                                                 <div>
-                                                                    <label className="block text-sm font-semibold text-gray-300 mb-2">Max Selections</label>
+                                                                <div>
+                                                                    <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">Max Selections</label>
                                                                     <input
                                                                         type="number"
                                                                         value={comp.max_values || 1}
                                                                         onChange={(e) => updateComponent(comp.id, { max_values: Math.min(parseInt(e.target.value) || 1, comp.options?.length || 10) })}
                                                                         min={1} max={comp.options?.length || 10}
-                                                                        className="w-full px-3 py-2 bg-[#0a0a0f] border border-white/10 rounded-lg text-white text-sm"
+                                                                        className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-white text-sm"
                                                                     />
                                                                 </div>
                                                             </div>
@@ -667,7 +665,7 @@ export default function FormEditor({
                                     <button
                                         onClick={() => addComponent("text_display")}
                                         disabled={currentPage.components.length >= 5}
-                                        className="flex items-center gap-2 px-3 py-2 bg-stone-500/20 hover:bg-stone-500/30 text-gray-400 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
+                                        className="flex items-center gap-2 px-3 py-2 bg-stone-500/20 hover:bg-stone-500/30 text-stone-300 font-bold rounded-[4px] disabled:opacity-50 transition-all text-xs"
                                     >
                                         ℹ️ Text Display
                                     </button>
@@ -687,7 +685,7 @@ export default function FormEditor({
                         <div className="space-y-6">
                             {/* Submission Type */}
                             <div>
-                                <label className="block text-xs font-bold text-gray-300 uppercase mb-3">Submission Type</label>
+                                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-3">Submission Type</label>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     {[
                                         { id: "default", label: "Default", icon: "📤", desc: "Send response to channel" },
@@ -698,7 +696,7 @@ export default function FormEditor({
                                             key={type.id}
                                             className={`flex items-center gap-3 p-4 rounded-[4px] cursor-pointer transition-all border ${form.submission_type === type.id
                                                 ? "bg-[#5865F2]/10 border-[#5865F2]"
-                                                : "bg-black/20 border-transparent hover:border-white/10"
+                                                : "bg-[var(--bg-tertiary)] border-transparent hover:border-[var(--border)]"
                                                 }`}
                                         >
                                             <input
@@ -712,7 +710,7 @@ export default function FormEditor({
                                             <span className="text-2xl">{type.icon}</span>
                                             <div>
                                                 <p className="font-bold text-white text-sm">{type.label}</p>
-                                                <p className="text-xs text-gray-400">{type.desc}</p>
+                                                <p className="text-xs text-[var(--text-secondary)]">{type.desc}</p>
                                             </div>
                                         </label>
                                     ))}
@@ -721,7 +719,7 @@ export default function FormEditor({
 
                             {/* Submission Channel */}
                             <div>
-                                <label className="block text-xs font-bold text-gray-300 uppercase mb-2">
+                                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
                                     Submission Channel <span className="text-red-400">*</span>
                                 </label>
                                 <CustomDropdown
@@ -733,13 +731,13 @@ export default function FormEditor({
                                     onChange={(value) => updateForm({ submission_channel_id: value })}
                                     placeholder="Select channel"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">Where form responses will be sent</p>
+                                <p className="text-xs text-[var(--text-tertiary)] mt-1">Where form responses will be sent</p>
                             </div>
 
                             {/* Ping Roles */}
                             <div>
-                                <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Ping Roles on Submission</label>
-                                <div className="flex flex-wrap gap-2 p-3 bg-black/20 rounded-[4px] min-h-[48px]">
+                                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Ping Roles on Submission</label>
+                                <div className="flex flex-wrap gap-2 p-3 bg-[var(--bg-tertiary)] rounded-[4px] min-h-[48px]">
                                     {(form.ping_roles || []).map((roleId) => {
                                         const role = roles.find(r => r.id === roleId);
                                         return (
@@ -751,7 +749,7 @@ export default function FormEditor({
                                                 @{role?.name || roleId}
                                                 <button
                                                     onClick={() => updateForm({ ping_roles: (form.ping_roles || []).filter(r => r !== roleId) })}
-                                                    className="ml-1 text-gray-400 hover:text-red-400"
+                                                    className="ml-1 text-[var(--text-secondary)] hover:text-red-400"
                                                 >
                                                     ✕
                                                 </button>
@@ -765,7 +763,7 @@ export default function FormEditor({
                                                 updateForm({ ping_roles: [...(form.ping_roles || []), e.target.value] });
                                             }
                                         }}
-                                        className="px-2 py-1 bg-transparent border border-dashed border-white/10 rounded-[4px] text-gray-400 text-sm hover:border-[#5865F2] hover:text-[#5865F2] cursor-pointer transition-colors"
+                                        className="px-2 py-1 bg-transparent border border-dashed border-[var(--border)] rounded-[4px] text-[var(--text-secondary)] text-sm hover:border-[#5865F2] hover:text-[#5865F2] cursor-pointer transition-colors"
                                     >
                                         <option value="">+ Add role</option>
                                         {roles.filter(r => !(form.ping_roles || []).includes(r.id)).map(r => (
@@ -778,39 +776,39 @@ export default function FormEditor({
                             {/* Cooldown */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Cooldown (seconds)</label>
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Cooldown (seconds)</label>
                                     <input
                                         type="number"
                                         value={form.cooldown_seconds}
                                         onChange={(e) => updateForm({ cooldown_seconds: parseInt(e.target.value) || 0 })}
                                         min={0}
-                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-[var(--bg-tertiary)] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Max Submissions per User</label>
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Max Submissions per User</label>
                                     <input
                                         type="number"
                                         value={form.max_submissions_per_user}
                                         onChange={(e) => updateForm({ max_submissions_per_user: parseInt(e.target.value) || 0 })}
                                         min={0}
                                         placeholder="0 = unlimited"
-                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-[var(--bg-tertiary)] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
                                 </div>
                             </div>
 
                             {/* Advanced Settings - Role Requirements */}
-                            <div className="pt-6 border-t border-white/10">
-                                <h3 className="text-xs font-bold text-gray-200 uppercase mb-4 flex items-center gap-2">
+                            <div className="pt-6 border-t border-[var(--border)]">
+                                <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase mb-4 flex items-center gap-2">
                                     🔐 Access Requirements
                                 </h3>
 
                                 {/* Required Roles */}
                                 <div className="mb-4">
-                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-1">Required Roles</label>
-                                    <p className="text-xs text-gray-400 mb-2">Users must have at least one of these roles to open the form</p>
-                                    <div className="flex flex-wrap gap-2 p-3 bg-black/20 rounded-[4px] min-h-[48px]">
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Required Roles</label>
+                                    <p className="text-xs text-[var(--text-secondary)] mb-2">Users must have at least one of these roles to open the form</p>
+                                    <div className="flex flex-wrap gap-2 p-3 bg-[var(--bg-tertiary)] rounded-[4px] min-h-[48px]">
                                         {(form.required_roles || []).map((roleId) => {
                                             const role = roles.find(r => r.id === roleId);
                                             return (
@@ -822,7 +820,7 @@ export default function FormEditor({
                                                     @{role?.name || roleId}
                                                     <button
                                                         onClick={() => updateForm({ required_roles: (form.required_roles || []).filter(r => r !== roleId) })}
-                                                        className="ml-1 text-gray-400 hover:text-red-400"
+                                                        className="ml-1 text-[var(--text-secondary)] hover:text-red-400"
                                                     >
                                                         ✕
                                                     </button>
@@ -836,7 +834,7 @@ export default function FormEditor({
                                                     updateForm({ required_roles: [...(form.required_roles || []), e.target.value] });
                                                 }
                                             }}
-                                            className="px-2 py-1 bg-transparent border border-dashed border-white/10 rounded-[4px] text-gray-400 text-sm hover:border-[#5865F2] hover:text-[#5865F2] cursor-pointer transition-colors"
+                                            className="px-2 py-1 bg-transparent border border-dashed border-[var(--border)] rounded-[4px] text-[var(--text-secondary)] text-sm hover:border-[#5865F2] hover:text-[#5865F2] cursor-pointer transition-colors"
                                         >
                                             <option value="">+ Add role</option>
                                             {roles.filter(r => !(form.required_roles || []).includes(r.id)).map(r => (
@@ -848,9 +846,9 @@ export default function FormEditor({
 
                                 {/* Blacklist Roles */}
                                 <div className="mb-4">
-                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-1">Blacklisted Roles</label>
-                                    <p className="text-xs text-gray-400 mb-2">Users with any of these roles cannot open the form</p>
-                                    <div className="flex flex-wrap gap-2 p-3 bg-black/20 rounded-[4px] min-h-[48px]">
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Blacklisted Roles</label>
+                                    <p className="text-xs text-[var(--text-secondary)] mb-2">Users with any of these roles cannot open the form</p>
+                                    <div className="flex flex-wrap gap-2 p-3 bg-[var(--bg-tertiary)] rounded-[4px] min-h-[48px]">
                                         {(form.blacklist_roles || []).map((roleId) => {
                                             const role = roles.find(r => r.id === roleId);
                                             return (
@@ -861,7 +859,7 @@ export default function FormEditor({
                                                     @{role?.name || roleId}
                                                     <button
                                                         onClick={() => updateForm({ blacklist_roles: (form.blacklist_roles || []).filter(r => r !== roleId) })}
-                                                        className="ml-1 text-gray-400 hover:text-red-500"
+                                                        className="ml-1 text-[var(--text-secondary)] hover:text-red-500"
                                                     >
                                                         ✕
                                                     </button>
@@ -875,7 +873,7 @@ export default function FormEditor({
                                                     updateForm({ blacklist_roles: [...(form.blacklist_roles || []), e.target.value] });
                                                 }
                                             }}
-                                            className="px-2 py-1 bg-transparent border border-dashed border-white/10 rounded-[4px] text-gray-400 text-sm hover:border-red-500 hover:text-red-400 cursor-pointer transition-colors"
+                                            className="px-2 py-1 bg-transparent border border-dashed border-[var(--border)] rounded-[4px] text-[var(--text-secondary)] text-sm hover:border-red-500 hover:text-red-400 cursor-pointer transition-colors"
                                         >
                                             <option value="">+ Add role</option>
                                             {roles.filter(r => !(form.blacklist_roles || []).includes(r.id)).map(r => (
@@ -887,70 +885,70 @@ export default function FormEditor({
 
                                 {/* Account Age */}
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Minimum Account Age (days)</label>
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Minimum Account Age (days)</label>
                                     <input
                                         type="number"
                                         value={form.min_account_age_days || 0}
                                         onChange={(e) => updateForm({ min_account_age_days: parseInt(e.target.value) || 0 })}
                                         min={0}
                                         placeholder="0 = no requirement"
-                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
+                                        className="w-full px-3 py-2 bg-[var(--bg-tertiary)] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm"
                                     />
-                                    <p className="text-[11px] text-gray-400 mt-1">Set to 0 to disable this requirement</p>
+                                    <p className="text-[11px] text-[var(--text-secondary)] mt-1">Set to 0 to disable this requirement</p>
                                 </div>
                             </div>
 
                             {/* Messages & DM Templates */}
-                            <div className="pt-6 border-t border-white/10">
-                                <h3 className="text-xs font-bold text-gray-200 uppercase mb-4 flex items-center gap-2">
+                            <div className="pt-6 border-t border-[var(--border)]">
+                                <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase mb-4 flex items-center gap-2">
                                     💬 Messages & DM Templates
                                 </h3>
 
                                 {/* Success Message */}
                                 <div className="mb-4">
-                                    <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Success Message</label>
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Success Message</label>
                                     <textarea
                                         value={form.success_message || ""}
                                         onChange={(e) => updateForm({ success_message: e.target.value })}
                                         placeholder="Thank you for your submission!"
                                         rows={2}
-                                        className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
+                                        className="w-full px-3 py-2 bg-[var(--bg-tertiary)] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
                                     />
-                                    <p className="text-[11px] text-gray-400 mt-1">Message shown after successful submission</p>
+                                    <p className="text-[11px] text-[var(--text-secondary)] mt-1">Message shown after successful submission</p>
                                 </div>
 
                                 {form.submission_type === "application" && (
                                     <>
                                         {/* Approve DM Template */}
                                         <div className="mb-4">
-                                            <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Approval DM Template</label>
+                                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Approval DM Template</label>
                                             <textarea
                                                 value={form.approve_dm_template || ""}
                                                 onChange={(e) => updateForm({ approve_dm_template: e.target.value })}
                                                 placeholder="Congratulations! Your application has been approved."
                                                 rows={3}
-                                                className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
+                                                className="w-full px-3 py-2 bg-[var(--bg-tertiary)] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
                                             />
-                                            <p className="text-xs text-gray-500 mt-1">DM sent when application is approved. Use {"{user}"} for username</p>
+                                            <p className="text-xs text-[var(--text-tertiary)] mt-1">DM sent when application is approved. Use {"{user}"} for username</p>
                                         </div>
 
                                         {/* Deny DM Template */}
                                         <div className="mb-4">
-                                            <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Denial DM Template</label>
+                                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Denial DM Template</label>
                                             <textarea
                                                 value={form.deny_dm_template || ""}
                                                 onChange={(e) => updateForm({ deny_dm_template: e.target.value })}
                                                 placeholder="Unfortunately, your application has been denied."
                                                 rows={3}
-                                                className="w-full px-3 py-2 bg-black/20 border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
+                                                className="w-full px-3 py-2 bg-[var(--bg-tertiary)] border-none rounded-[3px] text-white focus:outline-none focus:ring-0 transition-all text-sm resize-none custom-scrollbar"
                                             />
-                                            <p className="text-[11px] text-gray-400 mt-1">DM sent when application is denied. Use {"{user}"}, {"{reason}"}</p>
+                                            <p className="text-[11px] text-[var(--text-secondary)] mt-1">DM sent when application is denied. Use {"{user}"}, {"{reason}"}</p>
                                         </div>
 
                                         {/* Roles on Approve */}
                                         <div>
-                                            <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Add Roles on Approve</label>
-                                            <div className="flex flex-wrap gap-2 p-3 bg-black/20 rounded-[4px] min-h-[48px]">
+                                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Add Roles on Approve</label>
+                                            <div className="flex flex-wrap gap-2 p-3 bg-[var(--bg-tertiary)] rounded-[4px] min-h-[48px]">
                                                 {(form.add_roles_on_approve || []).map((roleId) => {
                                                     const role = roles.find(r => r.id === roleId);
                                                     return (
@@ -961,7 +959,7 @@ export default function FormEditor({
                                                             @{role?.name || roleId}
                                                             <button
                                                                 onClick={() => updateForm({ add_roles_on_approve: (form.add_roles_on_approve || []).filter(r => r !== roleId) })}
-                                                                className="ml-1 text-gray-400 hover:text-red-400"
+                                                                className="ml-1 text-[var(--text-secondary)] hover:text-red-400"
                                                             >
                                                                 ✕
                                                             </button>
@@ -975,7 +973,7 @@ export default function FormEditor({
                                                             updateForm({ add_roles_on_approve: [...(form.add_roles_on_approve || []), e.target.value] });
                                                         }
                                                     }}
-                                                    className="px-2 py-1 bg-transparent border border-dashed border-white/10 rounded-[4px] text-gray-400 text-sm hover:border-[#5865F2] hover:text-[#5865F2] cursor-pointer transition-colors"
+                                                    className="px-2 py-1 bg-transparent border border-dashed border-[var(--border)] rounded-[4px] text-[var(--text-secondary)] text-sm hover:border-[#5865F2] hover:text-[#5865F2] cursor-pointer transition-colors"
                                                 >
                                                     <option value="">+ Add role</option>
                                                     {roles.filter(r => !(form.add_roles_on_approve || []).includes(r.id)).map(r => (
@@ -983,7 +981,7 @@ export default function FormEditor({
                                                     ))}
                                                 </select>
                                             </div>
-                                            <p className="text-xs text-gray-500 mt-1">Roles added when application is approved</p>
+                                            <p className="text-xs text-[var(--text-tertiary)] mt-1">Roles added when application is approved</p>
                                         </div>
                                     </>
                                 )}
@@ -993,7 +991,7 @@ export default function FormEditor({
                 </div>
 
                 {/* Modal Floating Save Bar */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[250] bg-[#030305]/90 backdrop-blur-3xl border border-white/10 pl-4 pr-3 py-3 rounded-[8px] shadow-2xl animate-fade-in-up flex items-center gap-6 min-w-[400px]">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[250] bg-[var(--bg-secondary)]/90 backdrop-blur-3xl border border-[var(--border)] pl-4 pr-3 py-3 rounded-[8px] shadow-2xl animate-fade-in-up flex items-center gap-6 min-w-[400px]">
                     <span className="text-white font-medium text-sm flex-1">Careful — you have unsaved changes!</span>
                     <div className="flex items-center gap-2">
                         <button

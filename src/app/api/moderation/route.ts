@@ -634,7 +634,7 @@ export async function POST(request: Request) {
                     actionTitle = "👢 User Kicked";
                     const userKickEmbed = createEmbed(
                         '👢 User Kicked',
-                        `Kamu telah dikeluarkan (kicked) dari server **Don Pollo**.`,
+                        `You have been kicked from the server **Don Pollo**.`,
                         0xE67E22,
                         userFields
                     );

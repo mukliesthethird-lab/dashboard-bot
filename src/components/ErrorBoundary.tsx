@@ -43,7 +43,7 @@ function ErrorFallback({ error, reset }: ErrorFallbackProps) {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button
                         onClick={reset}
-                        className="w-full sm:w-auto px-8 py-4 rounded-full bg-amber-400 hover:bg-amber-500 text-stone-900 font-bold transition shadow-lg flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto px-8 py-4 rounded-full bg-[var(--bg-secondary)]mber-400 hover:bg-[var(--bg-secondary)]mber-500 text-stone-900 font-bold transition shadow-lg flex items-center justify-center gap-2"
                     >
                         <span>🔄</span>
                         <span>Try Again</span>
@@ -58,7 +58,7 @@ function ErrorFallback({ error, reset }: ErrorFallbackProps) {
                 </div>
 
                 {/* Fun message */}
-                <p className="mt-12 text-stone-400 text-sm">
+                <p className="mt-12 text-[var(--text-secondary)] text-sm">
                     If this keeps happening, try refreshing or contact support.
                 </p>
             </div>

@@ -40,7 +40,7 @@ export default async function ModerationReportsPage({ params }: PageProps) {
 
     if (!guildDetails) {
         return (
-            <div className="flex h-screen items-center justify-center bg-[#0a0a0f] text-gray-400 font-bold">
+            <div className="flex h-screen items-center justify-center bg-[var(--bg-primary)] text-[var(--text-secondary)] font-bold">
                 Guild not found or access denied.
             </div>
         );
@@ -49,7 +49,7 @@ export default async function ModerationReportsPage({ params }: PageProps) {
     return (
         <div className="min-h-screen">
             <GuildSidebar guildId={guildId} guildName={guildDetails.name} guildIcon={guildDetails.icon} />
-            <main className="lg:ml-72 pt-36 lg:pt-24 p-4 md:p-8">
+            <main className="lg:ml-[272px] pt-32 lg:pt-20 p-4 md:p-6">
                 <div className="max-w-6xl mx-auto">
                     <ModerationReports guildId={guildId} />
                 </div>

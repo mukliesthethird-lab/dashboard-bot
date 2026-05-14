@@ -148,7 +148,7 @@ export default function InteractiveColorPicker({ color, onChange, onClose }: Int
             <div className="flex flex-col p-3 gap-4">
                 {/* Mid Section: Eyedropper + Color Preview + Hue Slider */}
                 <div className="flex items-center gap-3">
-                    <div className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+                    <div className="text-[var(--text-secondary)] hover:text-gray-600 transition-colors cursor-pointer">
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M17.42,2.33a3.52,3.52,0,0,0-5,0l-1.3,1.3,4,4,1.3-1.3A3.52,3.52,0,0,0,17.42,2.33Zm-7.6,5L4.42,12.72a3,3,0,0,0-.73,1.15L2.34,18.52a1,1,0,0,0,1.14,1.14l4.65-1.35a3,3,0,0,0,1.15-.73L14.67,12.3Z" />
                         </svg>
@@ -182,7 +182,7 @@ export default function InteractiveColorPicker({ color, onChange, onClose }: Int
                                     onChange={(e) => handleRgbChange(l.toLowerCase() as 'r'|'g'|'b', e.target.value)}
                                     className="w-full h-8 bg-gray-50 border border-gray-200 text-center text-xs font-medium text-gray-700 outline-none focus:border-blue-500 rounded-sm"
                                 />
-                                <span className="text-[10px] text-gray-400 font-bold">{l}</span>
+                                <span className="text-[10px] text-[var(--text-secondary)] font-bold">{l}</span>
                             </div>
                         ))}
                     </div>
@@ -202,7 +202,7 @@ export default function InteractiveColorPicker({ color, onChange, onClose }: Int
                             }}
                             className="flex-1 h-8 bg-gray-50 border border-gray-200 px-3 text-xs font-semibold text-gray-700 outline-none focus:border-blue-500 rounded-sm uppercase text-center"
                         />
-                        <div className="text-gray-300">
+                        <div className="text-[var(--text-secondary)]">
                            <svg className="w-4 h-4 cursor-pointer hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>
                         </div>
                     </div>
@@ -212,7 +212,7 @@ export default function InteractiveColorPicker({ color, onChange, onClose }: Int
                 <div className="flex gap-2 pt-2 border-t border-gray-100">
                     <button 
                         onClick={onClose}
-                        className="flex-1 px-3 py-1.5 border border-gray-200 text-gray-500 text-[10px] font-bold uppercase hover:bg-gray-50 transition-colors rounded-sm"
+                        className="flex-1 px-3 py-1.5 border border-gray-200 text-[var(--text-tertiary)] text-[10px] font-bold uppercase hover:bg-gray-50 transition-colors rounded-sm"
                     >
                         Cancel
                     </button>

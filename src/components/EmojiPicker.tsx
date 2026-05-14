@@ -153,7 +153,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                 {trigger ? trigger : (
                     <button
                         type="button"
-                        className="w-14 h-10 flex items-center justify-center text-xl bg-white/5 border border-white/10 rounded-lg hover:border-amber-500/50 hover:bg-white/10 transition"
+                        className="w-14 h-10 flex items-center justify-center text-xl bg-[var(--bg-hover)] border border-[var(--border)] rounded-lg hover:border-amber-500/50 hover:bg-[var(--bg-hover)] transition"
                     >
                         {value.includes('<') ? <img src={`https://cdn.discordapp.com/emojis/${value.split(':')[2].slice(0, -1)}.png`} className="w-6 h-6" alt="emoji" /> : (value || "😀")}
                     </button>
@@ -165,23 +165,23 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                 <div 
                     ref={pickerRef}
                     style={{ top: coords.top, left: coords.left }}
-                    className="fixed z-[10000] w-[420px] h-[450px] bg-[#2b2d31] rounded-lg shadow-2xl border border-white/10 overflow-hidden flex flex-col font-sans select-none animate-in fade-in zoom-in-95 duration-150"
+                    className="fixed z-[10000] w-[420px] h-[450px] bg-[#2b2d31] rounded-lg shadow-2xl border border-[var(--border)] overflow-hidden flex flex-col font-sans select-none animate-in fade-in zoom-in-95 duration-150"
                 >
                     {/* Header: Search */}
-                    <div className="p-4 bg-[#2b2d31] border-b border-white/10">
+                    <div className="p-4 bg-[#2b2d31] border-b border-[var(--border)]">
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Find an emoji"
-                            className="w-full px-3 py-2 bg-black/20 text-gray-200 rounded-[4px] text-sm placeholder-[#949BA4] focus:outline-none focus:ring-1 focus:ring-[#00A8FC]"
+                            className="w-full px-3 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-[4px] text-sm placeholder-[#949BA4] focus:outline-none focus:ring-1 focus:ring-[#00A8FC]"
                             autoFocus
                         />
                     </div>
 
                     <div className="flex flex-1 overflow-hidden">
                         {/* Sidebar */}
-                        <div className="w-12 bg-[#1e1f22] flex flex-col items-center gap-1 py-2 overflow-y-auto no-scrollbar border-r border-white/10">
+                        <div className="w-12 bg-[#1e1f22] flex flex-col items-center gap-1 py-2 overflow-y-auto no-scrollbar border-r border-[var(--border)]">
                             {/* Custom Server Icon */}
                             {customEmojis.length > 0 && (
                                 <button
@@ -200,7 +200,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                                     className={`w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-[#404249] ${activeCategory === cat.id ? 'bg-[#404249] rounded-[10px]' : ''}`}
                                     title={cat.label}
                                 >
-                                    <span className="text-lg text-gray-200 grayscale hover:grayscale-0 transition">{cat.icon}</span>
+                                    <span className="text-lg text-[var(--text-primary)] grayscale hover:grayscale-0 transition">{cat.icon}</span>
                                 </button>
                             ))}
                         </div>
@@ -238,7 +238,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                             {/* Custom Emojis Section */}
                             {(search ? filteredCategories.custom.length > 0 : customEmojis.length > 0) && (
                                 <div id="emoji-cat-custom" className="mb-4 mt-2">
-                                    <h3 className="text-xs font-bold text-[#949BA4] uppercase mb-2 sticky top-0 bg-[#2b2d31] py-2 z-20 border-b border-white/10">
+                                    <h3 className="text-xs font-bold text-[#949BA4] uppercase mb-2 sticky top-0 bg-[#2b2d31] py-2 z-20 border-b border-[var(--border)]">
                                         Server Emojis
                                     </h3>
                                     <div className="grid grid-cols-7 gap-1 pt-1">
@@ -260,7 +260,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                             {/* Standard Categories */}
                             {filteredCategories.categories.map(cat => (
                                 <div key={cat.id} id={`emoji-cat-${cat.id}`} className="mb-4">
-                                    <h3 className="text-xs font-bold text-[#949BA4] uppercase mb-2 sticky top-0 bg-[#2b2d31] py-2 z-20 border-b border-white/10">
+                                    <h3 className="text-xs font-bold text-[#949BA4] uppercase mb-2 sticky top-0 bg-[#2b2d31] py-2 z-20 border-b border-[var(--border)]">
                                         {cat.label}
                                     </h3>
                                     <div className="grid grid-cols-7 gap-1 pt-1">
@@ -289,7 +289,7 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                     </div>
 
                     {/* Footer / Hover Preview */}
-                    <div className="h-12 bg-[#2b2d31] border-t border-white/10 flex items-center px-4 gap-3">
+                    <div className="h-12 bg-[#2b2d31] border-t border-[var(--border)] flex items-center px-4 gap-3">
                         {hoveredEmoji ? (
                             <>
                                 {hoveredEmoji.emoji.startsWith('http') ? (
@@ -297,14 +297,14 @@ export default function EmojiPicker({ value, onChange, className = "", guildId, 
                                 ) : (
                                     <span className="text-3xl">{hoveredEmoji.emoji}</span>
                                 )}
-                                <span className="font-medium text-gray-200 text-sm">{hoveredEmoji.name}</span>
+                                <span className="font-medium text-[var(--text-primary)] text-sm">{hoveredEmoji.name}</span>
                             </>
                         ) : (
                             <div className="flex-1 flex gap-2 w-full">
                                 <input
                                     type="text"
                                     placeholder="Or paste custom emoji string..."
-                                    className="flex-1 bg-black/20 text-gray-200 text-xs px-2 py-1.5 rounded outline-none border border-transparent focus:border-[#00A8FC]"
+                                    className="flex-1 bg-[var(--bg-tertiary)] text-[var(--text-primary)] text-xs px-2 py-1.5 rounded outline-none border border-transparent focus:border-[#00A8FC]"
                                     onKeyDown={handleCustomInput}
                                 />
                             </div>

@@ -18,7 +18,7 @@ const VARIANTS = {
     default: {
         icon: "📂",
         bgGradient: "from-stone-500/5 to-stone-500/10",
-        borderColor: "border-white/10",
+        borderColor: "border-[var(--border)]",
         iconBg: "bg-stone-500/20",
         buttonBg: "bg-stone-600 hover:bg-stone-500"
     },
@@ -33,13 +33,13 @@ const VARIANTS = {
         icon: "💰",
         bgGradient: "from-amber-500/5 to-yellow-500/10",
         borderColor: "border-amber-500/20",
-        iconBg: "bg-amber-500/20",
-        buttonBg: "bg-amber-500 hover:bg-amber-400"
+        iconBg: "bg-[var(--bg-secondary)]mber-500/20",
+        buttonBg: "bg-[var(--bg-secondary)]mber-500 hover:bg-[var(--bg-secondary)]mber-400"
     },
     moderation: {
         icon: "🛡️",
         bgGradient: "from-stone-500/5 to-stone-500/10",
-        borderColor: "border-white/10",
+        borderColor: "border-[var(--border)]",
         iconBg: "bg-stone-500/20",
         buttonBg: "bg-stone-600 hover:bg-stone-500"
     },
@@ -54,8 +54,8 @@ const VARIANTS = {
         icon: "👋",
         bgGradient: "from-green-500/5 to-emerald-500/10",
         borderColor: "border-emerald-500/20",
-        iconBg: "bg-emerald-500/20",
-        buttonBg: "bg-emerald-500 hover:bg-emerald-400"
+        iconBg: "bg-[var(--bg-elevated)]merald-500/20",
+        buttonBg: "bg-[var(--bg-elevated)]merald-500 hover:bg-[var(--bg-elevated)]merald-400"
     },
     logging: {
         icon: "📋",
@@ -79,7 +79,7 @@ export default function EmptyState({
     const displayIcon = icon || config.icon;
 
     return (
-        <div className={`bg-gradient-to-br ${config.bgGradient} rounded-3xl border ${config.borderColor} p-8 md:p-12 text-center ${className}`}>
+        <div className={`bg-gradient-to-br ${config.bgGradient} rounded-xl border ${config.borderColor} p-8 md:p-12 text-center ${className}`}>
             {/* Animated Icon */}
             <div className="relative inline-block mb-6">
                 <div className={`w-24 h-24 ${config.iconBg} rounded-full flex items-center justify-center mx-auto animate-bounce-subtle`}>
@@ -87,7 +87,7 @@ export default function EmptyState({
                 </div>
                 {/* Decorative circles */}
                 <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white/20 animate-pulse" />
-                <div className="absolute -bottom-1 -left-3 w-4 h-4 rounded-full bg-white/10 animate-pulse delay-100" />
+                <div className="absolute -bottom-1 -left-3 w-4 h-4 rounded-full bg-[var(--bg-hover)] animate-pulse delay-100" />
             </div>
 
             {/* Title */}
@@ -97,7 +97,7 @@ export default function EmptyState({
 
             {/* Description */}
             {description && (
-                <p className="text-gray-400 text-lg mb-6 max-w-md mx-auto">
+                <p className="text-[var(--text-secondary)] text-lg mb-6 max-w-md mx-auto">
                     {description}
                 </p>
             )}

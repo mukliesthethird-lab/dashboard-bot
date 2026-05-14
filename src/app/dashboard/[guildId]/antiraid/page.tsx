@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import https from "https";
 import GuildSidebar from "@/components/GuildSidebar";
 import { getDiscordToken } from "@/lib/discord-token";
-import VisualCommandEditor from "@/components/VisualCommandEditor";
+import AntiRaidSettings from "@/components/AntiRaidSettings";
 
 interface Guild {
     id: string;
@@ -39,7 +39,7 @@ function fetchGuild(guildId: string, token: string): Promise<Guild> {
     });
 }
 
-export default async function CommandsPage({
+export default async function AntiRaidPage({
     params,
 }: {
     params: Promise<{ guildId: string }>;
@@ -60,7 +60,7 @@ export default async function CommandsPage({
 
             <main className="lg:ml-[272px] pt-32 lg:pt-20 p-4 md:p-6 overflow-x-hidden">
                 <div className="max-w-6xl mx-auto w-full">
-                    <VisualCommandEditor guildId={guildId} />
+                    <AntiRaidSettings guildId={guildId} />
                 </div>
             </main>
         </div>

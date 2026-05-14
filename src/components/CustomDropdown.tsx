@@ -183,10 +183,10 @@ export default function CustomDropdown({
                 zIndex: 99999,
                 maxHeight: '240px'
             }}
-            className="bg-[#030305]/90 backdrop-blur-3xl border border-white/10 rounded-[3px] shadow-2xl overflow-y-auto custom-scrollbar"
+            className="bg-[var(--bg-secondary)]/90 backdrop-blur-3xl border border-[var(--border)] rounded-[3px] shadow-2xl overflow-y-auto custom-scrollbar"
         >
             {options.length === 0 ? (
-                <div className="px-3 py-2 text-gray-500 text-sm">No options available</div>
+                <div className="px-3 py-2 text-[var(--text-tertiary)] text-sm">No options available</div>
             ) : (
                 options.map((option, index) => (
                     <div
@@ -200,8 +200,8 @@ export default function CustomDropdown({
                             ${option.value === value
                                 ? "bg-[#5865f2] text-white font-bold"
                                 : highlightedIndex === index
-                                    ? "bg-white/10/50 text-white"
-                                    : "text-gray-200 hover:bg-white/10/30 hover:text-white"
+                                    ? "bg-[var(--bg-hover)]/50 text-white"
+                                    : "text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover:text-white"
                             }
                         `}
                     >
@@ -222,14 +222,14 @@ export default function CustomDropdown({
                 onClick={handleToggle}
                 disabled={disabled}
                 className={`
-                    w-full ${size === 'sm' ? 'p-1 text-[11px]' : 'px-3 py-2 text-sm'} bg-black/20 border border-transparent rounded-[3px] 
+                    w-full ${size === 'sm' ? 'p-1 text-[11px]' : 'px-3 py-2 text-sm'} bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-[3px] 
                     outline-none focus:border-[#5865F2] font-medium text-left
                     flex items-center justify-between gap-1 transition-all
                     ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-[#5865f2]/50 cursor-pointer"}
                     ${isOpen ? "border-[#5865f2]" : ""}
                 `}
             >
-                <span className={selectedOption ? "text-white" : "text-gray-500"}>
+                <span className={selectedOption ? "text-white" : "text-[var(--text-tertiary)]"}>
                     {selectedOption ? (
                         <span className="flex items-center gap-2">
                             {selectedOption.icon && <span>{selectedOption.icon}</span>}
@@ -240,7 +240,7 @@ export default function CustomDropdown({
                     )}
                 </span>
                 <svg
-                    className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 text-[var(--text-secondary)] transition-transform ${isOpen ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

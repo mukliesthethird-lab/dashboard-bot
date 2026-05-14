@@ -1,5 +1,7 @@
 "use client";
 
+import Loading from "@/components/Loading";
+
 import { useState, useEffect } from "react";
 import CreateMessageModal from "./CreateMessageModal";
 import { Channel, Role, ReactionRoleMessage } from "../types";
@@ -7,8 +9,6 @@ import CustomDropdown from "./CustomDropdown";
 import DashboardHeader from "./DashboardHeader";
 import PremiumCard from "./PremiumCard";
 import ToastContainer, { useToast } from "./Toast";
-import CatLoader from "./CatLoader";
-
 interface Feed {
     id: number;
     guild_id: string;
@@ -220,7 +220,7 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                 message_content: '🔔 Hey @everyone, **{channel.name}** sedang aktif!',
                 embeds: [{
                     title: '🎮 {channel.name} is LIVE!',
-                    description: "Don't miss out! **{channel.name}** sedang streaming **{content.game}** sekarang!\n\n**[{content.title}]({content.url})**\n\nGas masuk sekarang! ✨",
+                    description: "Don't miss out! **{channel.name}** is streaming **{content.game}** right now!\n\n**[{content.title}]({content.url})**\n\nJoin now! ✨",
                     color: '#9146FF',
                     image_url: '{content.thumbnail}',
                     footer_text: 'Don Pollo Notifications',
@@ -295,51 +295,47 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
     ];
 
     if (loading) {
-        return <CatLoader message="Loading notification settings..." />;
+        return <Loading message="Loading notification settings..." />;
     }
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}
-            <DashboardHeader
-                title="Notification"
-                subtitle="Manage your social media feeds and automated notifications for YouTube, Live streams, and more."
-                icon="🔔"
-            />
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
                 {/* YouTube Content */}
-                <div className="bg-[#0a0a0f] rounded-[8px] border border-white/10 overflow-hidden flex flex-col shadow-lg">
-                    <div className="p-4 border-b border-white/10 bg-black/20/30 flex items-center gap-3">
+                <div className="bg-[var(--bg-primary)] rounded-[8px] border border-[var(--border)] overflow-hidden flex flex-col shadow-lg">
+                    <div className="p-4 border-b border-[var(--border)] bg-[var(--bg-tertiary)]/30 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-[8px] bg-[#da373c]/10 flex items-center justify-center text-[#da373c]">
                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
                                 <h3 className="text-white font-bold text-lg leading-tight">YouTube Content</h3>
-                                <span className="text-[10px] bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter animate-pulse">Real-time</span>
+                                <span className="text-[10px] bg-[var(--bg-elevated)]merald-500/10 text-emerald-500 px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter animate-pulse">Real-time</span>
                             </div>
-                            <p className="text-gray-400 text-xs">Broadcast via WebSub (PubSubHubbub)</p>
+                            <p className="text-[var(--text-secondary)] text-xs">Broadcast via WebSub (PubSubHubbub)</p>
                         </div>
                     </div>
                     <div className="p-4 space-y-6">
                         {/* Add Form */}
-                        <div className="bg-black/20 p-4 rounded-[8px] border border-white/10">
+                        <div className="bg-[var(--bg-tertiary)] p-4 rounded-[8px] border border-[var(--border)]">
                             <h4 className="text-[10px] font-bold text-[#da373c] uppercase tracking-widest mb-4">Add New Channel</h4>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-400 mb-1 uppercase tracking-wider">YouTube URL or ID</label>
+                                    <label className="block text-[11px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">YouTube URL or ID</label>
                                     <input
                                         type="text"
                                         value={ytInput}
                                         onChange={(e) => setYtInput(e.target.value)}
                                         placeholder="https://youtube.com/@handle or UC..."
-                                        className="w-full bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 outline-none transition-all"
+                                        className="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] focus:border-[#5865F2] rounded-[3px] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none transition-all"
                                     />
-                                    <p className="text-[10px] text-gray-500 mt-1 italic">Automatically resolves handle to Channel ID</p>
+                                    <p className="text-[10px] text-[var(--text-tertiary)] mt-1 italic">Automatically resolves handle to Channel ID</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Discord Channel</label>
+                                    <label className="block text-[11px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">Discord Channel</label>
                                     <CustomDropdown
                                         value={ytChannelId}
                                         onChange={(val) => setYtChannelId(val)}
@@ -361,20 +357,20 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
 
                         {/* Saved List */}
                         <div className="space-y-3">
-                            <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                            <h4 className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-2">
                                 <span className="w-1.5 h-1.5 bg-[#da373c] rounded-full animate-pulse"></span>
                                 Currently Tracking
                             </h4>
                             <div className="space-y-2">
                                 {feeds.filter(f => f.type === 'youtube').map(feed => (
-                                    <div key={feed.id} className="bg-black/20 border border-white/10 rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
+                                    <div key={feed.id} className="bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
                                                 <p className="text-sm font-bold text-white truncate max-w-[150px]">{feed.feed_url.split('/').pop()}</p>
                                                 <span className="text-[10px] bg-[#da373c]/10 text-[#da373c] px-1.5 py-0.5 rounded-[3px] font-bold">YT</span>
                                             </div>
                                             <div className="flex items-center gap-2 mt-1">
-                                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Target:</span>
+                                                <span className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wider">Target:</span>
                                                 <div className="w-40">
                                                     <CustomDropdown
                                                         value={feed.discord_channel_id}
@@ -388,20 +384,20 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                         <div className="flex items-center gap-3">
                                             <button
                                                 onClick={() => openEditor(feed)}
-                                                className="p-1.5 hover:bg-white/10 rounded-[3px] text-gray-400 hover:text-white transition-colors"
+                                                className="p-1.5 hover:bg-[var(--bg-hover)] rounded-[3px] text-[var(--text-secondary)] hover:text-white transition-colors"
                                                 title="Edit Message"
                                             >
                                                 ⚙️
                                             </button>
                                             <div
                                                 onClick={() => handleToggleFeed(feed.id, feed.is_enabled)}
-                                                className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${feed.is_enabled ? 'bg-[#248046]' : 'bg-white/10'}`}
+                                                className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${feed.is_enabled ? 'bg-[#248046]' : 'bg-[var(--bg-hover)]'}`}
                                             >
                                                 <div className={`absolute top-[2px] w-4 h-4 bg-white rounded-full transition-transform ${feed.is_enabled ? 'left-[18px]' : 'left-[2px]'}`} />
                                             </div>
                                             <button
                                                 onClick={() => handleDeleteFeed(feed.id)}
-                                                className="p-1.5 hover:bg-[#da373c]/10 rounded-[3px] text-gray-400 hover:text-[#da373c] transition-colors"
+                                                className="p-1.5 hover:bg-[#da373c]/10 rounded-[3px] text-[var(--text-secondary)] hover:text-[#da373c] transition-colors"
                                             >
                                                 🗑️
                                             </button>
@@ -417,33 +413,33 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                 </div>
 
                 {/* Live Streams */}
-                <div className="bg-[#0a0a0f] rounded-[8px] border border-white/10 overflow-hidden flex flex-col shadow-lg">
-                    <div className="p-4 border-b border-white/10 bg-black/20/30 flex items-center gap-3">
+                <div className="bg-[var(--bg-primary)] rounded-[8px] border border-[var(--border)] overflow-hidden flex flex-col shadow-lg">
+                    <div className="p-4 border-b border-[var(--border)] bg-[var(--bg-tertiary)]/30 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-[8px] bg-[#5865f2]/10 flex items-center justify-center text-[#5865f2]">
                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0h1.714v5.143h-1.714zM4.714 0L1.714 3v15.429h5.143v4.285l4.286-4.285h3.428L22.286 12V0zm15.857 11.142l-3.428 3.429h-3.429l-3 3v-3H6.857V1.714h13.714z" /></svg>
                         </div>
                         <div>
                             <h3 className="text-white font-bold text-lg leading-tight">Live Streams</h3>
-                            <p className="text-gray-400 text-xs">Broadcast when you go live</p>
+                            <p className="text-[var(--text-secondary)] text-xs">Broadcast when you go live</p>
                         </div>
                     </div>
                     <div className="p-4 space-y-6">
                         {/* Add Form */}
-                        <div className="bg-black/20 p-4 rounded-[8px] border border-white/10">
+                        <div className="bg-[var(--bg-tertiary)] p-4 rounded-[8px] border border-[var(--border)]">
                             <h4 className="text-[10px] font-bold text-[#5865f2] uppercase tracking-widest mb-4">Add New Stream</h4>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Platform URL</label>
+                                    <label className="block text-[11px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">Platform URL</label>
                                     <input
                                         type="text"
                                         value={liveInput}
                                         onChange={(e) => setLiveInput(e.target.value)}
                                         placeholder="https://twitch.tv/donpollo"
-                                        className="w-full bg-black/20 border border-transparent focus:border-[#5865F2] rounded-[3px] px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 outline-none transition-all"
+                                        className="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] focus:border-[#5865F2] rounded-[3px] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none transition-all"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Discord Channel</label>
+                                    <label className="block text-[11px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider">Discord Channel</label>
                                     <CustomDropdown
                                         value={liveChannelId}
                                         onChange={(val) => setLiveChannelId(val)}
@@ -465,20 +461,20 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
 
                         {/* Saved List */}
                         <div className="space-y-3">
-                            <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                            <h4 className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-2">
                                 <span className="w-1.5 h-1.5 bg-[#5865f2] rounded-full animate-pulse"></span>
                                 Currently Tracking
                             </h4>
                             <div className="space-y-2">
                                 {feeds.filter(f => f.type === 'live').map(feed => (
-                                    <div key={feed.id} className="bg-black/20 border border-white/10 rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
+                                    <div key={feed.id} className="bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-[8px] p-3 flex items-center justify-between group/item hover:border-[#4e5058] transition-colors">
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
                                                 <p className="text-sm font-bold text-white truncate max-w-[150px]">{feed.feed_url.split('/').pop()}</p>
                                                 <span className="text-[10px] bg-[#5865f2]/10 text-[#5865f2] px-1.5 py-0.5 rounded-[3px] font-bold">LIVE</span>
                                             </div>
                                             <div className="flex items-center gap-2 mt-1">
-                                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Target:</span>
+                                                <span className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wider">Target:</span>
                                                 <div className="w-40">
                                                     <CustomDropdown
                                                         value={feed.discord_channel_id}
@@ -492,20 +488,20 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                                         <div className="flex items-center gap-3">
                                             <button
                                                 onClick={() => openEditor(feed)}
-                                                className="p-1.5 hover:bg-white/10 rounded-[3px] text-gray-400 hover:text-white transition-colors"
+                                                className="p-1.5 hover:bg-[var(--bg-hover)] rounded-[3px] text-[var(--text-secondary)] hover:text-white transition-colors"
                                                 title="Edit Message"
                                             >
                                                 ⚙️
                                             </button>
                                             <div
                                                 onClick={() => handleToggleFeed(feed.id, feed.is_enabled)}
-                                                className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${feed.is_enabled ? 'bg-[#248046]' : 'bg-white/10'}`}
+                                                className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${feed.is_enabled ? 'bg-[#248046]' : 'bg-[var(--bg-hover)]'}`}
                                             >
                                                 <div className={`absolute top-[2px] w-4 h-4 bg-white rounded-full transition-transform ${feed.is_enabled ? 'left-[18px]' : 'left-[2px]'}`} />
                                             </div>
                                             <button
                                                 onClick={() => handleDeleteFeed(feed.id)}
-                                                className="p-1.5 hover:bg-[#da373c]/10 rounded-[3px] text-gray-400 hover:text-[#da373c] transition-colors"
+                                                className="p-1.5 hover:bg-[#da373c]/10 rounded-[3px] text-[var(--text-secondary)] hover:text-[#da373c] transition-colors"
                                             >
                                                 🗑️
                                             </button>
@@ -523,14 +519,14 @@ export default function NotificationSettings({ guildId }: NotificationSettingsPr
                 {/* Coming Soon / More Platforms */}
                 <div className="md:col-span-2 group relative">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-[#5865f2] to-[#4e5058] rounded-[8px] blur opacity-5 group-hover:opacity-10 transition duration-500" />
-                    <div className="relative bg-[#0a0a0f] border border-dashed border-white/10 p-8 rounded-[8px] flex flex-col items-center justify-center text-center">
-                        <div className="w-16 h-16 bg-black/20 rounded-full flex items-center justify-center mb-4">
-                            <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="relative bg-[var(--bg-primary)] border border-dashed border-[var(--border)] p-8 rounded-[8px] flex flex-col items-center justify-center text-center">
+                        <div className="w-16 h-16 bg-[var(--bg-tertiary)] rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-8 h-8 text-[var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                         </div>
                         <h4 className="text-xl font-bold text-white">More Platforms Coming Soon</h4>
-                        <p className="text-gray-400 mt-2 max-w-sm">We're working on integrating TikTok, X (Twitter), and Instagram feeds into your dashboard.</p>
+                        <p className="text-[var(--text-secondary)] mt-2 max-w-sm">We're working on integrating TikTok, X (Twitter), and Instagram feeds into your dashboard.</p>
                     </div>
                 </div>
             </div>

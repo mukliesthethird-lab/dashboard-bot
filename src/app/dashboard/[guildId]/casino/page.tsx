@@ -9,6 +9,7 @@ import RouletteGame from "./components/RouletteGame";
 import CrashGame from "./components/CrashGame";
 import ChipExchangeModal from "./components/ChipExchangeModal";
 import CasinoLobby from "./components/CasinoLobby";
+import Loading from "@/components/Loading";
 
 export default function InteractiveCasinoPage() {
     const { data: session } = useSession();
@@ -21,89 +22,70 @@ export default function InteractiveCasinoPage() {
     useEffect(() => {
         const fetchBalance = async () => {
             try {
-                const res = await fetch("/api/user/balance"); // I'll need to ensure this endpoint exists or create a simple one
+                const res = await fetch("/api/user/balance");
                 if (res.ok) {
                     const data = await res.json();
                     setBalance(data.balance);
                     setChips(data.chips || 0);
                 }
-            } catch (err) {
-                console.error("Failed to fetch balance", err);
-            } finally {
-                setLoading(false);
-            }
+            } catch (err) { console.error("Failed to fetch balance", err); }
+            finally { setLoading(false); }
         };
         fetchBalance();
     }, []);
 
     const tabs = [
-        { id: "CRASH", name: "SpaceX Crash", icon: <Rocket className="w-4 h-4" /> },
-        { id: "ROULETTE", name: "Premium Roulette", icon: <Trophy className="w-4 h-4" /> },
-        { id: "SLOTS", name: "Golden Slots", icon: <Sparkles className="w-4 h-4" /> },
-        { id: "BLACKJACK", name: "Multiplayer Blackjack", icon: <Spade className="w-4 h-4" /> },
+        { id: "CRASH", name: "SpaceX Crash", icon: <Rocket className="w-3.5 h-3.5" /> },
+        { id: "ROULETTE", name: "Roulette", icon: <Trophy className="w-3.5 h-3.5" /> },
+        { id: "SLOTS", name: "Slots", icon: <Sparkles className="w-3.5 h-3.5" /> },
+        { id: "BLACKJACK", name: "Blackjack", icon: <Spade className="w-3.5 h-3.5" /> },
     ];
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#020205] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-gray-500 font-black animate-pulse uppercase tracking-[0.3em]">Loading Casino</p>
-                </div>
+            <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
+                <Loading message="Loading Casino" />
             </div>
         );
     }
 
     return (
-        <div className="h-screen bg-[#020205] text-white selection:bg-indigo-500/30 font-sans overflow-hidden flex flex-col">
-            {/* Background Glows */}
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[150px] rounded-full" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[150px] rounded-full" />
-            </div>
+        <div className="h-screen bg-[var(--bg-primary)] text-white font-sans overflow-hidden flex flex-col">
+            <main className="relative z-10 w-full max-w-[1700px] mx-auto pt-20 pb-3 px-4 md:px-6 flex flex-col flex-1 min-h-0 overflow-hidden">
+                {/* Header */}
+                <div className="flex flex-col lg:flex-row justify-between items-center mb-4 gap-4">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                        Gaming <span className="gradient-text">Excellence.</span>
+                    </h1>
 
-            <main className="relative z-10 w-full max-w-[1700px] mx-auto pt-24 pb-4 px-4 md:px-8 flex flex-col flex-1 min-h-0 overflow-hidden">
-                {/* Header Section - Compact */}
-                <div className="flex flex-col lg:flex-row justify-between items-center mb-6 gap-6">
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
-                            Gaming <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent italic">Excellence.</span>
-                        </h1>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    <div className="flex flex-col sm:flex-row gap-3 items-center">
                         <div className="flex gap-2">
-                            {/* Coins Balance Card */}
-                            <div className="bg-white/5 border border-white/10 rounded-2xl py-2 px-4 flex items-center gap-3 transition-all hover:bg-white/[0.08]">
-                                <Coins className="w-4 h-4 text-emerald-400" />
+                            {/* Coins */}
+                            <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg py-2 px-3 flex items-center gap-2">
+                                <Coins className="w-3.5 h-3.5 text-emerald-400" />
                                 <div>
-                                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none">Coins</p>
-                                    <div className="text-sm font-black text-white tabular-nums leading-none mt-1">
-                                        {balance.toLocaleString()}
-                                    </div>
+                                    <p className="text-[9px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider leading-none">Coins</p>
+                                    <div className="text-sm font-bold text-white tabular-nums leading-none mt-0.5">{balance.toLocaleString()}</div>
                                 </div>
                             </div>
-
-                            {/* Chips Balance Card (Clickable) */}
-                            <button onClick={() => setIsExchangeOpen(true)} className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl py-2 px-4 flex items-center gap-3 transition-all hover:bg-indigo-500/20 group">
-                                <Database className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+                            {/* Chips */}
+                            <button onClick={() => setIsExchangeOpen(true)} className="bg-[var(--accent-muted)] border border-[var(--border-accent)] rounded-lg py-2 px-3 flex items-center gap-2 hover:brightness-110 transition group">
+                                <Database className="w-3.5 h-3.5 text-[var(--accent)]" />
                                 <div className="text-left">
-                                    <p className="text-[9px] font-black text-indigo-400/70 uppercase tracking-widest leading-none">Chips</p>
-                                    <div className="text-sm font-black text-white tabular-nums leading-none mt-1">
-                                        {chips.toLocaleString()}
-                                    </div>
+                                    <p className="text-[9px] font-semibold text-[var(--accent)] uppercase tracking-wider leading-none opacity-70">Chips</p>
+                                    <div className="text-sm font-bold text-white tabular-nums leading-none mt-0.5">{chips.toLocaleString()}</div>
                                 </div>
                             </button>
                         </div>
 
-                        {/* Navigation Tabs - Slim */}
-                        <div className="bg-white/5 border border-white/10 p-1 rounded-[1.8rem] flex gap-1 overflow-x-auto max-w-full hide-scrollbar">
+                        {/* Tab Navigation */}
+                        <div className="bg-[var(--bg-secondary)] border border-[var(--border)] p-1 rounded-lg flex gap-1 overflow-x-auto max-w-full no-scrollbar">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
-                                    className={`whitespace-nowrap px-5 py-2.5 rounded-[1.4rem] font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2
-                                        ${activeTab === tab.id ? 'bg-white text-black shadow-lg shadow-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'}
+                                    className={`whitespace-nowrap px-3.5 py-2 rounded-md font-semibold text-xs transition-all flex items-center gap-1.5
+                                        ${activeTab === tab.id ? 'bg-white text-black' : 'text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)]'}
                                     `}
                                 >
                                     {tab.icon}
@@ -114,15 +96,15 @@ export default function InteractiveCasinoPage() {
                     </div>
                 </div>
 
-                {/* Main Game Stage - Viewport Filled */}
-                <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-[2.5rem] shadow-2xl relative overflow-hidden backdrop-blur-3xl min-h-0">
+                {/* Game Stage */}
+                <div className="flex-1 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl relative overflow-hidden min-h-0">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab}
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 1.02 }}
-                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                             className="absolute inset-0 h-full w-full"
                         >
                             {activeTab === 'CRASH' && <CrashGame userBalance={balance} onBalanceChange={setBalance} />}
@@ -133,23 +115,18 @@ export default function InteractiveCasinoPage() {
                     </AnimatePresence>
                 </div>
 
-                {/* Footer Meta - Small & Integrated */}
-                <div className="mt-3 flex justify-between items-center text-[8px] font-black text-white/10 uppercase tracking-[0.4em]">
+                {/* Footer */}
+                <div className="mt-2 flex justify-between items-center text-[8px] font-semibold text-[var(--text-muted)] uppercase tracking-widest">
                     <div>© 2026 DON POLLO ENTERPRISE</div>
-                    <div className="flex gap-4">
-                    </div>
                 </div>
             </main>
 
-            <ChipExchangeModal 
-                isOpen={isExchangeOpen} 
-                onClose={() => setIsExchangeOpen(false)} 
-                coinsBalance={balance} 
-                chipsBalance={chips} 
-                onSuccess={(newCoins, newChips) => {
-                    setBalance(newCoins);
-                    setChips(newChips);
-                }} 
+            <ChipExchangeModal
+                isOpen={isExchangeOpen}
+                onClose={() => setIsExchangeOpen(false)}
+                coinsBalance={balance}
+                chipsBalance={chips}
+                onSuccess={(newCoins, newChips) => { setBalance(newCoins); setChips(newChips); }}
             />
         </div>
     );
