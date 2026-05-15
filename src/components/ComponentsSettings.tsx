@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import EmojiPicker from "./EmojiPicker";
 import ConfirmationModal from "./ConfirmationModal";
 import { ToastContainer, useToast } from "./Toast";
+import CustomDropdown from "./CustomDropdown";
 
 interface Role { id: string; name: string; color: number; }
 interface Channel { id: string; name: string; type?: number; }
@@ -531,10 +532,13 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
                         {["add_role", "remove_role", "toggle_role"].includes(currentAction.type) && (
                             <div>
                                 <label className="text-xs font-bold text-[var(--text-secondary)] mb-2 block">SELECT ROLES</label>
-                                <select onChange={e => e.target.value && updateCurrentAction({ roles: [...(currentAction.roles || []), e.target.value] })} className="w-full bg-[var(--bg-hover)] border-2 border-[var(--border)] rounded-lg px-3 py-2 text-white text-sm mb-2 focus:outline-none focus:border-amber-400 font-medium">
-                                    <option value="">+ Add Role</option>
-                                    {roles.map((r: any) => <option key={r.id} value={r.id}>{r.name}</option>)}
-                                </select>
+                                <CustomDropdown
+                                    options={roles.map((r: any) => ({ value: r.id, label: r.name }))}
+                                    value=""
+                                    onChange={(val) => val && updateCurrentAction({ roles: [...(currentAction.roles || []), val] })}
+                                    placeholder="+ Add Role"
+                                    size="sm"
+                                />
                                 <div className="flex flex-wrap gap-2">
                                     {(currentAction.roles || []).map((rid: string) => {
                                         const r = roles.find((role: any) => role.id === rid);
@@ -553,10 +557,13 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
                                 {currentAction.type === "send_channel" && (
                                     <div>
                                         <label className="text-xs font-bold text-[var(--text-secondary)] mb-1 block">CHANNEL</label>
-                                        <select value={currentAction.channel_id || ''} onChange={e => updateCurrentAction({ channel_id: e.target.value })} className="w-full bg-[var(--bg-hover)] border-2 border-[var(--border)] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-400">
-                                            <option value="">Select Channel</option>
-                                            {channels.map((c: any) => <option key={c.id} value={c.id}>#{c.name}</option>)}
-                                        </select>
+                                        <CustomDropdown
+                                            options={channels.map((c: any) => ({ value: c.id, label: `#${c.name}` }))}
+                                            value={currentAction.channel_id || ''}
+                                            onChange={(val) => updateCurrentAction({ channel_id: val })}
+                                            placeholder="Select Channel"
+                                            size="sm"
+                                        />
                                     </div>
                                 )}
                                 <div>
@@ -570,17 +577,23 @@ function ActionManager({ actions, onUpdate, roles, channels, voiceChannels, edit
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="text-xs font-bold text-[var(--text-secondary)] mb-1 block">FROM CHANNEL</label>
-                                    <select value={currentAction.source_channel || ''} onChange={e => updateCurrentAction({ source_channel: e.target.value })} className="w-full bg-[var(--bg-hover)] border-2 border-[var(--border)] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-400">
-                                        <option value="">Any / Specific</option>
-                                        {voiceChannels.map((c: any) => <option key={c.id} value={c.id}>🔊 {c.name}</option>)}
-                                    </select>
+                                    <CustomDropdown
+                                        options={voiceChannels.map((c: any) => ({ value: c.id, label: `🔊 ${c.name}` }))}
+                                        value={currentAction.source_channel || ''}
+                                        onChange={(val) => updateCurrentAction({ source_channel: val })}
+                                        placeholder="Any / Specific"
+                                        size="sm"
+                                    />
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-[var(--text-secondary)] mb-1 block">TO CHANNEL</label>
-                                    <select value={currentAction.destination_channel || ''} onChange={e => updateCurrentAction({ destination_channel: e.target.value })} className="w-full bg-[var(--bg-hover)] border-2 border-[var(--border)] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-400">
-                                        <option value="">Select Channel</option>
-                                        {voiceChannels.map((c: any) => <option key={c.id} value={c.id}>🔊 {c.name}</option>)}
-                                    </select>
+                                    <CustomDropdown
+                                        options={voiceChannels.map((c: any) => ({ value: c.id, label: `🔊 ${c.name}` }))}
+                                        value={currentAction.destination_channel || ''}
+                                        onChange={(val) => updateCurrentAction({ destination_channel: val })}
+                                        placeholder="Select Channel"
+                                        size="sm"
+                                    />
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-[var(--text-secondary)] mb-1 block">USER COUNT (0=ALL)</label>

@@ -81,13 +81,13 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
     };
 
     const categoryIcons: Record<string, string> = {
-        'User': '👤',
-        'Server': '🏠',
-        'Role': '🎭',
-        'Channel': '💬',
-        'Date': '📅',
-        'Counter': '🔢',
-        'Notification': '🔔',
+        'User': 'U',
+        'Server': 'S',
+        'Role': 'R',
+        'Channel': 'C',
+        'Date': 'D',
+        'Counter': '#',
+        'Notification': 'N',
     };
 
     const handleCopy = (variable: string) => {
@@ -107,7 +107,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
             {/* Tip Banner */}
             <div className="bg-[#5865f2]/10 border border-[#5865f2]/30 rounded-[8px] p-4">
                 <div className="flex items-start gap-3">
-                    <span className="text-2xl">💡</span>
+                    <svg className="w-5 h-5 text-[#5865f2] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     <div>
                         <p className="font-bold text-[#5865f2] text-sm">How to use Variables</p>
                         <p className="text-[var(--text-secondary)] text-xs mt-1">
@@ -119,7 +119,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
 
             {/* Search Bar */}
             <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]">🔍</span>
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 <input
                     type="text"
                     placeholder="Search variables..."
@@ -149,7 +149,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                             : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border-transparent hover:border-[#4e5058]/30'
                             }`}
                     >
-                        <span>{categoryIcons[cat] || '✨'}</span>
+                        <span className="w-4 h-4 rounded bg-[#5865f2]/20 text-[10px] font-black flex items-center justify-center">{categoryIcons[cat] || '?'}</span>
                         <span>{cat}</span>
                         <span className="opacity-60">({allVariables.filter(v => v.category === cat).length})</span>
                     </button>
@@ -159,7 +159,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
             {/* Variables Grid */}
             {filteredVariables.length === 0 ? (
                 <div className="text-center py-8 text-[var(--text-secondary)]">
-                    <span className="text-3xl block mb-2">🔍</span>
+                    <svg className="w-8 h-8 mx-auto mb-2 text-[var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     <p className="text-sm">No variables match the search.</p>
                 </div>
             ) : (
@@ -172,7 +172,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                             <div key={cat} className="glass-card rounded-[8px] border border-[var(--border)] overflow-hidden">
                                 {/* Category Header */}
                                 <div className="px-4 py-2 border-b border-[var(--border)] bg-[var(--bg-tertiary)] flex items-center gap-2">
-                                    <span>{categoryIcons[cat] || '✨'}</span>
+                                    <span className="w-5 h-5 rounded bg-[#5865f2]/20 text-[10px] font-black flex items-center justify-center text-[#5865f2]">{categoryIcons[cat] || '?'}</span>
                                     <span className="font-bold text-xs uppercase tracking-wider text-[var(--text-secondary)]">{cat} Variables</span>
                                     <span className="text-[10px] text-[var(--text-tertiary)] ml-auto">{catVars.length} items</span>
                                 </div>
@@ -203,7 +203,7 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
                                                 ? 'text-green-400 opacity-100'
                                                 : 'text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100'
                                                 }`}>
-                                                {copiedVar === v.variable ? '✓ Copied!' : '📋 Copy'}
+                                                {copiedVar === v.variable ? '✓ Copied' : 'Copy'}
                                             </div>
                                         </button>
                                     ))}
@@ -220,13 +220,13 @@ const VariablesSection = ({ extraVariables = [] }: { extraVariables?: VariableIt
 // --- Helper Components ---
 
 const AccordionItem = ({ title, children, isOpen, onToggle, extraActions }: { title: React.ReactNode, children: React.ReactNode, isOpen: boolean, onToggle: () => void, extraActions?: React.ReactNode }) => (
-    <div className="border border-[var(--border)] rounded-[8px] glass-card overflow-hidden shadow-sm transition-all duration-200">
+    <div className={`rounded-[8px] overflow-hidden transition-all duration-300 ${isOpen ? 'bg-[var(--bg-secondary)] border border-[var(--border-hover)] shadow-md' : 'bg-[var(--bg-secondary)] border border-[var(--border)] hover:border-[var(--border-hover)]'}`}>
         <div
-            className="flex items-center justify-between p-4 bg-[var(--bg-tertiary)] cursor-pointer hover:bg-[var(--bg-hover)] transition select-none"
+            className="flex items-center justify-between px-5 py-3.5 cursor-pointer select-none group"
             onClick={onToggle}
         >
-            <div className="flex items-center gap-3 font-bold text-white">
-                <span className={`transform transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}>▶</span>
+            <div className="flex items-center gap-3 font-bold text-[var(--text-primary)] text-sm">
+                <svg className={`w-4 h-4 text-[var(--text-tertiary)] transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                 {title}
             </div>
             <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
@@ -234,12 +234,11 @@ const AccordionItem = ({ title, children, isOpen, onToggle, extraActions }: { ti
             </div>
         </div>
         {isOpen && (
-            <div className="p-4 border-t border-[var(--border)] animate-slide-down">
+            <div className="px-5 pb-5 pt-2 border-t border-[var(--border)] animate-slide-down">
                 {children}
             </div>
         )}
     </div>
-
 );
 
 // --- Emoji Renderer ---
@@ -276,8 +275,9 @@ const EmbedEditor = ({ embed, onChange, onDelete, index }: { embed: EmbedData, o
                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: embed.color || '#5865f2' }}></span>
                     Embed #{index + 1}
                 </div>
-                <button onClick={onDelete} className="text-[#da373c] hover:bg-[#da373c]/10 px-3 py-1 rounded-[3px] text-xs font-bold transition">
-                    🗑️ Delete Embed
+                <button onClick={onDelete} className="text-[#da373c] hover:bg-[#da373c]/10 px-3 py-1 rounded-[3px] text-xs font-bold transition flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Delete Embed
                 </button>
             </div>
 
@@ -517,13 +517,13 @@ const ActionEditor = ({
                         onChange={(value) => onChange({ type: value })}
                         placeholder="Select Action Type..."
                         options={[
-                            { value: 'add_role', label: 'Add Role', icon: '➕' },
-                            { value: 'remove_role', label: 'Remove Role', icon: '➖' },
-                            { value: 'toggle_role', label: 'Toggle Role', icon: '🔄' },
-                            { value: 'send_message', label: 'Send Message (Reply)', icon: '💬' },
-                            { value: 'send_message_channel', label: 'Send Message to Channel', icon: '📢' },
-                            { value: 'dm_user', label: 'DM User', icon: '✉️' },
-                            { value: 'move_voice', label: 'Move User to Voice Channel', icon: '🔊' },
+                            { value: 'add_role', label: 'Add Role' },
+                            { value: 'remove_role', label: 'Remove Role' },
+                            { value: 'toggle_role', label: 'Toggle Role' },
+                            { value: 'send_message', label: 'Send Message (Reply)' },
+                            { value: 'send_message_channel', label: 'Send Message to Channel' },
+                            { value: 'dm_user', label: 'DM User' },
+                            { value: 'move_voice', label: 'Move User to Voice Channel' },
                         ]}
                     />
                 </div>
@@ -553,23 +553,24 @@ const ActionEditor = ({
                                     </div>
                                 );
                             })}
-                            <select
-                                className="bg-transparent text-[var(--text-secondary)] text-xs outline-none cursor-pointer hover:text-white min-w-[80px]"
-                                onChange={(e) => {
-                                    if (e.target.value) {
-                                        const currentRoles = action.roles || (action.role_id ? [action.role_id] : []);
-                                        if (!currentRoles.includes(e.target.value)) {
-                                            onChange({ roles: [...currentRoles, e.target.value], role_id: undefined });
+                            <div className="min-w-[120px]">
+                                <CustomDropdown
+                                    value=""
+                                    size="sm"
+                                    placeholder="+ Add Role"
+                                    onChange={(val) => {
+                                        if (val) {
+                                            const currentRoles = action.roles || (action.role_id ? [action.role_id] : []);
+                                            if (!currentRoles.includes(val)) {
+                                                onChange({ roles: [...currentRoles, val], role_id: undefined });
+                                            }
                                         }
-                                    }
-                                    e.target.value = '';
-                                }}
-                            >
-                                <option value="" disabled selected>+ Add Role</option>
-                                {roles.filter(r => !([...(action.roles || []), ...(action.role_id ? [action.role_id] : [])]).includes(r.id)).map(r => (
-                                    <option key={r.id} value={r.id}>{r.name}</option>
-                                ))}
-                            </select>
+                                    }}
+                                    options={roles
+                                        .filter(r => !([...(action.roles || []), ...(action.role_id ? [action.role_id] : [])]).includes(r.id))
+                                        .map(r => ({ value: r.id, label: r.name }))}
+                                />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -741,20 +742,21 @@ const ReactionEditor = ({
                                         </div>
                                     );
                                 })}
-                                <select
-                                    className="bg-transparent text-[var(--text-secondary)] text-xs outline-none cursor-pointer hover:text-white min-w-[80px]"
-                                    onChange={(e) => {
-                                        if (e.target.value && !(reaction.role_ids || []).includes(e.target.value)) {
-                                            onChange({ role_ids: [...(reaction.role_ids || []), e.target.value] });
-                                        }
-                                        e.target.value = '';
-                                    }}
-                                >
-                                    <option value="" disabled selected>+ Add Role</option>
-                                    {roles.filter(r => !(reaction.role_ids || []).includes(r.id)).map(r => (
-                                        <option key={r.id} value={r.id}>{r.name}</option>
-                                    ))}
-                                </select>
+                                <div className="min-w-[120px]">
+                                    <CustomDropdown
+                                        value=""
+                                        size="sm"
+                                        placeholder="+ Add Role"
+                                        onChange={(val) => {
+                                            if (val && !(reaction.role_ids || []).includes(val)) {
+                                                onChange({ role_ids: [...(reaction.role_ids || []), val] });
+                                            }
+                                        }}
+                                        options={roles
+                                            .filter(r => !(reaction.role_ids || []).includes(r.id))
+                                            .map(r => ({ value: r.id, label: r.name }))}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -959,7 +961,7 @@ export default function CreateMessageModal({
             const prevState = JSON.parse(JSON.stringify(history[historyIndex - 1]));
             setHistoryIndex(historyIndex - 1);
             setEditingMsgInternal(prevState);
-            success('↩️ Undo!', 1000);
+            success('Undo', 1000);
         }
     };
 
@@ -969,7 +971,7 @@ export default function CreateMessageModal({
             const nextState = JSON.parse(JSON.stringify(history[historyIndex + 1]));
             setHistoryIndex(historyIndex + 1);
             setEditingMsgInternal(nextState);
-            success('↪️ Redo!', 1000);
+            success('Redo', 1000);
         }
     };
 
@@ -993,7 +995,7 @@ export default function CreateMessageModal({
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        success('📥 JSON exported!', 2000);
+        success('JSON exported!', 2000);
     };
 
     // Import from JSON - supports both internal format and Discord API format
@@ -1068,19 +1070,50 @@ export default function CreateMessageModal({
             // Convert embeds from Discord API format
             let embeds = [];
             if (Array.isArray(parsed.embeds)) {
-                embeds = parsed.embeds.map((embed: any) => ({
-                    author_name: embed.author?.name || '',
-                    author_icon_url: embed.author?.icon_url || '',
-                    title: embed.title || '',
-                    description: embed.description || '',
-                    color: embed.color ? `#${embed.color.toString(16).padStart(6, '0')}` : '#FFD700',
-                    url: embed.url || '',
-                    thumbnail_url: embed.thumbnail?.url || '',
-                    image_url: embed.image?.url || '',
-                    footer_text: embed.footer?.text || '',
-                    footer_icon_url: embed.footer?.icon_url || '',
-                    fields: embed.fields || []
-                }));
+                embeds = parsed.embeds.map((embed: any) => {
+                    // Check if it's already in our internal format
+                    const isInternal = embed.author_name !== undefined || embed.footer_text !== undefined || typeof embed.color === 'string';
+                    
+                    let color = '#5865f2';
+                    if (embed.color) {
+                        if (typeof embed.color === 'string') {
+                            color = embed.color.startsWith('#') ? embed.color : `#${embed.color}`;
+                        } else if (typeof embed.color === 'number') {
+                            color = `#${embed.color.toString(16).padStart(6, '0')}`;
+                        }
+                    }
+
+                    if (isInternal) {
+                        return {
+                            author_name: embed.author_name || '',
+                            author_icon_url: embed.author_icon_url || '',
+                            title: embed.title || '',
+                            description: embed.description || '',
+                            color: color,
+                            url: embed.url || '',
+                            thumbnail_url: embed.thumbnail_url || '',
+                            image_url: embed.image_url || '',
+                            footer_text: embed.footer_text || '',
+                            footer_icon_url: embed.footer_icon_url || '',
+                            fields: embed.fields || []
+                        };
+                    } else {
+                        // Discord API format
+                        return {
+                            author_name: embed.author?.name || '',
+                            author_icon_url: embed.author?.icon_url || '',
+                            title: embed.title || '',
+                            description: embed.description || '',
+                            color: color,
+                            url: embed.url || '',
+                            thumbnail_url: embed.thumbnail?.url || '',
+                            image_url: embed.image?.url || '',
+                            footer_text: embed.footer?.text || '',
+                            footer_icon_url: embed.footer?.icon_url || '',
+                            fields: embed.fields || []
+                        };
+                    }
+                });
             }
 
             // Create a valid message from the import
@@ -1102,7 +1135,7 @@ export default function CreateMessageModal({
             setShowImportModal(false);
             setImportJson('');
             setImportError(null);
-            success('📤 JSON imported successfully! All components loaded.', 3000);
+            success('JSON imported successfully! All components loaded.', 3000);
         } catch (e: any) {
             setImportError(e.message || 'Invalid JSON format');
         }
@@ -1226,9 +1259,9 @@ export default function CreateMessageModal({
     };
 
     // --- Preview Renderer ---
-    const preview = (text: string) => {
+    const preview = (text: any) => {
         if (!text) return '';
-        return text
+        return String(text)
             // User Variables
             .replace(/{user}/g, '@User')
             .replace(/{user\.name}/g, 'Username')
@@ -1267,7 +1300,7 @@ export default function CreateMessageModal({
         // Check for variables
         if (src.includes('{user.avatar}')) {
             return (
-                <div className={`${className} bg-[var(--bg-secondary)]mber-200 flex items-center justify-center text-stone-500 overflow-hidden`}>
+                <div className={`${className} bg-amber-200 flex items-center justify-center text-stone-500 overflow-hidden`}>
                     <span className="text-2xl">🐔</span>
                 </div>
             );
@@ -1297,7 +1330,7 @@ export default function CreateMessageModal({
             <div className="bg-[var(--bg-primary)] rounded-md shadow-sm font-sans text-white text-[15px] leading-[1.375rem] overflow-hidden">
                 <div className="p-4">
                     <div className="flex items-center gap-3 mb-1">
-                        <div className="w-10 h-10 rounded-full bg-[var(--bg-secondary)]mber-500 flex items-center justify-center font-bold text-lg select-none">🐔</div>
+                        <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center font-bold text-lg select-none">DP</div>
                         <div className="flex items-baseline gap-2">
                             <span className="font-medium hover:underline cursor-pointer">Don Pollo</span>
                             <span className="bg-[#5865F2] text-[10px] px-1.5 rounded-[3px] py-[0.5px] font-medium leading-[1.2]">APP</span>
@@ -1365,8 +1398,8 @@ export default function CreateMessageModal({
                                                             className={field.inline ? '' : 'col-span-3'}
                                                             style={{ minWidth: 0 }}
                                                         >
-                                                            <div className="font-semibold text-xs text-white mb-0.5 break-words">{field.name}</div>
-                                                            <div className="text-sm text-[var(--text-primary)] whitespace-pre-wrap break-words">{field.value}</div>
+                                                            <div className="font-semibold text-xs text-white mb-0.5 break-words">{preview(field.name)}</div>
+                                                            <div className="text-sm text-[var(--text-primary)] whitespace-pre-wrap break-words">{preview(field.value)}</div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -1441,22 +1474,28 @@ export default function CreateMessageModal({
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-0 md:p-4 animate-fade-in">
-            <div className="bg-[var(--bg-primary)] w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[8px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-[var(--border)] animate-scale-in">
+            <div className="bg-[var(--bg-primary)] w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-[12px] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-[var(--border)] animate-scale-in">
 
                 {/* Top Bar */}
-                <div className="bg-[#212226] border-b border-[var(--border)] px-3 md:px-6 py-3 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center shadow-sm z-10 shrink-0">
+                <div className="bg-[var(--bg-tertiary)] border-b border-[var(--border)] px-4 md:px-6 py-3 flex flex-col md:flex-row gap-2 md:gap-0 md:justify-between md:items-center z-10 shrink-0">
                     {/* Row 1: Close, Title, Undo/Redo */}
                     <div className="flex items-center justify-between md:justify-start gap-2 md:gap-4">
-                        <div className="flex items-center gap-2 md:gap-4">
-                            <button onClick={onClose} className="text-xl md:text-2xl text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]">✕</button>
-                            <h2 className="text-base md:text-xl font-black text-white truncate">
-                                {isEditing ? 'Edit' : 'Create'}
-                            </h2>
+                        <div className="flex items-center gap-3 md:gap-4">
+                            <button type="button" onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[var(--bg-hover)] transition text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                            <div>
+                                <h2 className="text-sm md:text-base font-bold text-white leading-tight">
+                                    {isEditing ? 'Edit Message' : 'Create Message'}
+                                </h2>
+                                <p className="text-[10px] text-[var(--text-tertiary)] hidden md:block">Message Editor</p>
+                            </div>
                         </div>
 
                         {/* Undo/Redo Buttons */}
                         <div className="flex items-center gap-1">
                             <button
+                                type="button"
                                 onClick={undo}
                                 disabled={historyIndex < 0}
                                 className="p-2 rounded-lg hover:bg-[var(--bg-hover)] transition disabled:opacity-30 disabled:cursor-not-allowed"
@@ -1467,6 +1506,7 @@ export default function CreateMessageModal({
                                 </svg>
                             </button>
                             <button
+                                type="button"
                                 onClick={redo}
                                 disabled={historyIndex >= history.length - 1}
                                 className="p-2 rounded-lg hover:bg-[var(--bg-hover)] transition disabled:opacity-30 disabled:cursor-not-allowed"
@@ -1484,6 +1524,7 @@ export default function CreateMessageModal({
                         {/* Import/Export Buttons */}
                         <div className="flex items-center gap-1 border-l border-[var(--border)] pl-4">
                             <button
+                                type="button"
                                 onClick={() => setShowImportModal(true)}
                                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] rounded-lg transition"
                                 title="Import JSON"
@@ -1494,6 +1535,7 @@ export default function CreateMessageModal({
                                 Import
                             </button>
                             <button
+                                type="button"
                                 onClick={exportToJson}
                                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] rounded-lg transition"
                                 title="Export JSON"
@@ -1520,9 +1562,10 @@ export default function CreateMessageModal({
                             />
                         )}
                         <button
+                            type="button"
                             onClick={handleSendMessage}
                             disabled={sending}
-                            className={`px-4 md:px-6 py-2 bg-[#248046] hover:bg-[#1a5c32] text-white font-bold rounded-[3px] shadow-md transition disabled:opacity-50 text-sm md:text-base whitespace-nowrap ${sending ? 'cursor-not-allowed opacity-70' : ''}`}
+                            className={`px-5 md:px-6 py-2.5 bg-[#248046] hover:bg-[#1a6b35] text-white font-bold rounded-[6px] shadow-sm hover:shadow-md transition-all text-sm whitespace-nowrap flex items-center gap-2 ${sending ? 'cursor-not-allowed opacity-70' : ''}`}
                         >
                             {sending ? (
                                 <div className="flex items-center gap-2">
@@ -1540,13 +1583,13 @@ export default function CreateMessageModal({
                         onClick={() => setMobileView('editor')}
                         className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'editor' ? 'text-white border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-[var(--text-secondary)]'}`}
                     >
-                        ✏️ Editor
+                        Editor
                     </button>
                     <button
                         onClick={() => setMobileView('preview')}
                         className={`flex-1 py-3 font-bold text-sm transition ${mobileView === 'preview' ? 'text-white border-b-2 border-[#5865f2] bg-[#5865f2]/10' : 'text-[var(--text-secondary)]'}`}
                     >
-                        👁️ Preview
+                        Preview
                     </button>
                 </div>
 
@@ -1599,7 +1642,7 @@ export default function CreateMessageModal({
                                             if (!openSections.includes('embeds')) toggleSection('embeds');
                                         }
                                     }}
-                                    className="text-xs bg-[var(--bg-secondary)]mber-500/10 text-amber-400 px-2 py-1 rounded font-bold hover:bg-[var(--bg-secondary)]mber-500/20 transition"
+                                    className="text-xs bg-amber-500/10 text-amber-400 px-2 py-1 rounded font-bold hover:bg-amber-500/20 transition"
                                 >
                                     + Add
                                 </button>
@@ -1661,7 +1704,7 @@ export default function CreateMessageModal({
                                                         <span>{comp.label || comp.placeholder}</span>
                                                         {/* Link indicator for Link buttons */}
                                                         {comp.style === 5 && (
-                                                            <span className="text-[#5865f2] text-xs">🔗</span>
+                                                            <svg className="w-3.5 h-3.5 text-[#5865f2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                                                         )}
                                                     </div>
                                                     {comp.type === 3 && <span className="text-xs text-[var(--text-tertiary)]">▼</span>}
@@ -1706,7 +1749,7 @@ export default function CreateMessageModal({
                                         setEditingMsg({ ...editingMsg, reactions: [...(editingMsg.reactions || []), { emoji: '', role_ids: [], success_message: '' }] });
                                         if (!openSections.includes('reactions')) toggleSection('reactions');
                                     }}
-                                    className="text-xs bg-[var(--bg-elevated)]merald-500/10 text-emerald-400 px-2 py-1 rounded font-bold hover:bg-[var(--bg-elevated)]merald-500/20 transition"
+                                    className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded font-bold hover:bg-emerald-500/20 transition"
                                 >
                                     + Add
                                 </button>
@@ -1723,7 +1766,6 @@ export default function CreateMessageModal({
                         <AccordionItem
                             title={
                                 <div className="flex items-center gap-2">
-                                    <span>📝</span>
                                     <span>Variables Guide</span>
                                     <span className="text-xs font-normal text-[var(--text-tertiary)]">({PLACEHOLDER_VARIABLES.length + extraVariables.length} variables)</span>
                                 </div>
@@ -1737,8 +1779,11 @@ export default function CreateMessageModal({
                     </div>
 
                     {/* RIGHT COLUMN: Live Preview */}
-                    <div className={`w-full md:w-1/2 bg-[#2f3136] p-4 md:p-8 overflow-y-auto flex flex-col items-center ${mobileView === 'preview' ? 'block' : 'hidden md:flex'}`}>
-                        <h3 className="text-xs font-black text-[#72767d] uppercase tracking-widest mb-4 md:mb-6 select-none">Live Preview</h3>
+                    <div className={`w-full md:w-1/2 bg-[#2b2d31] md:border-l border-[var(--border)] p-4 md:p-8 overflow-y-auto flex flex-col items-center ${mobileView === 'preview' ? 'block' : 'hidden md:flex'}`}>
+                        <div className="flex items-center gap-2 mb-4 md:mb-6 self-start">
+                            <div className="w-2 h-2 rounded-full bg-[#5865f2] animate-pulse"></div>
+                            <h3 className="text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest select-none">Live Preview</h3>
+                        </div>
                         <div className="w-full max-w-[550px] md:scale-95 origin-top">
                             {renderPreview()}
                         </div>
@@ -1793,7 +1838,7 @@ export default function CreateMessageModal({
                                                         { style: 2, label: 'Secondary', color: '#4F545C' },
                                                         { style: 3, label: 'Success', color: '#2D7D46' },
                                                         { style: 4, label: 'Danger', color: '#ED4245' },
-                                                        { style: 5, label: 'Link', color: '#4F545C', icon: '🔗' },
+                                                        { style: 5, label: 'Link', color: '#4F545C' },
                                                     ].map(s => (
                                                         <button
                                                             key={s.style}
@@ -1807,7 +1852,7 @@ export default function CreateMessageModal({
                                                                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold shadow-sm"
                                                                 style={{ backgroundColor: s.color }}
                                                             >
-                                                                {s.icon || ''}
+                                                                {s.style === 5 && <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>}
                                                             </div>
                                                             <span className="text-[10px] font-bold text-[var(--text-secondary)]">{s.label}</span>
                                                         </button>
@@ -1819,7 +1864,7 @@ export default function CreateMessageModal({
                                             {compSettings.style === 5 && (
                                                 <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 space-y-3">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-lg">🔗</span>
+                                                        <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                                                         <label className="font-bold text-blue-400 text-sm">Link Button URL</label>
                                                     </div>
                                                     <input
@@ -1906,7 +1951,7 @@ export default function CreateMessageModal({
                                                         const newOptions = [...(compSettings?.options || []), { label: 'New Option', value: `option_${Date.now()}`, description: '' }];
                                                         saveCompSettings({ options: newOptions });
                                                     }}
-                                                    className="text-xs bg-[var(--bg-secondary)]mber-500/20 text-amber-400 px-2 py-1 rounded font-bold hover:bg-[var(--bg-secondary)]mber-500/30 border border-amber-500/30 transition"
+                                                    className="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded font-bold hover:bg-amber-500/30 border border-amber-500/30 transition"
                                                     disabled={(compSettings.options || []).length >= 25}
                                                 >
                                                     + Add Option
@@ -2008,8 +2053,14 @@ export default function CreateMessageModal({
                                 </div>
                                 {/* Footer with buttons */}
                                 <div className="mt-4 flex justify-between">
-                                    <button onClick={() => { if (activeComponent) removeComponent(activeComponent.row, activeComponent.col); setActiveComponent(null); }} className="px-4 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg font-bold transition">🗑️ Delete</button>
-                                    <button onClick={() => { setActiveComponent(null); setCompSettings(null); }} className="px-4 py-2 bg-[var(--bg-elevated)]merald-500/20 text-emerald-400 hover:bg-[var(--bg-elevated)]merald-500/30 border border-emerald-500/30 rounded-lg font-bold transition">✓ Done</button>
+                                    <button onClick={() => { if (activeComponent) removeComponent(activeComponent.row, activeComponent.col); setActiveComponent(null); }} className="px-4 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg font-bold transition flex items-center gap-1.5">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        Delete
+                                    </button>
+                                    <button onClick={() => { setActiveComponent(null); setCompSettings(null); }} className="px-4 py-2 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg font-bold transition flex items-center gap-1.5">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                        Done
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -2023,7 +2074,7 @@ export default function CreateMessageModal({
                             {/* Header */}
                             <div className="bg-[var(--bg-tertiary)] p-3 md:p-4 flex items-center justify-between shrink-0 border-b border-[var(--border)]">
                                 <div className="flex items-center gap-2 md:gap-3">
-                                    <span className="text-xl md:text-2xl">📥</span>
+                                    <svg className="w-5 h-5 md:w-6 md:h-6 text-[#5865f2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                                     <h3 className="font-bold text-white text-base md:text-lg">Import JSON</h3>
                                 </div>
                                 <button
@@ -2043,7 +2094,7 @@ export default function CreateMessageModal({
                                         type="file"
                                         accept=".json"
                                         onChange={handleFileImport}
-                                        className="w-full text-sm text-[var(--text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-[var(--bg-secondary)]mber-500/20 file:text-amber-400 hover:file:bg-[var(--bg-secondary)]mber-500/30 file:cursor-pointer"
+                                        className="w-full text-sm text-[var(--text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-amber-500/20 file:text-amber-400 hover:file:bg-amber-500/30 file:cursor-pointer"
                                     />
                                 </div>
 
@@ -2067,15 +2118,15 @@ export default function CreateMessageModal({
                                 {/* Error Display */}
                                 {importError && (
                                     <div className="bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-                                        <span>⚠️</span>
+                                        <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
                                         <span>{importError}</span>
                                     </div>
                                 )}
 
                                 {/* Tip */}
-                                <div className="bg-[var(--bg-secondary)]mber-500/10 border border-amber-500/30 rounded-xl p-3">
+                                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
                                     <p className="text-xs text-amber-400">
-                                        💡 <strong>Tip:</strong> Export a message first to see the correct JSON format, then modify and import it back.
+                                        <strong>Tip:</strong> Export a message first to see the correct JSON format, then modify and import it back.
                                     </p>
                                 </div>
                             </div>
@@ -2083,15 +2134,17 @@ export default function CreateMessageModal({
                             {/* Footer */}
                             <div className="border-t border-[var(--border)] p-4 flex justify-end gap-3 bg-[var(--bg-tertiary)]">
                                 <button
+                                    type="button"
                                     onClick={() => { setShowImportModal(false); setImportJson(''); setImportError(null); }}
                                     className="px-4 py-2 text-[var(--text-secondary)] font-bold hover:bg-[var(--bg-hover)] rounded-lg transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={importFromJson}
                                     disabled={!importJson.trim()}
-                                    className="px-6 py-2 bg-[var(--bg-secondary)]mber-500 hover:bg-[var(--bg-secondary)]mber-600 text-black font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-6 py-2 bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Import
                                 </button>

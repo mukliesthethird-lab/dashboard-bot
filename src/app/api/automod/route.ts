@@ -41,7 +41,11 @@ export async function GET(request: Request) {
                 anti_zalgo: 0,
                 anti_emoji: 0,
                 emoji_threshold: 10,
-                log_channel_id: null
+                log_channel_id: null,
+                exempt_channels: '[]',
+                exempt_roles: '[]',
+                escalation_rules: '{}',
+                use_global_blacklist: 0
             });
         }
 
@@ -75,7 +79,11 @@ export async function POST(request: Request) {
             anti_zalgo,
             anti_emoji,
             emoji_threshold,
-            log_channel_id
+            log_channel_id,
+            exempt_channels,
+            exempt_roles,
+            escalation_rules,
+            use_global_blacklist
         } = body;
 
         if (!guild_id) {
@@ -86,8 +94,9 @@ export async function POST(request: Request) {
             INSERT INTO automod_settings 
             (guild_id, anti_links, anti_invites, anti_spam, spam_threshold, penalty_action, 
              blacklisted_words, anti_caps, caps_threshold, anti_mentions, mentions_threshold, 
-             anti_zalgo, anti_emoji, emoji_threshold, log_channel_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             anti_zalgo, anti_emoji, emoji_threshold, log_channel_id, 
+             exempt_channels, exempt_roles, escalation_rules, use_global_blacklist)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 anti_links = VALUES(anti_links),
                 anti_invites = VALUES(anti_invites),
@@ -102,7 +111,11 @@ export async function POST(request: Request) {
                 anti_zalgo = VALUES(anti_zalgo),
                 anti_emoji = VALUES(anti_emoji),
                 emoji_threshold = VALUES(emoji_threshold),
-                log_channel_id = VALUES(log_channel_id)
+                log_channel_id = VALUES(log_channel_id),
+                exempt_channels = VALUES(exempt_channels),
+                exempt_roles = VALUES(exempt_roles),
+                escalation_rules = VALUES(escalation_rules),
+                use_global_blacklist = VALUES(use_global_blacklist)
         `, [
             guild_id,
             anti_links ? 1 : 0,
@@ -118,7 +131,11 @@ export async function POST(request: Request) {
             anti_zalgo ? 1 : 0,
             anti_emoji ? 1 : 0,
             emoji_threshold || 10,
-            log_channel_id || null
+            log_channel_id || null,
+            JSON.stringify(exempt_channels || []),
+            JSON.stringify(exempt_roles || []),
+            JSON.stringify(escalation_rules || {}),
+            use_global_blacklist ? 1 : 0
         ]);
 
         console.log(`[Automod Update] Guild: ${guild_id} | User: ${session?.user?.name || 'Unknown'}`);

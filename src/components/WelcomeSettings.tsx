@@ -385,19 +385,19 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                 {type.type !== "role" && (
                                     <div className="flex-1 flex items-center gap-6 px-6 border-l border-[var(--border)]" onClick={e => e.stopPropagation()}>
                                         <div className="flex-1 max-w-[200px]">
-                                            <select
+                                            <CustomDropdown
                                                 value={config.channel_id || ""}
-                                                onChange={(e) => {
+                                                onChange={(value) => {
                                                     setSettings(prev => ({
                                                         ...prev,
-                                                        [type.type]: { ...prev[type.type as MessageType], channel_id: e.target.value }
+                                                        [type.type]: { ...prev[type.type as MessageType], channel_id: value }
                                                     }));
                                                 }}
-                                                className="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[11px] font-bold text-white outline-none focus:border-[#5865F2]"
-                                            >
-                                                <option value="">🚫 Disable Channel</option>
-                                                {channels.map(c => <option key={c.id} value={c.id}># {c.name}</option>)}
-                                            </select>
+                                                options={[
+                                                    { value: "", label: "🚫 Disable Channel" },
+                                                    ...channels.map(c => ({ value: c.id, label: `# ${c.name}` }))
+                                                ]}
+                                            />
                                         </div>
                                         <div className="flex items-center gap-4">
                                             <div className="flex items-center gap-2 pr-4 border-r border-white/5">
@@ -492,14 +492,14 @@ export default function WelcomeSettings({ guildId }: WelcomeSettingsProps) {
                                                 {/* Tracker Settings */}
                                                 <div className="flex items-center gap-5 shrink-0">
                                                     <div className="w-48">
-                                                        <select
+                                                        <CustomDropdown
                                                             value={tracker.channel_id || ""}
-                                                            onChange={(e) => updateTracker(tracker.id, { channel_id: e.target.value })}
-                                                            className="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[11px] font-bold text-white outline-none focus:border-[#5865F2]"
-                                                        >
-                                                            <option value="">No Channel</option>
-                                                            {channels.map(c => <option key={c.id} value={c.id}># {c.name}</option>)}
-                                                        </select>
+                                                            onChange={(value) => updateTracker(tracker.id, { channel_id: value })}
+                                                            options={[
+                                                                { value: "", label: "No Channel" },
+                                                                ...channels.map(c => ({ value: c.id, label: `# ${c.name}` }))
+                                                            ]}
+                                                        />
                                                     </div>
 
                                                     <div className="flex gap-2">

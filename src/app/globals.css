@@ -173,6 +173,11 @@ body {
   100% { background-position: 200% 0; }
 }
 
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 /* ===== ANIMATION CLASSES ===== */
 
 .animate-fade-in { animation: fade-in 0.4s ease-out; }
@@ -185,6 +190,11 @@ body {
 .animate-spin-slow { animation: spin-slow 20s linear infinite; }
 .animate-bounce-in { animation: bounce-in 0.4s ease-out; }
 .animate-count-up { animation: count-up 0.5s ease-out; }
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
 .animate-delay-100 { animation-delay: 100ms; }
 .animate-delay-200 { animation-delay: 200ms; }
 .animate-delay-300 { animation-delay: 300ms; }

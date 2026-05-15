@@ -78,7 +78,7 @@ function RuleEditor({
                     <button
                         onClick={handleSave}
                         disabled={loading}
-                        className="px-6 py-2.5 bg-[var(--bg-elevated)]merald-500 hover:bg-[var(--bg-elevated)]merald-600 text-white font-bold rounded-xl transition shadow-lg disabled:opacity-50 min-w-[140px] flex items-center justify-center"
+                        className="px-6 py-2.5 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold rounded-[4px] transition shadow-lg disabled:opacity-50 min-w-[140px] flex items-center justify-center"
                     >
                         {loading ? (
                             <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@ function RuleEditor({
                 {/* CONDITIONS */}
                 <div className="glass-card bg-[var(--bg-primary)] rounded-xl p-6 border border-fuchsia-500/20 shadow-[0_0_15px_rgba(217,70,239,0.05)]">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-full bg-[var(--bg-primary)]uchsia-500/20 flex items-center justify-center text-fuchsia-500 font-black">2</div>
+                        <div className="w-8 h-8 rounded-full bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-500 font-black">2</div>
                         <h3 className="text-xl font-bold text-white uppercase tracking-wider">If</h3>
                         <div className="flex-1 border-t border-[var(--border)] ml-2"></div>
                         <span className="text-xs font-bold text-[var(--text-tertiary)] uppercase px-2">{"(Optional)"}</span>
@@ -160,7 +160,7 @@ function RuleEditor({
                 {/* ACTIONS */}
                 <div className="glass-card bg-[var(--bg-primary)] rounded-xl p-6 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-full bg-[var(--bg-elevated)]merald-500/20 flex items-center justify-center text-emerald-500 font-black">3</div>
+                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500 font-black">3</div>
                         <h3 className="text-xl font-bold text-white uppercase tracking-wider">Then</h3>
                         <div className="flex-1 border-t border-[var(--border)] ml-2"></div>
                     </div>
@@ -169,7 +169,7 @@ function RuleEditor({
                         {actions.map((act, index) => (
                             <div key={act.id} className="bg-[#111214] border border-[var(--border)] rounded-xl group hover:border-emerald-500/30 transition-colors overflow-hidden flex flex-col relative">
                                 <div className="flex items-center gap-2 bg-[#18191c] p-3 border-b border-[var(--border)]">
-                                    <span className="bg-[var(--bg-elevated)]merald-500 text-black text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Action {index + 1}</span>
+                                    <span className="bg-emerald-500 text-black text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Action {index + 1}</span>
                                     <select value={act.type} onChange={(e) => updateAction(act.id, 'type', e.target.value)} className="ml-auto bg-transparent text-sm focus:outline-none text-white font-bold max-w-[200px]">
                                         <option value="reply_message">Reply With Text</option>
                                         <option value="send_message">Send Text To Channel</option>
@@ -188,7 +188,7 @@ function RuleEditor({
                                 </div>
                             </div>
                         ))}
-                        <button onClick={addAction} className="w-full py-4 border border-dashed border-[var(--border)] hover:border-emerald-500/50 hover:bg-[var(--bg-elevated)]merald-500/5 text-emerald-400 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+                        <button onClick={addAction} className="w-full py-4 border border-dashed border-[#5865F2]/30 hover:border-[#5865F2] hover:bg-[#5865F2]/5 text-[#5865F2] rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
                             <span className="text-xl">+</span> Add Action Block
                         </button>
                     </div>
@@ -322,8 +322,14 @@ export default function VisualCommandEditor({ guildId }: { guildId: string }) {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                         </div>
-                        <button onClick={handleCreateNew} className="px-6 py-3 bg-[var(--bg-elevated)]merald-500 hover:bg-[var(--bg-elevated)]merald-600 shadow-[0_0_20px_rgba(16,185,129,0.3)] text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
-                            <span className="text-xl">+</span> New Rule
+                        <button
+                            onClick={handleCreateNew}
+                            className="flex items-center gap-2 px-4 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[4px] transition-colors shadow-sm"
+                        >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            New Rule
                         </button>
                     </div>
 
@@ -343,7 +349,7 @@ export default function VisualCommandEditor({ guildId }: { guildId: string }) {
                                             {/* Custom Toggle Switch */}
                                             <button
                                                 onClick={() => handleToggleActive(r.id)}
-                                                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${r.active ? 'bg-[var(--bg-elevated)]merald-500' : 'bg-gray-700'}`}
+                                                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${r.active ? 'bg-emerald-500' : 'bg-gray-700'}`}
                                             >
                                                 <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${r.active ? 'translate-x-5' : 'translate-x-0'}`} />
                                             </button>

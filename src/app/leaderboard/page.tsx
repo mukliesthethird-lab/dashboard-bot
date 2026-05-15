@@ -38,9 +38,9 @@ export default function Leaderboard() {
     const isWealth = activeTab === 'wealth';
 
     const medalColors = [
-        { border: 'border-amber-400', text: 'text-amber-400', bg: 'bg-amber-400/10', shadow: '' },
-        { border: 'border-gray-300', text: 'text-gray-300', bg: 'bg-gray-300/10', shadow: '' },
-        { border: 'border-orange-500', text: 'text-orange-500', bg: 'bg-orange-500/10', shadow: '' },
+        { border: 'border-amber-400', text: 'text-amber-400', bg: 'bg-amber-400', shadow: 'shadow-[0_0_15px_rgba(251,191,36,0.3)]' },
+        { border: 'border-slate-300', text: 'text-slate-300', bg: 'bg-slate-300', shadow: 'shadow-[0_0_15px_rgba(203,213,225,0.2)]' },
+        { border: 'border-orange-500', text: 'text-orange-500', bg: 'bg-orange-500', shadow: 'shadow-[0_0_15px_rgba(249,115,22,0.2)]' },
     ];
 
     return (
@@ -105,7 +105,7 @@ export default function Leaderboard() {
                                                 alt={user.username}
                                                 className={`w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 ${medal.border} object-cover`}
                                             />
-                                            <div className={`absolute -top-1.5 -right-1.5 w-6 h-6 rounded-md ${medal.bg} ${medal.text} text-xs font-bold flex items-center justify-center border ${medal.border}`}>
+                                            <div className={`absolute -top-2 -right-2 w-7 h-7 rounded-lg ${medal.bg} text-[#000000] text-[13px] font-black flex items-center justify-center border-2 ${medal.border} ${medal.shadow} z-20`}>
                                                 {rank}
                                             </div>
                                         </div>

@@ -408,8 +408,8 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
                                                     <div className="flex items-start gap-4">
                                                         <div className="relative w-20 h-20 shrink-0 bg-black/40 rounded-xl overflow-hidden border border-[var(--border)]">
                                                             <img src={f.image_url} alt={f.name} className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105" />
-                                                            <div className="absolute inset-0 bg-[var(--bg-tertiary)] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                                                                <span className="text-[10px] text-white font-bold tracking-widest uppercase bg-black/60 px-3 py-1 rounded border border-white/20 scale-90 group-hover:scale-100 transition-transform">Detail</span>
+                                                            <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                                                                <span className="text-[10px] text-white font-black tracking-widest uppercase bg-black/80 px-4 py-1.5 rounded-lg border border-white/10 scale-75 group-hover:scale-100 transition-all duration-300 shadow-2xl">View Stats</span>
                                                             </div>
                                                         </div>
                                                         <div className="flex-1 min-w-0">
@@ -449,64 +449,107 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
                     </div>
                 </div>
             )}
-
-            {/* Catch Log Modal */}
+            {/* Catch Log Modal - POLISHED COMPACT VERSION */}
             {showCatchLog && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeModal}>
-                    <div className="bg-[var(--bg-primary)] rounded-[8px] p-8 max-w-md w-full mx-4 shadow-2xl relative border border-[#da373c]/30" onClick={e => e.stopPropagation()}>
-                        <button onClick={closeModal} className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
-                        <div className="text-center mb-6">
-                            <h2 className="text-2xl font-bold text-gray-100 flex items-center justify-center gap-2">
-                                <span className="text-[#da373c]">📈</span> Live Catch Activity
-                            </h2>
-                            <p className="text-[var(--text-secondary)] mt-1 text-sm">Real-time rarities distribution overview</p>
+                    <div className="bg-[var(--bg-primary)] rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl relative border border-[var(--border)] overflow-hidden animate-scale-in" onClick={e => e.stopPropagation()}>
+                        
+                        {/* Compact Header */}
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <span className="text-[#da373c]">📈</span> Live Activity
+                                </h2>
+                                <p className="text-[var(--text-secondary)] text-[10px] uppercase tracking-wider font-bold opacity-70">Real-time Global Ecosystem</p>
+                            </div>
+                            <button onClick={closeModal} className="text-[var(--text-secondary)] hover:text-white transition-colors p-1.5 hover:bg-white/5 rounded-lg">
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
                         </div>
-                        <div className="space-y-4">
-                            <div className="p-4 bg-[var(--bg-tertiary)] rounded-[4px] border border-[var(--border)]">
-                                <div className="text-[10px] font-bold text-[var(--text-secondary)] uppercase mb-3 tracking-widest text-center">Global Catch Distribution</div>
-                                <div className="flex justify-between items-end gap-1 h-32 px-4">
+
+                        <div className="space-y-6">
+                            {/* Improved Vertical Bar Chart */}
+                            <div className="p-4 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
+                                    <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm4 0h-2v-4h2v4z"/></svg>
+                                </div>
+                                <div className="text-[10px] font-black text-[var(--text-secondary)] uppercase mb-4 tracking-widest text-center opacity-60">Global Catch Distribution</div>
+                                <div className="flex justify-between items-end gap-2 h-32 px-2 relative z-10">
                                     {(['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary']).map((rarity, i) => {
                                         const count = Number(rarityDist[rarity]) || 0;
                                         const total = Object.values(rarityDist).reduce((a: any, b: any) => a + Number(b), 0) as number;
                                         const height = total > 0 ? Math.max(5, (count / total) * 100) : 5;
+                                        
+                                        const rarityColors: any = {
+                                            'Common': 'bg-sky-500 shadow-[0_0_15px_rgba(14,165,233,0.2)]',
+                                            'Uncommon': 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)]',
+                                            'Rare': 'bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.2)]',
+                                            'Epic': 'bg-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.2)]',
+                                            'Legendary': 'bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.2)]'
+                                        };
+
                                         return (
-                                            <div key={rarity} className="flex-1 h-full flex flex-col items-center justify-end gap-2 group relative">
+                                            <div key={rarity} className="flex-1 h-full flex flex-col items-center justify-end gap-2 group/bar relative">
                                                 <div 
-                                                    className={`w-full rounded-t-[2px] transition-all duration-1000 ${i === 4 ? 'bg-[#f0b232] shadow-[0_0_10px_rgba(240,178,50,0.3)]' : i === 3 ? 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : i === 2 ? 'bg-[#5865F2] shadow-[0_0_10px_rgba(88,101,242,0.3)]' : i === 1 ? 'bg-[var(--bg-elevated)]merald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]' : 'bg-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.3)]'}`} 
+                                                    className={`w-full rounded-t-md transition-all duration-1000 ease-out relative overflow-hidden ${rarityColors[rarity]}`} 
                                                     style={{ height: `${height}%` }}
-                                                ></div>
-                                                <span className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase shrink-0">{rarity[0]}</span>
-                                                {/* Tooltip on hover */}
-                                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black/90 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20 border border-white/20 shadow-xl">
-                                                    {count.toLocaleString()} Catches
+                                                >
+                                                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/bar:opacity-100 transition-opacity"></div>
+                                                </div>
+                                                <span className="text-[9px] font-black text-[var(--text-tertiary)] uppercase shrink-0 tracking-tighter">{rarity[0]}</span>
+                                                
+                                                {/* Neater Tooltip */}
+                                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/90 text-white text-[9px] px-2 py-1 rounded-md opacity-0 group-hover/bar:opacity-100 transition-all pointer-events-none whitespace-nowrap z-20 border border-white/10 shadow-xl translate-y-1 group-hover/bar:translate-y-0">
+                                                    <span className="font-black">{count.toLocaleString()}</span> {rarity}
                                                 </div>
                                             </div>
                                         );
                                     })}
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <div className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest mb-2 flex justify-between items-center">
-                                    Recent Legendary Highlights
-                                    {loadingCatches && <span className="animate-spin text-[10px]">⌛</span>}
+
+                            {/* Refined Activity List */}
+                            <div className="space-y-3">
+                                <div className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1 flex justify-between items-center opacity-60">
+                                    <span>Recent Highlights</span>
+                                    {loadingCatches && <span className="animate-spin">⌛</span>}
                                 </div>
-                                {recentCatches.length > 0 ? recentCatches.map((catchItem, idx) => (
-                                    <div key={idx} className="flex items-center justify-between p-2 bg-[var(--bg-hover)] rounded-[3px] text-xs">
-                                        <div className="flex items-center gap-2">
-                                            <span className={catchItem.rarity === 'Legendary' ? 'text-[#f0b232]' : 'text-purple-400'}>
-                                                {catchItem.rarity === 'Legendary' ? '👑' : '💎'}
-                                            </span>
-                                            <span className="text-[var(--text-secondary)] font-semibold">{catchItem.username}</span>
+                                <div className="space-y-1.5 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
+                                    {recentCatches.length > 0 ? recentCatches.map((catchItem, idx) => (
+                                        <div key={idx} className="flex items-center justify-between p-2.5 bg-[var(--bg-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-lg transition-colors group">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <span className={`text-sm shrink-0 ${catchItem.rarity === 'Legendary' ? 'drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]' : ''}`}>
+                                                    {catchItem.rarity === 'Legendary' ? '👑' : '💎'}
+                                                </span>
+                                                <div className="flex flex-col min-w-0">
+                                                    <span className="text-xs font-bold text-white truncate">@{catchItem.username}</span>
+                                                    <span className="text-[10px] text-[var(--text-secondary)] italic truncate opacity-70">"{catchItem.fish_name}"</span>
+                                                </div>
+                                            </div>
+                                            <div className="text-right shrink-0">
+                                                <div className={`text-[11px] font-black ${catchItem.rarity === 'Legendary' ? 'text-amber-400' : 'text-purple-400'}`}>
+                                                    {Number(catchItem.weight).toFixed(1)}kg
+                                                </div>
+                                                <div className="text-[8px] text-[var(--text-tertiary)] uppercase font-bold tracking-tighter">Live Now</div>
+                                            </div>
                                         </div>
-                                        <div className="text-[var(--text-secondary)] italic">{catchItem.fish_name} ({Number(catchItem.weight).toFixed(1)}kg)</div>
-                                        <div className="text-[10px] text-[var(--text-tertiary)]">Live</div>
-                                    </div>
-                                )) : (
-                                    <div className="text-center py-4 text-[var(--text-tertiary)] text-[10px] italic">No recent highlights</div>
-                                )}
+                                    )) : (
+                                        <div className="text-center py-6 bg-[var(--bg-secondary)] border border-dashed border-[var(--border)] rounded-lg">
+                                            <p className="text-[10px] text-[var(--text-tertiary)] font-bold uppercase tracking-widest italic opacity-50">No highlights found</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                        <div className="mt-8 pt-4 border-t border-[var(--border)]"><button onClick={closeModal} className="w-full py-2 bg-[var(--bg-hover)] hover:bg-white/20 text-white font-medium rounded-[3px] transition text-sm">Close</button></div>
+
+                        <div className="mt-8 flex gap-2">
+                            <button onClick={closeModal} className="flex-1 py-2.5 bg-[var(--bg-hover)] hover:bg-white/10 text-white font-bold rounded-lg transition text-xs border border-[var(--border)]">
+                                Dismiss
+                            </button>
+                            <button onClick={() => { fetchRecentCatches(); fetchStats(); }} className="px-4 py-2.5 bg-[#da373c]/10 hover:bg-[#da373c]/20 text-[#da373c] font-black rounded-lg transition text-xs border border-[#da373c]/20">
+                                Refresh
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -649,63 +692,103 @@ export default function FishingActions({ guildId }: FishingActionsProps) {
             )}
 
             {/* Toast Container */}
-            {/* Fish Detail Modal */}
+            {/* Fish Detail Modal - Redesigned for visual excellence */}
             {showFishDetail && selectedFish && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in" onClick={() => setShowFishDetail(false)}>
-                    <div className="bg-[var(--bg-primary)] rounded-xl max-w-lg w-full mx-4 shadow-2xl relative border border-[var(--border)] overflow-hidden" onClick={e => e.stopPropagation()}>
-                        <button onClick={() => setShowFishDetail(false)} className="absolute top-4 right-6 text-[var(--text-secondary)] hover:text-white transition-colors p-2 hover:bg-[var(--bg-hover)] rounded-full z-10">
-                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fade-in" onClick={() => setShowFishDetail(false)}>
+                    <div className="bg-[#0b0a12] rounded-3xl max-w-lg w-full mx-4 shadow-[0_0_80px_rgba(0,0,0,0.5)] relative border border-white/5 overflow-hidden animate-scale-in" onClick={e => e.stopPropagation()}>
+                        
+                        <button onClick={() => setShowFishDetail(false)} className="absolute top-5 right-5 text-white/30 hover:text-white transition-all p-2 bg-white/5 hover:bg-white/10 rounded-full z-30">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                         
-                        <div className="relative group text-left">
-                            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-transparent"></div>
-                            <div className="relative w-full aspect-video bg-black/40 flex items-center justify-center overflow-hidden">
-                                <img src={selectedFish.image_url} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" onError={(e: any) => { e.target.src = 'https://cdn-icons-png.flaticon.com/512/2274/2274532.png'; }} />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] to-transparent"></div>
-                                <div className="absolute top-4 left-4 flex gap-2">
-                                    <span className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-[var(--border)] text-[10px] font-black uppercase text-white tracking-widest">{selectedFish.rarity}</span>
+                        <div className="relative group overflow-hidden">
+                            {/* Visual Header with Image */}
+                            <div className="relative h-64 w-full bg-[#0d0d15] flex items-center justify-center">
+                                <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent z-10"></div>
+                                <div className="absolute inset-0 opacity-20 pointer-events-none z-0">
+                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                                </div>
+                                <img 
+                                    src={selectedFish.image_url} 
+                                    className="relative z-20 w-3/4 h-3/4 object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-1000 group-hover:scale-110" 
+                                    onError={(e: any) => { e.target.src = 'https://cdn-icons-png.flaticon.com/512/2274/2274532.png'; }} 
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0b0a12] via-transparent to-transparent z-20"></div>
+                                
+                                {/* Floating Rarity Badge */}
+                                <div className="absolute bottom-6 left-8 z-30">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-xl">
+                                        <span className={`w-2 h-2 rounded-full animate-pulse ${
+                                            selectedFish.rarity === 'Legendary' ? 'bg-amber-400' : 
+                                            selectedFish.rarity === 'Epic' ? 'bg-purple-500' : 
+                                            selectedFish.rarity === 'Rare' ? 'bg-blue-500' : 
+                                            selectedFish.rarity === 'Uncommon' ? 'bg-emerald-500' : 'bg-gray-400'
+                                        }`}></span>
+                                        <span className="text-[9px] font-black uppercase text-white tracking-[0.2em]">{selectedFish.rarity}</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="p-8 relative -mt-12">
-                                <div className="bg-[#12121a] rounded-xl p-6 border border-[var(--border)] shadow-2xl">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <h3 className="text-3xl font-black text-white tracking-tighter">{selectedFish.name}</h3>
+
+                            {/* Content Body */}
+                            <div className="p-8 pt-0 space-y-8">
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-end">
+                                        <div className="space-y-1">
+                                            <h3 className="text-4xl font-black text-white tracking-tighter leading-none">{selectedFish.name}</h3>
+                                            <div className="text-[10px] font-bold text-[#8e9297] italic opacity-60">Biological Data Ref: {selectedFish.name.substring(0,3).toUpperCase()}-402</div>
+                                        </div>
                                         <div className="text-right">
-                                            <div className="text-[10px] text-[var(--text-tertiary)] uppercase font-black tracking-widest">Base Value</div>
-                                            <div className="text-2xl font-black text-[#248046] tracking-tighter">${(selectedFish.base_price || 0).toLocaleString()}</div>
+                                            <div className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Market Value</div>
+                                            <div className="text-3xl font-black text-[#248046] tracking-tighter drop-shadow-[0_0_15px_rgba(36,128,70,0.2)]">
+                                                <span className="text-sm align-top mr-0.5">$</span>
+                                                {(selectedFish.base_price || 0).toLocaleString()}
+                                            </div>
                                         </div>
                                     </div>
-                                    <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-6 italic">
-                                        {selectedFish.description || (
-                                         selectedFish.rarity === 'Legendary' ? 'The stuff of myths. These ancient giants require the finest gear and absolute mastery.' :
-                                         selectedFish.rarity === 'Epic' ? 'Exotic species with unique biological markers, highly valued in the marketplace.' :
-                                         selectedFish.rarity === 'Rare' ? 'A prized catch for established fishers, found only in specific currents.' :
-                                         selectedFish.rarity === 'Uncommon' ? 'More elusive than common species, requiring a bit more patience to reel in.' :
-                                         'A frequent inhabitant of the shallow waters, easily caught with basic equipment.'
-                                        )}
-                                    </p>
-                                    <div className="grid grid-cols-2 gap-4 border-t border-[var(--border)] pt-6 mt-6">
-                                        <div className="bg-[var(--bg-hover)] p-4 rounded-xl border border-[var(--border)] text-center transition-colors hover:bg-white/[0.08]">
-                                            <div className="text-[9px] text-[var(--text-tertiary)] uppercase font-black tracking-widest mb-1">Min Weight</div>
-                                            <div className="text-white font-mono font-bold text-xl">{selectedFish.min_weight} <span className="text-[10px] text-[var(--text-tertiary)] font-sans">KG</span></div>
-                                        </div>
-                                        <div className="bg-[var(--bg-hover)] p-4 rounded-xl border border-[var(--border)] text-center transition-colors hover:bg-white/[0.08]">
-                                            <div className="text-[9px] text-[var(--text-tertiary)] uppercase font-black tracking-widest mb-1">Max Weight</div>
-                                            <div className="text-white font-mono font-bold text-xl">{selectedFish.max_weight} <span className="text-[10px] text-[var(--text-tertiary)] font-sans">KG</span></div>
-                                        </div>
+
+                                    <div className="p-4 bg-white/[0.03] border border-white/5 rounded-2xl">
+                                        <p className="text-[13px] text-[#8e9297] leading-relaxed font-medium">
+                                            {selectedFish.description || (
+                                             selectedFish.rarity === 'Legendary' ? 'The stuff of myths. These ancient giants require the finest gear and absolute mastery.' :
+                                             selectedFish.rarity === 'Epic' ? 'Exotic species with unique biological markers, highly valued in the marketplace.' :
+                                             selectedFish.rarity === 'Rare' ? 'A prized catch for established fishers, found only in specific currents.' :
+                                             selectedFish.rarity === 'Uncommon' ? 'More elusive than common species, requiring a bit more patience to reel in.' :
+                                             'A frequent inhabitant of the shallow waters, easily caught with basic equipment.'
+                                            )}
+                                        </p>
                                     </div>
-                                    <button 
-                                        onClick={() => setShowFishDetail(false)}
-                                        className="w-full mt-6 py-3 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 hover:text-blue-300 border border-blue-500/20 rounded-xl transition-all font-black text-xs uppercase tracking-widest"
-                                    >
-                                        Return to Encyclopedia
-                                    </button>
                                 </div>
+
+                                {/* Stats Grid */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="group/stat bg-white/[0.02] hover:bg-white/[0.04] p-5 rounded-2xl border border-white/5 transition-all">
+                                        <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-3 group-hover/stat:text-blue-400 transition-colors">Minimum Weight</div>
+                                        <div className="flex items-baseline gap-1.5">
+                                            <span className="text-2xl font-black text-white tracking-tight">{selectedFish.min_weight}</span>
+                                            <span className="text-[10px] font-bold text-white/20">KILOGRAMS</span>
+                                        </div>
+                                    </div>
+                                    <div className="group/stat bg-white/[0.02] hover:bg-white/[0.04] p-5 rounded-2xl border border-white/5 transition-all">
+                                        <div className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-3 group-hover/stat:text-blue-400 transition-colors">Maximum Weight</div>
+                                        <div className="flex items-baseline gap-1.5">
+                                            <span className="text-2xl font-black text-white tracking-tight">{selectedFish.max_weight}</span>
+                                            <span className="text-[10px] font-bold text-white/20">KILOGRAMS</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button 
+                                    onClick={() => setShowFishDetail(false)}
+                                    className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all border border-white/5 active:scale-[0.98] shadow-lg"
+                                >
+                                    Return to Encyclopedia
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
+
             <ToastContainer toast={toast} onClose={hideToast} />
         </>
     );

@@ -97,20 +97,18 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                 <button
                     onClick={handleExport}
                     disabled={exporting}
-                    className="px-5 py-2.5 rounded-xl glass hover:bg-[var(--bg-hover)] border border-[var(--border)] text-white font-bold text-sm transition-all hover:scale-105 flex items-center gap-2 disabled:opacity-50"
+                    className="px-4 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[4px] transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                    {exporting ? (
+                    {exporting && (
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                    ) : (
-                        <span className="text-lg">📤</span>
                     )}
                     Export Settings
                 </button>
                 <button
                     onClick={() => setShowModal(true)}
-                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] border border-indigo-400/20 text-white font-bold text-sm transition-all hover:scale-105 flex items-center gap-2"
+                    className="px-4 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium rounded-[4px] transition-colors shadow-sm flex items-center justify-center gap-2"
                 >
-                    <span className="text-lg">📥</span> Import Settings
+                    Import Settings
                 </button>
             </div>
 
@@ -123,7 +121,9 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                     <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
                         <div className="text-center mb-8">
                             <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
-                                <span className="text-4xl">📥</span>
+                                <svg className="w-10 h-10 text-[#5865F2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
                             </div>
                             <h2 className="text-3xl font-black text-white">Import Settings</h2>
                             <p className="text-[var(--text-secondary)] mt-2 font-medium">Upload a previously exported settings file</p>
@@ -158,17 +158,19 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                                     <span className="text-white font-bold text-sm">Overwrite existing settings</span>
                                     <p className="text-[var(--text-tertiary)] text-[11px]">Replace current settings instead of merging</p>
                                 </div>
-                                <div
-                                    className={`w-10 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${overwrite ? 'bg-[var(--bg-elevated)]merald-500' : 'bg-gray-700'}`}
-                                    onClick={() => setOverwrite(!overwrite)}
-                                >
-                                    <div className={`absolute top-1 left-1 bg-white w-3 h-3 rounded-full transition-transform duration-200 ease-in-out ${overwrite ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                                </div>
+                                    <div
+                                        className={`w-10 h-5 rounded-full relative transition-colors duration-200 ease-in-out ${overwrite ? 'bg-emerald-500' : 'bg-gray-700'}`}
+                                        onClick={() => setOverwrite(!overwrite)}
+                                    >
+                                        <div className={`absolute top-1 left-1 bg-white w-3 h-3 rounded-full transition-transform duration-200 ease-in-out ${overwrite ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                                    </div>
                             </label>
 
                             {/* Warning */}
                             <div className="bg-rose-500/10 border border-rose-500/30 rounded-[12px] p-4 flex gap-3">
-                                <span className="text-xl">⚠️</span>
+                                <svg className="w-6 h-6 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
                                 <div className="text-xs">
                                     <p className="font-bold text-rose-500 uppercase tracking-wider mb-1 text-[10px]">Security Warning</p>
                                     <p className="text-[var(--text-secondary)] leading-relaxed">Importing settings will modify your server configuration. Only upload files from sources you trust.</p>
@@ -189,7 +191,7 @@ export default function SettingsExportImport({ guildId }: SettingsExportImportPr
                             <button
                                 onClick={handleImport}
                                 disabled={!importData || importing}
-                                className="flex-[2] py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-[8px] transition disabled:opacity-50 flex items-center justify-center gap-2 text-sm shadow-lg shadow-indigo-500/25"
+                                className="flex-[2] py-2.5 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold rounded-[8px] transition disabled:opacity-50 flex items-center justify-center gap-2 text-sm shadow-lg shadow-indigo-500/25"
                             >
                                 {importing ? (
                                     <>

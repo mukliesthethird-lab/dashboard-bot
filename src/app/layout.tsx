@@ -6,10 +6,10 @@ import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: {
-    default: "Don Pollo | The Best Discord Bot",
+    default: "Don Pollo | Premium Bot",
     template: "%s | Don Pollo"
   },
-  description: "The most entertaining Discord bot with Economy, Fishing, Moderation, Welcome System, and Reaction Roles. Join thousands of servers already using Don Pollo!",
+  description: "Professional Discord management, global economy, and interactive systems—completely free. Don Pollo provides a premium experience without the paywall.",
   keywords: ["discord bot", "economy bot", "fishing bot", "moderation bot", "welcome bot", "reaction roles", "don pollo"],
   authors: [{ name: "Don Pollo Team" }],
   creator: "Don Pollo",
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://donpollo.gg",
     siteName: "Don Pollo Bot",
-    title: "Don Pollo | The Best Discord Bot",
-    description: "The most entertaining Discord bot with Economy, Fishing, Moderation, and more!",
+    title: "Don Pollo | Premium Bot",
+    description: "Professional Discord management, global economy, and interactive systems—completely free.",
     images: [
       {
         url: "/donpollo-icon.jpg",
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Don Pollo | The Best Discord Bot",
-    description: "The most entertaining Discord bot with Economy, Fishing, Moderation, and more!",
+    title: "Don Pollo | Premium Bot",
+    description: "Professional Discord management, global economy, and interactive systems—completely free.",
     images: ["/donpollo-icon.jpg"],
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://donpollo.gg"),

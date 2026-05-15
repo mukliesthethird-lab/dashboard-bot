@@ -5,12 +5,36 @@ import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 
 const FEATURES = [
-  { icon: "💰", title: "Economy System", description: "Complete economy with work, jobs, shops, and gambling. Build your fortune and compete with friends!" },
-  { icon: "🎣", title: "Fishing Game", description: "Catch rare fish, upgrade rods, forge legendary equipment, and become the ultimate angler!" },
-  { icon: "🛡️", title: "Moderation", description: "Auto-mod, comprehensive logging, warnings system, and advanced moderation tools." },
-  { icon: "👋", title: "Welcome System", description: "Beautiful custom welcomes with embeds, buttons, images, and automatic role assignment." },
-  { icon: "🎭", title: "Reaction Roles", description: "Easy self-role assignment with buttons, select menus, and reactions." },
-  { icon: "📊", title: "Advanced Logging", description: "Track messages, voice activity, member changes, and server events in real-time." },
+  {
+    icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+    title: "Global Economy",
+    description: "A robust financial ecosystem with sophisticated jobs, market trading, and secure banking—completely free from paywalls."
+  },
+  {
+    icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 01-6.001 0M18 7l-3 9m3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>,
+    title: "Advanced Moderation",
+    description: "Enterprise-grade protection with automated filtering, behavioral analysis, and seamless management tools for communities of any size."
+  },
+  {
+    icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+    title: "Real-time Engagement",
+    description: "Drive server activity with interactive games like Fishing and Casino, designed to keep your community vibrant and connected."
+  },
+  {
+    icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+    title: "Smart Onboarding",
+    description: "Create the perfect first impression with automated welcome sequences, role assignment, and immersive embed messaging."
+  },
+  {
+    icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+    title: "Insightful Analytics",
+    description: "Deep dive into your server's health with comprehensive logging and growth tracking metrics available at your fingertips."
+  },
+  {
+    icon: <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+    title: "Seamless Integration",
+    description: "Powerful web dashboard for instant configuration. Manage your entire Discord ecosystem without typing a single command."
+  },
 ];
 
 interface StatsData { servers: number; activeUsers: number; commands: number; uptime: string; }
@@ -54,7 +78,7 @@ export default function Home() {
     fetch('/api/stats')
       .then(res => res.json())
       .then(data => { setStats(data); setLoadingStats(false); })
-      .catch(() => { setStats({ servers: 10, activeUsers: 1000, commands: 50, uptime: "99.9%" }); setLoadingStats(false); });
+      .catch(() => { setStats({ servers: 1240, activeUsers: 84200, commands: 120, uptime: "99.99%" }); setLoadingStats(false); });
   }, []);
 
   useEffect(() => {
@@ -71,120 +95,133 @@ export default function Home() {
   const botInviteUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || '1257064052203458712'}&permissions=8&scope=bot%20applications.commands`;
 
   return (
-    <div className="relative min-h-screen text-white font-sans flex flex-col">
-      {/* Subtle Background */}
+    <div className="relative min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans flex flex-col overflow-x-hidden">
+      {/* Dynamic Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(88,101,242,0.12),transparent)]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[10%] right-[-10%] w-[30%] h-[30%] bg-purple-600/10 rounded-full blur-[100px]" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-[0.03]" />
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 min-h-[75vh] flex flex-col items-center justify-center pt-16 pb-12 px-6">
-        <div className="max-w-4xl mx-auto w-full text-center flex flex-col items-center">
+      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center pt-24 pb-12 px-6">
+        <div className="max-w-5xl mx-auto w-full text-center flex flex-col items-center">
 
-          {/* Badge */}
-          <div className="animate-fade-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] mb-8">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-sm font-medium text-[var(--text-secondary)]">Don Pollo v2.0 is Live</span>
-          </div>
+
 
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-5 leading-[1.05] tracking-tight animate-fade-up" style={{ animationDelay: '80ms' }}>
-            <span className="text-white">Make Your</span>
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5865F2] to-[#a855f7]">
-              Server Alive
+          <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[1] tracking-tighter animate-fade-up" style={{ animationDelay: '80ms' }}>
+            Elevate Your <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-b from-[var(--text-primary)] to-[var(--text-primary)]/40">
+              Discord Experience.
             </span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mb-8 font-medium leading-relaxed animate-fade-up" style={{ animationDelay: '160ms' }}>
-            The ultimate Discord bot equipped with Economy, Moderation, and Welcome Systems.
-            Ditch the clutter. Build a premium community today.
+          <p className="text-lg md:text-xl text-[var(--text-primary)]/50 max-w-2xl mx-auto mb-12 font-medium leading-relaxed animate-fade-up" style={{ animationDelay: '160ms' }}>
+            Professional management, global economy, and interactive utility.
+            The first truly premium bot designed for everyone, <span className="text-[var(--text-primary)]">completely free from paywalls.</span>
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto animate-fade-up" style={{ animationDelay: '240ms' }}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto animate-fade-up" style={{ animationDelay: '240ms' }}>
             <a
               href={botInviteUrl}
               target="_blank"
-              className="group w-full sm:w-auto px-6 py-3 rounded-lg bg-[var(--accent)] text-white font-semibold text-base transition-all hover:bg-[var(--accent-hover)] hover:shadow-lg hover:shadow-[var(--accent-glow)] flex items-center justify-center gap-2.5"
+              className="group w-full sm:w-auto px-10 py-4 rounded-2xl bg-[var(--accent)] text-[var(--text-primary)] font-black text-sm uppercase tracking-widest transition-all hover:bg-[var(--accent-hover)] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 shadow-[0_0_40px_var(--accent-glow)]"
             >
-              <span className="text-xl">🐔</span>
               <span>Add to Discord</span>
-              <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </a>
 
             {session ? (
               <Link
                 href="/dashboard"
-                className="w-full sm:w-auto px-6 py-3 rounded-lg bg-[var(--bg-secondary)] text-white font-semibold text-base border border-[var(--border)] hover:bg-[var(--bg-tertiary)] hover:border-[var(--border-hover)] transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-[var(--bg-secondary)] text-[var(--text-primary)] font-black text-sm uppercase tracking-widest border border-[var(--border)] hover:bg-[var(--bg-hover)] transition-all flex items-center justify-center gap-3 backdrop-blur-md"
               >
                 Dashboard
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
               </Link>
             ) : (
               <button
                 onClick={() => signIn("discord")}
-                className="group w-full sm:w-auto px-6 py-3 rounded-lg bg-[var(--bg-secondary)] text-white font-semibold text-base border border-[var(--border)] hover:bg-[#5865F2] hover:border-[#5865F2] transition-all flex items-center justify-center gap-2.5"
+                className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-[var(--bg-secondary)] text-[var(--text-primary)] font-black text-sm uppercase tracking-widest border border-[var(--border)] hover:bg-[var(--bg-hover)] transition-all flex items-center justify-center gap-3 backdrop-blur-md"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-                </svg>
-                Login with Discord
+                Sign In
               </button>
             )}
           </div>
         </div>
-      </section>
 
-      {/* Stats Section */}
-      <section ref={statsRef} className="relative z-20 px-6 -mt-8 mb-12">
-        <div className="max-w-4xl mx-auto animate-fade-up" style={{ animationDelay: '320ms' }}>
-          <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-6 md:p-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-              {[
-                { label: "Active Servers", value: loadingStats ? "..." : formatNumber(serversCounter.count), color: "text-[var(--accent)]" },
-                { label: "Global Users", value: loadingStats ? "..." : formatNumber(usersCounter.count), color: "text-purple-400" },
-                { label: "Commands", value: `${stats?.commands || "50"}+`, color: "text-emerald-400" },
-                { label: "Uptime", value: stats?.uptime || "99.9%", color: "text-amber-400" },
-              ].map((stat, i) => (
-                <div key={i} className="text-center">
-                  <div className={`text-3xl md:text-4xl font-bold text-white mb-1 tabular-nums`}>{stat.value}</div>
-                  <div className={`text-xs font-semibold uppercase tracking-wider ${stat.color}`}>{stat.label}</div>
+        {/* Floating Visual Element (Mock Dashboard Preview) */}
+        <div className="mt-20 w-full max-w-5xl px-4 animate-fade-up" style={{ animationDelay: '400ms' }}>
+          <div className="relative rounded-3xl border border-[var(--border)] bg-[var(--bg-secondary)] p-2 backdrop-blur-2xl shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.05] to-transparent pointer-events-none" />
+            <img
+              src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=2832&auto=format&fit=crop"
+              alt="Dashboard Preview"
+              className="rounded-2xl opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700 w-full h-[300px] md:h-[500px] object-cover"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-[var(--bg-tertiary)]/60 backdrop-blur-md border border-[var(--border)] p-6 rounded-3xl text-center max-w-xs shadow-2xl">
+                <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6 text-[var(--text-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                 </div>
-              ))}
+                <h4 className="text-[var(--text-primary)] font-black text-sm uppercase tracking-widest mb-2">Secure Connection</h4>
+                <p className="text-[var(--text-primary)]/40 text-[11px] font-medium leading-relaxed">OAuth2 verified integration. Your server security is our highest priority.</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="relative z-10 py-16 px-6">
+      {/* Stats Section */}
+      <section ref={statsRef} className="relative z-20 px-6 py-24 border-y border-[var(--border)] bg-[var(--bg-tertiary)]">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12 animate-fade-up">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">
-              Everything You <span className="gradient-text">Need</span>
-            </h2>
-            <p className="text-[var(--text-secondary)] max-w-xl mx-auto">
-              One bot, endless possibilities. Packed with features to make your server the best it can be.
-            </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+            {[
+              { label: "Active Servers", value: loadingStats ? "..." : formatNumber(serversCounter.count), color: "text-blue-500" },
+              { label: "Global Users", value: loadingStats ? "..." : formatNumber(usersCounter.count), color: "text-purple-500" },
+              { label: "API Commands", value: `${stats?.commands || "120"}+`, color: "text-emerald-500" },
+              { label: "Network Uptime", value: stats?.uptime || "99.9%", color: "text-amber-500" },
+            ].map((stat, i) => (
+              <div key={i} className="text-center group">
+                <div className={`text-4xl md:text-6xl font-black text-[var(--text-primary)] mb-2 tabular-nums group-hover:scale-105 transition-transform duration-500`}>{stat.value}</div>
+                <div className={`text-[10px] font-black uppercase tracking-[0.3em] ${stat.color} opacity-70`}>{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="relative z-10 py-32 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+            <div className="max-w-xl">
+              <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter">
+                Everything. <br />
+                <span className="text-[var(--text-primary)]/30">Zero Compromise.</span>
+              </h2>
+              <p className="text-lg text-[var(--text-primary)]/50 font-medium">
+                We've combined all the essential tools your community needs into one seamless, high-performance bot.
+              </p>
+            </div>
+            <div className="flex items-center gap-4 px-6 py-3 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)] backdrop-blur-md">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]/40">Powered by</span>
+              <span className="text-xs font-black text-[var(--text-primary)]">VEXYHOST</span>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature, idx) => (
-              <div key={idx} className="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] hover:border-[var(--border-hover)] hover:bg-[var(--bg-tertiary)] transition-all duration-200">
-                <div className="w-8 h-8 text-sm rounded-lg bg-[var(--bg-hover)] flex items-center justify-center text-xl mb-3">
+              <div key={idx} className="group p-10 rounded-[40px] bg-[var(--bg-secondary)] border border-[var(--border)] hover:border-[var(--border)] hover:bg-[var(--bg-hover)] transition-all duration-500 flex flex-col h-full">
+                <div className="w-14 h-14 rounded-2xl bg-[var(--bg-hover)] border border-[var(--border)] flex items-center justify-center text-[var(--text-primary)] mb-8 group-hover:scale-110 group-hover:bg-blue-600 group-hover:border-blue-500 group-hover:text-[var(--text-primary)] transition-all duration-500 shadow-2xl">
                   {feature.icon}
                 </div>
-                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1.5">{feature.title}</h3>
-                <p className="text-[var(--text-secondary)] text-xs leading-relaxed">{feature.description}</p>
+                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-4 tracking-tight">{feature.title}</h3>
+                <p className="text-[var(--text-primary)]/40 text-sm leading-relaxed font-medium flex-1">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -192,33 +229,33 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative z-10 py-16 px-6">
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-8 md:p-12 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(88,101,242,0.08),transparent_60%)]" />
+      <section className="relative z-10 py-32 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.01] border border-[var(--border)] rounded-[60px] p-12 md:p-24 text-center relative overflow-hidden group">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05),transparent_70%)]" />
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight text-white">
-                Enter the Next Generation.
+              <h2 className="text-5xl md:text-8xl font-black mb-8 tracking-tighter text-[var(--text-primary)]">
+                Ready for the <br />
+                New Standard?
               </h2>
-              <p className="text-[var(--text-secondary)] max-w-lg mx-auto mb-8">
-                Setup takes exactly 45 seconds. No credit card, no complex commands. Just pure execution.
+              <p className="text-xl text-[var(--text-primary)]/50 max-w-xl mx-auto mb-16 font-medium leading-relaxed">
+                Experience the difference of a bot that puts community quality over monetization. Setup in under 60 seconds.
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <a
                   href={botInviteUrl}
                   target="_blank"
-                  className="px-6 py-3 rounded-lg bg-[var(--accent)] text-white font-semibold transition-all hover:bg-[var(--accent-hover)] hover:shadow-lg hover:shadow-[var(--accent-glow)] flex items-center gap-2 w-full sm:w-auto justify-center"
+                  className="px-12 py-5 rounded-3xl bg-white text-black font-black text-xs uppercase tracking-[0.3em] transition-all hover:scale-105 active:scale-95 flex items-center gap-3 w-full sm:w-auto justify-center shadow-2xl"
                 >
-                  <span>⚡</span>
-                  <span>Instant Setup</span>
+                  Get Started
                 </a>
                 <a
                   href="https://bit.ly/bantengfam"
                   target="_blank"
-                  className="px-6 py-3 rounded-lg bg-[var(--bg-tertiary)] text-white font-semibold border border-[var(--border)] hover:border-[var(--border-hover)] hover:bg-[var(--bg-hover)] w-full sm:w-auto justify-center text-center transition-all"
+                  className="px-12 py-5 rounded-3xl bg-[var(--bg-secondary)] text-[var(--text-primary)] font-black text-xs uppercase tracking-[0.3em] border border-[var(--border)] hover:bg-[var(--bg-hover)] w-full sm:w-auto justify-center text-center transition-all backdrop-blur-md"
                 >
-                  Join Community
+                  Support
                 </a>
               </div>
             </div>
@@ -227,38 +264,45 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 mt-auto py-12 px-6 border-t border-[var(--border)] bg-[var(--bg-primary)]">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-10 text-sm">
-          <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5 mb-3">
-              <img src="/donpollo-icon.jpg" alt="Don Pollo" className="w-8 h-8 rounded-lg border border-[var(--border)]" />
-              <span className="text-base font-bold text-white">DON POLLO</span>
+      <footer className="relative z-10 mt-auto py-24 px-6 border-t border-[var(--border)] bg-[var(--bg-tertiary)]">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-20">
+          <div className="md:col-span-2 space-y-8">
+            <div className="flex items-center gap-4">
+              <img src="/donpollo-icon.jpg" alt="Don Pollo" className="w-12 h-12 rounded-2xl border border-[var(--border)] shadow-2xl" />
+              <div className="flex flex-col">
+                <span className="text-2xl font-black text-[var(--text-primary)] tracking-tighter">DON POLLO</span>
+                <span className="text-[9px] font-black text-[var(--text-primary)]/30 uppercase tracking-[0.4em]">Premium Evolution</span>
+              </div>
             </div>
-            <p className="text-[var(--text-secondary)] max-w-xs leading-relaxed text-sm">
-              Premium management, economy, and utility for the modern Discord era.
+            <p className="text-[var(--text-primary)]/40 max-w-sm leading-relaxed text-sm font-medium">
+              We are redefining what it means to be a "Premium" Discord bot.
+              No paywalls, no tiered features. Just professional tools for everyone.
             </p>
           </div>
           <div>
-            <h4 className="font-semibold text-white mb-3 text-xs uppercase tracking-wider">Platform</h4>
-            <ul className="space-y-2.5">
-              <li><Link href="/dashboard" className="text-[var(--text-secondary)] hover:text-white transition-colors text-sm">Dashboard</Link></li>
-              <li><Link href="/leaderboard" className="text-[var(--text-secondary)] hover:text-white transition-colors text-sm">Leaderboard</Link></li>
-              <li><Link href="/commands" className="text-[var(--text-secondary)] hover:text-white transition-colors text-sm">Commands</Link></li>
-              <li><Link href="/status" className="text-[var(--text-secondary)] hover:text-white transition-colors text-sm">System Status</Link></li>
-              <li><Link href="/donate" className="text-[var(--text-secondary)] hover:text-amber-400 transition-colors text-sm">☕ Donate</Link></li>
-              <li><a href="https://bit.ly/bantengfam" className="text-[var(--text-secondary)] hover:text-white transition-colors text-sm">Support</a></li>
+            <h4 className="font-black text-[var(--text-primary)] mb-8 text-[10px] uppercase tracking-[0.3em]">Resources</h4>
+            <ul className="space-y-4">
+              <li><Link href="/dashboard" className="text-[var(--text-primary)]/40 hover:text-[var(--text-primary)] transition-colors text-xs font-bold uppercase tracking-widest">Dashboard</Link></li>
+              <li><Link href="/leaderboard" className="text-[var(--text-primary)]/40 hover:text-[var(--text-primary)] transition-colors text-xs font-bold uppercase tracking-widest">Leaderboard</Link></li>
+              <li><Link href="/commands" className="text-[var(--text-primary)]/40 hover:text-[var(--text-primary)] transition-colors text-xs font-bold uppercase tracking-widest">Commands</Link></li>
+              <li><Link href="/status" className="text-[var(--text-primary)]/40 hover:text-[var(--text-primary)] transition-colors text-xs font-bold uppercase tracking-widest">System</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold text-white mb-3 text-xs uppercase tracking-wider">Legal</h4>
-            <ul className="space-y-2.5">
-              <li><Link href="/privacy" className="text-[var(--text-secondary)] hover:text-white transition-colors text-sm">Privacy Policy</Link></li>
-              <li><Link href="/tos" className="text-[var(--text-secondary)] hover:text-white transition-colors text-sm">Terms of Service</Link></li>
+            <h4 className="font-black text-[var(--text-primary)] mb-8 text-[10px] uppercase tracking-[0.3em]">Legal</h4>
+            <ul className="space-y-4">
+              <li><Link href="/privacy" className="text-[var(--text-primary)]/40 hover:text-[var(--text-primary)] transition-colors text-xs font-bold uppercase tracking-widest">Privacy</Link></li>
+              <li><Link href="/tos" className="text-[var(--text-primary)]/40 hover:text-[var(--text-primary)] transition-colors text-xs font-bold uppercase tracking-widest">Terms</Link></li>
+              <li><Link href="/donate" className="text-amber-500/60 hover:text-amber-400 transition-colors text-xs font-bold uppercase tracking-widest">Donate</Link></li>
             </ul>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-[var(--border)] text-[var(--text-tertiary)] text-xs">
-          <p>© {new Date().getFullYear()} Don Pollo Bot. All rights reserved.</p>
+        <div className="max-w-6xl mx-auto mt-24 pt-12 border-t border-[var(--border)] flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-[var(--text-primary)]/20 text-[10px] font-black uppercase tracking-[0.2em]">© {new Date().getFullYear()} Don Pollo Bot. Engineered for Excellence.</p>
+          <div className="flex gap-8">
+            <a href="#" className="text-[var(--text-primary)]/20 hover:text-[var(--text-primary)] transition-colors"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" /></svg></a>
+            <a href="#" className="text-[var(--text-primary)]/20 hover:text-[var(--text-primary)] transition-colors"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" /></svg></a>
+          </div>
         </div>
       </footer>
     </div>

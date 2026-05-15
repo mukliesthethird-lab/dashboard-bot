@@ -90,8 +90,8 @@ function RaidSlider({ label, value, min, max, unit, active, onChange, color = "#
     );
 }
 
-const SectionCard = ({ title, subtitle, children, accent = "#da373c" }: { title: string; subtitle?: string; children: React.ReactNode; accent?: string }) => (
-    <div className="glass-card p-5 rounded-xl border border-[var(--border)] space-y-4">
+const SectionCard = ({ title, subtitle, children, accent = "#da373c", className = "" }: { title: string; subtitle?: string; children: React.ReactNode; accent?: string; className?: string }) => (
+    <div className={`glass-card p-5 rounded-xl border border-[var(--border)] space-y-4 flex flex-col ${className}`}>
         <div className="flex items-center gap-3">
             <div className="w-1 h-6 rounded-full" style={{ background: accent }} />
             <div>
@@ -99,7 +99,9 @@ const SectionCard = ({ title, subtitle, children, accent = "#da373c" }: { title:
                 {subtitle && <p className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider">{subtitle}</p>}
             </div>
         </div>
-        {children}
+        <div className="flex-1 flex flex-col gap-4">
+            {children}
+        </div>
     </div>
 );
 
@@ -207,91 +209,98 @@ export default function AntiRaidSettings({ guildId }: Props) {
                 </div>
             </div>
 
-            <div className={`transition-all ${!settings.enabled ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+            <div className="relative">
+                {/* Master Overlay when Disarmed - More subtle than full grayscale */}
+                {!settings.enabled && (
+                    <div className="absolute inset-0 z-50 bg-[#1e1f22]/40 backdrop-blur-[1px] rounded-2xl flex items-center justify-center border border-dashed border-white/10 pointer-events-none">
+                        <div className="bg-[#2b2d31] px-6 py-3 rounded-full border border-white/5 shadow-2xl flex items-center gap-3 animate-fade-in">
+                            <div className="w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
+                            <span className="text-[11px] font-black text-white uppercase tracking-[0.2em]">Defense Systems Offline</span>
+                        </div>
+                    </div>
+                )}
+
+                <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch transition-all duration-500 ${!settings.enabled ? 'opacity-40 saturate-[0.3]' : ''}`}>
                     {/* Left Column */}
-                    <div className="lg:col-span-7 flex flex-col gap-4">
+                    <div className="flex flex-col gap-4">
                         {/* Mass Join */}
-                        <SectionCard title="Mass Join Detection" subtitle="Detect coordinated join attacks" accent="#ef4444">
-                            <ShieldToggle label="Mass Join Protection" desc="Detect and act on raids when many users join at once." active={settings.mass_join_enabled} onToggle={() => update('mass_join_enabled', !settings.mass_join_enabled)} color="#ef4444" />
+                        <SectionCard title="Mass Join Detection" subtitle="Detect coordinated join attacks" accent="#ef4444" className="flex-1">
+                            <ShieldToggle label="Mass Join Protection" desc="Protect against coordinated join attacks." active={settings.mass_join_enabled} onToggle={() => update('mass_join_enabled', !settings.mass_join_enabled)} color="#ef4444" />
                             <div className="grid grid-cols-2 gap-4">
                                 <RaidSlider label="Join Threshold" value={settings.mass_join_threshold} min={2} max={20} unit=" users" active={settings.mass_join_enabled} onChange={(v) => update('mass_join_threshold', v)} color="#ef4444" />
                                 <RaidSlider label="Time Window" value={settings.mass_join_window} min={3} max={60} unit="s" active={settings.mass_join_enabled} onChange={(v) => update('mass_join_window', v)} color="#ef4444" />
                             </div>
-                            <div className="space-y-1.5">
+                            <div className="pt-2 border-t border-white/5">
                                 <label className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest ml-1">Raid Action</label>
-                                <CustomDropdown value={settings.mass_join_action} onChange={(v) => update('mass_join_action', v)} size="sm" options={actionOptions} />
+                                <CustomDropdown value={settings.mass_join_action} onChange={(v) => update('mass_join_action', v)} size="sm" options={actionOptions} disabled={!settings.mass_join_enabled} />
                             </div>
                         </SectionCard>
 
                         {/* Account Age */}
-                        <SectionCard title="Account Age Filter" subtitle="Block suspiciously new accounts" accent="#f59e0b">
+                        <SectionCard title="Account Age Filter" subtitle="Block suspiciously new accounts" accent="#f59e0b" className="flex-1">
                             <ShieldToggle label="Minimum Account Age" desc="Reject accounts younger than the threshold." active={settings.account_age_enabled} onToggle={() => update('account_age_enabled', !settings.account_age_enabled)} color="#f59e0b" />
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4 items-end">
                                 <RaidSlider label="Min Age" value={settings.min_account_age_days} min={1} max={90} unit=" days" active={settings.account_age_enabled} onChange={(v) => update('min_account_age_days', v)} color="#f59e0b" />
                                 <div className="space-y-1.5">
                                     <label className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest ml-1">Action</label>
-                                    <CustomDropdown value={settings.account_age_action} onChange={(v) => update('account_age_action', v)} size="sm" options={actionOptions} />
+                                    <CustomDropdown value={settings.account_age_action} onChange={(v) => update('account_age_action', v)} size="sm" options={actionOptions} disabled={!settings.account_age_enabled} />
                                 </div>
                             </div>
                         </SectionCard>
 
-                        {/* Secondary Shields */}
-                        <SectionCard title="Secondary Shields" subtitle="Additional defense layers" accent="#8b5cf6">
-                            <div className="grid grid-cols-2 gap-3">
-                                <ShieldToggle label="No Avatar Detection" desc="Flag accounts without a profile picture." active={settings.no_avatar_enabled} onToggle={() => update('no_avatar_enabled', !settings.no_avatar_enabled)} color="#8b5cf6" />
-                                <ShieldToggle label="Anti-Bot Patterns" desc="Detect suspicious bot-like usernames." active={settings.anti_bot_enabled} onToggle={() => update('anti_bot_enabled', !settings.anti_bot_enabled)} color="#8b5cf6" />
-                            </div>
-                            {settings.no_avatar_enabled && (
-                                <div className="space-y-1.5">
-                                    <label className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest ml-1">No Avatar Action</label>
-                                    <CustomDropdown value={settings.no_avatar_action} onChange={(v) => update('no_avatar_action', v)} size="sm" options={actionOptions} />
-                                </div>
-                            )}
+                        {/* Join Slowmode */}
+                        <SectionCard title="Join Slowmode" subtitle="Rate-limit new member joins" accent="#10b981" className="flex-1">
+                            <ShieldToggle label="Join Rate Limit" desc="Flag users who join too quickly after each other." active={settings.join_slowmode_enabled} onToggle={() => update('join_slowmode_enabled', !settings.join_slowmode_enabled)} color="#10b981" />
+                            <RaidSlider label="Cooldown" value={settings.join_slowmode_seconds} min={5} max={120} unit="s" active={settings.join_slowmode_enabled} onChange={(v) => update('join_slowmode_seconds', v)} color="#10b981" />
                         </SectionCard>
                     </div>
 
                     {/* Right Column */}
-                    <div className="lg:col-span-5 flex flex-col gap-4">
-                        {/* Lockdown */}
-                        <SectionCard title="Auto Lockdown" subtitle="Emergency server lock" accent="#dc2626">
-                            <ShieldToggle label="Automatic Lockdown" desc="Lock all channels when a raid is detected." active={settings.auto_lockdown_enabled} onToggle={() => update('auto_lockdown_enabled', !settings.auto_lockdown_enabled)} color="#dc2626" />
-                            <RaidSlider label="Lockdown Duration" value={settings.lockdown_duration_minutes} min={1} max={60} unit=" min" active={settings.auto_lockdown_enabled} onChange={(v) => update('lockdown_duration_minutes', v)} color="#dc2626" />
+                    <div className="flex flex-col gap-4">
+                        {/* Secondary Shields */}
+                        <SectionCard title="Secondary Shields" subtitle="Additional defense layers" accent="#8b5cf6" className="flex-1">
+                            <div className="grid grid-cols-1 gap-3">
+                                <ShieldToggle label="No Avatar Detection" desc="Flag accounts without a profile picture." active={settings.no_avatar_enabled} onToggle={() => update('no_avatar_enabled', !settings.no_avatar_enabled)} color="#8b5cf6" />
+                                <ShieldToggle label="Anti-Bot Patterns" desc="Detect suspicious bot-like usernames." active={settings.anti_bot_enabled} onToggle={() => update('anti_bot_enabled', !settings.anti_bot_enabled)} color="#8b5cf6" />
+                            </div>
+                            <div className={`transition-all ${!settings.no_avatar_enabled ? 'opacity-30' : ''}`}>
+                                <label className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest ml-1">No Avatar Action</label>
+                                <CustomDropdown value={settings.no_avatar_action} onChange={(v) => update('no_avatar_action', v)} size="sm" options={actionOptions} disabled={!settings.no_avatar_enabled} />
+                            </div>
                         </SectionCard>
 
-                        {/* Verification Gate */}
-                        <SectionCard title="Verification Gate" subtitle="Hold new members for review" accent="#06b6d4">
-                            <ShieldToggle label="Verification Required" desc="Assign a verification role to new joins." active={settings.verification_enabled} onToggle={() => update('verification_enabled', !settings.verification_enabled)} color="#06b6d4" />
-                            {settings.verification_enabled && (
-                                <div className="space-y-1.5">
-                                    <label className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest ml-1">Verification Role</label>
-                                    <CustomDropdown value={settings.verification_role_id} onChange={(v) => update('verification_role_id', v)} size="sm" placeholder="Select role..."
+                        {/* Lockdown & Verification */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <SectionCard title="Auto Lockdown" accent="#dc2626">
+                                <ShieldToggle label="Auto Lockdown" desc="Lock channels on raid." active={settings.auto_lockdown_enabled} onToggle={() => update('auto_lockdown_enabled', !settings.auto_lockdown_enabled)} color="#dc2626" />
+                                <RaidSlider label="Duration" value={settings.lockdown_duration_minutes} min={1} max={60} unit=" min" active={settings.auto_lockdown_enabled} onChange={(v) => update('lockdown_duration_minutes', v)} color="#dc2626" />
+                            </SectionCard>
+                            <SectionCard title="Verification" accent="#06b6d4">
+                                <ShieldToggle label="Role Gate" desc="Verify new joins." active={settings.verification_enabled} onToggle={() => update('verification_enabled', !settings.verification_enabled)} color="#06b6d4" />
+                                <div className={`transition-all ${!settings.verification_enabled ? 'opacity-30' : ''}`}>
+                                    <CustomDropdown value={settings.verification_role_id} onChange={(v) => update('verification_role_id', v)} size="sm" placeholder="Role..." disabled={!settings.verification_enabled}
                                         options={[{ value: "", label: "None" }, ...roles.map(r => ({ value: r.id, label: `@${r.name}` }))]} />
                                 </div>
-                            )}
-                        </SectionCard>
+                            </SectionCard>
+                        </div>
 
-                        {/* Join Slowmode */}
-                        <SectionCard title="Join Slowmode" subtitle="Rate-limit new member joins" accent="#10b981">
-                            <ShieldToggle label="Join Rate Limit" desc="Flag users who join too quickly after each other." active={settings.join_slowmode_enabled} onToggle={() => update('join_slowmode_enabled', !settings.join_slowmode_enabled)} color="#10b981" />
-                            <RaidSlider label="Cooldown" value={settings.join_slowmode_seconds} min={5} max={120} unit="s" active={settings.join_slowmode_enabled} onChange={(v) => update('join_slowmode_seconds', v)} color="#10b981" />
-                        </SectionCard>
-
-                        {/* Logging & Notifications */}
-                        <SectionCard title="Logging & Alerts" subtitle="Configure raid notifications" accent="#5865F2">
-                            <div className="space-y-1.5">
-                                <label className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest ml-1">Log Channel</label>
-                                <CustomDropdown value={settings.log_channel_id} onChange={(v) => update('log_channel_id', v)} size="sm" placeholder="Select channel..."
-                                    options={[{ value: "", label: "Disable" }, ...channels.map(c => ({ value: c.id, label: `# ${c.name}` }))]} />
-                            </div>
-                            <ShieldToggle label="DM Notification" desc="Send a DM to flagged users explaining the action." active={settings.dm_notification_enabled} onToggle={() => update('dm_notification_enabled', !settings.dm_notification_enabled)} color="#5865F2" />
-                            {settings.dm_notification_enabled && (
+                        {/* Logging & Alerts */}
+                        <SectionCard title="Logging & Alerts" subtitle="Configure raid notifications" accent="#5865F2" className="flex-1">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest ml-1">Custom DM Message <span className="opacity-50">(leave empty for default)</span></label>
+                                    <label className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest ml-1">Log Channel</label>
+                                    <CustomDropdown value={settings.log_channel_id} onChange={(v) => update('log_channel_id', v)} size="sm" placeholder="Select channel..."
+                                        options={[{ value: "", label: "Disable" }, ...channels.map(c => ({ value: c.id, label: `# ${c.name}` }))]} />
+                                </div>
+                                <ShieldToggle label="DM Notification" desc="Alert flagged users via DM." active={settings.dm_notification_enabled} onToggle={() => update('dm_notification_enabled', !settings.dm_notification_enabled)} color="#5865F2" />
+                            </div>
+                            <div className={`transition-all ${!settings.dm_notification_enabled ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100 h-auto'}`}>
+                                <div className="space-y-1.5 pt-2">
+                                    <label className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest ml-1">Custom DM Message</label>
                                     <textarea value={settings.dm_message} onChange={(e) => update('dm_message', e.target.value)} placeholder="You have been flagged by our anti-raid system..."
                                         className="w-full bg-black/40 border border-[var(--border)] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#5865F2] transition-all resize-none font-mono text-[11px] shadow-inner min-h-[60px]" />
                                 </div>
-                            )}
+                            </div>
                         </SectionCard>
                     </div>
                 </div>
